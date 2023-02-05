@@ -1,0 +1,33 @@
+{
+    "overrides": [
+        {
+            "files": "*.sol",
+            "options": {
+                "singleQuote": false,
+                "explicitTypes": "always"
+            }
+        },
+        {
+            "files": "*.yml",
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": "*.json",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ],
+    "printWidth": 120,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "none",
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "importOrderSortSpecifiers": true,
+    "importOrderCaseInsensitive": true
+}
