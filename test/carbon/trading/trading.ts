@@ -1,6 +1,6 @@
 import { CarbonController, MasterVault, TestERC20Burnable } from '../../../components/Contracts';
 import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
-import { DEFAULT_TRADING_FEE_PPM, MAX_UINT128, PPM_RESOLUTION, ZERO_ADDRESS } from '../../../utils/Constants';
+import { DEFAULT_TRADING_FEE_PPM, MAX_UINT112, PPM_RESOLUTION, ZERO_ADDRESS } from '../../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
 import { createBurnableToken, createSystem, Tokens } from '../../helpers/Factory';
 import { latest } from '../../helpers/Time';
@@ -608,7 +608,7 @@ describe('Trading', () => {
                     sourceSymbol: TokenSymbol.TKN0,
                     targetSymbol: TokenSymbol.TKN1,
                     byTargetAmount: false,
-                    constraint: MAX_UINT128,
+                    constraint: BigNumber.from(2).pow(112).sub(1),
                     name: 'minReturn',
                     revertError: 'LowerThanMinReturn'
                 },

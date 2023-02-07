@@ -304,8 +304,8 @@ contract CarbonController is
         Token targetToken,
         TradeAction[] calldata tradeActions,
         uint256 deadline,
-        uint128 minReturn
-    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
+        uint112 minReturn
+    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint112) {
         _validateTradeParams(sourceToken, targetToken, deadline, msg.value, minReturn, tradeActions);
         TradeParams memory params = TradeParams({
             trader: msg.sender,
@@ -328,8 +328,8 @@ contract CarbonController is
         Token targetToken,
         TradeAction[] calldata tradeActions,
         uint256 deadline,
-        uint128 maxInput
-    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
+        uint112 maxInput
+    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint112) {
         _validateTradeParams(sourceToken, targetToken, deadline, msg.value, maxInput, tradeActions);
 
         if (sourceToken.isNative()) {
@@ -359,7 +359,7 @@ contract CarbonController is
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
-    ) external view returns (uint128) {
+    ) external view returns (uint112) {
         _validateInputTokens(sourceToken, targetToken);
         TradeTokens memory tokens = TradeTokens({ source: sourceToken, target: targetToken });
         SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, true);
@@ -373,7 +373,7 @@ contract CarbonController is
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
-    ) external view returns (uint128) {
+    ) external view returns (uint112) {
         _validateInputTokens(sourceToken, targetToken);
         TradeTokens memory tokens = TradeTokens({ source: sourceToken, target: targetToken });
         SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, false);
@@ -455,7 +455,7 @@ contract CarbonController is
         Token targetToken,
         uint256 deadline,
         uint256 value,
-        uint128 constraint,
+        uint112 constraint,
         TradeAction[] calldata tradeActions
     ) private view {
         // revert if deadline has passed

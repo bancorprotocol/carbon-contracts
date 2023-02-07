@@ -82,10 +82,10 @@ import { MAX_GAP } from "../utility/Constants.sol";
  * +-------------------+---------------------------------+---------------------------------+
  */
 struct Order {
-    uint128 y;
-    uint128 z;
-    uint64 A;
-    uint64 B;
+    uint112 y;
+    uint112 z;
+    uint80 A;
+    uint80 B;
 }
 // solhint-enable var-name-mixedcase
 
@@ -108,7 +108,7 @@ struct Strategy {
 
 struct TradeAction {
     uint256 strategyId;
-    uint128 amount;
+    uint112 amount;
 }
 
 abstract contract Strategies is Initializable {
@@ -148,8 +148,8 @@ abstract contract Strategies is Initializable {
     }
 
     struct SourceAndTargetAmounts {
-        uint128 sourceAmount;
-        uint128 targetAmount;
+        uint112 sourceAmount;
+        uint112 targetAmount;
     }
 
     struct TradeParams {
@@ -158,7 +158,7 @@ abstract contract Strategies is Initializable {
         TradeAction[] tradeActions;
         bool byTargetAmount;
         IMasterVault masterVault;
-        uint128 constraint;
+        uint112 constraint;
         uint256 txValue;
     }
 
@@ -239,7 +239,7 @@ abstract contract Strategies is Initializable {
         address indexed targetToken,
         uint256 sourceAmount,
         uint256 targetAmount,
-        uint128 tradingFeeAmount,
+        uint112 tradingFeeAmount,
         bool byTargetAmount
     );
 
@@ -316,11 +316,11 @@ abstract contract Strategies is Initializable {
             // handle transfers
             if (newOrders[i].y < strategy.orders[i].y) {
                 // liquidity decreased - withdraw the difference
-                uint128 delta = strategy.orders[i].y - newOrders[i].y;
+                uint112 delta = strategy.orders[i].y - newOrders[i].y;
                 vault.withdrawFunds(token, payable(owner), delta);
             } else if (newOrders[i].y > strategy.orders[i].y) {
                 // liquidity increased - deposit the difference
-                uint128 delta = newOrders[i].y - strategy.orders[i].y;
+                uint112 delta = newOrders[i].y - strategy.orders[i].y;
                 _depositToMasterVaultAndRefundExcessNativeToken(vault, token, owner, delta, value);
             }
         }
@@ -428,15 +428,15 @@ abstract contract Strategies is Initializable {
         }
 
         // apply trading fee
-        uint128 tradingFeeAmount;
+        uint112 tradingFeeAmount;
         address tradingFeeToken;
         if (params.byTargetAmount) {
-            uint128 amountIncludingFee = _addFee(totals.sourceAmount);
+            uint112 amountIncludingFee = _addFee(totals.sourceAmount);
             tradingFeeAmount = amountIncludingFee - totals.sourceAmount;
             tradingFeeToken = address(params.tokens.source);
             totals.sourceAmount = amountIncludingFee;
         } else {
-            uint128 amountIncludingFee = _subtractFee(totals.targetAmount);
+            uint112 amountIncludingFee = _subtractFee(totals.targetAmount);
             tradingFeeAmount = totals.targetAmount - amountIncludingFee;
             tradingFeeToken = address(params.tokens.target);
             totals.targetAmount = amountIncludingFee;
@@ -475,17 +475,17 @@ abstract contract Strategies is Initializable {
     /**
      * @dev calculates the required amount plus fee
      */
-    function _addFee(uint128 amount) private view returns (uint128) {
+    function _addFee(uint112 amount) private view returns (uint112) {
         // divide the input amount by `1 - fee`
-        return MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - _tradingFeePPM).toUint128();
+        return MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - _tradingFeePPM).toUint112();
     }
 
     /**
      * @dev calculates the expected amount minus fee
      */
-    function _subtractFee(uint128 amount) private view returns (uint128) {
+    function _subtractFee(uint112 amount) private view returns (uint112) {
         // multiply the input amount by `1 - fee`
-        return MathEx.mulDivF(amount, PPM_RESOLUTION - _tradingFeePPM, PPM_RESOLUTION).toUint128();
+        return MathEx.mulDivF(amount, PPM_RESOLUTION - _tradingFeePPM, PPM_RESOLUTION).toUint112();
     }
 
     /**
@@ -494,7 +494,7 @@ abstract contract Strategies is Initializable {
     function _validateConstraints(
         bool byTargetAmount,
         SourceAndTargetAmounts memory totals,
-        uint128 constraint
+        uint112 constraint
     ) private pure {
         if (byTargetAmount) {
             // the source amount required is greater than maxInput
@@ -722,20 +722,20 @@ abstract contract Strategies is Initializable {
      *  A * x * (A * y + B * z) + z ^ 2
      *
      */
-    function _tradeTargetAmount(uint256 x, Order memory order) private pure returns (uint128) {
+    function _tradeTargetAmount(uint256 x, Order memory order) private pure returns (uint112) {
         uint256 y = uint256(order.y);
         uint256 z = uint256(order.z);
         uint256 A = uint256(order.A);
         uint256 B = uint256(order.B);
 
         if (A == 0) {
-            return MathEx.mulDivF(x, B * B, ONE * ONE).toUint128();
+            return MathEx.mulDivF(x, B * B, ONE * ONE).toUint112();
         }
 
         uint256 temp1 = y * A + z * B;
         uint256 temp2 = (temp1 * x) / ONE;
         uint256 temp3 = temp2 * A + z * z * ONE;
-        return MathEx.mulDivF(temp1, temp2, temp3).toUint128();
+        return MathEx.mulDivF(temp1, temp2, temp3).toUint112();
     }
 
     /**
@@ -746,32 +746,40 @@ abstract contract Strategies is Initializable {
      *  (A * y + B * z) * (A * y + B * z - A * x)
      *
      */
-    function _tradeSourceAmount(uint256 x, Order memory order) private pure returns (uint128) {
+    function _tradeSourceAmount(uint256 x, Order memory order) private pure returns (uint112) {
         uint256 y = uint256(order.y);
         uint256 z = uint256(order.z);
         uint256 A = uint256(order.A);
         uint256 B = uint256(order.B);
 
         if (A == 0) {
-            return MathEx.mulDivC(x, ONE * ONE, B * B).toUint128();
+            return MathEx.mulDivC(x, ONE * ONE, B * B).toUint112();
         }
 
         uint256 temp1 = z * ONE;
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 - x * A;
-        return MathEx.mulDivC(x * temp1, temp1, temp2 * temp3).toUint128();
+        return MathEx.mulDivC(x * temp1, temp1, temp2 * temp3).toUint112();
     }
 
     // solhint-enable var-name-mixedcase
+
+    function _bits(uint256 val, uint256 shl) private pure returns (uint256) {
+        return val << shl;
+    }
+
+    function _bits(uint256 val, uint256 lsb, uint256 len, uint256 shl) private pure returns (uint256) {
+        return (val << (256 - lsb - len)) >> (256 - len) << shl;
+    }
 
     /**
      * @dev pack 2 orders into a 3 slot uint256 data structure
      */
     function _packOrders(Order[2] memory orders) private pure returns (uint256[3] memory) {
         return [
-            uint256((uint256(orders[0].y) << 0) | (uint256(orders[1].y) << 128)),
-            uint256((uint256(orders[0].z) << 0) | (uint256(orders[0].A) << 128) | (uint256(orders[0].B) << 192)),
-            uint256((uint256(orders[1].z) << 0) | (uint256(orders[1].A) << 128) | (uint256(orders[1].B) << 192))
+            _bits(orders[0].y, 0) | _bits(orders[1].y, 112) | _bits(orders[0].A, 0, 16, 224) | _bits(orders[1].A, 0, 16, 240),
+            _bits(orders[0].z, 0) | _bits(orders[0].A, 16, 64, 112) | _bits(orders[0].B, 176),
+            _bits(orders[1].z, 0) | _bits(orders[1].A, 16, 64, 112) | _bits(orders[1].B, 176)
         ];
     }
 
@@ -781,16 +789,16 @@ abstract contract Strategies is Initializable {
     function _unpackOrders(uint256[3] memory values) private pure returns (Order[2] memory) {
         return [
             Order({
-                y: uint128(values[0] >> 0),
-                z: uint128(values[1] >> 0),
-                A: uint64(values[1] >> 128),
-                B: uint64(values[1] >> 192)
+                y: uint112(values[0] >> 0),
+                z: uint112(values[1] >> 0),
+                A: uint80(_bits(values[1], 112, 64, 16) | _bits(values[0], 224, 16, 0)),
+                B: uint80(values[1] >> 176)
             }),
             Order({
-                y: uint128(values[0] >> 128),
-                z: uint128(values[2] >> 0),
-                A: uint64(values[2] >> 128),
-                B: uint64(values[2] >> 192)
+                y: uint112(values[0] >> 112),
+                z: uint112(values[2] >> 0),
+                A: uint80(_bits(values[2], 112, 64, 16) | _bits(values[0], 240, 16, 0)),
+                B: uint80(values[2] >> 176)
             })
         ];
     }

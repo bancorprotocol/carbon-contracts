@@ -127,8 +127,8 @@ interface ICarbonController is IVersioned {
         Token targetToken,
         TradeAction[] calldata tradeActions,
         uint256 deadline,
-        uint128 minReturn
-    ) external payable returns (uint128);
+        uint112 minReturn
+    ) external payable returns (uint112);
 
     /**
      * @dev performs a trade by specifying a fixed target amount
@@ -146,8 +146,8 @@ interface ICarbonController is IVersioned {
         Token targetToken,
         TradeAction[] calldata tradeActions,
         uint256 deadline,
-        uint128 maxInput
-    ) external payable returns (uint128);
+        uint112 maxInput
+    ) external payable returns (uint112);
 
     /**
      * @dev returns the source amount required when trading by target amount
@@ -156,7 +156,7 @@ interface ICarbonController is IVersioned {
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
-    ) external view returns (uint128);
+    ) external view returns (uint112);
 
     /**
      * @dev returns the target amount expected when trading by source amount
@@ -165,7 +165,7 @@ interface ICarbonController is IVersioned {
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
-    ) external view returns (uint128);
+    ) external view returns (uint112);
 
     /**
      * @dev returns the amount of fees accumulated for the specified token
