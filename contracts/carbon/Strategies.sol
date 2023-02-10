@@ -729,13 +729,18 @@ abstract contract Strategies is Initializable {
         uint256 B = uint256(order.B);
 
         if (A == 0) {
-            return MathEx.mulDivF(x, B * B, ONE * ONE).toUint128();
+            return MathEx.mulDivF(x, B * B, ONE * ONE).toUint112();
         }
 
-        uint256 temp1 = y * A + z * B;
-        uint256 temp2 = (temp1 * x) / ONE;
-        uint256 temp3 = temp2 * A + z * z * ONE;
-        return MathEx.mulDivF(temp1, temp2, temp3).toUint128();
+        uint256 temp1 = z * ONE;
+        uint256 temp2 = y * A + z * B;
+        uint256 temp3 = temp2 * x;
+
+        uint256 scale = MathEx.mulDivC(temp3, A, type(uint256).max);
+        uint256 temp4 = MathEx.mulDivC(temp1, temp1, scale);
+        uint256 temp5 = MathEx.mulDivC(temp3, A, scale);
+
+        return MathEx.mulDivF(temp2, temp3 / scale, temp4 + temp5).toUint112();
     }
 
     /**
@@ -753,13 +758,18 @@ abstract contract Strategies is Initializable {
         uint256 B = uint256(order.B);
 
         if (A == 0) {
-            return MathEx.mulDivC(x, ONE * ONE, B * B).toUint128();
+            return MathEx.mulDivC(x, ONE * ONE, B * B).toUint112();
         }
 
         uint256 temp1 = z * ONE;
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 - x * A;
-        return MathEx.mulDivC(x * temp1, temp1, temp2 * temp3).toUint128();
+
+        uint256 scale = MathEx.mulDivC(temp2, temp3, type(uint256).max);
+        uint256 temp4 = MathEx.mulDivC(temp1, temp1, scale);
+        uint256 temp5 = MathEx.mulDivF(temp2, temp3, scale);
+
+        return MathEx.mulDivC(x, temp4, temp5).toUint112();
     }
 
     // solhint-enable var-name-mixedcase
