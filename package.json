@@ -106,7 +106,7 @@
     "glob": "^8.1.0",
     "hardhat-contract-sizer": "^2.8.0",
     "hardhat-dependency-compiler": "^1.1.3",
-    "hardhat-deploy": "lbeder/hardhat-deploy#817a6d",
+    "hardhat-deploy": "bancorprotocol/hardhat-deploy#close-ledger-connection",
     "hardhat-deploy-tenderly": "^0.2.0",
     "hardhat-storage-layout": "^0.1.7",
     "hardhat-watcher": "^2.5.0",
