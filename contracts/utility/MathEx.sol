@@ -70,7 +70,7 @@ library MathEx {
     /**
      * @dev returns the value of `x * y`
      */
-    function _mul512(uint256 x, uint256 y) internal pure returns (Uint512 memory) {
+    function _mul512(uint256 x, uint256 y) private pure returns (Uint512 memory) {
         uint256 p = _mulModMax(x, y);
         uint256 q = _unsafeMul(x, y);
         if (p >= q) {
@@ -80,7 +80,7 @@ library MathEx {
     }
 
     /**
-     * @dev returns the value of `x - y`, given that `x >= y`
+     * @dev returns the value of `x - y`
      */
     function _sub512(Uint512 memory x, uint256 y) private pure returns (Uint512 memory) {
         if (x.lo >= y) {

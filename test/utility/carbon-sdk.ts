@@ -1,6 +1,35 @@
 import Decimal from 'decimal.js';
 import { BigNumber } from 'ethers';
 
+const ONE = 2 ** 48;
+
+const BnToDec = (x: BigNumber) => new Decimal(x.toString());
+const DecToBn = (x: Decimal) => BigNumber.from(x.toFixed());
+
+function bitLength(value: BigNumber) {
+    return value.gt(0) ? Decimal.log2(value.toString()).add(1).floor().toNumber() : 0;
+}
+
+function encodeRate(value: Decimal) {
+    const data = DecToBn(value.sqrt().mul(ONE).floor());
+    const length = bitLength(data.div(ONE));
+    return BnToDec(data.shr(length).shl(length));
+}
+
+function decodeRate(value: Decimal) {
+    return value.div(ONE).pow(2);
+}
+
+function encodeFloat(value: BigNumber) {
+    const exponent = bitLength(value.div(ONE));
+    const mantissa = value.shr(exponent);
+    return BigNumber.from(ONE).mul(exponent).or(mantissa);
+}
+
+function decodeFloat(value: BigNumber) {
+    return value.mod(ONE).shl(value.div(ONE).toNumber());
+}
+
 export type DecodedOrder = {
     liquidity: Decimal;
     lowestRate: Decimal;
@@ -15,34 +44,28 @@ export type EncodedOrder = {
     B: BigNumber;
 };
 
-const ONE = 2 ** 32;
-export const encode = (x: Decimal): Decimal => x.sqrt().mul(ONE);
-export const decode = (x: Decimal): Decimal => x.div(ONE).pow(2);
-
 export const encodeOrder = (order: DecodedOrder): EncodedOrder => {
-    const liq = BigNumber.from(order.liquidity.toFixed());
-    const min = BigNumber.from(encode(order.lowestRate).floor().toFixed());
-    const max = BigNumber.from(encode(order.highestRate).floor().toFixed());
-    const mid = BigNumber.from(encode(order.marginalRate).floor().toFixed());
-
+    const y = DecToBn(order.liquidity);
+    const L = DecToBn(encodeRate(order.lowestRate));
+    const H = DecToBn(encodeRate(order.highestRate));
+    const M = DecToBn(encodeRate(order.marginalRate));
     return {
-        y: liq,
-        z: liq.mul(max.sub(min)).div(mid.sub(min)),
-        A: max.sub(min),
-        B: min
+        y: y,
+        z: H.eq(M) ? y : y.mul(H.sub(L)).div(M.sub(L)),
+        A: encodeFloat(H.sub(L)),
+        B: encodeFloat(L)
     };
 };
 
 export const decodeOrder = (order: EncodedOrder): DecodedOrder => {
-    const y = new Decimal(order.y.toString());
-    const z = new Decimal(order.z.toString());
-    const A = new Decimal(order.A.toString());
-    const B = new Decimal(order.B.toString());
-    const yOverZ = y.eq(z) ? new Decimal(1) : y.div(z);
+    const y = BnToDec(order.y);
+    const z = BnToDec(order.z);
+    const A = BnToDec(decodeFloat(order.A));
+    const B = BnToDec(decodeFloat(order.B));
     return {
         liquidity: y,
-        lowestRate: decode(B),
-        highestRate: decode(B.add(A)),
-        marginalRate: decode(B.add(A.mul(yOverZ)))
+        lowestRate: decodeRate(B),
+        highestRate: decodeRate(B.add(A)),
+        marginalRate: decodeRate(y.eq(z) ? B.add(A) : B.add(A.mul(y).div(z)))
     };
 };
