@@ -71,9 +71,10 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     function _afterTokenTransfer(
         address from,
         address to,
-        uint256 tokenId
+        uint256 tokenId,
+        uint256 batchSize
     ) internal virtual override {
-        super._afterTokenTransfer(from, to, tokenId);
+        super._afterTokenTransfer(from, to, tokenId, batchSize);
 
         if (address(_carbonController) == address(0)) {
             revert CarbonControllerNotSet();

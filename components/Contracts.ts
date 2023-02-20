@@ -14,7 +14,7 @@ import {
     TestTokenLibrary__factory,
     TestUpgradeable__factory,
     TestVault__factory,
-    TransparentUpgradeableProxyImmutable__factory,
+    OptimizedTransparentUpgradeableProxy__factory,
     Voucher__factory
 } from '../typechain-types';
 import { deployOrAttach } from './ContractBuilder';
@@ -41,9 +41,9 @@ const getContracts = (signer?: Signer) => ({
     TestUpgradeable: deployOrAttach('TestUpgradeable', TestUpgradeable__factory, signer),
     TestVault: deployOrAttach('TestVault', TestVault__factory, signer),
     TestOnlyProxyDelegate: deployOrAttach('TestOnlyProxyDelegate', TestOnlyProxyDelegate__factory, signer),
-    TransparentUpgradeableProxyImmutable: deployOrAttach(
-        'TransparentUpgradeableProxyImmutable',
-        TransparentUpgradeableProxyImmutable__factory,
+    OptimizedTransparentUpgradeableProxy: deployOrAttach(
+        'OptimizedTransparentUpgradeableProxy',
+        OptimizedTransparentUpgradeableProxy__factory,
         signer
     )
 });
