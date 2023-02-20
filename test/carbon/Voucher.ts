@@ -51,4 +51,24 @@ describe('Voucher', () => {
         const tx = voucher.connect(nonAdmin).setBaseExtension('123');
         await expect(tx).to.have.been.revertedWithError('Ownable: caller is not the owner');
     });
+
+    it('emits CarbonControllerUpdated event', async () => {
+        const res = await voucher.setCarbonController(voucher.address);
+        await expect(res).to.emit(voucher, 'CarbonControllerUpdated').withArgs(voucher.address);
+    });
+
+    it('emits BaseURIUpdated event', async () => {
+        const res = await voucher.setBaseURI('123');
+        await expect(res).to.emit(voucher, 'BaseURIUpdated').withArgs('123');
+    });
+
+    it('emits BaseExtensionUpdated event', async () => {
+        const res = await voucher.setBaseExtension('123');
+        await expect(res).to.emit(voucher, 'BaseExtensionUpdated').withArgs('123');
+    });
+
+    it('emits UseGlobalURIUpdated event', async () => {
+        const res = await voucher.useGlobalURI(true);
+        await expect(res).to.emit(voucher, 'UseGlobalURIUpdated').withArgs(true);
+    });
 });

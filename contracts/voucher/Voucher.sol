@@ -12,6 +12,8 @@ import { CarbonController } from "../carbon/CarbonController.sol";
 contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     using Strings for uint256;
 
+    error CarbonControllerNotSet();
+
     // the carbon controller contract
     CarbonController private _carbonController;
 
@@ -24,7 +26,25 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     // the suffix of a dynamic URI for e.g. `.json`
     string private _baseExtension;
 
-    error CarbonControllerNotSet();
+    /**
+     @dev emits when the admin enables or disables the usage of the global URI
+     */
+    event UseGlobalURIUpdated(bool newUseGlobalURI);
+
+    /**
+     * @dev emits when the admin updates the base URI
+     */
+    event BaseURIUpdated(string newBaseURI);
+
+    /**
+     * @dev emits when the admin updates the base extension
+     */
+    event BaseExtensionUpdated(string newBaseExtension);
+
+    /**
+     * @dev emits when the contract's owner sets the CarbonController's address
+     */
+    event CarbonControllerUpdated(CarbonController carbonController);
 
     constructor(
         bool newUseGlobalURI,
@@ -63,6 +83,8 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
         validAddress(address(carbonController))
     {
         _carbonController = carbonController;
+
+        emit CarbonControllerUpdated(carbonController);
     }
 
     /**
@@ -109,6 +131,8 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      */
     function setBaseURI(string memory newBaseURI) public onlyOwner {
         __baseURI = newBaseURI;
+
+        emit BaseURIUpdated(newBaseURI);
     }
 
     /**
@@ -120,6 +144,8 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      */
     function setBaseExtension(string memory newBaseExtension) public onlyOwner {
         _baseExtension = newBaseExtension;
+
+        emit BaseExtensionUpdated(newBaseExtension);
     }
 
     /**
@@ -131,6 +157,8 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      */
     function useGlobalURI(bool newUseGlobalURI) public onlyOwner {
         _useGlobalURI = newUseGlobalURI;
+
+        emit UseGlobalURIUpdated(newUseGlobalURI);
     }
 
     /**
