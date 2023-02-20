@@ -1,18 +1,14 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.17;
 
-import { Strategies } from "../carbon/Strategies.sol";
+import { Strategies, Order } from "../carbon/Strategies.sol";
 
 contract TestStrategies is Strategies {
-    // solhint-disable var-name-mixedcase
-
-    function tradeBySourceAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) external pure returns (uint128) {
-        return _tradeTargetAmount(x, y, z, A, B);
+    function tradeBySourceAmount(Order memory order, uint128 amount) external pure returns (uint128) {
+        return _singleTradeActionSourceAndTargetAmounts(order, amount, false).targetAmount;
     }
 
-    function tradeByTargetAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) external pure returns (uint128) {
-        return _tradeSourceAmount(x, y, z, A, B);
+    function tradeByTargetAmount(Order memory order, uint128 amount) external pure returns (uint128) {
+        return _singleTradeActionSourceAndTargetAmounts(order, amount, true).sourceAmount;
     }
-
-    // solhint-enable var-name-mixedcase
 }

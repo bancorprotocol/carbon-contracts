@@ -409,7 +409,7 @@ abstract contract Strategies is Initializable {
             uint256 targetTokenIndex = _findTargetTokenIndex(storedStrategy, params.tokens);
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 tradeOrders.orders[targetTokenIndex],
-                params.tradeActions[i],
+                params.tradeActions[i].amount,
                 params.byTargetAmount
             );
 
@@ -556,7 +556,7 @@ abstract contract Strategies is Initializable {
 
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 orders[targetTokenIndex],
-                tradeActions[i],
+                tradeActions[i].amount,
                 byTargetAmount
             );
 
@@ -738,12 +738,9 @@ abstract contract Strategies is Initializable {
      *  A * x * (A * y + B * z) + z ^ 2
      *
      */
-    function _tradeTargetAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) internal pure returns (uint128) {
-        A = _expandRate(A);
-        B = _expandRate(B);
-
+    function _tradeTargetAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) private pure returns (uint256) {
         if (A == 0) {
-            return MathEx.mulDivF(x, B * B, ONE * ONE).toUint128();
+            return MathEx.mulDivF(x, B * B, ONE * ONE);
         }
 
         uint256 temp1 = z * ONE;
@@ -756,7 +753,7 @@ abstract contract Strategies is Initializable {
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
         uint256 temp5 = MathEx.mulDivC(temp3, A, factor);
-        return MathEx.mulDivF(temp2, temp3 / factor, temp4 + temp5).toUint128();
+        return MathEx.mulDivF(temp2, temp3 / factor, temp4 + temp5);
     }
 
     /**
@@ -767,12 +764,9 @@ abstract contract Strategies is Initializable {
      *  (A * y + B * z) * (A * y + B * z - A * x)
      *
      */
-    function _tradeSourceAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) internal pure returns (uint128) {
-        A = _expandRate(A);
-        B = _expandRate(B);
-
+    function _tradeSourceAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) private pure returns (uint256) {
         if (A == 0) {
-            return MathEx.mulDivC(x, ONE * ONE, B * B).toUint128();
+            return MathEx.mulDivC(x, ONE * ONE, B * B);
         }
 
         uint256 temp1 = z * ONE;
@@ -785,7 +779,7 @@ abstract contract Strategies is Initializable {
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
         uint256 temp5 = MathEx.mulDivF(temp2, temp3, factor);
-        return MathEx.mulDivC(x, temp4, temp5).toUint128();
+        return MathEx.mulDivC(x, temp4, temp5);
     }
 
     // solhint-enable var-name-mixedcase
@@ -833,16 +827,20 @@ abstract contract Strategies is Initializable {
      */
     function _singleTradeActionSourceAndTargetAmounts(
         Order memory order,
-        TradeAction memory action,
+        uint128 amount,
         bool byTargetAmount
-    ) private pure returns (SourceAndTargetAmounts memory) {
+    ) internal pure returns (SourceAndTargetAmounts memory) {
         SourceAndTargetAmounts memory amounts = SourceAndTargetAmounts({ sourceAmount: 0, targetAmount: 0 });
+        uint256 y = uint256(order.y);
+        uint256 z = uint256(order.z);
+        uint256 a = _expandRate(uint256(order.A));
+        uint256 b = _expandRate(uint256(order.B));
         if (byTargetAmount) {
-            amounts.sourceAmount = _tradeSourceAmount(action.amount, order.y, order.z, order.A, order.B);
-            amounts.targetAmount = action.amount;
+            amounts.sourceAmount = _tradeSourceAmount(amount, y, z, a, b).toUint128();
+            amounts.targetAmount = amount;
         } else {
-            amounts.sourceAmount = action.amount;
-            amounts.targetAmount = _tradeTargetAmount(action.amount, order.y, order.z, order.A, order.B);
+            amounts.sourceAmount = amount;
+            amounts.targetAmount = _tradeTargetAmount(amount, y, z, a, b).toUint128();
         }
         return amounts;
     }

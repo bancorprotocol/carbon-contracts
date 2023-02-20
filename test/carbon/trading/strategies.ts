@@ -31,13 +31,9 @@ describe('Strategies', () => {
                 highestRate: new Decimal(test.highestRate),
                 marginalRate: new Decimal(test.marginalRate)
             });
-            const x = BigNumber.from(test['inputAmount']);
-            const y = order.y;
-            const z = order.z;
-            const A = order.A;
-            const B = order.B;
-            const tradeRPC = (contract as any)[`tradeBy${test['tradeBy']}`](x, y, z, A, B);
-            const expected = BigNumber.from(test['implReturn']);
+            const amount = BigNumber.from(test.inputAmount);
+            const tradeRPC = (contract as any)[`tradeBy${test.tradeBy}`](order, amount);
+            const expected = BigNumber.from(test.implReturn);
             expect(await tradeRPC).to.eq(expected);
         });
     };
