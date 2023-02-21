@@ -140,6 +140,7 @@ abstract contract Strategies is Initializable {
     error StrategyDoesNotExist();
     error InvalidIndices();
     error InsufficientCapacity();
+    error InvalidRate();
 
     struct StoredStrategy {
         uint256 id;
@@ -823,6 +824,13 @@ abstract contract Strategies is Initializable {
     }
 
     /**
+     * @dev validates a given rate
+     */
+    function _validRate(uint256 rate) private pure returns (bool) {
+        return (ONE >> (rate / ONE)) > 0;
+    }
+
+    /**
      * @dev returns the source and target amounts of a single trade action
      */
     function _singleTradeActionSourceAndTargetAmounts(
@@ -865,12 +873,18 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * reverts if the capacity isn't greater or equal to the liquidity
+     * revert if any of the orders is invalid
      */
-    function _validateSufficientCapacity(Order[2] calldata orders) internal pure {
+    function _validateOrders(Order[2] calldata orders) internal pure {
         for (uint256 i = 0; i < 2; i++) {
             if (orders[i].z < orders[i].y) {
                 revert InsufficientCapacity();
+            }
+            if (!_validRate(orders[i].A)) {
+                revert InvalidRate();
+            }
+            if (!_validRate(orders[i].B)) {
+                revert InvalidRate();
             }
         }
     }
