@@ -157,8 +157,11 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      * - the caller must be the owner of this contract
      */
     function useGlobalURI(bool newUseGlobalURI) public onlyOwner {
-        _useGlobalURI = newUseGlobalURI;
+        if (_useGlobalURI == newUseGlobalURI) {
+            return;
+        }
 
+        _useGlobalURI = newUseGlobalURI;
         emit UseGlobalURIUpdated(newUseGlobalURI);
     }
 
