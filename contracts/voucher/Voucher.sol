@@ -27,22 +27,22 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     string private _baseExtension;
 
     /**
-     @dev emits when the admin enables or disables the usage of the global URI
+     @dev triggers when useGlobalURI is updated
      */
     event UseGlobalURIUpdated(bool newUseGlobalURI);
 
     /**
-     * @dev emits when the admin updates the base URI
+     * @dev triggers when baseURI is updated
      */
     event BaseURIUpdated(string newBaseURI);
 
     /**
-     * @dev emits when the admin updates the base extension
+     * @dev triggers when baseExtension is updated
      */
     event BaseExtensionUpdated(string newBaseExtension);
 
     /**
-     * @dev emits when the contract's owner sets the CarbonController's address
+     * @dev triggers when carbonController address is updated
      */
     event CarbonControllerUpdated(CarbonController carbonController);
 
@@ -77,13 +77,14 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      *
      * - the caller must be the owner of this contract
      */
-    function setCarbonController(CarbonController carbonController)
-        external
-        onlyOwner
-        validAddress(address(carbonController))
-    {
-        _carbonController = carbonController;
+    function setCarbonController(
+        CarbonController carbonController
+    ) external onlyOwner validAddress(address(carbonController)) {
+        if (_carbonController == carbonController) {
+            return;
+        }
 
+        _carbonController = carbonController;
         emit CarbonControllerUpdated(carbonController);
     }
 
