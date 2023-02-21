@@ -27,22 +27,22 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     string private _baseExtension;
 
     /**
-     @dev triggers when useGlobalURI is updated
+     @dev triggered when updating useGlobalURI
      */
     event UseGlobalURIUpdated(bool newUseGlobalURI);
 
     /**
-     * @dev triggers when baseURI is updated
+     * @dev triggered when updating the baseURI
      */
     event BaseURIUpdated(string newBaseURI);
 
     /**
-     * @dev triggers when baseExtension is updated
+     * @dev triggered when updating the baseExtension
      */
     event BaseExtensionUpdated(string newBaseExtension);
 
     /**
-     * @dev triggers when carbonController address is updated
+     * @dev triggered when updating the address of the carbonController contract
      */
     event CarbonControllerUpdated(CarbonController carbonController);
 
