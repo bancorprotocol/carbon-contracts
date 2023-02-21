@@ -11,7 +11,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
-import { OrderStruct } from 'typechain-types/contracts/carbon/Strategies';
 
 interface TestOrder {
     y: BigNumber;
@@ -462,20 +461,21 @@ describe('Strategy', () => {
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
             }
+        });
 
-            describe('reverts when any of the rates are invalid', () => {
-                for (const orderId of [0, 1]) {
-                    for (const rateId of ['A', 'B']) {
-                        it(`order ${orderId} rate ${rateId} invalid`, async () => {
-                            const orders: OrderStruct[2] = [generateTestOrder(), generateTestOrder()];
-                            orders[orderId] = { ...orders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
-                            await expect(
-                                carbonController.connect(owner).createStrategy(token0.address, token1.address, orders)
-                            ).to.be.revertedWithError('InvalidRate');
-                        });
-                    }
+        describe('reverts when any of the rates are invalid', () => {
+            for (const orderId of [0, 1]) {
+                for (const rateId of ['A', 'B']) {
+                    it(`order ${orderId} rate ${rateId} invalid`, async () => {
+                        const orders: any[2] = [generateTestOrder(), generateTestOrder()];
+                        orders[orderId] = { ...orders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
+
+                        await expect(
+                            carbonController.connect(owner).createStrategy(token0.address, token1.address, orders)
+                        ).to.be.revertedWithError('InvalidRate');
+                    });
                 }
-            });
+            }
         });
     });
 
@@ -900,9 +900,11 @@ describe('Strategy', () => {
             for (const orderId of [0, 1]) {
                 for (const rateId of ['A', 'B']) {
                     it(`order ${orderId} rate ${rateId} invalid`, async () => {
-                        const oldOrders: OrderStruct[2] = [generateTestOrder(), generateTestOrder()];
-                        const newOrders: OrderStruct[2] = [generateTestOrder(), generateTestOrder()];
+                        const oldOrders: any[2] = [generateTestOrder(), generateTestOrder()];
+                        const newOrders: any[2] = [generateTestOrder(), generateTestOrder()];
                         newOrders[orderId] = { ...newOrders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
+
+                        await createStrategy();
                         await expect(
                             carbonController.connect(owner).updateStrategy(1, oldOrders, newOrders)
                         ).to.be.revertedWithError('InvalidRate');
