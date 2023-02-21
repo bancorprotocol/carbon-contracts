@@ -57,6 +57,12 @@ describe('Voucher', () => {
         await expect(res).to.emit(voucher, 'CarbonControllerUpdated').withArgs(voucher.address);
     });
 
+    it('does not emit the CarbonControllerUpdated event if an update was attempted with the current value', async () => {
+        await voucher.setCarbonController(voucher.address);
+        const res = await voucher.setCarbonController(voucher.address);
+        await expect(res).to.not.emit(voucher, 'CarbonControllerUpdated');
+    });
+
     it('emits BaseURIUpdated event', async () => {
         const res = await voucher.setBaseURI('123');
         await expect(res).to.emit(voucher, 'BaseURIUpdated').withArgs('123');
