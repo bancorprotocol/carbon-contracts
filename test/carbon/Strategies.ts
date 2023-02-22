@@ -1371,4 +1371,10 @@ describe('Strategy', () => {
             await expect(tx).to.have.been.revertedWithError('AccessDenied');
         });
     });
+
+    it('skips transfers of 0 amount', async () => {
+        const { tx } = await createStrategy({ token0, token1, token0Amount: 0, token1Amount: 0 });
+        await expect(tx).to.not.emit(token0, 'Transfer');
+        await expect(tx).to.not.emit(token1, 'Transfer');
+    });
 });
