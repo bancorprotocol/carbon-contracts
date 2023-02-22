@@ -48,6 +48,7 @@ contract CarbonController is
 
     error IdenticalAddresses();
     error UnnecessaryNativeTokenReceived();
+    error InsufficientNativeTokenReceived();
     error DeadlineExpired();
     error InvalidTradeActionAmount();
     error TokensMismatch();
@@ -59,11 +60,7 @@ contract CarbonController is
     /**
      * @dev a "virtual" constructor that is only used to set immutable state variables
      */
-    constructor(
-        IMasterVault initMasterVault,
-        IVoucher initVoucher,
-        address proxy
-    ) OnlyProxyDelegate(proxy) {
+    constructor(IMasterVault initMasterVault, IVoucher initVoucher, address proxy) OnlyProxyDelegate(proxy) {
         _validAddress(address(initMasterVault));
         _validAddress(address(initVoucher));
 
@@ -138,13 +135,10 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function createPool(Token token0, Token token1)
-        external
-        nonReentrant
-        whenNotPaused
-        onlyProxyDelegate
-        returns (Pool memory)
-    {
+    function createPool(
+        Token token0,
+        Token token1
+    ) external nonReentrant whenNotPaused onlyProxyDelegate returns (Pool memory) {
         _validateInputTokens(token0, token1);
         return _createPool(token0, token1);
     }
@@ -231,13 +225,9 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function deleteStrategy(uint256 strategyId)
-        external
-        nonReentrant
-        whenNotPaused
-        greaterThanZero(strategyId)
-        onlyProxyDelegate
-    {
+    function deleteStrategy(
+        uint256 strategyId
+    ) external nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
         // find strategy, reverts if none
         Strategy memory __strategy = _strategy(strategyId);
 
@@ -335,7 +325,7 @@ contract CarbonController is
         if (sourceToken.isNative()) {
             // tx's value should at least match the maxInput
             if (msg.value < maxInput) {
-                revert GreaterThanMaxInput();
+                revert InsufficientNativeTokenReceived();
             }
         }
 
@@ -396,12 +386,10 @@ contract CarbonController is
      * - the caller must be the voucher contract
      *
      */
-    function updateStrategyOwner(uint256 strategyId, address newOwner)
-        external
-        only(address(_voucher))
-        greaterThanZero(strategyId)
-        validAddress(newOwner)
-    {
+    function updateStrategyOwner(
+        uint256 strategyId,
+        address newOwner
+    ) external only(address(_voucher)) greaterThanZero(strategyId) validAddress(newOwner) {
         Strategy memory __strategy = _strategy(strategyId);
         _updateStrategyOwner(__strategy, newOwner);
     }
