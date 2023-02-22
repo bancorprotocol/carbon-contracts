@@ -326,10 +326,13 @@ abstract contract Strategies is Initializable {
         address owner,
         uint256 value
     ) internal {
+        // update storage
+        _strategiesStorage[strategy.id].packedOrders = _packOrders(newOrders);
+
+        // deposit and withdraw
         for (uint256 i = 0; i < 2; i++) {
             Token token = i == 0 ? strategy.pair.token0 : strategy.pair.token1;
 
-            // handle transfers
             if (newOrders[i].y < strategy.orders[i].y) {
                 // liquidity decreased - withdraw the difference
                 uint128 delta = strategy.orders[i].y - newOrders[i].y;
@@ -340,9 +343,6 @@ abstract contract Strategies is Initializable {
                 _depositToMasterVaultAndRefundExcessNativeToken(vault, token, owner, delta, value);
             }
         }
-
-        // update storage
-        _strategiesStorage[strategy.id].packedOrders = _packOrders(newOrders);
 
         // emit event
         emit StrategyUpdated({
@@ -528,11 +528,10 @@ abstract contract Strategies is Initializable {
     /**
      * @dev returns the index of a trade's target token in a strategy
      */
-    function _findTargetTokenIndex(StoredStrategy memory strategy, TradeTokens memory tokens)
-        private
-        pure
-        returns (uint256)
-    {
+    function _findTargetTokenIndex(
+        StoredStrategy memory strategy,
+        TradeTokens memory tokens
+    ) private pure returns (uint256) {
         return tokens.target == strategy.pair.token0 ? 0 : 1;
     }
 
@@ -774,7 +773,7 @@ abstract contract Strategies is Initializable {
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 - x * A;
 
-        uint256 factor1 = MathEx. mulDivC(temp1, temp1, type(uint256).max);
+        uint256 factor1 = MathEx.mulDivC(temp1, temp1, type(uint256).max);
         uint256 factor2 = MathEx.mulDivC(temp2, temp3, type(uint256).max);
         uint256 factor = MathUpgradeable.max(factor1, factor2);
 
