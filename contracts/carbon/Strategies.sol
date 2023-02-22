@@ -15,13 +15,12 @@ import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
 
-// solhint-disable var-name-mixedcase
 /**
  * @dev:
  *
  * a strategy consists of two orders:
- * - order 0 sells `y0` units of token 0 at a marginal rate of `M0` ranging between `L0` and `H0`
- * - order 1 sells `y1` units of token 1 at a marginal rate of `M1` ranging between `L1` and `H1`
+ * - order 0 sells `y0` units of token 0 at a marginal rate `M0` ranging between `L0` and `H0`
+ * - order 1 sells `y1` units of token 1 at a marginal rate `M1` ranging between `L1` and `H1`
  *
  * rate symbols:
  * - `L0` indicates the lowest value of one wei of token 0 in units of token 1
@@ -31,26 +30,40 @@ import { MAX_GAP } from "../utility/Constants.sol";
  * - `H1` indicates the highest value of one wei of token 1 in units of token 0
  * - `M1` indicates the marginal value of one wei of token 1 in units of token 0
  *
- * the term "one wei" serves here as a simplification of "an amount tending to zero"
- * hence the rate values above are all theoretical
- * moreover, an order doesn't actually hold these values
- * instead, it maintains a modified version of them, as explained below
+ * the term "one wei" serves here as a simplification of "an amount tending to zero",
+ * hence the rate values above are all theoretical.
+ * moreover, since trade calculation is based on the square roots of the rates,
+ * an order doesn't actually hold the rate values, but a modified version of them.
+ * for each rate `r`, the order maintains:
+ * - mantissa: the value of the 48 most significant bits of `floor(sqrt(r) * 2 ^ 48)`
+ * - exponent: the number of the remaining (least significant) bits, limited up to 48
+ * this allows for rates between ~12.6e-28 and ~7.92e+28, at an average resolution of ~2.81e+14.
+ * it also ensures that every rate value `r` is supported if and only if `1 / r` is supported.
+ * however, it also yields a certain degree of accuracy loss as soon as the order is created.
  *
- * given:
- * - `min = floor(2^32 * sqrt(L))`
- * - `max = floor(2^32 * sqrt(H))`
- * - `mid = floor(2^32 * sqrt(M))`
+ * encoding / decoding scheme:
+ * - `b(x) = bit-length of x`
+ * - `c(x) = max(b(x) - 48, 0)`
+ * - `f(x) = floor(sqrt(x) * (1 << 48))`
+ * - `g(x) = f(x) >> c(f(x)) << c(f(x))`
+ * - `e(x) = (x >> c(x)) | (c(x) << 48)`
+ * - `d(x) = (x & ((1 << 48) - 1)) << (x >> 48)`
  *
- * the order maintains:
+ * let the following denote:
+ * - `L = g(lowest rate)`
+ * - `H = g(highest rate)`
+ * - `M = g(marginal rate)`
+ *
+ * then the order maintains:
  * - `y = current liquidity`
- * - `z = current liquidity * (max - min) / (mid - min)`
- * - `A = max - min`
- * - `B = min`
+ * - `z = current liquidity * (H - L) / (M - L)`
+ * - `A = e(H - L)`
+ * - `B = e(L)`
  *
- * the order reflects:
- * - `L = (B / 2^32) ^ 2`
- * - `H = ((B + A) / 2^32) ^ 2`
- * - `M = ((B + A * y / z) / 2^32) ^ 2`
+ * and the order reflects:
+ * - `L = d(B)`
+ * - `H = d(B + A)`
+ * - `M = d(B + A * y / z)`
  *
  * upon trading on a given order in a given strategy:
  * - the value of `y` in the given order decreases
@@ -59,11 +72,11 @@ import { MAX_GAP } from "../utility/Constants.sol";
  * - the values of all other parameters remain unchanged
  *
  * given a source amount `x`, the expected target amount is:
- * - theoretical formula: `M * x * y / ((M - sqrt(M * L)) * x + y)`
+ * - theoretical formula: `M ^ 2 * x * y / (M * (M - L) * x + y)`
  * - implemented formula: `x * (A * y + B * z) ^ 2 / (A * x * (A * y + B * z) + z ^ 2)`
  *
  * given a target amount `x`, the required source amount is:
- * - theoretical formula: `x * y / ((sqrt(M * L) - M) * x + M * y)`
+ * - theoretical formula: `x * y / (M * (L - M) * x + M ^ 2 * y)`
  * - implemented formula: `x * z ^ 2 / ((A * y + B * z) * (A * y + B * z - A * x))`
  *
  * fee scheme:
@@ -81,6 +94,8 @@ import { MAX_GAP } from "../utility/Constants.sol";
  * |                   | contract retains as fee: q - p  |                                 |
  * +-------------------+---------------------------------+---------------------------------+
  */
+
+// solhint-disable var-name-mixedcase
 struct Order {
     uint128 y;
     uint128 z;
@@ -125,6 +140,7 @@ abstract contract Strategies is Initializable {
     error StrategyDoesNotExist();
     error InvalidIndices();
     error InsufficientCapacity();
+    error InvalidRate();
 
     struct StoredStrategy {
         uint256 id;
@@ -167,7 +183,7 @@ abstract contract Strategies is Initializable {
         Order[2] orders;
     }
 
-    uint256 private constant ONE = 1 << 32;
+    uint256 private constant ONE = 1 << 48;
 
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 1500; // 0.15%
 
@@ -394,7 +410,7 @@ abstract contract Strategies is Initializable {
             uint256 targetTokenIndex = _findTargetTokenIndex(storedStrategy, params.tokens);
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 tradeOrders.orders[targetTokenIndex],
-                params.tradeActions[i],
+                params.tradeActions[i].amount,
                 params.byTargetAmount
             );
 
@@ -541,7 +557,7 @@ abstract contract Strategies is Initializable {
 
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 orders[targetTokenIndex],
-                tradeActions[i],
+                tradeActions[i].amount,
                 byTargetAmount
             );
 
@@ -714,6 +730,7 @@ abstract contract Strategies is Initializable {
     }
 
     // solhint-disable var-name-mixedcase
+
     /**
      * @dev returns:
      *
@@ -722,20 +739,22 @@ abstract contract Strategies is Initializable {
      *  A * x * (A * y + B * z) + z ^ 2
      *
      */
-    function _tradeTargetAmount(uint256 x, Order memory order) private pure returns (uint128) {
-        uint256 y = uint256(order.y);
-        uint256 z = uint256(order.z);
-        uint256 A = uint256(order.A);
-        uint256 B = uint256(order.B);
-
+    function _tradeTargetAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) private pure returns (uint256) {
         if (A == 0) {
-            return MathEx.mulDivF(x, B * B, ONE * ONE).toUint128();
+            return MathEx.mulDivF(x, B * B, ONE * ONE);
         }
 
-        uint256 temp1 = y * A + z * B;
-        uint256 temp2 = (temp1 * x) / ONE;
-        uint256 temp3 = temp2 * A + z * z * ONE;
-        return MathEx.mulDivF(temp1, temp2, temp3).toUint128();
+        uint256 temp1 = z * ONE;
+        uint256 temp2 = y * A + z * B;
+        uint256 temp3 = temp2 * x;
+
+        uint256 factor1 = MathEx.mulDivC(temp1, temp1, type(uint256).max);
+        uint256 factor2 = MathEx.mulDivC(temp3, A, type(uint256).max);
+        uint256 factor = MathUpgradeable.max(factor1, factor2);
+
+        uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
+        uint256 temp5 = MathEx.mulDivC(temp3, A, factor);
+        return MathEx.mulDivF(temp2, temp3 / factor, temp4 + temp5);
     }
 
     /**
@@ -746,20 +765,22 @@ abstract contract Strategies is Initializable {
      *  (A * y + B * z) * (A * y + B * z - A * x)
      *
      */
-    function _tradeSourceAmount(uint256 x, Order memory order) private pure returns (uint128) {
-        uint256 y = uint256(order.y);
-        uint256 z = uint256(order.z);
-        uint256 A = uint256(order.A);
-        uint256 B = uint256(order.B);
-
+    function _tradeSourceAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) private pure returns (uint256) {
         if (A == 0) {
-            return MathEx.mulDivC(x, ONE * ONE, B * B).toUint128();
+            return MathEx.mulDivC(x, ONE * ONE, B * B);
         }
 
         uint256 temp1 = z * ONE;
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 - x * A;
-        return MathEx.mulDivC(x * temp1, temp1, temp2 * temp3).toUint128();
+
+        uint256 factor1 = MathEx. mulDivC(temp1, temp1, type(uint256).max);
+        uint256 factor2 = MathEx.mulDivC(temp2, temp3, type(uint256).max);
+        uint256 factor = MathUpgradeable.max(factor1, factor2);
+
+        uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
+        uint256 temp5 = MathEx.mulDivF(temp2, temp3, factor);
+        return MathEx.mulDivC(x, temp4, temp5);
     }
 
     // solhint-enable var-name-mixedcase
@@ -796,20 +817,38 @@ abstract contract Strategies is Initializable {
     }
 
     /**
+     * @dev expand a given rate
+     */
+    function _expandRate(uint256 rate) private pure returns (uint256) {
+        return (rate % ONE) << (rate / ONE);
+    }
+
+    /**
+     * @dev validates a given rate
+     */
+    function _validRate(uint256 rate) private pure returns (bool) {
+        return (ONE >> (rate / ONE)) > 0;
+    }
+
+    /**
      * @dev returns the source and target amounts of a single trade action
      */
     function _singleTradeActionSourceAndTargetAmounts(
         Order memory order,
-        TradeAction memory action,
+        uint128 amount,
         bool byTargetAmount
-    ) private pure returns (SourceAndTargetAmounts memory) {
+    ) internal pure returns (SourceAndTargetAmounts memory) {
         SourceAndTargetAmounts memory amounts = SourceAndTargetAmounts({ sourceAmount: 0, targetAmount: 0 });
+        uint256 y = uint256(order.y);
+        uint256 z = uint256(order.z);
+        uint256 a = _expandRate(uint256(order.A));
+        uint256 b = _expandRate(uint256(order.B));
         if (byTargetAmount) {
-            amounts.sourceAmount = _tradeSourceAmount(action.amount, order);
-            amounts.targetAmount = action.amount;
+            amounts.sourceAmount = _tradeSourceAmount(amount, y, z, a, b).toUint128();
+            amounts.targetAmount = amount;
         } else {
-            amounts.sourceAmount = action.amount;
-            amounts.targetAmount = _tradeTargetAmount(action.amount, order);
+            amounts.sourceAmount = amount;
+            amounts.targetAmount = _tradeTargetAmount(amount, y, z, a, b).toUint128();
         }
         return amounts;
     }
@@ -834,12 +873,18 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * reverts if the capacity isn't greater or equal to the liquidity
+     * revert if any of the orders is invalid
      */
-    function _validateSufficientCapacity(Order[2] calldata orders) internal pure {
+    function _validateOrders(Order[2] calldata orders) internal pure {
         for (uint256 i = 0; i < 2; i++) {
             if (orders[i].z < orders[i].y) {
                 revert InsufficientCapacity();
+            }
+            if (!_validRate(orders[i].A)) {
+                revert InvalidRate();
+            }
+            if (!_validRate(orders[i].B)) {
+                revert InvalidRate();
             }
         }
     }

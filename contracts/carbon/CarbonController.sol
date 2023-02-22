@@ -181,8 +181,8 @@ contract CarbonController is
             revert UnnecessaryNativeTokenReceived();
         }
 
-        // the capacity must be greater than or equal to the liquidity
-        _validateSufficientCapacity(orders);
+        // revert if any of the orders is invalid
+        _validateOrders(orders);
 
         // create the pool if it does not exist
         if (!_poolExists(token0, token1)) {
@@ -219,8 +219,8 @@ contract CarbonController is
             revert UnnecessaryNativeTokenReceived();
         }
 
-        // the capacity must be greater than or equal to the liquidity
-        _validateSufficientCapacity(newOrders);
+        // revert if any of the orders is invalid
+        _validateOrders(newOrders);
 
         // perform update
         _updateStrategy(_masterVault, __strategy, newOrders, msg.sender, msg.value);

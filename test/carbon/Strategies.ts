@@ -452,7 +452,7 @@ describe('Strategy', () => {
                 it(`order 0 invalid: ${order0Insufficient}, order 1 invalid: ${order1Insufficient}`, async () => {
                     const order = generateTestOrder();
                     const newInvalidOrder = { ...order, z: order.y.sub(1) };
-                    const newValidOrder = { ...order, A: order.A.add(1) };
+                    const newValidOrder = { ...order, z: order.y.add(1) };
                     const order0 = order0Insufficient ? newInvalidOrder : newValidOrder;
                     const order1 = order1Insufficient ? newInvalidOrder : newValidOrder;
 
@@ -460,6 +460,21 @@ describe('Strategy', () => {
                         carbonController.connect(owner).createStrategy(token0.address, token1.address, [order0, order1])
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
+            }
+        });
+
+        describe('reverts when any of the rates are invalid', () => {
+            for (const orderId of [0, 1]) {
+                for (const rateId of ['A', 'B']) {
+                    it(`order ${orderId} rate ${rateId} invalid`, async () => {
+                        const orders: any[2] = [generateTestOrder(), generateTestOrder()];
+                        orders[orderId] = { ...orders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
+
+                        await expect(
+                            carbonController.connect(owner).createStrategy(token0.address, token1.address, orders)
+                        ).to.be.revertedWithError('InvalidRate');
+                    });
+                }
             }
         });
     });
@@ -869,7 +884,7 @@ describe('Strategy', () => {
                 it(`order 0 invalid: ${order0Insufficient}, order 1 invalid: ${order1Insufficient}`, async () => {
                     const order = generateTestOrder();
                     const newInvalidOrder = { ...order, z: order.y.sub(1) };
-                    const newValidOrder = { ...order, A: order.A.add(1) };
+                    const newValidOrder = { ...order, z: order.y.add(1) };
                     const order0 = order0Insufficient ? newInvalidOrder : newValidOrder;
                     const order1 = order1Insufficient ? newInvalidOrder : newValidOrder;
 
@@ -878,6 +893,23 @@ describe('Strategy', () => {
                         carbonController.connect(owner).updateStrategy(1, [order, order], [order0, order1])
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
+            }
+        });
+
+        describe('reverts when any of the rates are invalid', () => {
+            for (const orderId of [0, 1]) {
+                for (const rateId of ['A', 'B']) {
+                    it(`order ${orderId} rate ${rateId} invalid`, async () => {
+                        const oldOrders: any[2] = [generateTestOrder(), generateTestOrder()];
+                        const newOrders: any[2] = [generateTestOrder(), generateTestOrder()];
+                        newOrders[orderId] = { ...newOrders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
+
+                        await createStrategy();
+                        await expect(
+                            carbonController.connect(owner).updateStrategy(1, oldOrders, newOrders)
+                        ).to.be.revertedWithError('InvalidRate');
+                    });
+                }
             }
         });
     });
