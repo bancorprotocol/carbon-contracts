@@ -1,20 +1,14 @@
 import Contracts, { TestStrategies } from '../../../components/Contracts';
 import { encodeOrder } from '../../utility/carbon-sdk';
-import { expect } from 'chai';
-import { BigNumber } from 'ethers';
-import Decimal from 'decimal.js';
-
 import ArbitraryTrade from './data/ArbitraryTrade.json';
 import EthUsdcTrade from './data/EthUsdcTrade.json';
 import ExtremeSrcTrade from './data/ExtremeSrcTrade.json';
 import ExtremeTrgTrade from './data/ExtremeTrgTrade.json';
+import { expect } from 'chai';
+import Decimal from 'decimal.js';
+import { BigNumber } from 'ethers';
 
-const tests = [
-    ...ArbitraryTrade,
-    ...EthUsdcTrade,
-    ...ExtremeSrcTrade,
-    ...ExtremeTrgTrade,
-];
+const tests = [...ArbitraryTrade, ...EthUsdcTrade, ...ExtremeSrcTrade, ...ExtremeTrgTrade];
 
 describe('Strategies', () => {
     let contract: TestStrategies;
@@ -36,5 +30,5 @@ describe('Strategies', () => {
             const expected = BigNumber.from(test.implReturn);
             expect(await tradeRPC).to.eq(expected);
         });
-    };
+    }
 });

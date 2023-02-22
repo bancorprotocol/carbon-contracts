@@ -528,11 +528,10 @@ abstract contract Strategies is Initializable {
     /**
      * @dev returns the index of a trade's target token in a strategy
      */
-    function _findTargetTokenIndex(StoredStrategy memory strategy, TradeTokens memory tokens)
-        private
-        pure
-        returns (uint256)
-    {
+    function _findTargetTokenIndex(
+        StoredStrategy memory strategy,
+        TradeTokens memory tokens
+    ) private pure returns (uint256) {
         return tokens.target == strategy.pair.token0 ? 0 : 1;
     }
 
@@ -657,6 +656,10 @@ abstract contract Strategies is Initializable {
         uint256 depositAmount,
         uint256 txValue
     ) internal {
+        if (depositAmount == 0) {
+            return;
+        }
+
         if (token.isNative()) {
             if (txValue < depositAmount) {
                 revert NativeAmountMismatch();
@@ -774,7 +777,7 @@ abstract contract Strategies is Initializable {
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 - x * A;
 
-        uint256 factor1 = MathEx. mulDivC(temp1, temp1, type(uint256).max);
+        uint256 factor1 = MathEx.mulDivC(temp1, temp1, type(uint256).max);
         uint256 factor2 = MathEx.mulDivC(temp2, temp3, type(uint256).max);
         uint256 factor = MathUpgradeable.max(factor1, factor2);
 
