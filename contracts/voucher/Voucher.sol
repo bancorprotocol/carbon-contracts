@@ -12,6 +12,8 @@ import { CarbonController } from "../carbon/CarbonController.sol";
 contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     using Strings for uint256;
 
+    error CarbonControllerNotSet();
+
     // the carbon controller contract
     CarbonController private _carbonController;
 
@@ -24,7 +26,25 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     // the suffix of a dynamic URI for e.g. `.json`
     string private _baseExtension;
 
-    error CarbonControllerNotSet();
+    /**
+     @dev triggered when updating useGlobalURI
+     */
+    event UseGlobalURIUpdated(bool newUseGlobalURI);
+
+    /**
+     * @dev triggered when updating the baseURI
+     */
+    event BaseURIUpdated(string newBaseURI);
+
+    /**
+     * @dev triggered when updating the baseExtension
+     */
+    event BaseExtensionUpdated(string newBaseExtension);
+
+    /**
+     * @dev triggered when updating the address of the carbonController contract
+     */
+    event CarbonControllerUpdated(CarbonController carbonController);
 
     constructor(
         bool newUseGlobalURI,
@@ -57,12 +77,15 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      *
      * - the caller must be the owner of this contract
      */
-    function setCarbonController(CarbonController carbonController)
-        external
-        onlyOwner
-        validAddress(address(carbonController))
-    {
+    function setCarbonController(
+        CarbonController carbonController
+    ) external onlyOwner validAddress(address(carbonController)) {
+        if (_carbonController == carbonController) {
+            return;
+        }
+
         _carbonController = carbonController;
+        emit CarbonControllerUpdated(carbonController);
     }
 
     /**
@@ -109,6 +132,8 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      */
     function setBaseURI(string memory newBaseURI) public onlyOwner {
         __baseURI = newBaseURI;
+
+        emit BaseURIUpdated(newBaseURI);
     }
 
     /**
@@ -120,6 +145,8 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      */
     function setBaseExtension(string memory newBaseExtension) public onlyOwner {
         _baseExtension = newBaseExtension;
+
+        emit BaseExtensionUpdated(newBaseExtension);
     }
 
     /**
@@ -130,7 +157,12 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      * - the caller must be the owner of this contract
      */
     function useGlobalURI(bool newUseGlobalURI) public onlyOwner {
+        if (_useGlobalURI == newUseGlobalURI) {
+            return;
+        }
+
         _useGlobalURI = newUseGlobalURI;
+        emit UseGlobalURIUpdated(newUseGlobalURI);
     }
 
     /**
