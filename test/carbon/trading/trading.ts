@@ -387,7 +387,7 @@ describe('Trading', () => {
                     sourceSymbol: TokenSymbol.ETH,
                     targetSymbol: TokenSymbol.TKN0,
                     byTargetAmount: true,
-                    revertError: 'GreaterThanMaxInput'
+                    revertError: 'InsufficientNativeTokenReceived'
                 }
             ];
 
@@ -656,7 +656,7 @@ describe('Trading', () => {
                     txValue: 500,
                     sourceAmount: 1
                 })
-            ).to.be.revertedWithError('GreaterThanMaxInput');
+            ).to.be.revertedWithError('InsufficientNativeTokenReceived');
         });
     });
 

@@ -742,7 +742,13 @@ abstract contract Strategies is Initializable {
      *  A * x * (A * y + B * z) + z ^ 2
      *
      */
-    function _tradeTargetAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) private pure returns (uint256) {
+    function _calculateTradeTargetAmount(
+        uint256 x,
+        uint256 y,
+        uint256 z,
+        uint256 A,
+        uint256 B
+    ) private pure returns (uint256) {
         if (A == 0) {
             return MathEx.mulDivF(x, B * B, ONE * ONE);
         }
@@ -768,7 +774,13 @@ abstract contract Strategies is Initializable {
      *  (A * y + B * z) * (A * y + B * z - A * x)
      *
      */
-    function _tradeSourceAmount(uint256 x, uint256 y, uint256 z, uint256 A, uint256 B) private pure returns (uint256) {
+    function _calculateTradeSourceAmount(
+        uint256 x,
+        uint256 y,
+        uint256 z,
+        uint256 A,
+        uint256 B
+    ) private pure returns (uint256) {
         if (A == 0) {
             return MathEx.mulDivC(x, ONE * ONE, B * B);
         }
@@ -847,11 +859,11 @@ abstract contract Strategies is Initializable {
         uint256 a = _expandRate(uint256(order.A));
         uint256 b = _expandRate(uint256(order.B));
         if (byTargetAmount) {
-            amounts.sourceAmount = _tradeSourceAmount(amount, y, z, a, b).toUint128();
+            amounts.sourceAmount = _calculateTradeSourceAmount(amount, y, z, a, b).toUint128();
             amounts.targetAmount = amount;
         } else {
             amounts.sourceAmount = amount;
-            amounts.targetAmount = _tradeTargetAmount(amount, y, z, a, b).toUint128();
+            amounts.targetAmount = _calculateTradeTargetAmount(amount, y, z, a, b).toUint128();
         }
         return amounts;
     }
