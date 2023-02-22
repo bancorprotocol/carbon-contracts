@@ -74,8 +74,8 @@ describe('Voucher', () => {
     });
 
     it('emits UseGlobalURIUpdated event', async () => {
-        const res = await voucher.useGlobalURI(true);
-        await expect(res).to.emit(voucher, 'UseGlobalURIUpdated').withArgs(true);
+        const res = await voucher.useGlobalURI(false);
+        await expect(res).to.emit(voucher, 'UseGlobalURIUpdated').withArgs(false);
     });
 
     it('does not emit the UseGlobalURIUpdated event if an update was attempted with the current value', async () => {
