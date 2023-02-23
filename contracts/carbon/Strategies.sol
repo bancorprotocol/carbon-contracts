@@ -154,15 +154,6 @@ abstract contract Strategies is Initializable {
         uint256 value;
     }
 
-    struct StrategyUpdate {
-        uint256 id;
-        address owner;
-        Token token0;
-        Token token1;
-        Order order0;
-        Order order1;
-    }
-
     struct SourceAndTargetAmounts {
         uint128 sourceAmount;
         uint128 targetAmount;
