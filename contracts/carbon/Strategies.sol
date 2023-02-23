@@ -155,15 +155,6 @@ abstract contract Strategies is Initializable {
         uint256 value;
     }
 
-    struct StrategyUpdate {
-        uint256 id;
-        address owner;
-        Token token0;
-        Token token1;
-        Order order0;
-        Order order1;
-    }
-
     struct SourceAndTargetAmounts {
         uint128 sourceAmount;
         uint128 targetAmount;
@@ -459,7 +450,7 @@ abstract contract Strategies is Initializable {
             totals.targetAmount = amountIncludingFee;
         }
 
-        // revert here if the minReturn/maxInput constrants is unmet
+        // revert here if the minReturn/maxInput constraints are unmet
         _validateConstraints(params.byTargetAmount, totals, params.constraint);
 
         // transfer funds
