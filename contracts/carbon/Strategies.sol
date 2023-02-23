@@ -141,6 +141,7 @@ abstract contract Strategies is Initializable {
     error InvalidIndices();
     error InsufficientCapacity();
     error InvalidRate();
+    error InsufficientLiquidity();
 
     struct StoredStrategy {
         uint256 id;
@@ -877,6 +878,10 @@ abstract contract Strategies is Initializable {
         SourceAndTargetAmounts memory amounts
     ) private pure returns (Order[2] memory) {
         uint256 sourceTokenIndex = 1 - targetTokenIndex;
+        if (amounts.targetAmount > orders[targetTokenIndex].y || amounts.sourceAmount > orders[sourceTokenIndex].y) {
+            revert InsufficientLiquidity();
+        }
+
         orders[targetTokenIndex].y -= amounts.targetAmount;
         orders[sourceTokenIndex].y += amounts.sourceAmount;
 
