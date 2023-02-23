@@ -15,8 +15,8 @@ struct Pool {
 abstract contract Pools is Initializable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    error PoolAlreadyExists();
-    error PoolDoesNotExists();
+    error PoolAlreadyExist();
+    error PoolDoesNotExist();
 
     // unique incremental id representing a pool
     CountersUpgradeable.Counter private _lastPoolId;
@@ -56,7 +56,7 @@ abstract contract Pools is Initializable {
      */
     function _createPool(Token token0, Token token1) internal returns (Pool memory) {
         if (_poolExists(token0, token1)) {
-            revert PoolAlreadyExists();
+            revert PoolAlreadyExist();
         }
 
         // sort tokens by address value, smaller first
@@ -100,7 +100,7 @@ abstract contract Pools is Initializable {
      */
     function _validatePoolExistance(Token token0, Token token1) private view {
         if (!_poolExists(token0, token1)) {
-            revert PoolDoesNotExists();
+            revert PoolDoesNotExist();
         }
     }
 
