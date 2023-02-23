@@ -53,7 +53,6 @@ contract CarbonController is
     error InvalidTradeActionAmount();
     error TokensMismatch();
     error InvalidStrategyId();
-    error ZeroLiquidityProvided();
     error NoIdsProvided();
     error OutDated();
 
