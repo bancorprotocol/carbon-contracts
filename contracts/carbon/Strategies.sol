@@ -449,7 +449,7 @@ abstract contract Strategies is Initializable {
             totals.targetAmount = amountIncludingFee;
         }
 
-        // revert here if the minReturn/maxInput constrants is unmet
+        // revert here if the minReturn/maxInput constraints are unmet
         _validateConstraints(params.byTargetAmount, totals, params.constraint);
 
         // transfer funds
