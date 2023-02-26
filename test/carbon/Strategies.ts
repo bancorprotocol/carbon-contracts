@@ -1113,7 +1113,7 @@ describe('Strategy', () => {
 
         it('reverts when no pool found for given tokens', async () => {
             const tx = carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
-            await expect(tx).to.be.revertedWithError('PoolDoesNotExists');
+            await expect(tx).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         describe('reverts for non valid addresses', async () => {
@@ -1192,7 +1192,7 @@ describe('Strategy', () => {
 
         it('reverts when no pool found for given tokens', async () => {
             const tx = carbonController.strategiesByPoolCount(token0.address, token1.address);
-            await expect(tx).to.be.revertedWithError('PoolDoesNotExists');
+            await expect(tx).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         it('returns the correct count', async () => {

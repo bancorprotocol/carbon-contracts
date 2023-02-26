@@ -48,7 +48,7 @@ describe('Pool', () => {
         it('should revert when pool already exist', async () => {
             await carbonController.createPool(pool.token0, pool.token1);
             await expect(carbonController.createPool(pool.token0, pool.token1)).to.be.revertedWithError(
-                'PoolAlreadyExists'
+                'PoolAlreadyExist'
             );
         });
 
