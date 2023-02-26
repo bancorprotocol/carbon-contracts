@@ -4,8 +4,12 @@ import { createSystem, createTestToken } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { expect } from 'chai';
 
-const sortTokens = (token0: string, token1: string): string[] => {
-    return token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
+const sortTokens = (token0: string, token1: string, smallerFirst = true): string[] => {
+    if (smallerFirst) {
+        return token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
+    } else {
+        return token0.toLowerCase() > token1.toLowerCase() ? [token0, token1] : [token1, token0];
+    }
 };
 
 describe('Pool', () => {
@@ -72,16 +76,31 @@ describe('Pool', () => {
 
             await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(2, tokens[0], tokens[1]);
         });
+
+        it('sorts the tokens by address value size, smaller first', async () => {
+            const tokens = sortTokens(pool.token0, pool.token1, false);
+            const res = await carbonController.createPool(tokens[0], tokens[1]);
+            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, tokens[1], tokens[0]);
+        });
     });
 
     it('gets a pool matching the provided tokens', async () => {
         await carbonController.createPool(pool.token0, pool.token1);
         const tokens = sortTokens(pool.token0, pool.token1);
 
-        const _pool = await carbonController.pool(pool.token1, pool.token0);
+        const _pool = await carbonController.pool(pool.token0, pool.token1);
         expect(_pool.id.toNumber()).to.eq(1);
         expect(_pool.token0).to.eq(tokens[0]);
         expect(_pool.token1).to.eq(tokens[1]);
+    });
+
+    it('gets a pool matching the provided unsorted tokens', async () => {
+        const tokens = sortTokens(pool.token0, pool.token1, false);
+        await carbonController.createPool(tokens[0], tokens[1]);
+        const _pool = await carbonController.pool(tokens[0], tokens[1]);
+        expect(_pool.id.toNumber()).to.eq(1);
+        expect(_pool.token0).to.eq(tokens[1]);
+        expect(_pool.token1).to.eq(tokens[0]);
     });
 
     it('lists all supported tokens', async () => {
