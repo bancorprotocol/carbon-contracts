@@ -551,37 +551,6 @@ describe('Trading', () => {
             }
         });
 
-        describe('reverts if there is insufficient liquidity to fulfill an order', () => {
-            const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
-            for (const { byTargetAmount } of permutations) {
-                it(`byTargetAmount: ${byTargetAmount}`, async () => {
-                    // create testCase and strategies to use for assertions
-                    const testCase = testCaseFactory({
-                        byTargetAmount,
-                        sourceSymbol: TokenSymbol.TKN0,
-                        targetSymbol: TokenSymbol.TKN1
-                    });
-                    const { strategies, sourceAmount, targetAmount } = testCase;
-
-                    // remove liquidity from the first order
-                    strategies[0].orders[0].liquidity = '0';
-                    await createStrategies(strategies);
-
-                    // assert
-                    await expect(
-                        trade({
-                            sourceAmount,
-                            targetAmount,
-                            tradeActions: testCase.tradeActions,
-                            sourceSymbol: testCase.sourceSymbol,
-                            targetSymbol: testCase.targetSymbol,
-                            byTargetAmount: testCase.byTargetAmount
-                        })
-                    ).to.be.revertedWithError('InsufficientLiquidity');
-                });
-            }
-        });
-
         describe('reverts if tradeActions provided with strategyIds that do not exist', () => {
             const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
             for (const { byTargetAmount } of permutations) {

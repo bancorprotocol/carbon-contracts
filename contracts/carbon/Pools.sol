@@ -15,7 +15,7 @@ struct Pool {
 abstract contract Pools is Initializable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    error PoolAlreadyExist();
+    error PoolAlreadyExists();
     error PoolDoesNotExist();
 
     // unique incremental id representing a pool
@@ -56,7 +56,7 @@ abstract contract Pools is Initializable {
      */
     function _createPool(Token token0, Token token1) internal returns (Pool memory) {
         if (_poolExists(token0, token1)) {
-            revert PoolAlreadyExist();
+            revert PoolAlreadyExists();
         }
 
         // sort tokens by address value, smaller first
