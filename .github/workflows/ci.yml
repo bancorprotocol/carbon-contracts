@@ -12,7 +12,7 @@ jobs:
   test:
     name: Test
 
-    runs-on: [self-hosted, CI]
+    runs-on: [macos-latest, CI]
     timeout-minutes: 600
 
     steps:
