@@ -178,11 +178,13 @@ contract CarbonController is
         _validateOrders(orders);
 
         // create the pool if it does not exist
+        Pool memory __pool;
         if (!_poolExists(token0, token1)) {
-            _createPool(token0, token1);
+            __pool = _createPool(token0, token1);
+        } else {
+            __pool = _pool(token0, token1);
         }
 
-        Pool memory __pool = _pool(token0, token1);
         Pair memory pair = Pair({ token0: token0, token1: token1 });
         return _createStrategy(_masterVault, _voucher, pair, orders, __pool, msg.sender, msg.value);
     }
