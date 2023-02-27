@@ -60,13 +60,13 @@ abstract contract Pools is Initializable {
      * @dev generates and stores a new pool, tokens are assumed unique and valid
      */
     function _createPool(Token token0, Token token1) internal returns (Pool memory) {
-        // sort tokens
-        (Token _token0, Token _token1) = _sortTokens(token0, token1);
-
         // validate pool existance
-        if (_poolExists(_token0, _token1)) {
+        if (_poolExists(token0, token1)) {
             revert PoolAlreadyExists();
         }
+
+        // sort tokens
+        (Token _token0, Token _token1) = _sortTokens(token0, token1);
 
         // increment pool id
         _lastPoolId.increment();
@@ -126,7 +126,7 @@ abstract contract Pools is Initializable {
     }
 
     /**
-     * returns the given tokens sorted by address value size, smaller first
+     * returns the given tokens sorted by address value, smaller first
      */
     function _sortTokens(Token token0, Token token1) private pure returns (Token, Token) {
         return token0 < token1 ? (token0, token1) : (token1, token0);
