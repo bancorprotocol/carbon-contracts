@@ -45,11 +45,7 @@ interface ICarbonController is IVersioned {
      *
      * - the caller must have approved the tokens with assigned liquidity in the order, if any
      */
-    function createStrategy(
-        Token token0,
-        Token token1,
-        Order[2] calldata orders
-    ) external payable returns (uint256);
+    function createStrategy(Token token0, Token token1, Order[2] calldata orders) external payable returns (uint256);
 
     /**
      * @dev updates an existing strategy
@@ -66,8 +62,8 @@ interface ICarbonController is IVersioned {
      */
     function updateStrategy(
         uint256 strategyId,
-        Order[2] memory currentOrders,
-        Order[2] memory newOrders
+        Order[2] calldata currentOrders,
+        Order[2] calldata newOrders
     ) external payable;
 
     // solhint-enable var-name-mixedcase
