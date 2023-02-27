@@ -15,6 +15,11 @@ struct Pool {
 abstract contract Pools is Initializable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
+    struct StoredPool {
+        Token token0;
+        Token token1;
+    }
+
     error PoolAlreadyExists();
     error PoolDoesNotExist();
 
@@ -25,7 +30,7 @@ abstract contract Pools is Initializable {
     mapping(Token => mapping(Token => uint256)) private _poolIds;
 
     // mapping between a poolId to its Pool object
-    mapping(uint256 => Pool) private _poolsStorage;
+    mapping(uint256 => StoredPool) private _poolsStorage;
 
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 3] private __gap;
@@ -55,53 +60,55 @@ abstract contract Pools is Initializable {
      * @dev generates and stores a new pool, tokens are assumed unique and valid
      */
     function _createPool(Token token0, Token token1) internal returns (Pool memory) {
+        // validate pool existance
         if (_poolExists(token0, token1)) {
             revert PoolAlreadyExists();
         }
 
-        // sort tokens by address value, smaller first
-        (Token _token0, Token _token1) = token0 < token1 ? (token0, token1) : (token1, token0);
+        // sort tokens
+        (Token _token0, Token _token1) = _sortTokens(token0, token1);
 
         // increment pool id
         _lastPoolId.increment();
         uint256 id = _lastPoolId.current();
 
         // store pool
-        Pool memory newPool = Pool({ id: id, token0: _token0, token1: _token1 });
+        StoredPool memory newPool = StoredPool({ token0: _token0, token1: _token1 });
         _poolsStorage[id] = newPool;
-        _poolIds[token0][token1] = newPool.id;
-        _poolIds[token1][token0] = newPool.id; // optimization, store reversed order
+        _poolIds[_token0][_token1] = id;
 
-        emit PoolCreated(newPool.id, newPool.token0, newPool.token1);
-        return newPool;
+        emit PoolCreated(id, newPool.token0, newPool.token1);
+        return Pool({ id: id, token0: _token0, token1: _token1 });
     }
 
     /**
      * @dev return a pool matching the given tokens
      */
     function _pool(Token token0, Token token1) internal view returns (Pool memory) {
-        _validatePoolExistance(token0, token1);
-        uint256 id = _poolIds[token0][token1];
-        return _poolsStorage[id];
+        // sort tokens
+        (Token _token0, Token _token1) = _sortTokens(token0, token1);
+
+        // validate pool existance
+        if (!_poolExists(token0, token1)) {
+            revert PoolDoesNotExist();
+        }
+
+        // return pool
+        uint256 id = _poolIds[_token0][_token1];
+        return Pool({ id: id, token0: _token0, token1: _token1 });
     }
 
     /**
      * @dev check for the existance of a pool (pool id's are sequential intergers starting at 1)
      */
     function _poolExists(Token token0, Token token1) internal view returns (bool) {
-        if (_poolIds[token0][token1] == 0) {
+        // sort tokens
+        (Token _token0, Token _token1) = _sortTokens(token0, token1);
+
+        if (_poolIds[_token0][_token1] == 0) {
             return false;
         }
         return true;
-    }
-
-    /**
-     * @dev check for the existance of a pool or revert
-     */
-    function _validatePoolExistance(Token token0, Token token1) private view {
-        if (!_poolExists(token0, token1)) {
-            revert PoolDoesNotExist();
-        }
     }
 
     /**
@@ -111,10 +118,17 @@ abstract contract Pools is Initializable {
         uint256 length = _lastPoolId.current();
         address[2][] memory list = new address[2][](length);
         for (uint256 i = 0; i < length; i++) {
-            Pool memory pool = _poolsStorage[i + 1];
+            StoredPool memory pool = _poolsStorage[i + 1];
             list[i] = [address(pool.token0), address(pool.token1)];
         }
 
         return list;
+    }
+
+    /**
+     * returns the given tokens sorted by address value, smaller first
+     */
+    function _sortTokens(Token token0, Token token1) private pure returns (Token, Token) {
+        return token0 < token1 ? (token0, token1) : (token1, token0);
     }
 }

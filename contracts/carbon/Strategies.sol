@@ -144,7 +144,6 @@ abstract contract Strategies is Initializable {
     error InsufficientLiquidity();
 
     struct StoredStrategy {
-        uint256 id;
         address owner;
         Pair pair;
         uint256[3] packedOrders;
@@ -287,12 +286,7 @@ abstract contract Strategies is Initializable {
         uint256 id = _lastStrategyId.current();
 
         _strategiesByPoolIdStorage[pool.id].add(id);
-        _strategiesStorage[id] = StoredStrategy({
-            id: id,
-            owner: owner,
-            pair: pair,
-            packedOrders: _packOrders(orders)
-        });
+        _strategiesStorage[id] = StoredStrategy({ owner: owner, pair: pair, packedOrders: _packOrders(orders) });
 
         voucher.mint(owner, id);
 
@@ -421,7 +415,7 @@ abstract contract Strategies is Initializable {
             // emit update events if necessary
             if (strategyUpdated) {
                 emit StrategyUpdated({
-                    id: storedStrategy.id,
+                    id: params.tradeActions[i].strategyId,
                     owner: storedStrategy.owner,
                     token0: storedStrategy.pair.token0,
                     token1: storedStrategy.pair.token1,
@@ -625,12 +619,12 @@ abstract contract Strategies is Initializable {
      */
     function _strategy(uint256 id) internal view returns (Strategy memory) {
         StoredStrategy memory strategy = _strategiesStorage[id];
-        if (strategy.id <= 0) {
+        if (strategy.owner == address(0)) {
             revert StrategyDoesNotExist();
         }
         return
             Strategy({
-                id: strategy.id,
+                id: id,
                 owner: strategy.owner,
                 pair: strategy.pair,
                 orders: _unpackOrders(strategy.packedOrders)
