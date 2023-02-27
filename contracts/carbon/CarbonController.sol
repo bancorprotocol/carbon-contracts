@@ -239,7 +239,7 @@ contract CarbonController is
         Pool memory __pool = _pool(__strategy.pair.token0, __strategy.pair.token1);
 
         // delete strategy
-        _deleteStrategy(__strategy, _voucher, msg.sender, _masterVault, __pool);
+        _deleteStrategy(__strategy, _voucher, _masterVault, __pool);
     }
 
     /**
