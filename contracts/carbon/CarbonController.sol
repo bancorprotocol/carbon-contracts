@@ -218,7 +218,7 @@ contract CarbonController is
         _validateOrders(newOrders);
 
         // perform update
-        _updateStrategy(_masterVault, __strategy, newOrders, msg.sender, msg.value);
+        _updateStrategy(_masterVault, __strategy, newOrders, msg.value);
     }
 
     // solhint-enable var-name-mixedcase

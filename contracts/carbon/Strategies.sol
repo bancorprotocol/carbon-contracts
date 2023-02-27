@@ -309,7 +309,6 @@ abstract contract Strategies is Initializable {
         IMasterVault vault,
         Strategy memory strategy,
         Order[2] calldata newOrders,
-        address owner,
         uint256 value
     ) internal {
         // prepare storage variable
@@ -330,18 +329,18 @@ abstract contract Strategies is Initializable {
             if (newOrders[i].y < strategy.orders[i].y) {
                 // liquidity decreased - withdraw the difference
                 uint128 delta = strategy.orders[i].y - newOrders[i].y;
-                vault.withdrawFunds(token, payable(owner), delta);
+                vault.withdrawFunds(token, payable(strategy.owner), delta);
             } else if (newOrders[i].y > strategy.orders[i].y) {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - strategy.orders[i].y;
-                _depositToMasterVaultAndRefundExcessNativeToken(vault, token, owner, delta, value);
+                _depositToMasterVaultAndRefundExcessNativeToken(vault, token, strategy.owner, delta, value);
             }
         }
 
         // emit event
         emit StrategyUpdated({
             id: strategy.id,
-            owner: owner,
+            owner: strategy.owner,
             token0: strategy.pair.token0,
             token1: strategy.pair.token1,
             order0: newOrders[0],
