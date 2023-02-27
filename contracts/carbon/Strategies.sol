@@ -313,8 +313,16 @@ abstract contract Strategies is Initializable {
         address owner,
         uint256 value
     ) internal {
-        // update storage
-        _strategiesStorage[strategy.id].packedOrders = _packOrders(newOrders);
+        // prepare storage variable
+        StoredStrategy storage storedStrategy = _strategiesStorage[strategy.id];
+
+        // store new values if necessary
+        uint256[3] memory newPackedOrders = _packOrders(newOrders);
+        for (uint256 n = 0; n < 3; n++) {
+            if (storedStrategy.packedOrders[n] != newPackedOrders[n]) {
+                storedStrategy.packedOrders[n] = newPackedOrders[n];
+            }
+        }
 
         // deposit and withdraw
         for (uint256 i = 0; i < 2; i++) {
