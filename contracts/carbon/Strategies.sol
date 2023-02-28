@@ -142,6 +142,7 @@ abstract contract Strategies is Initializable {
     error InsufficientCapacity();
     error InvalidRate();
     error InsufficientLiquidity();
+    error TokensMismatch();
 
     struct StoredStrategy {
         address owner;
@@ -395,27 +396,39 @@ abstract contract Strategies is Initializable {
         for (uint256 i = 0; i < params.tradeActions.length; i++) {
             // prepare variables
             StoredStrategy storage storedStrategy = _strategiesStorage[params.tradeActions[i].strategyId];
-            TradeOrders memory tradeOrders = TradeOrders({
-                packedOrders: storedStrategy.packedOrders,
-                orders: _unpackOrders(storedStrategy.packedOrders)
-            });
+            Strategy memory memoryStrategy = _strategy(params.tradeActions[i].strategyId);
+
+            // make sure strategyIds match the provided source/target tokens
+            if (
+                address(memoryStrategy.pair.token0) != address(params.tokens.source) &&
+                address(memoryStrategy.pair.token0) != address(params.tokens.target)
+            ) {
+                revert TokensMismatch();
+            }
+
+            if (
+                address(memoryStrategy.pair.token1) != address(params.tokens.source) &&
+                address(memoryStrategy.pair.token1) != address(params.tokens.target)
+            ) {
+                revert TokensMismatch();
+            }
 
             // calculate the orders new values
             uint256 targetTokenIndex = _findTargetTokenIndex(storedStrategy, params.tokens);
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
-                tradeOrders.orders[targetTokenIndex],
+                memoryStrategy.orders[targetTokenIndex],
                 params.tradeActions[i].amount,
                 params.byTargetAmount
             );
 
             // update the orders with the new values
-            _updateOrders(tradeOrders.orders, targetTokenIndex, tempTradeAmounts);
+            _updateOrders(memoryStrategy.orders, targetTokenIndex, tempTradeAmounts);
 
             // store new values if necessary
-            uint256[3] memory newPackedOrders = _packOrders(tradeOrders.orders);
+            uint256[3] memory newPackedOrders = _packOrders(memoryStrategy.orders);
             bool strategyUpdated = false;
             for (uint256 n = 0; n < 3; n++) {
-                if (tradeOrders.packedOrders[n] != newPackedOrders[n]) {
+                if (storedStrategy.packedOrders[n] != newPackedOrders[n]) {
                     storedStrategy.packedOrders[n] = newPackedOrders[n];
                     strategyUpdated = true;
                 }
@@ -424,12 +437,12 @@ abstract contract Strategies is Initializable {
             // emit update events if necessary
             if (strategyUpdated) {
                 emit StrategyUpdated({
-                    id: params.tradeActions[i].strategyId,
-                    owner: storedStrategy.owner,
-                    token0: storedStrategy.pair.token0,
-                    token1: storedStrategy.pair.token1,
-                    order0: tradeOrders.orders[0],
-                    order1: tradeOrders.orders[1]
+                    id: memoryStrategy.id,
+                    owner: memoryStrategy.owner,
+                    token0: memoryStrategy.pair.token0,
+                    token1: memoryStrategy.pair.token1,
+                    order0: memoryStrategy.orders[0],
+                    order1: memoryStrategy.orders[1]
                 });
             }
 

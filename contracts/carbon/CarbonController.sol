@@ -51,7 +51,6 @@ contract CarbonController is
     error InsufficientNativeTokenReceived();
     error DeadlineExpired();
     error InvalidTradeActionAmount();
-    error TokensMismatch();
     error InvalidStrategyId();
     error NoIdsProvided();
     error OutDated();
@@ -473,19 +472,6 @@ contract CarbonController is
             // validate strategyId value
             if (tradeActions[i].strategyId <= 0) {
                 revert InvalidStrategyId();
-            }
-
-            // make sure strategyIds match the provided source/target tokens
-            Strategy memory s = _strategy(tradeActions[i].strategyId);
-            address token0 = address(s.pair.token0);
-            address token1 = address(s.pair.token1);
-
-            if (token0 != address(sourceToken) && token0 != address(targetToken)) {
-                revert TokensMismatch();
-            }
-
-            if (token1 != address(sourceToken) && token1 != address(targetToken)) {
-                revert TokensMismatch();
             }
         }
     }

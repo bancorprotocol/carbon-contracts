@@ -523,7 +523,7 @@ describe('Trading', () => {
                         sourceSymbol: TokenSymbol.ETH,
                         targetSymbol: TokenSymbol.TKN0
                     });
-                    const { strategies, sourceAmount, tradeActions } = testCase;
+                    const { strategies, sourceAmount, targetAmount, tradeActions, sourceSymbol } = testCase;
                     await createStrategies(strategies);
 
                     // edit one of the actions to use the extra strategy created
@@ -537,14 +537,18 @@ describe('Trading', () => {
                     });
                     await createStrategies(testCase2.strategies);
 
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
+
                     // assert
                     await expect(
-                        simpleTrade({
+                        trade({
                             sourceAmount,
+                            targetAmount,
                             tradeActions,
-                            byTargetAmount,
-                            sourceToken: tokens[TokenSymbol.ETH].address,
-                            targetToken: tokens[TokenSymbol.TKN1].address
+                            sourceSymbol: TokenSymbol.ETH,
+                            targetSymbol: TokenSymbol.TKN1,
+                            byTargetAmount
                         })
                     ).to.be.revertedWithError('TokensMismatch');
                 });
@@ -561,20 +565,25 @@ describe('Trading', () => {
                         sourceSymbol: TokenSymbol.ETH,
                         targetSymbol: TokenSymbol.TKN0
                     });
-                    const { strategies, sourceAmount, tradeActions } = testCase;
+                    const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
+                        testCase;
                     await createStrategies(strategies);
 
                     // edit one of the actions to use a strategy that does not exist
                     tradeActions[2].strategyId = (strategies.length + 1).toString();
 
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
+
                     // assert
                     await expect(
-                        simpleTrade({
+                        trade({
                             sourceAmount,
+                            targetAmount,
                             tradeActions,
-                            byTargetAmount,
-                            sourceToken: tokens[TokenSymbol.ETH].address,
-                            targetToken: tokens[TokenSymbol.TKN0].address
+                            sourceSymbol,
+                            targetSymbol,
+                            byTargetAmount
                         })
                     ).to.be.revertedWithError('StrategyDoesNotExist');
                 });
