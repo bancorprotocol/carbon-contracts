@@ -356,7 +356,6 @@ abstract contract Strategies is Initializable {
     function _deleteStrategy(
         Strategy memory strategy,
         IVoucher voucher,
-        address owner,
         IMasterVault vault,
         Pool memory pool
     ) internal {
@@ -368,13 +367,13 @@ abstract contract Strategies is Initializable {
         _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
-        vault.withdrawFunds(strategy.pair.token0, payable(owner), strategy.orders[0].y);
-        vault.withdrawFunds(strategy.pair.token1, payable(owner), strategy.orders[1].y);
+        vault.withdrawFunds(strategy.pair.token0, payable(strategy.owner), strategy.orders[0].y);
+        vault.withdrawFunds(strategy.pair.token1, payable(strategy.owner), strategy.orders[1].y);
 
         // emit event
         emit StrategyDeleted({
             id: strategy.id,
-            owner: owner,
+            owner: strategy.owner,
             token0: strategy.pair.token0,
             token1: strategy.pair.token1,
             order0: strategy.orders[0],
