@@ -491,7 +491,7 @@ abstract contract Strategies is Initializable {
             byTargetAmount: params.byTargetAmount
         });
 
-        return SourceAndTargetAmounts({ sourceAmount: totals.sourceAmount, targetAmount: totals.targetAmount });
+        return totals;
     }
 
     /**
@@ -579,7 +579,7 @@ abstract contract Strategies is Initializable {
         }
 
         // return amounts
-        return SourceAndTargetAmounts({ sourceAmount: totals.sourceAmount, targetAmount: totals.targetAmount });
+        return totals;
     }
 
     /**
