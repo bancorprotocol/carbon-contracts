@@ -130,7 +130,7 @@ const main = async () => {
 
     await runDeployments();
 
-    // await fundAccounts();
+    await fundAccounts();
 
     await archiveArtifacts();
 
