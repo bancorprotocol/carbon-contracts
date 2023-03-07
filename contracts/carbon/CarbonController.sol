@@ -193,18 +193,10 @@ contract CarbonController is
      */
     function updateStrategy(
         uint256 strategyId,
-        Token token0,
-        Token token1,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
-        _validateInputTokens(token0, token1);
-
         Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
-        if (address(token0) != address(__pool.token0) || address(token1) != address(__pool.token1)) {
-            revert TokensMismatch();
-        }
-
         Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
 
         // only the owner of the strategy is allowed to delete it

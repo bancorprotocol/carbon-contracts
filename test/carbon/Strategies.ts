@@ -210,18 +210,15 @@ describe('Strategy', () => {
         }
 
         // update strategy
-        const tx = await carbonController
-            .connect(owner)
-            .updateStrategy(
-                _params.strategyId,
-                tokens[0].address,
-                tokens[1].address,
-                [currentOrder, currentOrder],
-                [token0NewOrder, token1NewOrder],
-                {
-                    value: txValue
-                }
-            );
+        const tx = await carbonController.connect(owner).updateStrategy(
+            _params.strategyId,
+
+            [currentOrder, currentOrder],
+            [token0NewOrder, token1NewOrder],
+            {
+                value: txValue
+            }
+        );
         const receipt = await tx.wait();
         gasUsed = gasUsed.add(receipt.gasUsed.mul(receipt.effectiveGasPrice));
 
@@ -701,13 +698,7 @@ describe('Strategy', () => {
                     // update strategy
                     await carbonController
                         .connect(owner)
-                        .updateStrategy(
-                            1,
-                            sortedTokens[0].address,
-                            sortedTokens[1].address,
-                            [order, order],
-                            [newOrders[0], newOrders[1]]
-                        );
+                        .updateStrategy(1, [order, order], [newOrders[0], newOrders[1]]);
 
                     // fetch the strategy created
                     const strategy = await carbonController.strategy(1);
@@ -833,18 +824,9 @@ describe('Strategy', () => {
                 for (const [key, value] of Object.entries(mutation)) {
                     it(`reverts for a mutation in ${key}`, async () => {
                         await createStrategy();
-                        const sortedTokens = sortTokens(token0, token1);
                         const order: any = generateTestOrder();
                         order[key] = BigNumber.from(value);
-                        const tx = carbonController
-                            .connect(owner)
-                            .updateStrategy(
-                                1,
-                                sortedTokens[0].address,
-                                sortedTokens[1].address,
-                                [order, order],
-                                [order, order]
-                            );
+                        const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order]);
                         await expect(tx).to.have.been.revertedWithError('OutDated');
                     });
                 }
@@ -875,63 +857,45 @@ describe('Strategy', () => {
         it('reverts when unnecessary native token was sent', async () => {
             const order = generateTestOrder();
             await createStrategy();
-            const sortedTokens = sortTokens(token0, token1);
 
-            const tx = carbonController
-                .connect(owner)
-                .updateStrategy(1, sortedTokens[0].address, sortedTokens[1].address, [order, order], [order, order], {
-                    value: 100
-                });
+            const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order], {
+                value: 100
+            });
             await expect(tx).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
         });
 
         it('reverts when paused', async () => {
             await createStrategy();
-            const sortedTokens = sortTokens(token0, token1);
             await carbonController
                 .connect(deployer)
                 .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
             await carbonController.connect(nonAdmin).pause();
 
             const order = generateTestOrder();
-            const tx = carbonController.updateStrategy(
-                1,
-                sortedTokens[0].address,
-                sortedTokens[1].address,
-                [order, order],
-                [order, order]
-            );
+            const tx = carbonController.updateStrategy(1, [order, order], [order, order]);
             await expect(tx).to.be.revertedWithError('Pausable: paused');
         });
 
         it('reverts when trying to update a non existing strategy', async () => {
             await createStrategy();
-            const sortedTokens = sortTokens(token0, token1);
             const order = generateTestOrder();
             await expect(
-                carbonController
-                    .connect(owner)
-                    .updateStrategy(2, sortedTokens[0].address, sortedTokens[1].address, [order, order], [order, order])
+                carbonController.connect(owner).updateStrategy(2, [order, order], [order, order])
             ).to.be.revertedWithError('StrategyDoesNotExist');
         });
 
         it('reverts when the provided id is invalid', async () => {
             const order = generateTestOrder();
             await expect(
-                carbonController
-                    .connect(owner)
-                    .updateStrategy(0, token0.address, token1.address, [order, order], [order, order])
+                carbonController.connect(owner).updateStrategy(0, [order, order], [order, order])
             ).to.be.revertedWithError('ZeroValue');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
-            const sortedTokens = sortTokens(token0, token1);
             const order = generateTestOrder();
             await expect(
-                carbonController
-                    .connect(nonAdmin)
-                    .updateStrategy(1, sortedTokens[0].address, sortedTokens[1].address, [order, order], [order, order])
+                carbonController.connect(nonAdmin).updateStrategy(1, [order, order], [order, order])
             ).to.be.revertedWithError('AccessDenied');
         });
 
@@ -945,7 +909,6 @@ describe('Strategy', () => {
             for (const { order0Insufficient, order1Insufficient } of _permutations) {
                 it(`order 0 invalid: ${order0Insufficient}, order 1 invalid: ${order1Insufficient}`, async () => {
                     const order = generateTestOrder();
-                    const sortedTokens = sortTokens(token0, token1);
                     const newInvalidOrder = { ...order, z: order.y.sub(1) };
                     const newValidOrder = { ...order, z: order.y.add(1) };
                     const order0 = order0Insufficient ? newInvalidOrder : newValidOrder;
@@ -953,15 +916,7 @@ describe('Strategy', () => {
 
                     await createStrategy();
                     await expect(
-                        carbonController
-                            .connect(owner)
-                            .updateStrategy(
-                                1,
-                                sortedTokens[0].address,
-                                sortedTokens[1].address,
-                                [order, order],
-                                [order0, order1]
-                            )
+                        carbonController.connect(owner).updateStrategy(1, [order, order], [order0, order1])
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
             }
@@ -976,48 +931,11 @@ describe('Strategy', () => {
                         newOrders[orderId] = { ...newOrders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
 
                         await createStrategy();
-                        const sortedTokens = sortTokens(token0, token1);
                         await expect(
-                            carbonController
-                                .connect(owner)
-                                .updateStrategy(
-                                    1,
-                                    sortedTokens[0].address,
-                                    sortedTokens[1].address,
-                                    oldOrders,
-                                    newOrders
-                                )
+                            carbonController.connect(owner).updateStrategy(1, oldOrders, newOrders)
                         ).to.be.revertedWithError('InvalidRate');
                     });
                 }
-            }
-        });
-
-        describe('reverts when the tokens provided does not match the pool tokens in the same sorting', () => {
-            const _permutations = [
-                { token0: TokenSymbol.TKN0, token1: TokenSymbol.TKN2 },
-                { token0: TokenSymbol.TKN2, token1: TokenSymbol.TKN0 },
-                { token0: TokenSymbol.ETH, token1: TokenSymbol.TKN2 }
-            ];
-
-            for (const { token0, token1 } of _permutations) {
-                it(`token0: ${token0}, token1: ${token1}`, async () => {
-                    await createStrategy();
-                    const order = generateTestOrder();
-
-                    await createStrategy();
-                    await expect(
-                        carbonController
-                            .connect(owner)
-                            .updateStrategy(
-                                1,
-                                tokens[token0].address,
-                                tokens[token1].address,
-                                [order, order],
-                                [order, order]
-                            )
-                    ).to.be.revertedWithError('TokensMismatch');
-                });
             }
         });
     });

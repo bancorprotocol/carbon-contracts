@@ -99,7 +99,7 @@ describe('CarbonController', () => {
                 ctorArgs: [masterVault.address, voucher.address, voucher.address]
             });
             const order = { y: 0, z: 0, A: 0, B: 0 };
-            const tx = carbonController.updateStrategy(1, ZERO_ADDRESS, ZERO_ADDRESS, [order, order], [order, order]);
+            const tx = carbonController.updateStrategy(1, [order, order], [order, order]);
             await expect(tx).to.have.been.revertedWithError('UnknownDelegator');
         });
 
