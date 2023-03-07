@@ -258,17 +258,6 @@ contract CarbonController is
         return _strategy(id, _voucher, __pool);
     }
 
-    // /**
-    //  * @inheritdoc ICarbonController
-    //  */
-    // function strategiesByIds(uint256[] calldata ids) external view returns (Strategy[] memory) {
-    //     if (ids.length == 0) {
-    //         revert NoIdsProvided();
-    //     }
-
-    //     return _strategiesByIds(ids);
-    // }
-
     /**
      * @inheritdoc ICarbonController
      */
