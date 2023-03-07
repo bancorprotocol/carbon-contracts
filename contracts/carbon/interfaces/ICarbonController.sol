@@ -62,6 +62,8 @@ interface ICarbonController is IVersioned {
      */
     function updateStrategy(
         uint256 strategyId,
+        Token token0,
+        Token token1,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable;
