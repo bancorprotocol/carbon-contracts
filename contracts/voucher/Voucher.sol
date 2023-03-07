@@ -89,26 +89,6 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     }
 
     /**
-     * subscribes to the afterTokenTransfer hook where we update the strategy's owner following a transfer
-     */
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal virtual override {
-        super._afterTokenTransfer(from, to, tokenId, batchSize);
-
-        if (address(_carbonController) == address(0)) {
-            revert CarbonControllerNotSet();
-        }
-
-        if (from != address(0) && to != address(0)) {
-            _carbonController.updateStrategyOwner(tokenId, to);
-        }
-    }
-
-    /**
      * @dev depending on the useGlobalURI flag, returns a unique URI point to a json representing the voucher,
      * or a URI of a global json used for all tokens
      */

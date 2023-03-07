@@ -196,7 +196,8 @@ contract CarbonController is
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
-        Strategy memory __strategy = _strategy(strategyId);
+        Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
+        Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
@@ -229,15 +230,13 @@ contract CarbonController is
         uint256 strategyId
     ) external nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
         // find strategy, reverts if none
-        Strategy memory __strategy = _strategy(strategyId);
+        Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
+        Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
             revert AccessDenied();
         }
-
-        // find pool
-        Pool memory __pool = _pool(__strategy.pair.token0, __strategy.pair.token1);
 
         // delete strategy
         _deleteStrategy(__strategy, _voucher, _masterVault, __pool);
@@ -247,19 +246,20 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function strategy(uint256 id) external view greaterThanZero(id) returns (Strategy memory) {
-        return _strategy(id);
+        Pool memory __pool = _poolById(_poolIdbyStrategyId(id));
+        return _strategy(id, _voucher, __pool);
     }
 
-    /**
-     * @inheritdoc ICarbonController
-     */
-    function strategiesByIds(uint256[] calldata ids) external view returns (Strategy[] memory) {
-        if (ids.length == 0) {
-            revert NoIdsProvided();
-        }
+    // /**
+    //  * @inheritdoc ICarbonController
+    //  */
+    // function strategiesByIds(uint256[] calldata ids) external view returns (Strategy[] memory) {
+    //     if (ids.length == 0) {
+    //         revert NoIdsProvided();
+    //     }
 
-        return _strategiesByIds(ids);
-    }
+    //     return _strategiesByIds(ids);
+    // }
 
     /**
      * @inheritdoc ICarbonController
@@ -273,7 +273,7 @@ contract CarbonController is
         _validateInputTokens(token0, token1);
 
         Pool memory __pool = _pool(token0, token1);
-        return _strategiesByPool(__pool, startIndex, endIndex);
+        return _strategiesByPool(__pool, startIndex, endIndex, _voucher);
     }
 
     /**
@@ -297,6 +297,7 @@ contract CarbonController is
         uint128 minReturn
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
         _validateTradeParams(sourceToken, targetToken, deadline, msg.value, minReturn, tradeActions);
+        Pool memory _pool = _pool(sourceToken, targetToken);
         TradeParams memory params = TradeParams({
             trader: msg.sender,
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
@@ -304,7 +305,9 @@ contract CarbonController is
             byTargetAmount: false,
             masterVault: _masterVault,
             constraint: minReturn,
-            txValue: msg.value
+            txValue: msg.value,
+            pool: _pool,
+            voucher: _voucher
         });
         SourceAndTargetAmounts memory amounts = _trade(params);
         return amounts.targetAmount;
@@ -329,6 +332,7 @@ contract CarbonController is
             }
         }
 
+        Pool memory _pool = _pool(sourceToken, targetToken);
         TradeParams memory params = TradeParams({
             trader: msg.sender,
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
@@ -336,7 +340,9 @@ contract CarbonController is
             byTargetAmount: true,
             masterVault: _masterVault,
             constraint: maxInput,
-            txValue: msg.value
+            txValue: msg.value,
+            pool: _pool,
+            voucher: _voucher
         });
         SourceAndTargetAmounts memory amounts = _trade(params);
         return amounts.sourceAmount;
@@ -351,8 +357,9 @@ contract CarbonController is
         TradeAction[] calldata tradeActions
     ) external view returns (uint128) {
         _validateInputTokens(sourceToken, targetToken);
+        Pool memory __pool = _pool(sourceToken, targetToken);
         TradeTokens memory tokens = TradeTokens({ source: sourceToken, target: targetToken });
-        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, true);
+        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, __pool, true);
         return amounts.sourceAmount;
     }
 
@@ -365,8 +372,9 @@ contract CarbonController is
         TradeAction[] calldata tradeActions
     ) external view returns (uint128) {
         _validateInputTokens(sourceToken, targetToken);
+        Pool memory __pool = _pool(sourceToken, targetToken);
         TradeTokens memory tokens = TradeTokens({ source: sourceToken, target: targetToken });
-        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, false);
+        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, __pool, false);
         return amounts.targetAmount;
     }
 
@@ -376,22 +384,6 @@ contract CarbonController is
     function accumulatedFees(address token) external view returns (uint256) {
         _validAddress(token);
         return _getAccumulatedFees(token);
-    }
-
-    /**
-     * updates the owner of a strategy following a transfer in a voucher
-     *
-     * requirements:
-     *
-     * - the caller must be the voucher contract
-     *
-     */
-    function updateStrategyOwner(
-        uint256 strategyId,
-        address newOwner
-    ) external only(address(_voucher)) greaterThanZero(strategyId) validAddress(newOwner) {
-        Strategy memory __strategy = _strategy(strategyId);
-        _updateStrategyOwner(__strategy, newOwner);
     }
 
     /**

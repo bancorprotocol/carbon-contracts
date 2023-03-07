@@ -98,6 +98,11 @@ abstract contract Pools is Initializable {
         return Pool({ id: id, token0: _token0, token1: _token1 });
     }
 
+    function _poolById(uint256 poolId) internal view returns (Pool memory) {
+        StoredPool memory storedPool = _poolsStorage[poolId];
+        return Pool({ id: poolId, token0: storedPool.token0, token1: storedPool.token1 });
+    }
+
     /**
      * @dev check for the existance of a pool (pool id's are sequential intergers starting at 1)
      */

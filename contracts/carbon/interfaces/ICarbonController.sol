@@ -87,11 +87,6 @@ interface ICarbonController is IVersioned {
     function strategy(uint256 id) external view returns (Strategy memory);
 
     /**
-     * @dev returns strategies matching provided ids
-     */
-    function strategiesByIds(uint256[] calldata ids) external view returns (Strategy[] memory);
-
-    /**
      * @dev returns strategies belonging to a specific pool
      * note for the full list of strategies pass 0 to both startIndex and endIndex
      */
