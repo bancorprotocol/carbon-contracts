@@ -828,7 +828,6 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
-                        expect(event.args.owner).to.eq(marketMaker.address);
                         expect(event.event).to.eq('StrategyUpdated');
                     }
                 }

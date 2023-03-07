@@ -234,14 +234,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev emits following an update to either or both of the orders
      */
-    event StrategyUpdated(
-        uint256 id,
-        address indexed owner,
-        Token indexed token0,
-        Token indexed token1,
-        Order order0,
-        Order order1
-    );
+    event StrategyUpdated(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
 
     /**
      * @dev emits following a user initiated trade
@@ -351,7 +344,6 @@ abstract contract Strategies is Initializable {
         // emit event
         emit StrategyUpdated({
             id: strategy.id,
-            owner: strategy.owner,
             token0: strategy.pair.token0,
             token1: strategy.pair.token1,
             order0: newOrders[0],
@@ -435,11 +427,9 @@ abstract contract Strategies is Initializable {
 
             // emit update events if necessary
             uint256 strategyId = params.tradeActions[i].strategyId;
-            address _owner = params.voucher.ownerOf(strategyId);
             if (strategyUpdated) {
                 emit StrategyUpdated({
                     id: strategyId,
-                    owner: _owner,
                     token0: params.pool.token0,
                     token1: params.pool.token1,
                     order0: orders[0],

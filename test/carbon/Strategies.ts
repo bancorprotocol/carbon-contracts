@@ -843,7 +843,6 @@ describe('Strategy', () => {
                 .to.emit(carbonController, 'StrategyUpdated')
                 .withArgs(
                     BigNumber.from(1),
-                    owner.address,
                     sortedTokens[0].address,
                     sortedTokens[1].address,
                     expectedOrder,
