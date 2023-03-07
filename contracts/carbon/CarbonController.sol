@@ -303,8 +303,7 @@ contract CarbonController is
             masterVault: _masterVault,
             constraint: minReturn,
             txValue: msg.value,
-            pool: _pool,
-            voucher: _voucher
+            pool: _pool
         });
         SourceAndTargetAmounts memory amounts = _trade(params);
         return amounts.targetAmount;
@@ -338,8 +337,7 @@ contract CarbonController is
             masterVault: _masterVault,
             constraint: maxInput,
             txValue: msg.value,
-            pool: _pool,
-            voucher: _voucher
+            pool: _pool
         });
         SourceAndTargetAmounts memory amounts = _trade(params);
         return amounts.sourceAmount;

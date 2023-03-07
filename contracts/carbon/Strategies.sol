@@ -169,7 +169,6 @@ abstract contract Strategies is Initializable {
         uint128 constraint;
         uint256 txValue;
         Pool pool;
-        IVoucher voucher;
     }
 
     struct TradeOrders {
