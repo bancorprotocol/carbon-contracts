@@ -395,11 +395,12 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < params.tradeActions.length; i++) {
             // prepare variables
-            uint256[3] storage packedOrders = _packedOrdersByStrategyId[params.tradeActions[i].strategyId];
+            uint256 strategyId = params.tradeActions[i].strategyId;
+            uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
             Order[2] memory orders = _unpackOrders(packedOrders);
 
             // make sure strategyIds match the provided source/target tokens
-            if (_poolIdbyStrategyId(params.tradeActions[i].strategyId) != params.pool.id) {
+            if (_poolIdbyStrategyId(strategyId) != params.pool.id) {
                 revert TokensMismatch();
             }
 
@@ -425,7 +426,6 @@ abstract contract Strategies is Initializable {
             }
 
             // emit update events if necessary
-            uint256 strategyId = params.tradeActions[i].strategyId;
             if (strategyUpdated) {
                 emit StrategyUpdated({
                     id: strategyId,
