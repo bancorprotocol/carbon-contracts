@@ -73,11 +73,6 @@ describe('CarbonController', () => {
         await expect(carbonController.accumulatedFees(ZERO_ADDRESS)).to.be.revertedWithError('InvalidAddress');
     });
 
-    it('reverts when someone except the voucher contract is trying to update the owner of a strategy', async () => {
-        const tx = carbonController.updateStrategyOwner(1, nonAdmin.address);
-        await expect(tx).to.have.been.revertedWithError('AccessDenied');
-    });
-
     describe('unknown delegator', () => {
         it('reverts when an unknown delegator tries creating a pool', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {

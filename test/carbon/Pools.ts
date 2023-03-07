@@ -1,4 +1,4 @@
-import { CarbonController, TestERC20Burnable } from '../../components/Contracts';
+import Contracts, { CarbonController, TestERC20Burnable } from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
 import { createSystem, createTestToken } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
@@ -12,7 +12,7 @@ const sortTokens = (token0: string, token1: string, smallerFirst = true): string
     }
 };
 
-describe('Pool', () => {
+describe('Pools', () => {
     let carbonController: CarbonController;
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
@@ -108,5 +108,13 @@ describe('Pool', () => {
         const pairs = await carbonController.pairs();
         const tokens = sortTokens(pool.token0, pool.token1);
         expect(pairs).to.deep.eq([[tokens[0], tokens[1]]]);
+    });
+
+    describe('_poolById unit tests', () => {
+        it('reverts when trying to fetch a pool by an id that does not exist', async () => {
+            const testPools = await Contracts.TestPools.deploy();
+            await testPools.test_createPool(token0.address, token1.address);
+            await expect(testPools.test_poolById(2)).to.be.revertedWithError('PoolDoesNotExist');
+        });
     });
 });

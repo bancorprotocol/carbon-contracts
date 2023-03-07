@@ -137,12 +137,12 @@ abstract contract Strategies is Initializable {
     error NativeAmountMismatch();
     error GreaterThanMaxInput();
     error LowerThanMinReturn();
-    error StrategyDoesNotExist();
     error InvalidIndices();
     error InsufficientCapacity();
     error InvalidRate();
     error InsufficientLiquidity();
     error TokensMismatch();
+    error StrategyDoesNotExist();
 
     struct StoredStrategy {
         address owner;
@@ -168,6 +168,7 @@ abstract contract Strategies is Initializable {
         IMasterVault masterVault;
         uint128 constraint;
         uint256 txValue;
+        Pool pool;
     }
 
     struct TradeOrders {
@@ -182,8 +183,11 @@ abstract contract Strategies is Initializable {
     // unique incremental id representing a pool
     CountersUpgradeable.Counter private _lastStrategyId;
 
-    // mapping between a strategyId to its Strategy object
-    mapping(uint256 => StoredStrategy) private _strategiesStorage;
+    // mapping between a strategy to its packed orders
+    mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
+
+    // mapping between strategy to its pool
+    mapping(uint256 => uint256) private __poolIdbyStrategyId;
 
     // mapping between a pool id to its strategies ids
     mapping(uint256 => EnumerableSetUpgradeable.UintSet) private _strategiesByPoolIdStorage;
@@ -195,7 +199,7 @@ abstract contract Strategies is Initializable {
     mapping(address => uint256) private _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 5] private __gap;
+    uint256[MAX_GAP - 6] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
@@ -229,14 +233,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev emits following an update to either or both of the orders
      */
-    event StrategyUpdated(
-        uint256 id,
-        address indexed owner,
-        Token indexed token0,
-        Token indexed token1,
-        Order order0,
-        Order order1
-    );
+    event StrategyUpdated(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
 
     /**
      * @dev emits following a user initiated trade
@@ -280,24 +277,28 @@ abstract contract Strategies is Initializable {
         address owner,
         uint256 value
     ) internal returns (uint256) {
-        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pair.token0, owner, orders[0].y, value);
-        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pair.token1, owner, orders[1].y, value);
+        // sort orders
+        Order[2] memory sortedOrders = pair.token0 == pool.token0 ? [orders[0], orders[1]] : [orders[1], orders[0]];
+
+        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token0, owner, sortedOrders[0].y, value);
+        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token1, owner, sortedOrders[1].y, value);
 
         _lastStrategyId.increment();
         uint256 id = _lastStrategyId.current();
 
         _strategiesByPoolIdStorage[pool.id].add(id);
-        _strategiesStorage[id] = StoredStrategy({ owner: owner, pair: pair, packedOrders: _packOrders(orders) });
+        _packedOrdersByStrategyId[id] = _packOrders(sortedOrders);
+        __poolIdbyStrategyId[id] = pool.id;
 
         voucher.mint(owner, id);
 
         emit StrategyCreated({
             id: id,
             owner: owner,
-            token0: pair.token0,
-            token1: pair.token1,
-            order0: orders[0],
-            order1: orders[1]
+            token0: pool.token0,
+            token1: pool.token1,
+            order0: sortedOrders[0],
+            order1: sortedOrders[1]
         });
 
         return id;
@@ -313,13 +314,14 @@ abstract contract Strategies is Initializable {
         uint256 value
     ) internal {
         // prepare storage variable
-        StoredStrategy storage storedStrategy = _strategiesStorage[strategy.id];
+        uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategy.id];
+        Order[2] memory orders = _unpackOrders(packedOrders);
 
         // store new values if necessary
         uint256[3] memory newPackedOrders = _packOrders(newOrders);
         for (uint256 n = 0; n < 3; n++) {
-            if (storedStrategy.packedOrders[n] != newPackedOrders[n]) {
-                storedStrategy.packedOrders[n] = newPackedOrders[n];
+            if (packedOrders[n] != newPackedOrders[n]) {
+                packedOrders[n] = newPackedOrders[n];
             }
         }
 
@@ -327,13 +329,13 @@ abstract contract Strategies is Initializable {
         for (uint256 i = 0; i < 2; i++) {
             Token token = i == 0 ? strategy.pair.token0 : strategy.pair.token1;
 
-            if (newOrders[i].y < strategy.orders[i].y) {
+            if (newOrders[i].y < orders[i].y) {
                 // liquidity decreased - withdraw the difference
-                uint128 delta = strategy.orders[i].y - newOrders[i].y;
+                uint128 delta = orders[i].y - newOrders[i].y;
                 vault.withdrawFunds(token, payable(strategy.owner), delta);
-            } else if (newOrders[i].y > strategy.orders[i].y) {
+            } else if (newOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
-                uint128 delta = newOrders[i].y - strategy.orders[i].y;
+                uint128 delta = newOrders[i].y - orders[i].y;
                 _depositToMasterVaultAndRefundExcessNativeToken(vault, token, strategy.owner, delta, value);
             }
         }
@@ -341,7 +343,6 @@ abstract contract Strategies is Initializable {
         // emit event
         emit StrategyUpdated({
             id: strategy.id,
-            owner: strategy.owner,
             token0: strategy.pair.token0,
             token1: strategy.pair.token1,
             order0: newOrders[0],
@@ -362,7 +363,8 @@ abstract contract Strategies is Initializable {
         voucher.burn(strategy.id);
 
         // clear storage
-        delete _strategiesStorage[strategy.id];
+        delete _packedOrdersByStrategyId[strategy.id];
+        delete __poolIdbyStrategyId[strategy.id];
         _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
@@ -393,41 +395,32 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < params.tradeActions.length; i++) {
             // prepare variables
-            StoredStrategy storage storedStrategy = _strategiesStorage[params.tradeActions[i].strategyId];
-            Strategy memory memoryStrategy = _strategy(params.tradeActions[i].strategyId);
+            uint256 strategyId = params.tradeActions[i].strategyId;
+            uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
+            Order[2] memory orders = _unpackOrders(packedOrders);
 
             // make sure strategyIds match the provided source/target tokens
-            if (
-                address(memoryStrategy.pair.token0) != address(params.tokens.source) &&
-                address(memoryStrategy.pair.token0) != address(params.tokens.target)
-            ) {
-                revert TokensMismatch();
-            }
-
-            if (
-                address(memoryStrategy.pair.token1) != address(params.tokens.source) &&
-                address(memoryStrategy.pair.token1) != address(params.tokens.target)
-            ) {
+            if (_poolIdbyStrategyId(strategyId) != params.pool.id) {
                 revert TokensMismatch();
             }
 
             // calculate the orders new values
-            uint256 targetTokenIndex = _findTargetTokenIndex(storedStrategy, params.tokens);
+            uint256 targetTokenIndex = _findTargetTokenIndex(params.pool, params.tokens);
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
-                memoryStrategy.orders[targetTokenIndex],
+                orders[targetTokenIndex],
                 params.tradeActions[i].amount,
                 params.byTargetAmount
             );
 
             // update the orders with the new values
-            _updateOrders(memoryStrategy.orders, targetTokenIndex, tempTradeAmounts);
+            _updateOrders(orders, targetTokenIndex, tempTradeAmounts);
 
             // store new values if necessary
-            uint256[3] memory newPackedOrders = _packOrders(memoryStrategy.orders);
+            uint256[3] memory newPackedOrders = _packOrders(orders);
             bool strategyUpdated = false;
             for (uint256 n = 0; n < 3; n++) {
-                if (storedStrategy.packedOrders[n] != newPackedOrders[n]) {
-                    storedStrategy.packedOrders[n] = newPackedOrders[n];
+                if (packedOrders[n] != newPackedOrders[n]) {
+                    packedOrders[n] = newPackedOrders[n];
                     strategyUpdated = true;
                 }
             }
@@ -435,12 +428,11 @@ abstract contract Strategies is Initializable {
             // emit update events if necessary
             if (strategyUpdated) {
                 emit StrategyUpdated({
-                    id: memoryStrategy.id,
-                    owner: memoryStrategy.owner,
-                    token0: memoryStrategy.pair.token0,
-                    token1: memoryStrategy.pair.token1,
-                    order0: memoryStrategy.orders[0],
-                    order1: memoryStrategy.orders[1]
+                    id: strategyId,
+                    token0: params.pool.token0,
+                    token1: params.pool.token1,
+                    order0: orders[0],
+                    order1: orders[1]
                 });
             }
 
@@ -533,11 +525,8 @@ abstract contract Strategies is Initializable {
     /**
      * @dev returns the index of a trade's target token in a strategy
      */
-    function _findTargetTokenIndex(
-        StoredStrategy memory strategy,
-        TradeTokens memory tokens
-    ) private pure returns (uint256) {
-        return tokens.target == strategy.pair.token0 ? 0 : 1;
+    function _findTargetTokenIndex(Pool memory pool, TradeTokens memory tokens) private pure returns (uint256) {
+        return tokens.target == pool.token0 ? 0 : 1;
     }
 
     /**
@@ -546,6 +535,7 @@ abstract contract Strategies is Initializable {
     function _tradeSourceAndTargetAmounts(
         TradeTokens memory tokens,
         TradeAction[] calldata tradeActions,
+        Pool memory pool,
         bool byTargetAmount
     ) internal view returns (SourceAndTargetAmounts memory) {
         SourceAndTargetAmounts memory totals = SourceAndTargetAmounts({ sourceAmount: 0, targetAmount: 0 });
@@ -553,11 +543,11 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // prepare variables
-            StoredStrategy memory storedStrategy = _strategiesStorage[tradeActions[i].strategyId];
-            Order[2] memory orders = _unpackOrders(storedStrategy.packedOrders);
+            uint256[3] storage packedOrders = _packedOrdersByStrategyId[tradeActions[i].strategyId];
+            Order[2] memory orders = _unpackOrders(packedOrders);
 
             // calculate the orders new values
-            uint256 targetTokenIndex = _findTargetTokenIndex(storedStrategy, tokens);
+            uint256 targetTokenIndex = _findTargetTokenIndex(pool, tokens);
 
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 orders[targetTokenIndex],
@@ -582,25 +572,13 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * @dev returns stored strategies matching provided strategyIds
-     */
-    function _strategiesByIds(uint256[] calldata strategyIds) internal view returns (Strategy[] memory) {
-        uint256 length = strategyIds.length;
-        Strategy[] memory result = new Strategy[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            result[i] = _strategy(strategyIds[i]);
-        }
-        return result;
-    }
-
-    /**
      * @dev returns stored strategies of a pool
      */
     function _strategiesByPool(
         Pool memory pool,
         uint256 startIndex,
-        uint256 endIndex
+        uint256 endIndex,
+        IVoucher voucher
     ) internal view returns (Strategy[] memory) {
         EnumerableSetUpgradeable.UintSet storage strategyIds = _strategiesByPoolIdStorage[pool.id];
         uint256 allLength = strategyIds.length();
@@ -620,7 +598,7 @@ abstract contract Strategies is Initializable {
         Strategy[] memory result = new Strategy[](resultLength);
         for (uint256 i = 0; i < resultLength; i++) {
             uint256 strategyId = strategyIds.at(startIndex + i);
-            result[i] = _strategy(strategyId);
+            result[i] = _strategy(strategyId, voucher, pool);
         }
 
         return result;
@@ -637,17 +615,18 @@ abstract contract Strategies is Initializable {
     /**
      @dev retuns a strategy object matching the provided id
      */
-    function _strategy(uint256 id) internal view returns (Strategy memory) {
-        StoredStrategy memory strategy = _strategiesStorage[id];
-        if (strategy.owner == address(0)) {
-            revert StrategyDoesNotExist();
-        }
+    function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
+        address _owner = voucher.ownerOf(id);
+
+        uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
+        Order[2] memory _orders = _unpackOrders(packedOrders);
+
         return
             Strategy({
                 id: id,
-                owner: strategy.owner,
-                pair: strategy.pair,
-                orders: _unpackOrders(strategy.packedOrders)
+                owner: _owner,
+                pair: Pair({ token0: pool.token0, token1: pool.token1 }),
+                orders: _orders
             });
     }
 
@@ -727,14 +706,6 @@ abstract contract Strategies is Initializable {
             }
         }
         return true;
-    }
-
-    /**
-     * updates the owner of a strategy
-     * note that this does not update the owner's voucher
-     */
-    function _updateStrategyOwner(Strategy memory strategy, address newOwner) internal {
-        _strategiesStorage[strategy.id].owner = newOwner;
     }
 
     // solhint-disable var-name-mixedcase
@@ -907,5 +878,17 @@ abstract contract Strategies is Initializable {
                 revert InvalidRate();
             }
         }
+    }
+
+    /**
+     * returns the poolId relates to a given strategyId
+     */
+    function _poolIdbyStrategyId(uint256 strategyId) internal view returns (uint256) {
+        uint256 id = __poolIdbyStrategyId[strategyId];
+        if (id == 0) {
+            revert StrategyDoesNotExist();
+        }
+
+        return id;
     }
 }

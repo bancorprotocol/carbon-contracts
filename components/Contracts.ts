@@ -2,6 +2,7 @@ import {
     CarbonController__factory,
     ERC20__factory,
     MasterVault__factory,
+    OptimizedTransparentUpgradeableProxy__factory,
     ProxyAdmin__factory,
     TestBlockNumber__factory,
     TestERC20Burnable__factory,
@@ -9,13 +10,13 @@ import {
     TestLogic__factory,
     TestMathEx__factory,
     TestOnlyProxyDelegate__factory,
+    TestPools__factory,
     TestSafeERC20Ex__factory,
     TestStrategies__factory,
     TestTime__factory,
     TestTokenLibrary__factory,
     TestUpgradeable__factory,
     TestVault__factory,
-    OptimizedTransparentUpgradeableProxy__factory,
     Voucher__factory
 } from '../typechain-types';
 import { deployOrAttach } from './ContractBuilder';
@@ -38,6 +39,7 @@ const getContracts = (signer?: Signer) => ({
     TestMathEx: deployOrAttach('TestMathEx', TestMathEx__factory, signer),
     TestSafeERC20Ex: deployOrAttach('TestSafeERC20Ex', TestSafeERC20Ex__factory, signer),
     TestStrategies: deployOrAttach('TestStrategies', TestStrategies__factory, signer),
+    TestPools: deployOrAttach('TestPools', TestPools__factory, signer),
     TestTime: deployOrAttach('TestTime', TestTime__factory, signer),
     TestTokenLibrary: deployOrAttach('TestTokenLibrary', TestTokenLibrary__factory, signer),
     TestUpgradeable: deployOrAttach('TestUpgradeable', TestUpgradeable__factory, signer),
