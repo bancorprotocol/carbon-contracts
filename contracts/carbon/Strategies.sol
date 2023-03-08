@@ -216,7 +216,8 @@ abstract contract Strategies is Initializable {
         Token indexed token0,
         Token indexed token1,
         Order order0,
-        Order order1
+        Order order1,
+        bool ordersInverted
     );
 
     /**
@@ -234,7 +235,14 @@ abstract contract Strategies is Initializable {
     /**
      * @dev emits following an update to either or both of the orders
      */
-    event StrategyUpdated(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
+    event StrategyUpdated(
+        uint256 indexed id,
+        Token indexed token0,
+        Token indexed token1,
+        Order order0,
+        Order order1,
+        bool ordersInverted
+    );
 
     /**
      * @dev emits following a user initiated trade
@@ -300,7 +308,8 @@ abstract contract Strategies is Initializable {
             token0: pool.token0,
             token1: pool.token1,
             order0: sortedOrders[0],
-            order1: sortedOrders[1]
+            order1: sortedOrders[1],
+            ordersInverted: ordersInverted
         });
 
         return id;
@@ -348,7 +357,8 @@ abstract contract Strategies is Initializable {
             token0: strategy.pair.token0,
             token1: strategy.pair.token1,
             order0: newOrders[0],
-            order1: newOrders[1]
+            order1: newOrders[1],
+            ordersInverted: ordersInverted
         });
     }
 
@@ -434,7 +444,8 @@ abstract contract Strategies is Initializable {
                     token0: params.pool.token0,
                     token1: params.pool.token1,
                     order0: orders[0],
-                    order1: orders[1]
+                    order1: orders[1],
+                    ordersInverted: ordersInverted
                 });
             }
 
