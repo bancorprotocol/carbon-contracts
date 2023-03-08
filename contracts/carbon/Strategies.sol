@@ -812,11 +812,11 @@ abstract contract Strategies is Initializable {
     }
 
     function b2u(bool b) private pure returns (uint256 u) {
-        assembly { u := b }
+        u = b ? 1 : 0;
     }
 
     function u2b(uint256 u) private pure returns (bool b) {
-        assembly { b := u }
+        b = u == 1;
     }
 
     /**
