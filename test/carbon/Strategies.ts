@@ -287,7 +287,8 @@ describe('Strategy', () => {
                             z: o.z.toString(),
                             A: o.A.toString(),
                             B: o.B.toString()
-                        }))
+                        })),
+                        ordersInverted: strategy.ordersInverted
                     };
 
                     // prepare the expected result object
@@ -303,7 +304,8 @@ describe('Strategy', () => {
                         orders: [
                             { y: amounts[0].toString(), z: z.toString(), A: A.toString(), B: B.toString() },
                             { y: amounts[1].toString(), z: z.toString(), A: A.toString(), B: B.toString() }
-                        ]
+                        ],
+                        ordersInverted: sortedTokens[0].address === _token1.address
                     };
 
                     // assert
@@ -344,7 +346,8 @@ describe('Strategy', () => {
                     sortedTokens[0].address,
                     sortedTokens[1].address,
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
-                    [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)]
+                    [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
+                    sortedTokens[0].address === token1.address
                 );
         });
 
@@ -498,6 +501,24 @@ describe('Strategy', () => {
                 }
             }
         });
+
+        describe('orders inversion flag is set correctly', () => {
+            const _permutations = [
+                { token0: TokenSymbol.TKN0, token1: TokenSymbol.TKN1 },
+                { token0: TokenSymbol.TKN1, token1: TokenSymbol.TKN0 }
+            ];
+
+            for (const { token0, token1 } of _permutations) {
+                it(`${token0}, ${token1}`, async () => {
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    const inverted = _token0.address > _token1.address;
+                    await createStrategy({ token0: _token0, token1: _token1 });
+                    const strategy = await carbonController.strategy(1);
+                    expect(strategy.ordersInverted).to.eq(inverted);
+                });
+            }
+        });
     });
 
     describe('strategy updating', async () => {
@@ -624,7 +645,8 @@ describe('Strategy', () => {
                             z: o.z.toString(),
                             A: o.A.toString(),
                             B: o.B.toString()
-                        }))
+                        })),
+                        ordersInverted: strategy.ordersInverted
                     };
 
                     // prepare the expected result object
@@ -645,7 +667,8 @@ describe('Strategy', () => {
                                 A: A.add(order1Delta).toString(),
                                 B: B.add(order1Delta).toString()
                             }
-                        ]
+                        ],
+                        ordersInverted: false
                     };
 
                     // assert
@@ -713,7 +736,8 @@ describe('Strategy', () => {
                             z: o.z,
                             A: o.A,
                             B: o.B
-                        }))
+                        })),
+                        ordersInverted: strategy.ordersInverted
                     };
 
                     // prepare the expected result object
@@ -721,7 +745,8 @@ describe('Strategy', () => {
                         id: '1',
                         owner: owner.address,
                         pair: { token0: sortedTokens[0].address, token1: sortedTokens[1].address },
-                        orders: [newOrders[0], newOrders[1]]
+                        orders: [newOrders[0], newOrders[1]],
+                        ordersInverted: false
                     };
 
                     // assert
@@ -850,7 +875,8 @@ describe('Strategy', () => {
                     sortedTokens[0].address,
                     sortedTokens[1].address,
                     expectedOrder,
-                    expectedOrder
+                    expectedOrder,
+                    sortedTokens[0].address === token1.address
                 );
         });
 
