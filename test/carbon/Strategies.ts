@@ -484,6 +484,24 @@ describe('Strategy', () => {
                 }
             }
         });
+
+        describe('tokens sorting persist', () => {
+            const _permutations = [
+                { token0: TokenSymbol.TKN0, token1: TokenSymbol.TKN1 },
+                { token0: TokenSymbol.TKN1, token1: TokenSymbol.TKN0 }
+            ];
+
+            for (const { token0, token1 } of _permutations) {
+                it(`${token0}, ${token1}`, async () => {
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    await createStrategy({ token0: _token0, token1: _token1 });
+                    const strategy = await carbonController.strategy(1);
+                    expect(strategy.pair.token0).to.eq(_token0.address);
+                    expect(strategy.pair.token1).to.eq(_token1.address);
+                });
+            }
+        });
     });
 
     describe('strategy updating', async () => {
