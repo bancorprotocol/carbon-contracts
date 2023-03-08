@@ -119,7 +119,6 @@ struct Strategy {
     address owner;
     Pair pair;
     Order[2] orders;
-    bool ordersInverted;
 }
 
 struct TradeAction {
@@ -216,8 +215,7 @@ abstract contract Strategies is Initializable {
         Token indexed token0,
         Token indexed token1,
         Order order0,
-        Order order1,
-        bool ordersInverted
+        Order order1
     );
 
     /**
@@ -235,14 +233,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev emits following an update to either or both of the orders
      */
-    event StrategyUpdated(
-        uint256 indexed id,
-        Token indexed token0,
-        Token indexed token1,
-        Order order0,
-        Order order1,
-        bool ordersInverted
-    );
+    event StrategyUpdated(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
 
     /**
      * @dev emits following a user initiated trade
@@ -286,30 +277,32 @@ abstract contract Strategies is Initializable {
         address owner,
         uint256 value
     ) internal returns (uint256) {
-        // sort orders
-        bool ordersInverted = pair.token0 == pool.token1;
-        Order[2] memory sortedOrders = ordersInverted ? [orders[1], orders[0]] : orders;
+        // transfer funds
+        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pair.token0, owner, orders[0].y, value);
+        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pair.token1, owner, orders[1].y, value);
 
-        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token0, owner, sortedOrders[0].y, value);
-        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token1, owner, sortedOrders[1].y, value);
-
+        // store id
         _lastStrategyId.increment();
         uint256 id = _lastStrategyId.current();
-
         _strategiesByPoolIdStorage[pool.id].add(id);
-        _packedOrdersByStrategyId[id] = _packOrders(sortedOrders, ordersInverted);
         __poolIdbyStrategyId[id] = pool.id;
 
+        // store orders
+        bool ordersInverted = pair.token0 == pool.token1;
+        Order[2] memory sortedOrders = ordersInverted ? [orders[1], orders[0]] : orders;
+        _packedOrdersByStrategyId[id] = _packOrders(sortedOrders, ordersInverted);
+
+        // mint voucher
         voucher.mint(owner, id);
 
+        // emit event
         emit StrategyCreated({
             id: id,
             owner: owner,
-            token0: pool.token0,
-            token1: pool.token1,
-            order0: sortedOrders[0],
-            order1: sortedOrders[1],
-            ordersInverted: ordersInverted
+            token0: pair.token0,
+            token1: pair.token1,
+            order0: orders[0],
+            order1: orders[1]
         });
 
         return id;
@@ -328,8 +321,14 @@ abstract contract Strategies is Initializable {
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategy.id];
         (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
+        // handle sorting
+        Order[2] memory sortedNewOrders = ordersInverted ? [newOrders[1], newOrders[0]] : newOrders;
+        Token[2] memory sortedTokens = ordersInverted
+            ? [strategy.pair.token1, strategy.pair.token0]
+            : [strategy.pair.token0, strategy.pair.token1];
+
         // store new values if necessary
-        uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
+        uint256[3] memory newPackedOrders = _packOrders(sortedNewOrders, ordersInverted);
         for (uint256 n = 0; n < 3; n++) {
             if (packedOrders[n] != newPackedOrders[n]) {
                 packedOrders[n] = newPackedOrders[n];
@@ -338,15 +337,14 @@ abstract contract Strategies is Initializable {
 
         // deposit and withdraw
         for (uint256 i = 0; i < 2; i++) {
-            Token token = i == 0 ? strategy.pair.token0 : strategy.pair.token1;
-
-            if (newOrders[i].y < orders[i].y) {
+            Token token = sortedTokens[i];
+            if (sortedNewOrders[i].y < orders[i].y) {
                 // liquidity decreased - withdraw the difference
-                uint128 delta = orders[i].y - newOrders[i].y;
+                uint128 delta = orders[i].y - sortedNewOrders[i].y;
                 vault.withdrawFunds(token, payable(strategy.owner), delta);
-            } else if (newOrders[i].y > orders[i].y) {
+            } else if (sortedNewOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
-                uint128 delta = newOrders[i].y - orders[i].y;
+                uint128 delta = sortedNewOrders[i].y - orders[i].y;
                 _depositToMasterVaultAndRefundExcessNativeToken(vault, token, strategy.owner, delta, value);
             }
         }
@@ -357,8 +355,7 @@ abstract contract Strategies is Initializable {
             token0: strategy.pair.token0,
             token1: strategy.pair.token1,
             order0: newOrders[0],
-            order1: newOrders[1],
-            ordersInverted: ordersInverted
+            order1: newOrders[1]
         });
     }
 
@@ -444,8 +441,7 @@ abstract contract Strategies is Initializable {
                     token0: params.pool.token0,
                     token1: params.pool.token1,
                     order0: orders[0],
-                    order1: orders[1],
-                    ordersInverted: ordersInverted
+                    order1: orders[1]
                 });
             }
 
@@ -630,18 +626,14 @@ abstract contract Strategies is Initializable {
      */
     function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
         address _owner = voucher.ownerOf(id);
-
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
         (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
+        Order[2] memory sortedOrders = ordersInverted ? [_orders[1], _orders[0]] : _orders;
+        Pair memory sortedPair = ordersInverted
+            ? Pair({ token0: pool.token1, token1: pool.token0 })
+            : Pair({ token0: pool.token0, token1: pool.token1 });
 
-        return
-            Strategy({
-                id: id,
-                owner: _owner,
-                pair: Pair({ token0: pool.token0, token1: pool.token1 }),
-                orders: _orders,
-                ordersInverted: ordersInverted
-            });
+        return Strategy({ id: id, owner: _owner, pair: sortedPair, orders: sortedOrders });
     }
 
     /**
@@ -793,15 +785,15 @@ abstract contract Strategies is Initializable {
     /**
      * @dev pack 2 orders into a 3 slot uint256 data structure
      */
-    function _packOrders(Order[2] memory orders, bool ordersInverted) private pure returns (uint256[3] memory values) {
-        values = [
+    function _packOrders(Order[2] memory orders, bool ordersInverted) private pure returns (uint256[3] memory) {
+        return [
             uint256((uint256(orders[0].y) << 0) | (uint256(orders[1].y) << 128)),
             uint256((uint256(orders[0].z) << 0) | (uint256(orders[0].A) << 128) | (uint256(orders[0].B) << 192)),
             uint256(
                 (uint256(orders[1].z) << 0) |
                     (uint256(orders[1].A) << 128) |
                     (uint256(orders[1].B) << 192) |
-                    (booleanToNumber(ordersInverted) << 255)
+                    (_booleanToNumber(ordersInverted) << 255)
             )
         ];
     }
@@ -826,7 +818,7 @@ abstract contract Strategies is Initializable {
                 B: uint64((values[2] << 1) >> 193)
             })
         ];
-        ordersInverted = numberToBoolean(values[2] >> 255);
+        ordersInverted = _numberToBoolean(values[2] >> 255);
     }
 
     /**
@@ -917,14 +909,14 @@ abstract contract Strategies is Initializable {
     /**
      * returns a number representation for a boolean
      */
-    function booleanToNumber(bool b) private pure returns (uint256) {
+    function _booleanToNumber(bool b) private pure returns (uint256) {
         return b ? 1 : 0;
     }
 
     /**
      * returns a boolean representation for a number
      */
-    function numberToBoolean(uint256 u) private pure returns (bool) {
-        return u == 1;
+    function _numberToBoolean(uint256 u) private pure returns (bool) {
+        return u != 0;
     }
 }
