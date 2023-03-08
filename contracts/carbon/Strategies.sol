@@ -119,6 +119,7 @@ struct Strategy {
     address owner;
     Pair pair;
     Order[2] orders;
+    uint256 index;
 }
 
 struct TradeAction {
@@ -620,14 +621,15 @@ abstract contract Strategies is Initializable {
         address _owner = voucher.ownerOf(id);
 
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
-        (Order[2] memory _orders, ) = _unpackOrders(packedOrders);
+        (Order[2] memory _orders, uint256 index) = _unpackOrders(packedOrders);
 
         return
             Strategy({
                 id: id,
                 owner: _owner,
                 pair: Pair({ token0: pool.token0, token1: pool.token1 }),
-                orders: _orders
+                orders: _orders,
+                index: index
             });
     }
 
