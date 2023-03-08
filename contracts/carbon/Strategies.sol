@@ -119,7 +119,7 @@ struct Strategy {
     address owner;
     Pair pair;
     Order[2] orders;
-    bool flipped;
+    bool ordersInverted;
 }
 
 struct TradeAction {
@@ -279,8 +279,8 @@ abstract contract Strategies is Initializable {
         uint256 value
     ) internal returns (uint256) {
         // sort orders
-        bool flipped = pair.token0 == pool.token1;
-        Order[2] memory sortedOrders = flipped ? [orders[1], orders[0]] : orders;
+        bool ordersInverted = pair.token0 == pool.token1;
+        Order[2] memory sortedOrders = ordersInverted ? [orders[1], orders[0]] : orders;
 
         _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token0, owner, sortedOrders[0].y, value);
         _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token1, owner, sortedOrders[1].y, value);
@@ -289,7 +289,7 @@ abstract contract Strategies is Initializable {
         uint256 id = _lastStrategyId.current();
 
         _strategiesByPoolIdStorage[pool.id].add(id);
-        _packedOrdersByStrategyId[id] = _packOrders(sortedOrders, flipped);
+        _packedOrdersByStrategyId[id] = _packOrders(sortedOrders, ordersInverted);
         __poolIdbyStrategyId[id] = pool.id;
 
         voucher.mint(owner, id);
@@ -317,10 +317,10 @@ abstract contract Strategies is Initializable {
     ) internal {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategy.id];
-        (Order[2] memory orders, bool flipped) = _unpackOrders(packedOrders);
+        (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
         // store new values if necessary
-        uint256[3] memory newPackedOrders = _packOrders(newOrders, flipped);
+        uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
         for (uint256 n = 0; n < 3; n++) {
             if (packedOrders[n] != newPackedOrders[n]) {
                 packedOrders[n] = newPackedOrders[n];
@@ -399,7 +399,7 @@ abstract contract Strategies is Initializable {
             // prepare variables
             uint256 strategyId = params.tradeActions[i].strategyId;
             uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
-            (Order[2] memory orders, bool flipped) = _unpackOrders(packedOrders);
+            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
             // make sure strategyIds match the provided source/target tokens
             if (_poolIdbyStrategyId(strategyId) != params.pool.id) {
@@ -418,7 +418,7 @@ abstract contract Strategies is Initializable {
             _updateOrders(orders, targetTokenIndex, tempTradeAmounts);
 
             // store new values if necessary
-            uint256[3] memory newPackedOrders = _packOrders(orders, flipped);
+            uint256[3] memory newPackedOrders = _packOrders(orders, ordersInverted);
             bool strategyUpdated = false;
             for (uint256 n = 0; n < 3; n++) {
                 if (packedOrders[n] != newPackedOrders[n]) {
@@ -621,7 +621,7 @@ abstract contract Strategies is Initializable {
         address _owner = voucher.ownerOf(id);
 
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
-        (Order[2] memory _orders, bool flipped) = _unpackOrders(packedOrders);
+        (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
         return
             Strategy({
@@ -629,7 +629,7 @@ abstract contract Strategies is Initializable {
                 owner: _owner,
                 pair: Pair({ token0: pool.token0, token1: pool.token1 }),
                 orders: _orders,
-                flipped: flipped
+                ordersInverted: ordersInverted
             });
     }
 
@@ -782,18 +782,25 @@ abstract contract Strategies is Initializable {
     /**
      * @dev pack 2 orders into a 3 slot uint256 data structure
      */
-    function _packOrders(Order[2] memory orders, bool flipped) private pure returns (uint256[3] memory values) {
+    function _packOrders(Order[2] memory orders, bool ordersInverted) private pure returns (uint256[3] memory values) {
         values = [
             uint256((uint256(orders[0].y) << 0) | (uint256(orders[1].y) << 128)),
             uint256((uint256(orders[0].z) << 0) | (uint256(orders[0].A) << 128) | (uint256(orders[0].B) << 192)),
-            uint256((uint256(orders[1].z) << 0) | (uint256(orders[1].A) << 128) | (uint256(orders[1].B) << 192) | (b2u(flipped) << 255))
+            uint256(
+                (uint256(orders[1].z) << 0) |
+                    (uint256(orders[1].A) << 128) |
+                    (uint256(orders[1].B) << 192) |
+                    (booleanToNumber(ordersInverted) << 255)
+            )
         ];
     }
 
     /**
      * @dev unpack 2 stored orders into an array of Order types
      */
-    function _unpackOrders(uint256[3] memory values) private pure returns (Order[2] memory orders, bool flipped) {
+    function _unpackOrders(
+        uint256[3] memory values
+    ) private pure returns (Order[2] memory orders, bool ordersInverted) {
         orders = [
             Order({
                 y: uint128(values[0] >> 0),
@@ -808,15 +815,7 @@ abstract contract Strategies is Initializable {
                 B: uint64((values[2] << 1) >> 193)
             })
         ];
-        flipped = u2b(values[2] >> 255);
-    }
-
-    function b2u(bool b) private pure returns (uint256 u) {
-        u = b ? 1 : 0;
-    }
-
-    function u2b(uint256 u) private pure returns (bool b) {
-        b = u == 1;
+        ordersInverted = numberToBoolean(values[2] >> 255);
     }
 
     /**
@@ -902,5 +901,19 @@ abstract contract Strategies is Initializable {
         }
 
         return id;
+    }
+
+    /**
+     * returns a number representation for a boolean
+     */
+    function booleanToNumber(bool b) private pure returns (uint256) {
+        return b ? 1 : 0;
+    }
+
+    /**
+     * returns a boolean representation for a number
+     */
+    function numberToBoolean(uint256 u) private pure returns (bool) {
+        return u == 1;
     }
 }
