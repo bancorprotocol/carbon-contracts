@@ -925,6 +925,6 @@ abstract contract Strategies is Initializable {
      * returns a boolean representation for a number
      */
     function numberToBoolean(uint256 u) private pure returns (bool) {
-        return u == 1;
+        return u != 0;
     }
 }
