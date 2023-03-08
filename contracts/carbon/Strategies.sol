@@ -622,12 +622,15 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     @dev retuns a strategy object matching the provided id
+     @dev retuns a strategy object matching the provided id.
      */
     function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
+        // fetch data
         address _owner = voucher.ownerOf(id);
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
         (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
+
+        // handle sorting
         Order[2] memory sortedOrders = ordersInverted ? [_orders[1], _orders[0]] : _orders;
         Pair memory sortedPair = ordersInverted
             ? Pair({ token0: pool.token1, token1: pool.token0 })
