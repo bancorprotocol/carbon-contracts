@@ -280,7 +280,7 @@ abstract contract Strategies is Initializable {
     ) internal returns (uint256) {
         // sort orders
         bool flipped = pair.token0 == pool.token1;
-        Order[2] memory sortedOrders = flipped ? [orders[1], orders[0]] : [orders[0], orders[1]];
+        Order[2] memory sortedOrders = flipped ? [orders[1], orders[0]] : orders;
 
         _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token0, owner, sortedOrders[0].y, value);
         _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pool.token1, owner, sortedOrders[1].y, value);
