@@ -74,10 +74,6 @@ const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: false, inverseOrders: false }
 ];
 
-const sortTokens = (token0: TestERC20Burnable, token1: TestERC20Burnable): TestERC20Burnable[] => {
-    return token0.address < token1.address ? [token0, token1] : [token1, token0];
-};
-
 describe('Trading', () => {
     let deployer: SignerWithAddress;
     let marketMaker: SignerWithAddress;
@@ -819,11 +815,9 @@ describe('Trading', () => {
                     if (!event.args) {
                         expect.fail('Event contains no args');
                     }
-                    const sortedTokens = sortTokens(tokens[strategy.orders[0].token], tokens[strategy.orders[1].token]);
                     for (let x = 0; x < 2; x++) {
                         const expectedOrder = strategy.orders[x].expected;
-                        const orderIndex = tokens[strategy.orders[x].token].address === sortedTokens[0].address ? 0 : 1;
-                        const emittedOrder = decodeOrder(event.args[`order${orderIndex}`]);
+                        const emittedOrder = decodeOrder(event.args[`order${x}`]);
                         expect(emittedOrder.liquidity.toFixed()).to.eq(expectedOrder.liquidity);
                         expect(toFixed(emittedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);

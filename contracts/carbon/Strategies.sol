@@ -289,8 +289,7 @@ abstract contract Strategies is Initializable {
 
         // store orders
         bool ordersInverted = pair.token0 == pool.token1;
-        Order[2] memory sortedOrders = ordersInverted ? [orders[1], orders[0]] : orders;
-        _packedOrdersByStrategyId[id] = _packOrders(sortedOrders, ordersInverted);
+        _packedOrdersByStrategyId[id] = _packOrders(orders, ordersInverted);
 
         // mint voucher
         voucher.mint(owner, id);
@@ -321,14 +320,8 @@ abstract contract Strategies is Initializable {
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategy.id];
         (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
-        // handle sorting
-        Order[2] memory sortedNewOrders = ordersInverted ? [newOrders[1], newOrders[0]] : newOrders;
-        Token[2] memory sortedTokens = ordersInverted
-            ? [strategy.pair.token1, strategy.pair.token0]
-            : [strategy.pair.token0, strategy.pair.token1];
-
         // store new values if necessary
-        uint256[3] memory newPackedOrders = _packOrders(sortedNewOrders, ordersInverted);
+        uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
         for (uint256 n = 0; n < 3; n++) {
             if (packedOrders[n] != newPackedOrders[n]) {
                 packedOrders[n] = newPackedOrders[n];
@@ -337,14 +330,14 @@ abstract contract Strategies is Initializable {
 
         // deposit and withdraw
         for (uint256 i = 0; i < 2; i++) {
-            Token token = sortedTokens[i];
-            if (sortedNewOrders[i].y < orders[i].y) {
+            Token token = i == 0 ? strategy.pair.token0 : strategy.pair.token1;
+            if (newOrders[i].y < orders[i].y) {
                 // liquidity decreased - withdraw the difference
-                uint128 delta = orders[i].y - sortedNewOrders[i].y;
+                uint128 delta = orders[i].y - newOrders[i].y;
                 vault.withdrawFunds(token, payable(strategy.owner), delta);
-            } else if (sortedNewOrders[i].y > orders[i].y) {
+            } else if (newOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
-                uint128 delta = sortedNewOrders[i].y - orders[i].y;
+                uint128 delta = newOrders[i].y - orders[i].y;
                 _depositToMasterVaultAndRefundExcessNativeToken(vault, token, strategy.owner, delta, value);
             }
         }
@@ -414,7 +407,7 @@ abstract contract Strategies is Initializable {
             }
 
             // calculate the orders new values
-            uint256 targetTokenIndex = _findTargetTokenIndex(params.pool, params.tokens);
+            uint256 targetTokenIndex = _findTargetTokenIndex(params.pool, params.tokens, ordersInverted);
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 orders[targetTokenIndex],
                 params.tradeActions[i].amount,
@@ -534,8 +527,16 @@ abstract contract Strategies is Initializable {
     /**
      * @dev returns the index of a trade's target token in a strategy
      */
-    function _findTargetTokenIndex(Pool memory pool, TradeTokens memory tokens) private pure returns (uint256) {
-        return tokens.target == pool.token0 ? 0 : 1;
+    function _findTargetTokenIndex(
+        Pool memory pool,
+        TradeTokens memory tokens,
+        bool ordersInverted
+    ) private pure returns (uint256) {
+        uint256 index = tokens.target == pool.token0 ? 0 : 1;
+        if (ordersInverted) {
+            index = 1 - index;
+        }
+        return index;
     }
 
     /**
@@ -553,10 +554,10 @@ abstract contract Strategies is Initializable {
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // prepare variables
             uint256[3] storage packedOrders = _packedOrdersByStrategyId[tradeActions[i].strategyId];
-            (Order[2] memory orders, ) = _unpackOrders(packedOrders);
+            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
             // calculate the orders new values
-            uint256 targetTokenIndex = _findTargetTokenIndex(pool, tokens);
+            uint256 targetTokenIndex = _findTargetTokenIndex(pool, tokens, ordersInverted);
 
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 orders[targetTokenIndex],
@@ -631,12 +632,11 @@ abstract contract Strategies is Initializable {
         (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
         // handle sorting
-        Order[2] memory sortedOrders = ordersInverted ? [_orders[1], _orders[0]] : _orders;
         Pair memory sortedPair = ordersInverted
             ? Pair({ token0: pool.token1, token1: pool.token0 })
             : Pair({ token0: pool.token0, token1: pool.token1 });
 
-        return Strategy({ id: id, owner: _owner, pair: sortedPair, orders: sortedOrders });
+        return Strategy({ id: id, owner: _owner, pair: sortedPair, orders: _orders });
     }
 
     /**
