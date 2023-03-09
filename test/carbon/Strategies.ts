@@ -829,7 +829,7 @@ describe('Strategy', () => {
                     it(`reverts for a mutation in ${key}`, async () => {
                         await createStrategy();
                         const order: any = generateTestOrder();
-                        order[key] = BigNumber.from(value);
+                        order[key] = BigNumber.from(value).add(order[key]);
                         const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order]);
                         await expect(tx).to.have.been.revertedWithError('OutDated');
                     });

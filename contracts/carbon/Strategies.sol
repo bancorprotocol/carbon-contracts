@@ -143,6 +143,7 @@ abstract contract Strategies is Initializable {
     error InsufficientLiquidity();
     error TokensMismatch();
     error StrategyDoesNotExist();
+    error OutDated();
 
     struct StoredStrategy {
         address owner;
@@ -311,14 +312,22 @@ abstract contract Strategies is Initializable {
      * @dev updates an existing strategy
      */
     function _updateStrategy(
+        uint256 strategyId,
+        Pool memory pool,
         IMasterVault vault,
-        Strategy memory strategy,
+        Order[2] calldata currentOrders,
         Order[2] calldata newOrders,
-        uint256 value
+        uint256 value,
+        address owner
     ) internal {
         // prepare storage variable
-        uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategy.id];
+        uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
         (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
+
+        // revert if the strategy mutated since this tx was sent
+        if (!_equalStrategyOrders(currentOrders, orders)) {
+            revert OutDated();
+        }
 
         // store new values if necessary
         uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
@@ -329,24 +338,25 @@ abstract contract Strategies is Initializable {
         }
 
         // deposit and withdraw
+        Pair memory sortedPair = _sortedPair(pool, ordersInverted);
         for (uint256 i = 0; i < 2; i++) {
-            Token token = i == 0 ? strategy.pair.token0 : strategy.pair.token1;
+            Token token = i == 0 ? sortedPair.token0 : sortedPair.token1;
             if (newOrders[i].y < orders[i].y) {
                 // liquidity decreased - withdraw the difference
                 uint128 delta = orders[i].y - newOrders[i].y;
-                vault.withdrawFunds(token, payable(strategy.owner), delta);
+                vault.withdrawFunds(token, payable(owner), delta);
             } else if (newOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - orders[i].y;
-                _depositToMasterVaultAndRefundExcessNativeToken(vault, token, strategy.owner, delta, value);
+                _depositToMasterVaultAndRefundExcessNativeToken(vault, token, owner, delta, value);
             }
         }
 
         // emit event
         emit StrategyUpdated({
-            id: strategy.id,
-            token0: strategy.pair.token0,
-            token1: strategy.pair.token1,
+            id: strategyId,
+            token0: sortedPair.token0,
+            token1: sortedPair.token1,
             order0: newOrders[0],
             order1: newOrders[1]
         });
@@ -632,9 +642,7 @@ abstract contract Strategies is Initializable {
         (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
         // handle sorting
-        Pair memory sortedPair = ordersInverted
-            ? Pair({ token0: pool.token1, token1: pool.token0 })
-            : Pair({ token0: pool.token0, token1: pool.token1 });
+        Pair memory sortedPair = _sortedPair(pool, ordersInverted);
 
         return Strategy({ id: id, owner: _owner, pair: sortedPair, orders: _orders });
     }
@@ -921,5 +929,15 @@ abstract contract Strategies is Initializable {
      */
     function _numberToBoolean(uint256 u) private pure returns (bool) {
         return u != 0;
+    }
+
+    /**
+     * retuns a Pair sorted accordingly to a strategy orders inversion
+     */
+    function _sortedPair(Pool memory pool, bool ordersInverted) private pure returns (Pair memory) {
+        return
+            ordersInverted
+                ? Pair({ token0: pool.token1, token1: pool.token0 })
+                : Pair({ token0: pool.token0, token1: pool.token1 });
     }
 }
