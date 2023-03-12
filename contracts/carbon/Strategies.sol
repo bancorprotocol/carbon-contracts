@@ -922,6 +922,9 @@ abstract contract Strategies is Initializable {
                 : Pair({ token0: pool.token0, token1: pool.token1 });
     }
 
+    /**
+     * sends erc20 or native token to the provided target
+     */
     function _withdrawFunds(Token token, address payable target, uint256 amount) private {
         if (amount == 0) {
             return;
