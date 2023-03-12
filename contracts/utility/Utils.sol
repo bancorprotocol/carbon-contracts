@@ -5,7 +5,6 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { PPM_RESOLUTION } from "./Constants.sol";
 import { Token } from "../token/Token.sol";
-import { IMasterVault } from "../vaults/interfaces/IMasterVault.sol";
 import { TokenLibrary } from "../token/TokenLibrary.sol";
 
 error AccessDenied();

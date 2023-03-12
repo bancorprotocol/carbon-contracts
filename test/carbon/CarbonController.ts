@@ -1,4 +1,4 @@
-import Contracts, { CarbonController, MasterVault, Voucher } from '../../components/Contracts';
+import Contracts, { CarbonController, Voucher } from '../../components/Contracts';
 import { ControllerType, DEFAULT_TRADING_FEE_PPM, ZERO_ADDRESS } from '../../utils/Constants';
 import { Roles } from '../helpers/AccessControl';
 import { createProxy, createSystem } from '../helpers/Factory';
@@ -13,7 +13,6 @@ describe('CarbonController', () => {
     let emergencyStopper: SignerWithAddress;
     let carbonController: CarbonController;
     let voucher: Voucher;
-    let masterVault: MasterVault;
 
     shouldHaveGap('CarbonController');
 
@@ -22,16 +21,10 @@ describe('CarbonController', () => {
     });
 
     beforeEach(async () => {
-        ({ carbonController, voucher, masterVault } = await createSystem());
+        ({ carbonController, voucher } = await createSystem());
     });
 
     describe('construction', () => {
-        it('should revert when attempting to create with an invalid master vault contract', async () => {
-            await expect(
-                Contracts.CarbonController.deploy(ZERO_ADDRESS, voucher.address, ZERO_ADDRESS)
-            ).to.be.revertedWithError('InvalidAddress');
-        });
-
         it('should be properly initialized', async () => {
             expect(await carbonController.version()).to.equal(2);
 
@@ -77,7 +70,7 @@ describe('CarbonController', () => {
         it('reverts when an unknown delegator tries creating a pool', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
-                ctorArgs: [masterVault.address, voucher.address, voucher.address]
+                ctorArgs: [voucher.address, voucher.address]
             });
             const tx = carbonController.createPool(ZERO_ADDRESS, ZERO_ADDRESS);
             await expect(tx).to.have.been.revertedWithError('UnknownDelegator');
@@ -86,7 +79,7 @@ describe('CarbonController', () => {
         it('reverts when an unknown delegator tries creating a strategy', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
-                ctorArgs: [masterVault.address, voucher.address, voucher.address]
+                ctorArgs: [voucher.address, voucher.address]
             });
             const order = { y: 0, z: 0, A: 0, B: 0 };
             const tx = carbonController.createStrategy(ZERO_ADDRESS, ZERO_ADDRESS, [order, order]);
@@ -96,7 +89,7 @@ describe('CarbonController', () => {
         it('reverts when an unknown delegator tries updating a strategy', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
-                ctorArgs: [masterVault.address, voucher.address, voucher.address]
+                ctorArgs: [voucher.address, voucher.address]
             });
             const order = { y: 0, z: 0, A: 0, B: 0 };
             const tx = carbonController.updateStrategy(1, [order, order], [order, order]);
@@ -106,7 +99,7 @@ describe('CarbonController', () => {
         it('reverts when an unknown delegator tries deleting a strategy', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
-                ctorArgs: [masterVault.address, voucher.address, voucher.address]
+                ctorArgs: [voucher.address, voucher.address]
             });
             const tx = carbonController.deleteStrategy(1);
             await expect(tx).to.have.been.revertedWithError('UnknownDelegator');
@@ -115,7 +108,7 @@ describe('CarbonController', () => {
         it('reverts when an unknown delegator tries trading by source mount', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
-                ctorArgs: [masterVault.address, voucher.address, voucher.address]
+                ctorArgs: [voucher.address, voucher.address]
             });
             const tx = carbonController.tradeBySourceAmount(
                 ZERO_ADDRESS,
@@ -130,7 +123,7 @@ describe('CarbonController', () => {
         it('reverts when an unknown delegator tries trading by target mount', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
-                ctorArgs: [masterVault.address, voucher.address, voucher.address]
+                ctorArgs: [voucher.address, voucher.address]
             });
             const tx = carbonController.tradeByTargetAmount(
                 ZERO_ADDRESS,

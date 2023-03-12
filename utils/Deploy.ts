@@ -1,5 +1,5 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, IVersioned, MasterVault, ProxyAdmin, Voucher } from '../components/Contracts';
+import { CarbonController, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
@@ -38,14 +38,12 @@ interface EnvOptions {
 const { TEST_FORK: isTestFork }: EnvOptions = process.env as any as EnvOptions;
 
 enum NewInstanceName {
-    MasterVault = 'MasterVault',
     CarbonController = 'CarbonController',
     ProxyAdmin = 'ProxyAdmin',
     Voucher = 'Voucher'
 }
 
-export const LegacyInstanceName = {
-};
+export const LegacyInstanceName = {};
 
 export const InstanceName = {
     ...LegacyInstanceName,
@@ -59,7 +57,6 @@ const deployed = <F extends Contract>(name: InstanceName) => ({
 });
 
 const DeployedNewContracts = {
-    MasterVault: deployed<MasterVault>(InstanceName.MasterVault),
     CarbonController: deployed<CarbonController>(InstanceName.CarbonController),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
     Voucher: deployed<Voucher>(InstanceName.Voucher)
@@ -440,14 +437,14 @@ export const initializeProxy = async (options: InitializeProxyOptions) => {
 
 interface RolesOptions {
     name: InstanceName;
-    id: typeof RoleIds[number];
+    id: (typeof RoleIds)[number];
     member: string;
     from: string;
 }
 
 interface RenounceRoleOptions {
     name: InstanceName;
-    id: typeof RoleIds[number];
+    id: (typeof RoleIds)[number];
     from: string;
 }
 

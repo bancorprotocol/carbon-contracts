@@ -1,13 +1,6 @@
 import { ContractBuilder } from '../../components/ContractBuilder';
-import Contracts, {
-    MasterVault,
-    ProxyAdmin,
-    TestERC20Burnable,
-    TestERC20Token,
-    Voucher
-} from '../../components/Contracts';
+import Contracts, { ProxyAdmin, TestERC20Burnable, TestERC20Token, Voucher } from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
-import { Roles } from '../../utils/Roles';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { Addressable, toWei } from '../../utils/Types';
 import { toAddress } from './Utils';
@@ -81,33 +74,28 @@ export const upgradeProxy = async <F extends ContractFactory>(
     return factory.attach(proxy.address);
 };
 
-export const createCarbonController = async (masterVault: string | MasterVault, voucher: string | Voucher) => {
+export const createCarbonController = async (voucher: string | Voucher) => {
     const carbonController = await createProxy(Contracts.CarbonController, {
         skipInitialization: false,
-        ctorArgs: [toAddress(masterVault), toAddress(voucher), ZERO_ADDRESS]
+        ctorArgs: [toAddress(voucher), ZERO_ADDRESS]
     });
 
     const upgradedCarbonController = await upgradeProxy(carbonController, Contracts.CarbonController, {
         skipInitialization: false,
-        ctorArgs: [toAddress(masterVault), toAddress(voucher), carbonController.address]
+        ctorArgs: [toAddress(voucher), carbonController.address]
     });
 
     return upgradedCarbonController;
 };
 
 const createSystemFixture = async () => {
-    const masterVault = await createProxy(Contracts.MasterVault);
-
     const voucher = await Contracts.Voucher.deploy(true, 'ipfs://xxx', '');
 
-    const carbonController = await createCarbonController(masterVault, voucher);
+    const carbonController = await createCarbonController(voucher);
 
     await voucher.setCarbonController(carbonController.address);
 
-    await masterVault.grantRole(Roles.Vault.ROLE_ASSET_MANAGER, carbonController.address);
-
     return {
-        masterVault,
         carbonController,
         voucher
     };

@@ -1,4 +1,4 @@
-import { CarbonController, MasterVault, TestERC20Burnable } from '../../../components/Contracts';
+import { CarbonController, TestERC20Burnable } from '../../../components/Contracts';
 import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
 import { DEFAULT_TRADING_FEE_PPM, MAX_UINT128, PPM_RESOLUTION, ZERO_ADDRESS } from '../../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
@@ -81,7 +81,6 @@ describe('Trading', () => {
     let carbonController: CarbonController;
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
-    let masterVault: MasterVault;
     let tokens: Tokens = {};
 
     before(async () => {
@@ -89,7 +88,7 @@ describe('Trading', () => {
     });
 
     beforeEach(async () => {
-        ({ carbonController, masterVault } = await createSystem());
+        ({ carbonController } = await createSystem());
 
         tokens = {};
         for (const symbol of [
@@ -1050,8 +1049,8 @@ describe('Trading', () => {
                 const balanceTypes = [
                     { type: 'traderSource', symbol: sourceSymbol, account: trader.address },
                     { type: 'traderTarget', symbol: targetSymbol, account: trader.address },
-                    { type: 'vaultSource', symbol: sourceSymbol, account: masterVault.address },
-                    { type: 'vaultTarget', symbol: targetSymbol, account: masterVault.address }
+                    { type: 'controllerSource', symbol: sourceSymbol, account: carbonController.address },
+                    { type: 'controllerTarget', symbol: targetSymbol, account: carbonController.address }
                 ];
 
                 // fetch balances prior to trading
@@ -1092,8 +1091,8 @@ describe('Trading', () => {
                 // assert
                 expect(newBalances.traderTarget.sub(previousBalances.traderTarget)).to.eq(expectedTargetAmount);
                 expect(previousBalances.traderSource.sub(newBalances.traderSource)).to.eq(expectedSourceAmount);
-                expect(newBalances.vaultSource.sub(previousBalances.vaultSource)).to.eq(expectedSourceAmount);
-                expect(previousBalances.vaultTarget.sub(newBalances.vaultTarget)).to.eq(expectedTargetAmount);
+                expect(newBalances.controllerSource.sub(previousBalances.controllerSource)).to.eq(expectedSourceAmount);
+                expect(previousBalances.controllerTarget.sub(newBalances.controllerTarget)).to.eq(expectedTargetAmount);
             });
         }
     });
@@ -1127,8 +1126,8 @@ describe('Trading', () => {
                 const balanceTypes = [
                     { type: 'traderSource', symbol: sourceSymbol, account: trader.address },
                     { type: 'traderTarget', symbol: targetSymbol, account: trader.address },
-                    { type: 'vaultSource', symbol: sourceSymbol, account: masterVault.address },
-                    { type: 'vaultTarget', symbol: targetSymbol, account: masterVault.address }
+                    { type: 'controllerSource', symbol: sourceSymbol, account: carbonController.address },
+                    { type: 'controllerTarget', symbol: targetSymbol, account: carbonController.address }
                 ];
 
                 // fetch balances prior to trading
@@ -1170,8 +1169,8 @@ describe('Trading', () => {
                 // assert
                 expect(newBalances.traderTarget.sub(previousBalances.traderTarget)).to.eq(expectedTargetAmount);
                 expect(previousBalances.traderSource.sub(newBalances.traderSource)).to.eq(expectedSourceAmount);
-                expect(newBalances.vaultSource.sub(previousBalances.vaultSource)).to.eq(expectedSourceAmount);
-                expect(previousBalances.vaultTarget.sub(newBalances.vaultTarget)).to.eq(expectedTargetAmount);
+                expect(newBalances.controllerSource.sub(previousBalances.controllerSource)).to.eq(expectedSourceAmount);
+                expect(previousBalances.controllerTarget.sub(newBalances.controllerTarget)).to.eq(expectedTargetAmount);
             });
         }
     });

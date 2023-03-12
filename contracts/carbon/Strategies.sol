@@ -10,7 +10,6 @@ import { MathEx } from "../utility/MathEx.sol";
 import { Token } from "../token/Token.sol";
 import { TokenLibrary } from "../token/TokenLibrary.sol";
 import { Pool } from "./Pools.sol";
-import { IMasterVault } from "../vaults/interfaces/IMasterVault.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
@@ -160,7 +159,6 @@ abstract contract Strategies is Initializable {
         TradeTokens tokens;
         TradeAction[] tradeActions;
         bool byTargetAmount;
-        IMasterVault masterVault;
         uint128 constraint;
         uint256 txValue;
         Pool pool;
@@ -264,7 +262,6 @@ abstract contract Strategies is Initializable {
      * @dev creates a new strategy
      */
     function _createStrategy(
-        IMasterVault masterVault,
         IVoucher voucher,
         Pair memory pair,
         Order[2] calldata orders,
@@ -273,8 +270,8 @@ abstract contract Strategies is Initializable {
         uint256 value
     ) internal returns (uint256) {
         // transfer funds
-        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pair.token0, owner, orders[0].y, value);
-        _depositToMasterVaultAndRefundExcessNativeToken(masterVault, pair.token1, owner, orders[1].y, value);
+        _validateDepositAndRefundExcessNativeToken(pair.token0, owner, orders[0].y, value);
+        _validateDepositAndRefundExcessNativeToken(pair.token1, owner, orders[1].y, value);
 
         // store id
         _lastStrategyId.increment();
@@ -308,7 +305,6 @@ abstract contract Strategies is Initializable {
     function _updateStrategy(
         uint256 strategyId,
         Pool memory pool,
-        IMasterVault vault,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders,
         uint256 value,
@@ -339,11 +335,11 @@ abstract contract Strategies is Initializable {
             if (newOrders[i].y < orders[i].y) {
                 // liquidity decreased - withdraw the difference
                 uint128 delta = orders[i].y - newOrders[i].y;
-                vault.withdrawFunds(token, payable(owner), delta);
+                _withdrawFunds(token, payable(owner), delta);
             } else if (newOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - orders[i].y;
-                _depositToMasterVaultAndRefundExcessNativeToken(vault, token, owner, delta, value);
+                _validateDepositAndRefundExcessNativeToken(token, owner, delta, value);
             }
         }
 
@@ -360,12 +356,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev deletes a strategy
      */
-    function _deleteStrategy(
-        Strategy memory strategy,
-        IVoucher voucher,
-        IMasterVault vault,
-        Pool memory pool
-    ) internal {
+    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pool memory pool) internal {
         // burn the voucher nft token
         voucher.burn(strategy.id);
 
@@ -375,8 +366,8 @@ abstract contract Strategies is Initializable {
         _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
-        vault.withdrawFunds(strategy.pair.token0, payable(strategy.owner), strategy.orders[0].y);
-        vault.withdrawFunds(strategy.pair.token1, payable(strategy.owner), strategy.orders[1].y);
+        _withdrawFunds(strategy.pair.token0, payable(strategy.owner), strategy.orders[0].y);
+        _withdrawFunds(strategy.pair.token1, payable(strategy.owner), strategy.orders[1].y);
 
         // emit event
         emit StrategyDeleted({
@@ -468,14 +459,13 @@ abstract contract Strategies is Initializable {
         _validateConstraints(params.byTargetAmount, totals, params.constraint);
 
         // transfer funds
-        _depositToMasterVaultAndRefundExcessNativeToken(
-            params.masterVault,
+        _validateDepositAndRefundExcessNativeToken(
             params.tokens.source,
             params.trader,
             totals.sourceAmount,
             params.txValue
         );
-        params.masterVault.withdrawFunds(params.tokens.target, payable(params.trader), totals.targetAmount);
+        _withdrawFunds(params.tokens.target, payable(params.trader), totals.targetAmount);
 
         // update fee counters
         _accumulatedFees[tradingFeeToken] += tradingFeeAmount;
@@ -644,15 +634,14 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * @dev deposits tokens to the master vault, refunds excess native tokens sent
+     * @dev validates deposit amounts, refunds excess native tokens sent
      */
-    function _depositToMasterVaultAndRefundExcessNativeToken(
-        IMasterVault masterVault,
+    function _validateDepositAndRefundExcessNativeToken(
         Token token,
         address owner,
         uint256 depositAmount,
         uint256 txValue
-    ) internal {
+    ) private {
         if (depositAmount == 0) {
             return;
         }
@@ -662,16 +651,12 @@ abstract contract Strategies is Initializable {
                 revert NativeAmountMismatch();
             }
 
-            // using a regular transfer here would revert due to exceeding the 2300 gas limit which is why we're using
-            // call instead (via sendValue), which the 2300 gas limit does not apply for
-            payable(address(masterVault)).sendValue(depositAmount);
-
             // refund the owner for the remaining native token amount
             if (txValue > depositAmount) {
                 payable(address(owner)).sendValue(txValue - depositAmount);
             }
         } else {
-            token.safeTransferFrom(owner, address(masterVault), depositAmount);
+            token.safeTransferFrom(owner, address(this), depositAmount);
         }
     }
 
@@ -935,5 +920,22 @@ abstract contract Strategies is Initializable {
             ordersInverted
                 ? Pair({ token0: pool.token1, token1: pool.token0 })
                 : Pair({ token0: pool.token0, token1: pool.token1 });
+    }
+
+    /**
+     * sends erc20 or native token to the provided target
+     */
+    function _withdrawFunds(Token token, address payable target, uint256 amount) private {
+        if (amount == 0) {
+            return;
+        }
+
+        if (token.isNative()) {
+            // using a regular transfer here would revert due to exceeding the 2300 gas limit which is why we're using
+            // call instead (via sendValue), which the 2300 gas limit does not apply for
+            target.sendValue(amount);
+        } else {
+            token.safeTransfer(target, amount);
+        }
     }
 }

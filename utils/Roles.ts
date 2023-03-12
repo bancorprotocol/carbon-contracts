@@ -9,10 +9,6 @@ export const Roles = {
 
     CarbonController: {
         ROLE_EMERGENCY_STOPPER: id('ROLE_EMERGENCY_STOPPER')
-    },
-
-    Vault: {
-        ROLE_ASSET_MANAGER: id('ROLE_ASSET_MANAGER')
     }
 };
 

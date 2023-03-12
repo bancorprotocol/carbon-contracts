@@ -1,7 +1,6 @@
 import {
     CarbonController__factory,
     ERC20__factory,
-    MasterVault__factory,
     OptimizedTransparentUpgradeableProxy__factory,
     ProxyAdmin__factory,
     TestBlockNumber__factory,
@@ -16,7 +15,6 @@ import {
     TestTime__factory,
     TestTokenLibrary__factory,
     TestUpgradeable__factory,
-    TestVault__factory,
     Voucher__factory
 } from '../typechain-types';
 import { deployOrAttach } from './ContractBuilder';
@@ -28,7 +26,6 @@ const getContracts = (signer?: Signer) => ({
     connect: (signer: Signer) => getContracts(signer),
 
     ERC20: deployOrAttach('ERC20', ERC20__factory, signer),
-    MasterVault: deployOrAttach('MasterVault', MasterVault__factory, signer),
     CarbonController: deployOrAttach('CarbonController', CarbonController__factory, signer),
     ProxyAdmin: deployOrAttach('ProxyAdmin', ProxyAdmin__factory, signer),
     Voucher: deployOrAttach('Voucher', Voucher__factory, signer),
@@ -43,7 +40,6 @@ const getContracts = (signer?: Signer) => ({
     TestTime: deployOrAttach('TestTime', TestTime__factory, signer),
     TestTokenLibrary: deployOrAttach('TestTokenLibrary', TestTokenLibrary__factory, signer),
     TestUpgradeable: deployOrAttach('TestUpgradeable', TestUpgradeable__factory, signer),
-    TestVault: deployOrAttach('TestVault', TestVault__factory, signer),
     TestOnlyProxyDelegate: deployOrAttach('TestOnlyProxyDelegate', TestOnlyProxyDelegate__factory, signer),
     OptimizedTransparentUpgradeableProxy: deployOrAttach(
         'OptimizedTransparentUpgradeableProxy',

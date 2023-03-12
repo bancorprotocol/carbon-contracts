@@ -3,7 +3,6 @@ pragma solidity 0.8.17;
 import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import { IMasterVault } from "../vaults/interfaces/IMasterVault.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { Pools, Pool } from "./Pools.sol";
 import { Token } from "../token/Token.sol";
@@ -37,9 +36,6 @@ contract CarbonController is
 
     uint16 private constant CONTROLLER_TYPE = 1;
 
-    // the master vault contract
-    IMasterVault private immutable _masterVault;
-
     // the voucher contract
     IVoucher private immutable _voucher;
 
@@ -57,11 +53,9 @@ contract CarbonController is
     /**
      * @dev a "virtual" constructor that is only used to set immutable state variables
      */
-    constructor(IMasterVault initMasterVault, IVoucher initVoucher, address proxy) OnlyProxyDelegate(proxy) {
-        _validAddress(address(initMasterVault));
+    constructor(IVoucher initVoucher, address proxy) OnlyProxyDelegate(proxy) {
         _validAddress(address(initVoucher));
 
-        _masterVault = initMasterVault;
         _voucher = initVoucher;
     }
 
@@ -184,7 +178,7 @@ contract CarbonController is
         }
 
         Pair memory pair = Pair({ token0: token0, token1: token1 });
-        return _createStrategy(_masterVault, _voucher, pair, orders, __pool, msg.sender, msg.value);
+        return _createStrategy(_voucher, pair, orders, __pool, msg.sender, msg.value);
     }
 
     /**
@@ -211,7 +205,7 @@ contract CarbonController is
         _validateOrders(newOrders);
 
         // perform update
-        _updateStrategy(strategyId, __pool, _masterVault, currentOrders, newOrders, msg.value, msg.sender);
+        _updateStrategy(strategyId, __pool, currentOrders, newOrders, msg.value, msg.sender);
     }
 
     // solhint-enable var-name-mixedcase
@@ -232,7 +226,7 @@ contract CarbonController is
         }
 
         // delete strategy
-        _deleteStrategy(__strategy, _voucher, _masterVault, __pool);
+        _deleteStrategy(__strategy, _voucher, __pool);
     }
 
     /**
@@ -285,7 +279,6 @@ contract CarbonController is
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
             tradeActions: tradeActions,
             byTargetAmount: false,
-            masterVault: _masterVault,
             constraint: minReturn,
             txValue: msg.value,
             pool: _pool
@@ -319,7 +312,6 @@ contract CarbonController is
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
             tradeActions: tradeActions,
             byTargetAmount: true,
-            masterVault: _masterVault,
             constraint: maxInput,
             txValue: msg.value,
             pool: _pool

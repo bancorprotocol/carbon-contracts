@@ -5,7 +5,6 @@ import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/C
 import { IVersioned } from "../../utility/interfaces/IVersioned.sol";
 import { Pool } from "../Pools.sol";
 import { Token } from "../../token/Token.sol";
-import { IMasterVault } from "../../vaults/interfaces/IMasterVault.sol";
 import { Strategy, TradeAction, Order } from "../Strategies.sol";
 
 /**
@@ -53,7 +52,7 @@ interface ICarbonController is IVersioned {
      * notes:
      * - currentOrders should reflect the orders values at the time of sending the tx
      * - reduced liquidity is refunded to the owner
-     * - increased liquidity is deposited to the vault
+     * - increased liquidity is deposited
      * - excess native token is returned to the sender if any
      * - the sorting of orders is expected to equal the sorting upon creation
      *
