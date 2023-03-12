@@ -783,7 +783,7 @@ describe('Trading', () => {
         }
     });
 
-    describe('emits StrategyUpdated event for every trade action', () => {
+    describe.only('emits StrategyUpdated event for every trade action', () => {
         for (const { sourceSymbol, targetSymbol, byTargetAmount, inverseOrders } of permutations) {
             it(`(${sourceSymbol}->${targetSymbol}) | byTargetAmount: ${byTargetAmount} | inverseOrders: ${inverseOrders}`, async () => {
                 const testCase = testCaseFactory({ sourceSymbol, targetSymbol, byTargetAmount, inverseOrders });
@@ -808,6 +808,7 @@ describe('Trading', () => {
                 if (!receipt || !receipt.events) {
                     expect.fail('No events emitted');
                 }
+
                 const tradeActionsAmount = testCase.tradeActions.length;
                 for (let i = 0; i < tradeActionsAmount; i++) {
                     const strategy = testCase.strategies[i];
@@ -815,6 +816,7 @@ describe('Trading', () => {
                     if (!event.args) {
                         expect.fail('Event contains no args');
                     }
+
                     for (let x = 0; x < 2; x++) {
                         const expectedOrder = strategy.orders[x].expected;
                         const emittedOrder = decodeOrder(event.args[`order${x}`]);
@@ -822,6 +824,7 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
+                        expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
                         expect(event.event).to.eq('StrategyUpdated');
                     }
                 }

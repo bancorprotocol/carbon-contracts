@@ -434,11 +434,12 @@ abstract contract Strategies is Initializable {
             }
 
             // emit update events if necessary
+            Pair memory sortedPair = _sortedPair(params.pool, ordersInverted);
             if (strategyUpdated) {
                 emit StrategyUpdated({
                     id: strategyId,
-                    token0: params.pool.token0,
-                    token1: params.pool.token1,
+                    token0: sortedPair.token0,
+                    token1: sortedPair.token1,
                     order0: orders[0],
                     order1: orders[1]
                 });
