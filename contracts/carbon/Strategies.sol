@@ -316,6 +316,7 @@ abstract contract Strategies is Initializable {
     ) internal {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
+        uint256[3] memory packedOrdersMemory = packedOrders;
         (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
         // revert if the strategy mutated since this tx was sent
@@ -326,7 +327,7 @@ abstract contract Strategies is Initializable {
         // store new values if necessary
         uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
         for (uint256 n = 0; n < 3; n++) {
-            if (packedOrders[n] != newPackedOrders[n]) {
+            if (packedOrdersMemory[n] != newPackedOrders[n]) {
                 packedOrders[n] = newPackedOrders[n];
             }
         }
@@ -403,6 +404,7 @@ abstract contract Strategies is Initializable {
             // prepare variables
             uint256 strategyId = params.tradeActions[i].strategyId;
             uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
+            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
 
             // make sure strategyIds match the provided source/target tokens
@@ -425,7 +427,7 @@ abstract contract Strategies is Initializable {
             uint256[3] memory newPackedOrders = _packOrders(orders, ordersInverted);
             bool strategyUpdated = false;
             for (uint256 n = 0; n < 3; n++) {
-                if (packedOrders[n] != newPackedOrders[n]) {
+                if (packedOrdersMemory[n] != newPackedOrders[n]) {
                     packedOrders[n] = newPackedOrders[n];
                     strategyUpdated = true;
                 }
