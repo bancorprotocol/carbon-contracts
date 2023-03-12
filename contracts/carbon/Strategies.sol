@@ -145,12 +145,6 @@ abstract contract Strategies is Initializable {
     error StrategyDoesNotExist();
     error OutDated();
 
-    struct StoredStrategy {
-        address owner;
-        Pair pair;
-        uint256[3] packedOrders;
-    }
-
     struct StorageUpdate {
         uint256 index;
         uint256 value;
