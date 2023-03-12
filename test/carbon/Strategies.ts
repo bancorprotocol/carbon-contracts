@@ -1,4 +1,4 @@
-import Contracts, { CarbonController, MasterVault, TestERC20Burnable, Voucher } from '../../components/Contracts';
+import Contracts, { CarbonController, TestERC20Burnable, Voucher } from '../../components/Contracts';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
 import { DEFAULT_TRADING_FEE_PPM, PPM_RESOLUTION, ZERO_ADDRESS } from '../../utils/Constants';
 import { Roles } from '../../utils/Roles';
@@ -54,7 +54,6 @@ describe('Strategy', () => {
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
     let token2: TestERC20Burnable;
-    let masterVault: MasterVault;
     let voucher: Voucher;
     let tokens: Tokens = {};
 
@@ -65,7 +64,7 @@ describe('Strategy', () => {
     });
 
     beforeEach(async () => {
-        ({ carbonController, masterVault, voucher } = await createSystem());
+        ({ carbonController, voucher } = await createSystem());
         await voucher.setCarbonController(carbonController.address);
 
         tokens = {};
@@ -384,8 +383,8 @@ describe('Strategy', () => {
                     const balanceTypes = [
                         { type: 'ownerToken0', token: _token0, account: owner.address },
                         { type: 'ownerToken1', token: _token1, account: owner.address },
-                        { type: 'vaultToken0', token: _token0, account: masterVault.address },
-                        { type: 'vaultToken1', token: _token1, account: masterVault.address }
+                        { type: 'controllerToken0', token: _token0, account: carbonController.address },
+                        { type: 'controllerToken1', token: _token1, account: carbonController.address }
                     ];
 
                     // fund the owner
@@ -423,9 +422,9 @@ describe('Strategy', () => {
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
 
-                    // vault's balance should increase y amount
-                    expect(after.vaultToken0).to.eq(before.vaultToken0.add(amounts[0]));
-                    expect(after.vaultToken1).to.eq(before.vaultToken1.add(amounts[1]));
+                    // controller's balance should increase y amount
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(amounts[0]));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(amounts[1]));
                 });
             }
         });
@@ -770,8 +769,8 @@ describe('Strategy', () => {
                     const balanceTypes = [
                         { type: 'ownerToken0', token: _tokens[0], account: owner.address },
                         { type: 'ownerToken1', token: _tokens[1], account: owner.address },
-                        { type: 'vaultToken0', token: _tokens[0], account: masterVault.address },
-                        { type: 'vaultToken1', token: _tokens[1], account: masterVault.address }
+                        { type: 'controllerToken0', token: _tokens[0], account: carbonController.address },
+                        { type: 'controllerToken1', token: _tokens[1], account: carbonController.address }
                     ];
 
                     // create strategy
@@ -816,8 +815,8 @@ describe('Strategy', () => {
                     // assert
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerDeltaToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerDeltaToken1));
-                    expect(after.vaultToken0).to.eq(before.vaultToken0.add(delta0));
-                    expect(after.vaultToken1).to.eq(before.vaultToken1.add(delta1));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(delta0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(delta1));
                 });
             }
         });
@@ -963,8 +962,8 @@ describe('Strategy', () => {
                     const balanceTypes = [
                         { type: 'ownerToken0', token: _token0, account: owner.address },
                         { type: 'ownerToken1', token: _token1, account: owner.address },
-                        { type: 'vaultToken0', token: _token0, account: masterVault.address },
-                        { type: 'vaultToken1', token: _token1, account: masterVault.address }
+                        { type: 'controllerToken0', token: _token0, account: carbonController.address },
+                        { type: 'controllerToken1', token: _token1, account: carbonController.address }
                     ];
 
                     // fund the owner
@@ -999,9 +998,9 @@ describe('Strategy', () => {
                     expect(after.ownerToken0).to.eq(before.ownerToken0.add(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.add(expectedOwnerAmountToken1));
 
-                    // vault's balance should decrease y amount
-                    expect(after.vaultToken0).to.eq(before.vaultToken0.sub(y));
-                    expect(after.vaultToken1).to.eq(before.vaultToken1.sub(y));
+                    // controller's balance should decrease y amount
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.sub(y));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.sub(y));
                 });
             }
         });
@@ -1371,7 +1370,7 @@ describe('Strategy', () => {
 
         it('reverts if a transfer occurs before the carbonController was set', async () => {
             const voucher = await Contracts.Voucher.deploy(true, 'ipfs://xxx', '');
-            const carbonController = await createCarbonController(masterVault, voucher);
+            const carbonController = await createCarbonController(voucher);
             const order = { ...generateTestOrder(), y: BigNumber.from(0) };
             const tx = carbonController.createStrategy(token0.address, token1.address, [order, order]);
             await expect(tx).to.have.been.revertedWithError('AccessDenied');

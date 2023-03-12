@@ -56,9 +56,9 @@ describe('Pools', () => {
             const res = await carbonController.createPool(pool.token0, pool.token1);
             const tokens = [pool.token0, pool.token1];
             const pairs = await carbonController.pairs();
-
-            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, pool.token0, pool.token1);
-            await expect(pairs).to.deep.equal([tokens]);
+            const sortedTokens = sortTokens(tokens[0], tokens[1]);
+            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, sortedTokens[0], sortedTokens[1]);
+            await expect(pairs).to.deep.equal([sortedTokens]);
         });
 
         it('should increase pairId', async () => {
