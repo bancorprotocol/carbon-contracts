@@ -317,7 +317,7 @@ abstract contract Strategies is Initializable {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
         uint256[3] memory packedOrdersMemory = packedOrders;
-        (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
+        (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
         // revert if the strategy mutated since this tx was sent
         if (!_equalStrategyOrders(currentOrders, orders)) {
@@ -405,7 +405,7 @@ abstract contract Strategies is Initializable {
             uint256 strategyId = params.tradeActions[i].strategyId;
             uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
-            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
+            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
             // make sure strategyIds match the provided source/target tokens
             if (_poolIdbyStrategyId(strategyId) != params.pool.id) {
