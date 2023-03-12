@@ -74,10 +74,6 @@ const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: false, inverseOrders: false }
 ];
 
-const sortTokens = (token0: TestERC20Burnable, token1: TestERC20Burnable): TestERC20Burnable[] => {
-    return token0.address < token1.address ? [token0, token1] : [token1, token0];
-};
-
 describe('Trading', () => {
     let deployer: SignerWithAddress;
     let marketMaker: SignerWithAddress;
@@ -812,6 +808,7 @@ describe('Trading', () => {
                 if (!receipt || !receipt.events) {
                     expect.fail('No events emitted');
                 }
+
                 const tradeActionsAmount = testCase.tradeActions.length;
                 for (let i = 0; i < tradeActionsAmount; i++) {
                     const strategy = testCase.strategies[i];
@@ -819,15 +816,15 @@ describe('Trading', () => {
                     if (!event.args) {
                         expect.fail('Event contains no args');
                     }
-                    const sortedTokens = sortTokens(tokens[strategy.orders[0].token], tokens[strategy.orders[1].token]);
+
                     for (let x = 0; x < 2; x++) {
                         const expectedOrder = strategy.orders[x].expected;
-                        const orderIndex = tokens[strategy.orders[x].token].address === sortedTokens[0].address ? 0 : 1;
-                        const emittedOrder = decodeOrder(event.args[`order${orderIndex}`]);
+                        const emittedOrder = decodeOrder(event.args[`order${x}`]);
                         expect(emittedOrder.liquidity.toFixed()).to.eq(expectedOrder.liquidity);
                         expect(toFixed(emittedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
+                        expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
                         expect(event.event).to.eq('StrategyUpdated');
                     }
                 }
@@ -948,16 +945,13 @@ describe('Trading', () => {
                 const token0 = tokens[testCase.sourceSymbol];
                 const token1 = tokens[testCase.targetSymbol];
                 const strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
-                const sortedTokens = sortTokens(token0, token1);
 
                 // assertions
                 strategies.forEach((strategy, i) => {
                     strategy.orders.forEach((order, x) => {
                         const { y, z, A, B } = order;
                         const encodedOrder = decodeOrder({ y, z, A, B });
-                        const orderIndex =
-                            tokens[testCase.strategies[i].orders[x].token].address === sortedTokens[0].address ? 0 : 1;
-                        const expectedOrder = testCase.strategies[i].orders[orderIndex].expected;
+                        const expectedOrder = testCase.strategies[i].orders[x].expected;
 
                         expect(encodedOrder.liquidity.toFixed()).to.eq(expectedOrder.liquidity);
                         expect(toFixed(encodedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
@@ -1010,7 +1004,7 @@ describe('Trading', () => {
 
                 // fetch updated data from the chain
                 const newStrategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
-                const sortedTokens = sortTokens(token0, token1);
+
                 // assertions
                 newStrategies.forEach((newStrategy, i) => {
                     newStrategy.orders.forEach((newOrder, x) => {
@@ -1018,11 +1012,7 @@ describe('Trading', () => {
                             // first order should have been updated with new values
                             const { y, z, A, B } = newOrder;
                             const encodedOrder = decodeOrder({ y, z, A, B });
-                            const orderIndex =
-                                tokens[testCase.strategies[i].orders[x].token].address === sortedTokens[0].address
-                                    ? 0
-                                    : 1;
-                            const expectedOrder = testCase.strategies[i].orders[orderIndex].expected;
+                            const expectedOrder = testCase.strategies[i].orders[x].expected;
                             expect(encodedOrder.liquidity.toFixed()).to.eq(expectedOrder.liquidity);
                             expect(toFixed(encodedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
                             expect(toFixed(encodedOrder.highestRate)).to.eq(expectedOrder.highestRate);

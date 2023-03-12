@@ -46,10 +46,6 @@ const permutations = [
     { token0: TokenSymbol.TKN0, token1: TokenSymbol.TKN1 }
 ];
 
-const sortTokens = (token0: TestERC20Burnable, token1: TestERC20Burnable): TestERC20Burnable[] => {
-    return token0.address < token1.address ? [token0, token1] : [token1, token0];
-};
-
 describe('Strategy', () => {
     let deployer: SignerWithAddress;
     let owner: SignerWithAddress;
@@ -157,15 +153,8 @@ describe('Strategy', () => {
         // keep track of gas usage
         let gasUsed = BigNumber.from(0);
 
-        let tokens;
-        let deltas;
-        if (_params.token0.address < _params.token1.address) {
-            tokens = [_params.token0, _params.token1];
-            deltas = [BigNumber.from(_params.order0Delta), BigNumber.from(_params.order1Delta)];
-        } else {
-            tokens = [_params.token1, _params.token0];
-            deltas = [BigNumber.from(_params.order1Delta), BigNumber.from(_params.order0Delta)];
-        }
+        const tokens = [_params.token0, _params.token1];
+        const deltas = [BigNumber.from(_params.order0Delta), BigNumber.from(_params.order1Delta)];
 
         let txValue = BigNumber.from(0);
         for (let i = 0; i < 2; i++) {
@@ -291,15 +280,13 @@ describe('Strategy', () => {
                     };
 
                     // prepare the expected result object
-                    const sortedTokens = sortTokens(tokens[token0], tokens[token1]);
-                    const amounts =
-                        sortedTokens[0].address === _token0.address
-                            ? [token0Amount, token1Amount]
-                            : [token1Amount, token0Amount];
+                    const amounts = [token0Amount, token1Amount];
+                    const _tokens = [tokens[token0], tokens[token1]];
+
                     const expectedResult: StrategyStruct = {
                         id: '1',
                         owner: owner.address,
-                        pair: { token0: sortedTokens[0].address, token1: sortedTokens[1].address },
+                        pair: { token0: _tokens[0].address, token1: _tokens[1].address },
                         orders: [
                             { y: amounts[0].toString(), z: z.toString(), A: A.toString(), B: B.toString() },
                             { y: amounts[1].toString(), z: z.toString(), A: A.toString(), B: B.toString() }
@@ -334,15 +321,14 @@ describe('Strategy', () => {
         it('emits the StrategyCreated event', async () => {
             const { y, z, A, B } = generateTestOrder();
 
-            const sortedTokens = sortTokens(token0, token1);
             const { tx } = await createStrategy();
             await expect(tx)
                 .to.emit(carbonController, 'StrategyCreated')
                 .withArgs(
                     BigNumber.from(1),
                     owner.address,
-                    sortedTokens[0].address,
-                    sortedTokens[1].address,
+                    token0.address,
+                    token1.address,
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)]
                 );
@@ -498,6 +484,24 @@ describe('Strategy', () => {
                 }
             }
         });
+
+        describe('tokens sorting persist', () => {
+            const _permutations = [
+                { token0: TokenSymbol.TKN0, token1: TokenSymbol.TKN1 },
+                { token0: TokenSymbol.TKN1, token1: TokenSymbol.TKN0 }
+            ];
+
+            for (const { token0, token1 } of _permutations) {
+                it(`${token0}, ${token1}`, async () => {
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    await createStrategy({ token0: _token0, token1: _token1 });
+                    const strategy = await carbonController.strategy(1);
+                    expect(strategy.pair.token0).to.eq(_token0.address);
+                    expect(strategy.pair.token1).to.eq(_token1.address);
+                });
+            }
+        });
     });
 
     describe('strategy updating', async () => {
@@ -598,15 +602,15 @@ describe('Strategy', () => {
                     const { y, z, A, B } = generateTestOrder();
                     const _token0 = tokens[token0];
                     const _token1 = tokens[token1];
-                    const sortedTokens = sortTokens(_token0, _token1);
+                    const _tokens = [_token0, _token1];
 
                     // create strategy
-                    await createStrategy({ token0: sortedTokens[0], token1: sortedTokens[1] });
+                    await createStrategy({ token0: _tokens[0], token1: _tokens[1] });
 
                     // update strategy
                     await updateStrategy({
-                        token0: sortedTokens[0],
-                        token1: sortedTokens[1],
+                        token0: _tokens[0],
+                        token1: _tokens[1],
                         order0Delta,
                         order1Delta
                     });
@@ -628,22 +632,23 @@ describe('Strategy', () => {
                     };
 
                     // prepare the expected result object
+                    const deltas = [order0Delta, order1Delta];
                     const expectedResult: StrategyStruct = {
                         id: '1',
                         owner: owner.address,
-                        pair: { token0: sortedTokens[0].address, token1: sortedTokens[1].address },
+                        pair: { token0: _tokens[0].address, token1: _tokens[1].address },
                         orders: [
                             {
-                                y: y.add(order0Delta).toString(),
-                                z: z.add(order0Delta).toString(),
-                                A: A.add(order0Delta).toString(),
-                                B: B.add(order0Delta).toString()
+                                y: y.add(deltas[0]).toString(),
+                                z: z.add(deltas[0]).toString(),
+                                A: A.add(deltas[0]).toString(),
+                                B: B.add(deltas[0]).toString()
                             },
                             {
-                                y: y.add(order1Delta).toString(),
-                                z: z.add(order1Delta).toString(),
-                                A: A.add(order1Delta).toString(),
-                                B: B.add(order1Delta).toString()
+                                y: y.add(deltas[1]).toString(),
+                                z: z.add(deltas[1]).toString(),
+                                A: A.add(deltas[1]).toString(),
+                                B: B.add(deltas[1]).toString()
                             }
                         ]
                     };
@@ -677,10 +682,9 @@ describe('Strategy', () => {
                     // prepare variables
                     const order = generateTestOrder();
                     const newOrders: TestOrder[] = [];
-                    const deltas = [order0Delta, order1Delta];
                     const _token0 = tokens[token0];
                     const _token1 = tokens[token1];
-                    const sortedTokens = sortTokens(_token0, _token1);
+                    const deltas = [order0Delta, order1Delta];
 
                     // prepare new orders
                     for (let i = 0; i < 2; i++) {
@@ -693,7 +697,7 @@ describe('Strategy', () => {
                     }
 
                     // create strategy
-                    await createStrategy({ token0: sortedTokens[0], token1: sortedTokens[1] });
+                    await createStrategy({ token0: _token0, token1: _token1 });
 
                     // update strategy
                     await carbonController
@@ -720,7 +724,7 @@ describe('Strategy', () => {
                     const expectedResult: StrategyStruct = {
                         id: '1',
                         owner: owner.address,
-                        pair: { token0: sortedTokens[0].address, token1: sortedTokens[1].address },
+                        pair: { token0: _token0.address, token1: _token1.address },
                         orders: [newOrders[0], newOrders[1]]
                     };
 
@@ -825,7 +829,7 @@ describe('Strategy', () => {
                     it(`reverts for a mutation in ${key}`, async () => {
                         await createStrategy();
                         const order: any = generateTestOrder();
-                        order[key] = BigNumber.from(value);
+                        order[key] = BigNumber.from(value).add(order[key]);
                         const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order]);
                         await expect(tx).to.have.been.revertedWithError('OutDated');
                     });
@@ -842,16 +846,9 @@ describe('Strategy', () => {
             const { tx } = await updateStrategy({ order0Delta: delta, order1Delta: delta });
 
             const expectedOrder = [y.add(delta), z.add(delta), A.add(delta), B.add(delta)];
-            const sortedTokens = sortTokens(token0, token1);
             await expect(tx)
                 .to.emit(carbonController, 'StrategyUpdated')
-                .withArgs(
-                    BigNumber.from(1),
-                    sortedTokens[0].address,
-                    sortedTokens[1].address,
-                    expectedOrder,
-                    expectedOrder
-                );
+                .withArgs(BigNumber.from(1), token0.address, token1.address, expectedOrder, expectedOrder);
         });
 
         it('reverts when unnecessary native token was sent', async () => {
@@ -1051,7 +1048,6 @@ describe('Strategy', () => {
             // prepare variables and transaction
             const { y, z, A, B } = generateTestOrder();
             const tx = carbonController.connect(owner).deleteStrategy(1);
-            const sortedTokens = sortTokens(token0, token1);
 
             // assert
             await expect(tx)
@@ -1059,8 +1055,8 @@ describe('Strategy', () => {
                 .withArgs(
                     BigNumber.from(1),
                     owner.address,
-                    sortedTokens[0].address,
-                    sortedTokens[1].address,
+                    token0.address,
+                    token1.address,
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)]
                 );
@@ -1166,21 +1162,19 @@ describe('Strategy', () => {
             await createStrategy({ token0, token1: token2 });
 
             let strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
-            let sortedTokens = sortTokens(token0, token1);
             expect(strategies.length).to.eq(2);
             expect(strategies[0].id).to.eq(1);
             expect(strategies[1].id).to.eq(2);
-            expect(strategies[0].pair.token0).to.eq(sortedTokens[0].address);
-            expect(strategies[0].pair.token1).to.eq(sortedTokens[1].address);
-            expect(strategies[1].pair.token0).to.eq(sortedTokens[0].address);
-            expect(strategies[1].pair.token1).to.eq(sortedTokens[1].address);
+            expect(strategies[0].pair.token0).to.eq(token0.address);
+            expect(strategies[0].pair.token1).to.eq(token1.address);
+            expect(strategies[1].pair.token0).to.eq(token0.address);
+            expect(strategies[1].pair.token1).to.eq(token1.address);
 
             strategies = await carbonController.strategiesByPool(token0.address, token2.address, 0, 0);
-            sortedTokens = sortTokens(token0, token2);
             expect(strategies.length).to.eq(1);
             expect(strategies[0].id).to.eq(3);
-            expect(strategies[0].pair.token0).to.eq(sortedTokens[0].address);
-            expect(strategies[0].pair.token1).to.eq(sortedTokens[1].address);
+            expect(strategies[0].pair.token0).to.eq(token0.address);
+            expect(strategies[0].pair.token1).to.eq(token2.address);
         });
 
         it('sets endIndex to the maximum possible if provided with 0', async () => {

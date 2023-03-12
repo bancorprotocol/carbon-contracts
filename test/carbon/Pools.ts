@@ -4,12 +4,8 @@ import { createSystem, createTestToken } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { expect } from 'chai';
 
-const sortTokens = (token0: string, token1: string, smallerFirst = true): string[] => {
-    if (smallerFirst) {
-        return token0.toLowerCase() < token1.toLowerCase() ? [token0, token1] : [token1, token0];
-    } else {
-        return token0.toLowerCase() > token1.toLowerCase() ? [token0, token1] : [token1, token0];
-    }
+const sortTokens = (token0: string, token1: string): string[] => {
+    return token0 < token1 ? [token0, token1] : [token1, token0];
 };
 
 describe('Pools', () => {
@@ -58,10 +54,10 @@ describe('Pools', () => {
 
         it('should create a pool', async () => {
             const res = await carbonController.createPool(pool.token0, pool.token1);
-            const tokens = sortTokens(pool.token0, pool.token1);
+            const tokens = [pool.token0, pool.token1];
             const pairs = await carbonController.pairs();
 
-            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, tokens[0], tokens[1]);
+            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, pool.token0, pool.token1);
             await expect(pairs).to.deep.equal([tokens]);
         });
 
@@ -72,15 +68,16 @@ describe('Pools', () => {
             const token3 = await createTestToken();
 
             const res = await carbonController.createPool(token2.address, token3.address);
-            const tokens = sortTokens(token2.address, token3.address);
+            const tokens = [token2.address, token3.address];
 
             await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(2, tokens[0], tokens[1]);
         });
 
         it('sorts the tokens by address value size, smaller first', async () => {
-            const tokens = sortTokens(pool.token0, pool.token1, false);
-            const res = await carbonController.createPool(tokens[0], tokens[1]);
-            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, tokens[1], tokens[0]);
+            const sortedTokens =
+                token0.address < token1.address ? [token0.address, token1.address] : [token1.address, token0.address];
+            const res = await carbonController.createPool(sortedTokens[1], sortedTokens[0]);
+            await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(1, sortedTokens[0], sortedTokens[1]);
         });
     });
 
@@ -95,12 +92,12 @@ describe('Pools', () => {
     });
 
     it('gets a pool matching the provided unsorted tokens', async () => {
-        const tokens = sortTokens(pool.token0, pool.token1, false);
+        const tokens = sortTokens(pool.token0, pool.token1);
         await carbonController.createPool(tokens[0], tokens[1]);
-        const _pool = await carbonController.pool(tokens[0], tokens[1]);
+        const _pool = await carbonController.pool(tokens[1], tokens[0]);
         expect(_pool.id.toNumber()).to.eq(1);
-        expect(_pool.token0).to.eq(tokens[1]);
-        expect(_pool.token1).to.eq(tokens[0]);
+        expect(_pool.token0).to.eq(tokens[0]);
+        expect(_pool.token1).to.eq(tokens[1]);
     });
 
     it('lists all supported tokens', async () => {

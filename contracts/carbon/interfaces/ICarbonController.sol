@@ -55,6 +55,7 @@ interface ICarbonController is IVersioned {
      * - reduced liquidity is refunded to the owner
      * - increased liquidity is deposited to the vault
      * - excess native token is returned to the sender if any
+     * - the sorting of orders is expected to equal the sorting upon creation
      *
      * requirements:
      *
@@ -82,7 +83,8 @@ interface ICarbonController is IVersioned {
     function deleteStrategy(uint256 strategyId) external;
 
     /**
-     * @dev returns a strategy matching the provided id
+     * @dev returns a strategy matching the provided id,
+     * note pair and orders are returned sorted as provided upon creation
      */
     function strategy(uint256 id) external view returns (Strategy memory);
 

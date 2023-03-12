@@ -53,7 +53,6 @@ contract CarbonController is
     error InvalidTradeActionAmount();
     error InvalidStrategyId();
     error NoIdsProvided();
-    error OutDated();
 
     /**
      * @dev a "virtual" constructor that is only used to set immutable state variables
@@ -197,20 +196,14 @@ contract CarbonController is
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
         Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
-        Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
             revert AccessDenied();
         }
 
-        // revert if the strategy mutated since this tx was sent
-        if (!_equalStrategyOrders(currentOrders, __strategy.orders)) {
-            revert OutDated();
-        }
-
         // don't allow unnecessary eth
-        if (!__strategy.pair.token0.isNative() && !__strategy.pair.token1.isNative() && msg.value > 0) {
+        if (!__pool.token0.isNative() && !__pool.token1.isNative() && msg.value > 0) {
             revert UnnecessaryNativeTokenReceived();
         }
 
@@ -218,7 +211,7 @@ contract CarbonController is
         _validateOrders(newOrders);
 
         // perform update
-        _updateStrategy(_masterVault, __strategy, newOrders, msg.value);
+        _updateStrategy(strategyId, __pool, _masterVault, currentOrders, newOrders, msg.value, msg.sender);
     }
 
     // solhint-enable var-name-mixedcase
