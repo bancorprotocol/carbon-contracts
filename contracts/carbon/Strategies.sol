@@ -564,7 +564,6 @@ abstract contract Strategies is Initializable {
 
             // calculate the orders new values
             uint256 targetTokenIndex = _findTargetTokenIndex(pool, tokens, ordersInverted);
-
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 orders[targetTokenIndex],
                 tradeActions[i].amount,
