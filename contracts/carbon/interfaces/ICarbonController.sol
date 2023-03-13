@@ -34,7 +34,7 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns a list of all supported pairs
      */
-    function pairs() external view returns (address[2][] memory);
+    function pairs() external view returns (Token[2][] memory);
 
     // solhint-disable var-name-mixedcase
     /**
@@ -83,7 +83,7 @@ interface ICarbonController is IVersioned {
 
     /**
      * @dev returns a strategy matching the provided id,
-     * note pair and orders are returned sorted as provided upon creation
+     * note tokens and orders are returned sorted as provided upon creation
      */
     function strategy(uint256 id) external view returns (Strategy memory);
 

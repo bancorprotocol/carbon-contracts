@@ -122,12 +122,12 @@ abstract contract Pools is Initializable {
     /**
      * @dev returns a list of all supported pairs
      */
-    function _pairs() internal view returns (address[2][] memory) {
+    function _pairs() internal view returns (Token[2][] memory) {
         uint256 length = _lastPoolId.current();
-        address[2][] memory list = new address[2][](length);
+        Token[2][] memory list = new Token[2][](length);
         for (uint256 i = 0; i < length; i++) {
             StoredPool memory pool = _poolsStorage[i + 1];
-            list[i] = [address(pool.token0), address(pool.token1)];
+            list[i] = [Token(pool.token0), Token(pool.token1)];
         }
 
         return list;

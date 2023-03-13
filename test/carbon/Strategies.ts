@@ -269,7 +269,7 @@ describe('Strategy', () => {
                     const result = {
                         id: strategy.id.toString(),
                         owner: strategy.owner,
-                        pair: { token0: strategy.pair.token0, token1: strategy.pair.token1 },
+                        tokens: strategy.tokens,
                         orders: strategy.orders.map((o: any) => ({
                             y: o.y.toString(),
                             z: o.z.toString(),
@@ -285,7 +285,7 @@ describe('Strategy', () => {
                     const expectedResult: StrategyStruct = {
                         id: '1',
                         owner: owner.address,
-                        pair: { token0: _tokens[0].address, token1: _tokens[1].address },
+                        tokens: [_tokens[0].address, _tokens[1].address],
                         orders: [
                             { y: amounts[0].toString(), z: z.toString(), A: A.toString(), B: B.toString() },
                             { y: amounts[1].toString(), z: z.toString(), A: A.toString(), B: B.toString() }
@@ -496,8 +496,8 @@ describe('Strategy', () => {
                     const _token1 = tokens[token1];
                     await createStrategy({ token0: _token0, token1: _token1 });
                     const strategy = await carbonController.strategy(1);
-                    expect(strategy.pair.token0).to.eq(_token0.address);
-                    expect(strategy.pair.token1).to.eq(_token1.address);
+                    expect(strategy.tokens[0]).to.eq(_token0.address);
+                    expect(strategy.tokens[1]).to.eq(_token1.address);
                 });
             }
         });
@@ -621,7 +621,7 @@ describe('Strategy', () => {
                     const result = {
                         id: strategy.id.toString(),
                         owner: strategy.owner,
-                        pair: { token0: strategy.pair.token0, token1: strategy.pair.token1 },
+                        tokens: strategy.tokens,
                         orders: strategy.orders.map((o: any) => ({
                             y: o.y.toString(),
                             z: o.z.toString(),
@@ -635,7 +635,7 @@ describe('Strategy', () => {
                     const expectedResult: StrategyStruct = {
                         id: '1',
                         owner: owner.address,
-                        pair: { token0: _tokens[0].address, token1: _tokens[1].address },
+                        tokens: [_tokens[0].address, _tokens[1].address],
                         orders: [
                             {
                                 y: y.add(deltas[0]).toString(),
@@ -710,7 +710,7 @@ describe('Strategy', () => {
                     const result = {
                         id: strategy.id.toString(),
                         owner: strategy.owner,
-                        pair: { token0: strategy.pair.token0, token1: strategy.pair.token1 },
+                        tokens: strategy.tokens,
                         orders: strategy.orders.map((o: any) => ({
                             y: o.y,
                             z: o.z,
@@ -723,7 +723,7 @@ describe('Strategy', () => {
                     const expectedResult: StrategyStruct = {
                         id: '1',
                         owner: owner.address,
-                        pair: { token0: _token0.address, token1: _token1.address },
+                        tokens: [_token0.address, _token1.address],
                         orders: [newOrders[0], newOrders[1]]
                     };
 
@@ -1164,16 +1164,16 @@ describe('Strategy', () => {
             expect(strategies.length).to.eq(2);
             expect(strategies[0].id).to.eq(1);
             expect(strategies[1].id).to.eq(2);
-            expect(strategies[0].pair.token0).to.eq(token0.address);
-            expect(strategies[0].pair.token1).to.eq(token1.address);
-            expect(strategies[1].pair.token0).to.eq(token0.address);
-            expect(strategies[1].pair.token1).to.eq(token1.address);
+            expect(strategies[0].tokens[0]).to.eq(token0.address);
+            expect(strategies[0].tokens[1]).to.eq(token1.address);
+            expect(strategies[1].tokens[0]).to.eq(token0.address);
+            expect(strategies[1].tokens[1]).to.eq(token1.address);
 
             strategies = await carbonController.strategiesByPool(token0.address, token2.address, 0, 0);
             expect(strategies.length).to.eq(1);
             expect(strategies[0].id).to.eq(3);
-            expect(strategies[0].pair.token0).to.eq(token0.address);
-            expect(strategies[0].pair.token1).to.eq(token2.address);
+            expect(strategies[0].tokens[0]).to.eq(token0.address);
+            expect(strategies[0].tokens[1]).to.eq(token2.address);
         });
 
         it('sets endIndex to the maximum possible if provided with 0', async () => {
