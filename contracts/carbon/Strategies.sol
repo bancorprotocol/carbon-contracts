@@ -422,13 +422,13 @@ abstract contract Strategies is Initializable {
 
             // emit update events if necessary
             Token[2] memory sortedTokens = _sortStrategyTokens(params.pool, ordersInverted);
-                emit StrategyUpdated({
-                    id: strategyId,
-                    token0: sortedTokens[0],
-                    token1: sortedTokens[1],
-                    order0: orders[0],
-                    order1: orders[1]
-                });
+            emit StrategyUpdated({
+                id: strategyId,
+                token0: sortedTokens[0],
+                token1: sortedTokens[1],
+                order0: orders[0],
+                order1: orders[1]
+            });
 
             totals.sourceAmount += tempTradeAmounts.sourceAmount;
             totals.targetAmount += tempTradeAmounts.targetAmount;
