@@ -7,7 +7,7 @@ import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { Pools, Pool } from "./Pools.sol";
 import { Token } from "../token/Token.sol";
 import { TokenLibrary } from "../token/TokenLibrary.sol";
-import { Strategies, Strategy, TradeAction, Order, Pair, TradeTokens } from "./Strategies.sol";
+import { Strategies, Strategy, TradeAction, Order, TradeTokens } from "./Strategies.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { ICarbonController } from "./interfaces/ICarbonController.sol";
@@ -137,7 +137,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function pairs() external view returns (address[2][] memory) {
+    function pairs() external view returns (Token[2][] memory) {
         return _pairs();
     }
 
@@ -177,8 +177,8 @@ contract CarbonController is
             __pool = _pool(token0, token1);
         }
 
-        Pair memory pair = Pair({ token0: token0, token1: token1 });
-        return _createStrategy(_voucher, pair, orders, __pool, msg.sender, msg.value);
+        Token[2] memory tokens = [token0, token1];
+        return _createStrategy(_voucher, tokens, orders, __pool, msg.sender, msg.value);
     }
 
     /**
