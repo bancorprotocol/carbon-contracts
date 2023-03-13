@@ -139,11 +139,6 @@ abstract contract Strategies is Initializable {
     error StrategyDoesNotExist();
     error OutDated();
 
-    struct StorageUpdate {
-        uint256 index;
-        uint256 value;
-    }
-
     struct SourceAndTargetAmounts {
         uint128 sourceAmount;
         uint128 targetAmount;
@@ -400,28 +395,33 @@ abstract contract Strategies is Initializable {
 
             // calculate the orders new values
             uint256 targetTokenIndex = _findTargetOrderIndex(params.pool, params.tokens, ordersInverted);
+
+            Order memory targetOrder = orders[targetTokenIndex];
+            Order memory sourceOrder = orders[1 - targetTokenIndex];
+
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
-                orders[targetTokenIndex],
+                targetOrder,
                 params.tradeActions[i].amount,
                 params.byTargetAmount
             );
 
             // update the orders with the new values
-            _updateOrders(orders, targetTokenIndex, tempTradeAmounts);
+            targetOrder.y -= tempTradeAmounts.targetAmount;
+            sourceOrder.y += tempTradeAmounts.sourceAmount;
+            if (sourceOrder.z < sourceOrder.y) {
+                sourceOrder.z = sourceOrder.y;
+            }
 
             // store new values if necessary
             uint256[3] memory newPackedOrders = _packOrders(orders, ordersInverted);
-            bool strategyUpdated = false;
             for (uint256 n = 0; n < 3; n++) {
                 if (packedOrdersMemory[n] != newPackedOrders[n]) {
                     packedOrders[n] = newPackedOrders[n];
-                    strategyUpdated = true;
                 }
             }
 
             // emit update events if necessary
             Token[2] memory sortedTokens = _sortStrategyTokens(params.pool, ordersInverted);
-            if (strategyUpdated) {
                 emit StrategyUpdated({
                     id: strategyId,
                     token0: sortedTokens[0],
@@ -429,7 +429,6 @@ abstract contract Strategies is Initializable {
                     order0: orders[0],
                     order1: orders[1]
                 });
-            }
 
             totals.sourceAmount += tempTradeAmounts.sourceAmount;
             totals.targetAmount += tempTradeAmounts.targetAmount;
@@ -843,25 +842,6 @@ abstract contract Strategies is Initializable {
             amounts.targetAmount = _calculateTradeTargetAmount(amount, y, z, a, b).toUint128();
         }
         return amounts;
-    }
-
-    /**
-     * @dev update order's according to a single trade action
-     */
-    function _updateOrders(
-        Order[2] memory orders,
-        uint256 targetTokenIndex,
-        SourceAndTargetAmounts memory amounts
-    ) private pure returns (Order[2] memory) {
-        uint256 sourceTokenIndex = 1 - targetTokenIndex;
-        orders[targetTokenIndex].y -= amounts.targetAmount;
-        orders[sourceTokenIndex].y += amounts.sourceAmount;
-
-        // when marginal and highest rate are equal
-        if (orders[sourceTokenIndex].z < orders[sourceTokenIndex].y) {
-            orders[sourceTokenIndex].z = orders[sourceTokenIndex].y;
-        }
-        return orders;
     }
 
     /**
