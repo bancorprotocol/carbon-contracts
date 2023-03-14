@@ -84,10 +84,7 @@ export const permitSignature = async (
     amount: BigNumberish,
     deadline: BigNumberish
 ): Promise<Signature> => {
-    if (
-        tokenAddress === NATIVE_TOKEN_ADDRESS ||
-        tokenAddress === ZERO_ADDRESS
-    ) {
+    if (tokenAddress === NATIVE_TOKEN_ADDRESS || tokenAddress === ZERO_ADDRESS) {
         return {
             v: 0,
             r: ZERO_BYTES32,
