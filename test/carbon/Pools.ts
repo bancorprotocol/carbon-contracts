@@ -87,8 +87,8 @@ describe('Pools', () => {
 
         const _pool = await carbonController.pool(pool.token0, pool.token1);
         expect(_pool.id.toNumber()).to.eq(1);
-        expect(_pool.token0).to.eq(tokens[0]);
-        expect(_pool.token1).to.eq(tokens[1]);
+        expect(_pool.tokens[0]).to.eq(tokens[0]);
+        expect(_pool.tokens[1]).to.eq(tokens[1]);
     });
 
     it('gets a pool matching the provided unsorted tokens', async () => {
@@ -96,8 +96,8 @@ describe('Pools', () => {
         await carbonController.createPool(tokens[0], tokens[1]);
         const _pool = await carbonController.pool(tokens[1], tokens[0]);
         expect(_pool.id.toNumber()).to.eq(1);
-        expect(_pool.token0).to.eq(tokens[0]);
-        expect(_pool.token1).to.eq(tokens[1]);
+        expect(_pool.tokens[0]).to.eq(tokens[0]);
+        expect(_pool.tokens[1]).to.eq(tokens[1]);
     });
 
     it('lists all supported tokens', async () => {

@@ -8,16 +8,14 @@ import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/C
 
 struct Pool {
     uint256 id;
-    Token token0;
-    Token token1;
+    Token[2] tokens;
 }
 
 abstract contract Pools is Initializable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     struct StoredPool {
-        Token token0;
-        Token token1;
+        Token[2] tokens;
     }
 
     error PoolAlreadyExists();
@@ -66,19 +64,19 @@ abstract contract Pools is Initializable {
         }
 
         // sort tokens
-        (Token _token0, Token _token1) = _sortTokens(token0, token1);
+        Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
         // increment pool id
         _lastPoolId.increment();
         uint256 id = _lastPoolId.current();
 
         // store pool
-        StoredPool memory newPool = StoredPool({ token0: _token0, token1: _token1 });
+        StoredPool memory newPool = StoredPool({ tokens: sortedTokens });
         _poolsStorage[id] = newPool;
-        _poolIds[_token0][_token1] = id;
+        _poolIds[sortedTokens[0]][sortedTokens[1]] = id;
 
-        emit PoolCreated(id, newPool.token0, newPool.token1);
-        return Pool({ id: id, token0: _token0, token1: _token1 });
+        emit PoolCreated(id, newPool.tokens[0], newPool.tokens[1]);
+        return Pool({ id: id, tokens: sortedTokens });
     }
 
     /**
@@ -86,7 +84,7 @@ abstract contract Pools is Initializable {
      */
     function _pool(Token token0, Token token1) internal view returns (Pool memory) {
         // sort tokens
-        (Token _token0, Token _token1) = _sortTokens(token0, token1);
+        Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
         // validate pool existance
         if (!_poolExists(token0, token1)) {
@@ -94,16 +92,16 @@ abstract contract Pools is Initializable {
         }
 
         // return pool
-        uint256 id = _poolIds[_token0][_token1];
-        return Pool({ id: id, token0: _token0, token1: _token1 });
+        uint256 id = _poolIds[sortedTokens[0]][sortedTokens[1]];
+        return Pool({ id: id, tokens: sortedTokens });
     }
 
     function _poolById(uint256 poolId) internal view returns (Pool memory) {
         StoredPool memory storedPool = _poolsStorage[poolId];
-        if (address(storedPool.token0) == address(0)) {
+        if (address(storedPool.tokens[0]) == address(0)) {
             revert PoolDoesNotExist();
         }
-        return Pool({ id: poolId, token0: storedPool.token0, token1: storedPool.token1 });
+        return Pool({ id: poolId, tokens: storedPool.tokens });
     }
 
     /**
@@ -111,9 +109,9 @@ abstract contract Pools is Initializable {
      */
     function _poolExists(Token token0, Token token1) internal view returns (bool) {
         // sort tokens
-        (Token _token0, Token _token1) = _sortTokens(token0, token1);
+        Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
-        if (_poolIds[_token0][_token1] == 0) {
+        if (_poolIds[sortedTokens[0]][sortedTokens[1]] == 0) {
             return false;
         }
         return true;
@@ -127,7 +125,7 @@ abstract contract Pools is Initializable {
         Token[2][] memory list = new Token[2][](length);
         for (uint256 i = 0; i < length; i++) {
             StoredPool memory pool = _poolsStorage[i + 1];
-            list[i] = [Token(pool.token0), Token(pool.token1)];
+            list[i] = pool.tokens;
         }
 
         return list;
@@ -136,7 +134,7 @@ abstract contract Pools is Initializable {
     /**
      * returns the given tokens sorted by address value, smaller first
      */
-    function _sortTokens(Token token0, Token token1) private pure returns (Token, Token) {
-        return token0 < token1 ? (token0, token1) : (token1, token0);
+    function _sortTokens(Token token0, Token token1) private pure returns (Token[2] memory) {
+        return token0 < token1 ? [token0, token1] : [token1, token0];
     }
 }
