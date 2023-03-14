@@ -197,7 +197,7 @@ contract CarbonController is
         }
 
         // don't allow unnecessary eth
-        if (!__pool.token0.isNative() && !__pool.token1.isNative() && msg.value > 0) {
+        if (!__pool.tokens[0].isNative() && !__pool.tokens[1].isNative() && msg.value > 0) {
             revert UnnecessaryNativeTokenReceived();
         }
 

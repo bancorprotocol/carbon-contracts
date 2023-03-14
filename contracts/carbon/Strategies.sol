@@ -270,7 +270,7 @@ abstract contract Strategies is Initializable {
         __poolIdbyStrategyId[id] = pool.id;
 
         // store orders
-        bool ordersInverted = tokens[0] == pool.token1;
+        bool ordersInverted = tokens[0] == pool.tokens[1];
         _packedOrdersByStrategyId[id] = _packOrders(orders, ordersInverted);
 
         // mint voucher
@@ -523,7 +523,7 @@ abstract contract Strategies is Initializable {
         TradeTokens memory tokens,
         bool ordersInverted
     ) private pure returns (uint256) {
-        uint256 index = tokens.target == pool.token0 ? 0 : 1;
+        uint256 index = tokens.target == pool.tokens[0] ? 0 : 1;
         if (ordersInverted) {
             index = 1 - index;
         }
@@ -891,7 +891,7 @@ abstract contract Strategies is Initializable {
      * retuns tokens sorted accordingly to a strategy orders inversion
      */
     function _sortStrategyTokens(Pool memory pool, bool ordersInverted) private pure returns (Token[2] memory) {
-        return ordersInverted ? [pool.token1, pool.token0] : [pool.token0, pool.token1];
+        return ordersInverted ? [pool.tokens[1], pool.tokens[0]] : pool.tokens;
     }
 
     /**
