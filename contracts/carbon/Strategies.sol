@@ -169,9 +169,6 @@ abstract contract Strategies is Initializable {
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
 
-    // mapping between strategy to its pool
-    mapping(uint256 => uint256) private __poolIdbyStrategyId;
-
     // mapping between a pool id to its strategies ids
     mapping(uint256 => EnumerableSetUpgradeable.UintSet) private _strategiesByPoolIdStorage;
 
@@ -182,7 +179,7 @@ abstract contract Strategies is Initializable {
     mapping(address => uint256) private _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 6] private __gap;
+    uint256[MAX_GAP - 5] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
@@ -265,9 +262,8 @@ abstract contract Strategies is Initializable {
 
         // store id
         _lastStrategyId.increment();
-        uint256 id = _lastStrategyId.current();
+        uint256 id = (uint256(pool.id.toUint128()) << 128) | _lastStrategyId.current().toUint128();
         _strategiesByPoolIdStorage[pool.id].add(id);
-        __poolIdbyStrategyId[id] = pool.id;
 
         // store orders
         bool ordersInverted = tokens[0] == pool.tokens[1];
@@ -352,7 +348,6 @@ abstract contract Strategies is Initializable {
 
         // clear storage
         delete _packedOrdersByStrategyId[strategy.id];
-        delete __poolIdbyStrategyId[strategy.id];
         _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
@@ -864,13 +859,8 @@ abstract contract Strategies is Initializable {
     /**
      * returns the poolId relates to a given strategyId
      */
-    function _poolIdbyStrategyId(uint256 strategyId) internal view returns (uint256) {
-        uint256 id = __poolIdbyStrategyId[strategyId];
-        if (id == 0) {
-            revert StrategyDoesNotExist();
-        }
-
-        return id;
+    function _poolIdbyStrategyId(uint256 strategyId) internal pure returns (uint256) {
+        return strategyId >> 128;
     }
 
     /**

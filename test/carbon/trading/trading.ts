@@ -569,7 +569,7 @@ describe('Trading', () => {
                     await createStrategies(strategies);
 
                     // edit one of the actions to use a strategy that does not exist
-                    tradeActions[2].strategyId = (strategies.length + 1).toString();
+                    tradeActions[2].strategyId = BigNumber.from(tradeActions[2].strategyId).mask(128).or(strategies.length + 1).toString();
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
@@ -584,7 +584,7 @@ describe('Trading', () => {
                             targetSymbol,
                             byTargetAmount
                         })
-                    ).to.be.revertedWithError('StrategyDoesNotExist');
+                    ).to.be.revertedWithError('TokensMismatch');
                 });
             }
         });
