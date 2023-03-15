@@ -298,7 +298,7 @@ abstract contract Strategies is Initializable {
     ) internal {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
-        uint256[3] memory packedOrdersMemory = packedOrders;
+        uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
         (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
         // revert if the strategy mutated since this tx was sent
@@ -539,8 +539,8 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // prepare variables
-            uint256[3] storage packedOrders = _packedOrdersByStrategyId[tradeActions[i].strategyId];
-            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
+            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[tradeActions[i].strategyId];
+            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
             // calculate the orders new values
             uint256 targetTokenIndex = _findTargetOrderIndex(pool, tokens, ordersInverted);
@@ -613,8 +613,8 @@ abstract contract Strategies is Initializable {
     function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
         // fetch data
         address _owner = voucher.ownerOf(id);
-        uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
-        (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
+        uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[id];
+        (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
         // handle sorting
         Token[2] memory sortedTokens = _sortStrategyTokens(pool, ordersInverted);
