@@ -867,7 +867,7 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * returns the poolId relates to a given strategyId
+     * returns the poolId associated with a given strategyId
      */
     function _poolIdbyStrategyId(uint256 strategyId) internal pure returns (uint256) {
         return strategyId >> 128;
