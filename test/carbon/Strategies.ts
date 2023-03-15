@@ -62,7 +62,7 @@ describe('Strategy', () => {
     let voucher: Voucher;
     let tokens: Tokens = {};
 
-    shouldHaveGap('Strategies', '_lastStrategyId');
+    shouldHaveGap('Strategies', '_strategyCounter');
 
     before(async () => {
         [deployer, owner, nonAdmin] = await ethers.getSigners();
