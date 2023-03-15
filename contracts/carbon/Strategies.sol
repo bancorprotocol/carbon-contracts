@@ -163,8 +163,8 @@ abstract contract Strategies is Initializable {
 
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 1500; // 0.15%
 
-    // unique incremental id representing a pool
-    CountersUpgradeable.Counter private _lastStrategyId;
+    // total number of strategies
+    CountersUpgradeable.Counter private _strategyCounter;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
@@ -261,8 +261,8 @@ abstract contract Strategies is Initializable {
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
-        _lastStrategyId.increment();
-        uint256 id = (uint256(pool.id.toUint128()) << 128) | _lastStrategyId.current().toUint128();
+        _strategyCounter.increment();
+        uint256 id = _strategyId(pool.id, _strategyCounter.current());
         _strategiesByPoolIdStorage[pool.id].add(id);
 
         // store orders
@@ -854,6 +854,13 @@ abstract contract Strategies is Initializable {
                 revert InvalidRate();
             }
         }
+    }
+
+    /**
+     * returns the strategyId for a given poolId and a given strategyIndex
+     */
+    function _strategyId(uint256 poolId, uint256 strategyIndex) internal pure returns (uint256) {
+        return (uint256(poolId.toUint128()) << 128) | strategyIndex.toUint128();
     }
 
     /**
