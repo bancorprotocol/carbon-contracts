@@ -147,7 +147,6 @@ abstract contract Strategies is Initializable {
     struct TradeParams {
         address trader;
         TradeTokens tokens;
-        TradeAction[] tradeActions;
         bool byTargetAmount;
         uint128 constraint;
         uint256 txValue;
@@ -377,13 +376,14 @@ abstract contract Strategies is Initializable {
      *
      * - the caller must have approved the source token
      */
-    function _trade(TradeParams memory params) internal returns (SourceAndTargetAmounts memory) {
-        SourceAndTargetAmounts memory totals = SourceAndTargetAmounts({ sourceAmount: 0, targetAmount: 0 });
-
+    function _trade(
+        TradeAction[] calldata tradeActions,
+        TradeParams memory params
+    ) internal returns (SourceAndTargetAmounts memory totals) {
         // process trade actions
-        for (uint256 i = 0; i < params.tradeActions.length; i++) {
+        for (uint256 i = 0; i < tradeActions.length; i++) {
             // prepare variables
-            uint256 strategyId = params.tradeActions[i].strategyId;
+            uint256 strategyId = tradeActions[i].strategyId;
             uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
@@ -401,7 +401,7 @@ abstract contract Strategies is Initializable {
 
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 targetOrder,
-                params.tradeActions[i].amount,
+                tradeActions[i].amount,
                 params.byTargetAmount
             );
 
@@ -442,15 +442,18 @@ abstract contract Strategies is Initializable {
             tradingFeeAmount = amountIncludingFee - totals.sourceAmount;
             tradingFeeToken = address(params.tokens.source);
             totals.sourceAmount = amountIncludingFee;
+            if (totals.sourceAmount > params.constraint) {
+                revert GreaterThanMaxInput();
+            }
         } else {
             uint128 amountIncludingFee = _subtractFee(totals.targetAmount);
             tradingFeeAmount = totals.targetAmount - amountIncludingFee;
             tradingFeeToken = address(params.tokens.target);
             totals.targetAmount = amountIncludingFee;
+            if (totals.targetAmount < params.constraint) {
+                revert LowerThanMinReturn();
+            }
         }
-
-        // revert here if the minReturn/maxInput constraints are unmet
-        _validateConstraints(params.byTargetAmount, totals, params.constraint);
 
         // transfer funds
         _validateDepositAndRefundExcessNativeToken(
@@ -492,27 +495,6 @@ abstract contract Strategies is Initializable {
     function _subtractFee(uint128 amount) private view returns (uint128) {
         // multiply the input amount by `1 - fee`
         return MathEx.mulDivF(amount, PPM_RESOLUTION - _tradingFeePPM, PPM_RESOLUTION).toUint128();
-    }
-
-    /**
-     * @dev validates the minReturn/maxInput constraints
-     */
-    function _validateConstraints(
-        bool byTargetAmount,
-        SourceAndTargetAmounts memory totals,
-        uint128 constraint
-    ) private pure {
-        if (byTargetAmount) {
-            // the source amount required is greater than maxInput
-            if (totals.sourceAmount > constraint) {
-                revert GreaterThanMaxInput();
-            }
-        } else {
-            // the target amount is lower than minReturn
-            if (totals.targetAmount < constraint) {
-                revert LowerThanMinReturn();
-            }
-        }
     }
 
     /**
