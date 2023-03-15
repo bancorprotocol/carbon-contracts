@@ -785,6 +785,9 @@ abstract contract Strategies is Initializable {
     function _unpackOrders(
         uint256[3] memory values
     ) private pure returns (Order[2] memory orders, bool ordersInverted) {
+        if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
+            revert StrategyDoesNotExist();
+        }
         orders = [
             Order({
                 y: uint128(values[0] >> 0),
