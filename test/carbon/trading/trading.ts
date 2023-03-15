@@ -74,7 +74,7 @@ const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: false, inverseOrders: false }
 ];
 
-describe.only('Trading', () => {
+describe('Trading', () => {
     let deployer: SignerWithAddress;
     let marketMaker: SignerWithAddress;
     let trader: SignerWithAddress;
@@ -197,7 +197,6 @@ describe.only('Trading', () => {
         });
         const receipt = await tx.wait();
         gasUsed = gasUsed.add(receipt.gasUsed.mul(receipt.effectiveGasPrice));
-        console.log(receipt.gasUsed.toString());
 
         // prepare variables for assertions
         const tradingFeeAmount = getTradingFeeAmount(byTargetAmount, sourceAmount, targetAmount);
@@ -341,7 +340,7 @@ describe.only('Trading', () => {
         await transfer(deployer, tokens[sourceSymbol], trader, expectedSourceAmount);
     };
 
-    describe.skip('validations', () => {
+    describe('validations', () => {
         describe('reverts when identical tokens are provided', async () => {
             const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
             for (const { byTargetAmount } of permutations) {
