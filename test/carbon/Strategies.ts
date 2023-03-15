@@ -893,6 +893,13 @@ describe('Strategy', () => {
             ).to.be.revertedWithError('PoolDoesNotExist');
         });
 
+        it('reverts when the provided strategy id is zero', async () => {
+            const order = generateTestOrder();
+            await expect(
+                carbonController.connect(owner).updateStrategy(0, [order, order], [order, order])
+            ).to.be.revertedWithError('PoolDoesNotExist');
+        });
+
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
             const order = generateTestOrder();
@@ -1065,6 +1072,12 @@ describe('Strategy', () => {
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)]
                 );
+        });
+
+        it('reverts when provided strategy id is zero', async () => {
+            await createStrategy();
+
+            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
@@ -1270,6 +1283,10 @@ describe('Strategy', () => {
 
         it('reverts when fetching a non existing strategy on a non existing pool', async () => {
             await expect(carbonController.strategy(SID2)).to.be.revertedWithError('PoolDoesNotExist');
+        });
+
+        it('reverts when the provided strategy id is zero', async () => {
+            await expect(carbonController.strategy(0)).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         it('returns the correct strategy', async () => {
