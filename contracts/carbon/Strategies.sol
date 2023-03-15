@@ -520,9 +520,7 @@ abstract contract Strategies is Initializable {
         TradeAction[] calldata tradeActions,
         Pool memory pool,
         bool byTargetAmount
-    ) internal view returns (SourceAndTargetAmounts memory) {
-        SourceAndTargetAmounts memory totals = SourceAndTargetAmounts({ sourceAmount: 0, targetAmount: 0 });
-
+    ) internal view returns (SourceAndTargetAmounts memory totals) {
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // prepare variables
@@ -548,9 +546,6 @@ abstract contract Strategies is Initializable {
         } else {
             totals.targetAmount = _subtractFee(totals.targetAmount);
         }
-
-        // return amounts
-        return totals;
     }
 
     /**
@@ -810,8 +805,7 @@ abstract contract Strategies is Initializable {
         Order memory order,
         uint128 amount,
         bool byTargetAmount
-    ) internal pure returns (SourceAndTargetAmounts memory) {
-        SourceAndTargetAmounts memory amounts = SourceAndTargetAmounts({ sourceAmount: 0, targetAmount: 0 });
+    ) internal pure returns (SourceAndTargetAmounts memory amounts) {
         uint256 y = uint256(order.y);
         uint256 z = uint256(order.z);
         uint256 a = _expandRate(uint256(order.A));
@@ -823,7 +817,6 @@ abstract contract Strategies is Initializable {
             amounts.sourceAmount = amount;
             amounts.targetAmount = _calculateTradeTargetAmount(amount, y, z, a, b).toUint128();
         }
-        return amounts;
     }
 
     /**
