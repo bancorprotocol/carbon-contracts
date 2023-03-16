@@ -12,10 +12,10 @@ import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
-const getSid = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
-const SID1 = getSid(1, 1);
-const SID2 = getSid(1, 2);
-const SID3 = getSid(2, 3);
+const generateStrategyId = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
+const SID1 = generateStrategyId(1, 1);
+const SID2 = generateStrategyId(1, 2);
+const SID3 = generateStrategyId(2, 3);
 
 interface TestOrder {
     y: BigNumber;
