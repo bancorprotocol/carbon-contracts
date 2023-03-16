@@ -213,9 +213,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function deleteStrategy(
-        uint256 strategyId
-    ) external nonReentrant whenNotPaused onlyProxyDelegate {
+    function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
         // find strategy, reverts if none
         Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
         Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);

@@ -1083,7 +1083,9 @@ describe('Strategy', () => {
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
 
-            await expect(carbonController.connect(nonAdmin).deleteStrategy(SID1)).to.be.revertedWithError('AccessDenied');
+            await expect(carbonController.connect(nonAdmin).deleteStrategy(SID1)).to.be.revertedWithError(
+                'AccessDenied'
+            );
         });
 
         it('reverts when trying to delete a non existing strategy on an existing pool', async () => {
@@ -1108,7 +1110,9 @@ describe('Strategy', () => {
                 .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
             await createStrategy();
             await carbonController.connect(nonAdmin).pause();
-            await expect(carbonController.connect(owner).deleteStrategy(SID1)).to.be.revertedWithError('Pausable: paused');
+            await expect(carbonController.connect(owner).deleteStrategy(SID1)).to.be.revertedWithError(
+                'Pausable: paused'
+            );
         });
     });
 
