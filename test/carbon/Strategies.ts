@@ -1039,7 +1039,7 @@ describe('Strategy', () => {
                     await carbonController.connect(owner).deleteStrategy(strategy.id);
 
                     // assert after deleting
-                    await expect(carbonController.connect(owner).strategy(strategy.id)).to.be.revertedWith(
+                    await expect(carbonController.connect(owner).strategy(strategy.id)).to.be.revertedWithError(
                         'ERC721: invalid token ID'
                     );
                     strategiesByPool = await carbonController.strategiesByPool(
@@ -1280,7 +1280,7 @@ describe('Strategy', () => {
     describe('fetch by a single id', async () => {
         it('reverts when fetching a non existing strategy on an existing pool', async () => {
             await createStrategy();
-            await expect(carbonController.strategy(SID2)).to.be.revertedWith('ERC721: invalid token ID');
+            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
         it('reverts when fetching a non existing strategy on a non existing pool', async () => {
