@@ -534,7 +534,7 @@ describe('Trading', () => {
                     await createStrategies(testCase2.strategies);
 
                     // edit one of the actions to use the extra strategy created
-                    tradeActions[2].strategyId = (testCase.strategies.length + 1).toString();
+                    tradeActions[2].strategyId = BigNumber.from(2).shl(128).or(strategies.length + 1).toString();
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
@@ -569,7 +569,7 @@ describe('Trading', () => {
                     await createStrategies(strategies);
 
                     // edit one of the actions to use a strategy that does not exist
-                    tradeActions[2].strategyId = (strategies.length + 1).toString();
+                    tradeActions[2].strategyId = BigNumber.from(2).shl(128).or(1).toString();
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);

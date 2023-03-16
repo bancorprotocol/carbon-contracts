@@ -47,7 +47,6 @@ contract CarbonController is
     error InsufficientNativeTokenReceived();
     error DeadlineExpired();
     error InvalidTradeActionAmount();
-    error InvalidStrategyId();
     error NoIdsProvided();
 
     /**
@@ -188,7 +187,7 @@ contract CarbonController is
         uint256 strategyId,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
-    ) external payable nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
+    ) external payable nonReentrant whenNotPaused onlyProxyDelegate {
         Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
 
         // only the owner of the strategy is allowed to delete it
@@ -213,9 +212,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function deleteStrategy(
-        uint256 strategyId
-    ) external nonReentrant whenNotPaused greaterThanZero(strategyId) onlyProxyDelegate {
+    function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
         // find strategy, reverts if none
         Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
         Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
@@ -232,7 +229,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function strategy(uint256 id) external view greaterThanZero(id) returns (Strategy memory) {
+    function strategy(uint256 id) external view returns (Strategy memory) {
         Pool memory __pool = _poolById(_poolIdbyStrategyId(id));
         return _strategy(id, _voucher, __pool);
     }
@@ -427,13 +424,8 @@ contract CarbonController is
         // validate tradeActions
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // make sure all tradeActions are provided with a positive amount
-            if (tradeActions[i].amount <= 0) {
+            if (tradeActions[i].amount == 0) {
                 revert InvalidTradeActionAmount();
-            }
-
-            // validate strategyId value
-            if (tradeActions[i].strategyId <= 0) {
-                revert InvalidStrategyId();
             }
         }
     }

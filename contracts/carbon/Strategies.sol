@@ -162,14 +162,11 @@ abstract contract Strategies is Initializable {
 
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 1500; // 0.15%
 
-    // unique incremental id representing a pool
-    CountersUpgradeable.Counter private _lastStrategyId;
+    // total number of strategies
+    CountersUpgradeable.Counter private _strategyCounter;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
-
-    // mapping between strategy to its pool
-    mapping(uint256 => uint256) private __poolIdbyStrategyId;
 
     // mapping between a pool id to its strategies ids
     mapping(uint256 => EnumerableSetUpgradeable.UintSet) private _strategiesByPoolIdStorage;
@@ -181,7 +178,7 @@ abstract contract Strategies is Initializable {
     mapping(address => uint256) private _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 6] private __gap;
+    uint256[MAX_GAP - 5] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
@@ -263,10 +260,9 @@ abstract contract Strategies is Initializable {
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
-        _lastStrategyId.increment();
-        uint256 id = _lastStrategyId.current();
+        _strategyCounter.increment();
+        uint256 id = _strategyId(pool.id, _strategyCounter.current());
         _strategiesByPoolIdStorage[pool.id].add(id);
-        __poolIdbyStrategyId[id] = pool.id;
 
         // store orders
         bool ordersInverted = tokens[0] == pool.tokens[1];
@@ -301,7 +297,7 @@ abstract contract Strategies is Initializable {
     ) internal {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
-        uint256[3] memory packedOrdersMemory = packedOrders;
+        uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
         (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
         // revert if the strategy mutated since this tx was sent
@@ -351,7 +347,6 @@ abstract contract Strategies is Initializable {
 
         // clear storage
         delete _packedOrdersByStrategyId[strategy.id];
-        delete __poolIdbyStrategyId[strategy.id];
         _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
@@ -524,8 +519,8 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // prepare variables
-            uint256[3] storage packedOrders = _packedOrdersByStrategyId[tradeActions[i].strategyId];
-            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrders);
+            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[tradeActions[i].strategyId];
+            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
             // calculate the orders new values
             uint256 targetTokenIndex = _findTargetOrderIndex(pool, tokens, ordersInverted);
@@ -595,8 +590,8 @@ abstract contract Strategies is Initializable {
     function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
         // fetch data
         address _owner = voucher.ownerOf(id);
-        uint256[3] storage packedOrders = _packedOrdersByStrategyId[id];
-        (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrders);
+        uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[id];
+        (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
         // handle sorting
         Token[2] memory sortedTokens = _sortStrategyTokens(pool, ordersInverted);
@@ -767,6 +762,9 @@ abstract contract Strategies is Initializable {
     function _unpackOrders(
         uint256[3] memory values
     ) private pure returns (Order[2] memory orders, bool ordersInverted) {
+        if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
+            revert StrategyDoesNotExist();
+        }
         orders = [
             Order({
                 y: uint128(values[0] >> 0),
@@ -837,15 +835,17 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * returns the poolId relates to a given strategyId
+     * returns the strategyId for a given poolId and a given strategyIndex
      */
-    function _poolIdbyStrategyId(uint256 strategyId) internal view returns (uint256) {
-        uint256 id = __poolIdbyStrategyId[strategyId];
-        if (id == 0) {
-            revert StrategyDoesNotExist();
-        }
+    function _strategyId(uint256 poolId, uint256 strategyIndex) internal pure returns (uint256) {
+        return (uint256(poolId.toUint128()) << 128) | strategyIndex.toUint128();
+    }
 
-        return id;
+    /**
+     * returns the poolId associated with a given strategyId
+     */
+    function _poolIdbyStrategyId(uint256 strategyId) internal pure returns (uint256) {
+        return strategyId >> 128;
     }
 
     /**

@@ -12,6 +12,11 @@ import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
+const generateStrategyId = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
+const SID1 = generateStrategyId(1, 1);
+const SID2 = generateStrategyId(1, 2);
+const SID3 = generateStrategyId(2, 3);
+
 interface TestOrder {
     y: BigNumber;
     z: BigNumber;
@@ -57,7 +62,7 @@ describe('Strategy', () => {
     let voucher: Voucher;
     let tokens: Tokens = {};
 
-    shouldHaveGap('Strategies', '_lastStrategyId');
+    shouldHaveGap('Strategies', '_strategyCounter');
 
     before(async () => {
         [deployer, owner, nonAdmin] = await ethers.getSigners();
@@ -142,7 +147,7 @@ describe('Strategy', () => {
             owner,
             token0,
             token1,
-            strategyId: 1,
+            strategyId: SID1,
             skipFunding: false,
             order0Delta: 100,
             order1Delta: -100
@@ -263,7 +268,7 @@ describe('Strategy', () => {
                     await createStrategy({ token0: _token0, token1: _token1, token0Amount, token1Amount });
 
                     // fetch the strategy created
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
 
                     // prepare a result object
                     const result = {
@@ -283,7 +288,7 @@ describe('Strategy', () => {
                     const _tokens = [tokens[token0], tokens[token1]];
 
                     const expectedResult: StrategyStruct = {
-                        id: '1',
+                        id: SID1.toString(),
                         owner: owner.address,
                         tokens: [_tokens[0].address, _tokens[1].address],
                         orders: [
@@ -324,7 +329,7 @@ describe('Strategy', () => {
             await expect(tx)
                 .to.emit(carbonController, 'StrategyCreated')
                 .withArgs(
-                    BigNumber.from(1),
+                    SID1,
                     owner.address,
                     token0.address,
                     token1.address,
@@ -338,20 +343,20 @@ describe('Strategy', () => {
             const balance = await voucher.balanceOf(owner.address);
             const tokenId = await voucher.tokenOfOwnerByIndex(owner.address, balance.sub(1));
             expect(balance).to.eq(1);
-            expect(tokenId).to.eq(1);
+            expect(tokenId).to.eq(SID1);
         });
 
         it('emits the voucher Transfer event', async () => {
             const { tx } = await createStrategy();
-            await expect(tx).to.emit(voucher, 'Transfer').withArgs(ZERO_ADDRESS, owner.address, 1);
+            await expect(tx).to.emit(voucher, 'Transfer').withArgs(ZERO_ADDRESS, owner.address, SID1);
         });
 
         it('increases strategyId', async () => {
             await createStrategy();
             await createStrategy();
 
-            const strategy = await carbonController.strategy(2);
-            expect(strategy.id).to.eq(2);
+            const strategy = await carbonController.strategy(SID2);
+            expect(strategy.id).to.eq(SID2);
         });
 
         describe('balances are updated correctly', () => {
@@ -495,7 +500,7 @@ describe('Strategy', () => {
                     const _token0 = tokens[token0];
                     const _token1 = tokens[token1];
                     await createStrategy({ token0: _token0, token1: _token1 });
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
                     expect(strategy.tokens[0]).to.eq(_token0.address);
                     expect(strategy.tokens[1]).to.eq(_token1.address);
                 });
@@ -615,7 +620,7 @@ describe('Strategy', () => {
                     });
 
                     // fetch the strategy created
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
 
                     // prepare a result object
                     const result = {
@@ -633,7 +638,7 @@ describe('Strategy', () => {
                     // prepare the expected result object
                     const deltas = [order0Delta, order1Delta];
                     const expectedResult: StrategyStruct = {
-                        id: '1',
+                        id: SID1.toString(),
                         owner: owner.address,
                         tokens: [_tokens[0].address, _tokens[1].address],
                         orders: [
@@ -701,10 +706,10 @@ describe('Strategy', () => {
                     // update strategy
                     await carbonController
                         .connect(owner)
-                        .updateStrategy(1, [order, order], [newOrders[0], newOrders[1]]);
+                        .updateStrategy(SID1, [order, order], [newOrders[0], newOrders[1]]);
 
                     // fetch the strategy created
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
 
                     // prepare a result object
                     const result = {
@@ -721,7 +726,7 @@ describe('Strategy', () => {
 
                     // prepare the expected result object
                     const expectedResult: StrategyStruct = {
-                        id: '1',
+                        id: SID1.toString(),
                         owner: owner.address,
                         tokens: [_token0.address, _token1.address],
                         orders: [newOrders[0], newOrders[1]]
@@ -829,7 +834,7 @@ describe('Strategy', () => {
                         await createStrategy();
                         const order: any = generateTestOrder();
                         order[key] = BigNumber.from(value).add(order[key]);
-                        const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order]);
+                        const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order]);
                         await expect(tx).to.have.been.revertedWithError('OutDated');
                     });
                 }
@@ -847,14 +852,14 @@ describe('Strategy', () => {
             const expectedOrder = [y.add(delta), z.add(delta), A.add(delta), B.add(delta)];
             await expect(tx)
                 .to.emit(carbonController, 'StrategyUpdated')
-                .withArgs(BigNumber.from(1), token0.address, token1.address, expectedOrder, expectedOrder);
+                .withArgs(SID1, token0.address, token1.address, expectedOrder, expectedOrder);
         });
 
         it('reverts when unnecessary native token was sent', async () => {
             const order = generateTestOrder();
             await createStrategy();
 
-            const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order], {
+            const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order], {
                 value: 100
             });
             await expect(tx).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
@@ -872,26 +877,34 @@ describe('Strategy', () => {
             await expect(tx).to.be.revertedWithError('Pausable: paused');
         });
 
-        it('reverts when trying to update a non existing strategy', async () => {
+        it('reverts when trying to update a non existing strategy on an existing pool', async () => {
             await createStrategy();
             const order = generateTestOrder();
             await expect(
-                carbonController.connect(owner).updateStrategy(2, [order, order], [order, order])
-            ).to.be.revertedWithError('StrategyDoesNotExist');
+                carbonController.connect(owner).updateStrategy(SID2, [order, order], [order, order])
+            ).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
-        it('reverts when the provided id is invalid', async () => {
+        it('reverts when trying to update a non existing strategy on a non existing pool', async () => {
+            await createStrategy();
+            const order = generateTestOrder();
+            await expect(
+                carbonController.connect(owner).updateStrategy(SID3, [order, order], [order, order])
+            ).to.be.revertedWithError('PoolDoesNotExist');
+        });
+
+        it('reverts when the provided strategy id is zero', async () => {
             const order = generateTestOrder();
             await expect(
                 carbonController.connect(owner).updateStrategy(0, [order, order], [order, order])
-            ).to.be.revertedWithError('ZeroValue');
+            ).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
             const order = generateTestOrder();
             await expect(
-                carbonController.connect(nonAdmin).updateStrategy(1, [order, order], [order, order])
+                carbonController.connect(nonAdmin).updateStrategy(SID1, [order, order], [order, order])
             ).to.be.revertedWithError('AccessDenied');
         });
 
@@ -912,7 +925,7 @@ describe('Strategy', () => {
 
                     await createStrategy();
                     await expect(
-                        carbonController.connect(owner).updateStrategy(1, [order, order], [order0, order1])
+                        carbonController.connect(owner).updateStrategy(SID1, [order, order], [order0, order1])
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
             }
@@ -928,7 +941,7 @@ describe('Strategy', () => {
 
                         await createStrategy();
                         await expect(
-                            carbonController.connect(owner).updateStrategy(1, oldOrders, newOrders)
+                            carbonController.connect(owner).updateStrategy(SID1, oldOrders, newOrders)
                         ).to.be.revertedWithError('InvalidRate');
                     });
                 }
@@ -943,7 +956,7 @@ describe('Strategy', () => {
                     await createStrategy({ token0: tokens[token0], token1: tokens[token1] });
                     const beforeTotalSupply = await voucher.totalSupply();
 
-                    await carbonController.connect(owner).deleteStrategy(1);
+                    await carbonController.connect(owner).deleteStrategy(SID1);
                     const afterTotalSupply = await voucher.totalSupply();
 
                     expect(beforeTotalSupply).to.eq(1);
@@ -980,7 +993,7 @@ describe('Strategy', () => {
                     }
 
                     // delete strategy
-                    const tx = await carbonController.connect(owner).deleteStrategy(1);
+                    const tx = await carbonController.connect(owner).deleteStrategy(SID1);
                     const receipt = await tx.wait();
                     const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
 
@@ -1012,22 +1025,22 @@ describe('Strategy', () => {
                     await createStrategy({ token0: tokens[token0], token1: tokens[token1] });
 
                     // assert before deleting
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
                     let strategiesByPool = await carbonController.strategiesByPool(
                         tokens[token0].address,
                         tokens[token1].address,
                         0,
                         0
                     );
-                    expect(strategy.id).to.eq(1);
-                    expect(strategiesByPool[0].id).to.eq(1);
+                    expect(strategy.id).to.eq(SID1);
+                    expect(strategiesByPool[0].id).to.eq(SID1);
 
                     // delete strategy
                     await carbonController.connect(owner).deleteStrategy(strategy.id);
 
                     // assert after deleting
                     await expect(carbonController.connect(owner).strategy(strategy.id)).to.be.revertedWithError(
-                        'StrategyDoesNotExist'
+                        'ERC721: invalid token ID'
                     );
                     strategiesByPool = await carbonController.strategiesByPool(
                         tokens[token0].address,
@@ -1046,13 +1059,13 @@ describe('Strategy', () => {
 
             // prepare variables and transaction
             const { y, z, A, B } = generateTestOrder();
-            const tx = carbonController.connect(owner).deleteStrategy(1);
+            const tx = carbonController.connect(owner).deleteStrategy(SID1);
 
             // assert
             await expect(tx)
                 .to.emit(carbonController, 'StrategyDeleted')
                 .withArgs(
-                    BigNumber.from(1),
+                    SID1,
                     owner.address,
                     token0.address,
                     token1.address,
@@ -1061,23 +1074,33 @@ describe('Strategy', () => {
                 );
         });
 
-        it('reverts when provided strategy id is not valid', async () => {
+        it('reverts when provided strategy id is zero', async () => {
             await createStrategy();
 
-            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('ZeroValue');
+            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
 
-            await expect(carbonController.connect(nonAdmin).deleteStrategy(1)).to.be.revertedWithError('AccessDenied');
+            await expect(carbonController.connect(nonAdmin).deleteStrategy(SID1)).to.be.revertedWithError(
+                'AccessDenied'
+            );
         });
 
-        it('reverts when trying to delete a non existing strategy', async () => {
+        it('reverts when trying to delete a non existing strategy on an existing pool', async () => {
             await createStrategy();
 
-            await expect(carbonController.connect(owner).deleteStrategy(2)).to.be.revertedWithError(
-                'StrategyDoesNotExist'
+            await expect(carbonController.connect(owner).deleteStrategy(SID2)).to.be.revertedWithError(
+                'ERC721: invalid token ID'
+            );
+        });
+
+        it('reverts when trying to delete a non existing strategy on a non existing pool', async () => {
+            await createStrategy();
+
+            await expect(carbonController.connect(owner).deleteStrategy(SID3)).to.be.revertedWithError(
+                'PoolDoesNotExist'
             );
         });
 
@@ -1087,7 +1110,9 @@ describe('Strategy', () => {
                 .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
             await createStrategy();
             await carbonController.connect(nonAdmin).pause();
-            await expect(carbonController.connect(owner).deleteStrategy(1)).to.be.revertedWithError('Pausable: paused');
+            await expect(carbonController.connect(owner).deleteStrategy(SID1)).to.be.revertedWithError(
+                'Pausable: paused'
+            );
         });
     });
 
@@ -1162,8 +1187,8 @@ describe('Strategy', () => {
 
             let strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
             expect(strategies.length).to.eq(2);
-            expect(strategies[0].id).to.eq(1);
-            expect(strategies[1].id).to.eq(2);
+            expect(strategies[0].id).to.eq(SID1);
+            expect(strategies[1].id).to.eq(SID2);
             expect(strategies[0].tokens[0]).to.eq(token0.address);
             expect(strategies[0].tokens[1]).to.eq(token1.address);
             expect(strategies[1].tokens[0]).to.eq(token0.address);
@@ -1171,7 +1196,7 @@ describe('Strategy', () => {
 
             strategies = await carbonController.strategiesByPool(token0.address, token2.address, 0, 0);
             expect(strategies.length).to.eq(1);
-            expect(strategies[0].id).to.eq(3);
+            expect(strategies[0].id).to.eq(SID3);
             expect(strategies[0].tokens[0]).to.eq(token0.address);
             expect(strategies[0].tokens[1]).to.eq(token2.address);
         });
@@ -1253,19 +1278,24 @@ describe('Strategy', () => {
     });
 
     describe('fetch by a single id', async () => {
-        it('reverts when fetching a strategy with an id that does not exist', async () => {
-            await expect(carbonController.strategy(2)).to.be.revertedWithError('StrategyDoesNotExist');
+        it('reverts when fetching a non existing strategy on an existing pool', async () => {
+            await createStrategy();
+            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
-        it('reverts when the provided id is invalid', async () => {
-            await expect(carbonController.strategy(0)).to.be.revertedWithError('ZeroValue');
+        it('reverts when fetching a non existing strategy on a non existing pool', async () => {
+            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('PoolDoesNotExist');
+        });
+
+        it('reverts when the provided strategy id is zero', async () => {
+            await expect(carbonController.strategy(0)).to.be.revertedWithError('PoolDoesNotExist');
         });
 
         it('returns the correct strategy', async () => {
             await createStrategy();
             await createStrategy();
-            const strategy = await carbonController.strategy(2);
-            expect(strategy.id).to.eq(2);
+            const strategy = await carbonController.strategy(SID2);
+            expect(strategy.id).to.eq(SID2);
         });
     });
 
@@ -1276,7 +1306,7 @@ describe('Strategy', () => {
                 await createStrategy();
 
                 // transfer the voucher
-                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, 1);
+                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
                 // original owner should not have a voucher
                 let balance = await voucher.balanceOf(owner.address);
@@ -1286,7 +1316,7 @@ describe('Strategy', () => {
                 balance = await voucher.balanceOf(nonAdmin.address);
                 const tokenId = await voucher.tokenOfOwnerByIndex(nonAdmin.address, balance.sub(1));
                 expect(balance).to.eq(1);
-                expect(tokenId).to.eq(1);
+                expect(tokenId).to.eq(SID1);
             });
 
             it('updates the strategy owner following a transfer', async () => {
@@ -1294,10 +1324,10 @@ describe('Strategy', () => {
                 await createStrategy();
 
                 // transfer the voucher
-                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, 1);
+                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
                 // fetch the strategy
-                const strategy = await carbonController.strategy(1);
+                const strategy = await carbonController.strategy(SID1);
 
                 // the strategy should have a new owner
                 expect(strategy.owner).to.eq(nonAdmin.address);
@@ -1312,7 +1342,7 @@ describe('Strategy', () => {
                     voucher.connect(owner).transferFrom(owner.address, deployer.address, 0)
                 ).to.have.been.revertedWithError('ERC721: invalid token ID');
                 await expect(
-                    voucher.connect(owner).transferFrom(owner.address, deployer.address, 2)
+                    voucher.connect(owner).transferFrom(owner.address, deployer.address, SID2)
                 ).to.have.been.revertedWithError('ERC721: invalid token ID');
             });
 
@@ -1322,7 +1352,7 @@ describe('Strategy', () => {
 
                 // assert
                 await expect(
-                    voucher.connect(owner).transferFrom(owner.address, ZERO_ADDRESS, 1)
+                    voucher.connect(owner).transferFrom(owner.address, ZERO_ADDRESS, SID1)
                 ).to.have.been.revertedWithError('ERC721: transfer to the zero address');
             });
 
@@ -1331,10 +1361,10 @@ describe('Strategy', () => {
                 await createStrategy();
 
                 // transfer the voucher
-                const tx = voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, 1);
+                const tx = voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
                 // assert
-                await expect(tx).to.emit(voucher, 'Transfer').withArgs(owner.address, nonAdmin.address, 1);
+                await expect(tx).to.emit(voucher, 'Transfer').withArgs(owner.address, nonAdmin.address, SID1);
             });
         });
 
@@ -1344,7 +1374,7 @@ describe('Strategy', () => {
                 await createStrategy();
                 await voucher.setBaseURI('ipfs://test321');
                 await voucher.useGlobalURI(true);
-                const result = await voucher.tokenURI(1);
+                const result = await voucher.tokenURI(SID1);
                 expect(result).to.eq('ipfs://test321');
             });
 
@@ -1353,8 +1383,8 @@ describe('Strategy', () => {
                 await voucher.setBaseURI('ipfs://test123/');
                 await voucher.useGlobalURI(false);
                 await createStrategy();
-                const result = await voucher.tokenURI(1);
-                expect(result).to.eq('ipfs://test123/1');
+                const result = await voucher.tokenURI(SID1);
+                expect(result).to.eq(`ipfs://test123/${SID1}`);
             });
 
             it('generates a unique URI with baseExtension', async () => {
@@ -1363,8 +1393,8 @@ describe('Strategy', () => {
                 await voucher.setBaseExtension('.json');
                 await voucher.useGlobalURI(false);
                 await createStrategy();
-                const result = await voucher.tokenURI(1);
-                expect(result).to.eq('ipfs://test123/1.json');
+                const result = await voucher.tokenURI(SID1);
+                expect(result).to.eq(`ipfs://test123/${SID1}.json`);
             });
         });
 
