@@ -275,13 +275,12 @@ contract CarbonController is
         TradeParams memory params = TradeParams({
             trader: msg.sender,
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
-            tradeActions: tradeActions,
             byTargetAmount: false,
             constraint: minReturn,
             txValue: msg.value,
             pool: _pool
         });
-        SourceAndTargetAmounts memory amounts = _trade(params);
+        SourceAndTargetAmounts memory amounts = _trade(tradeActions, params);
         return amounts.targetAmount;
     }
 
@@ -308,13 +307,12 @@ contract CarbonController is
         TradeParams memory params = TradeParams({
             trader: msg.sender,
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
-            tradeActions: tradeActions,
             byTargetAmount: true,
             constraint: maxInput,
             txValue: msg.value,
             pool: _pool
         });
-        SourceAndTargetAmounts memory amounts = _trade(params);
+        SourceAndTargetAmounts memory amounts = _trade(tradeActions, params);
         return amounts.sourceAmount;
     }
 
