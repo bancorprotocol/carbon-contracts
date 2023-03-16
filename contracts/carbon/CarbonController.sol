@@ -47,7 +47,6 @@ contract CarbonController is
     error InsufficientNativeTokenReceived();
     error DeadlineExpired();
     error InvalidTradeActionAmount();
-    error InvalidStrategyId();
     error NoIdsProvided();
 
     /**
@@ -425,13 +424,8 @@ contract CarbonController is
         // validate tradeActions
         for (uint256 i = 0; i < tradeActions.length; i++) {
             // make sure all tradeActions are provided with a positive amount
-            if (tradeActions[i].amount <= 0) {
+            if (tradeActions[i].amount == 0) {
                 revert InvalidTradeActionAmount();
-            }
-
-            // validate strategyId value
-            if (tradeActions[i].strategyId <= 0) {
-                revert InvalidStrategyId();
             }
         }
     }
