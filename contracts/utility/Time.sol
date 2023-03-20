@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity 0.8.19;
 
 /**
  * @dev this contract abstracts the block timestamp in order to allow for more flexible control in tests
