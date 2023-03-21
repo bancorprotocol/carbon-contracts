@@ -160,7 +160,7 @@ abstract contract Strategies is Initializable {
 
     uint256 private constant ONE = 1 << 48;
 
-    uint32 private constant DEFAULT_TRADING_FEE_PPM = 1500; // 0.15%
+    uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
     // total number of strategies
     CountersUpgradeable.Counter private _strategyCounter;
