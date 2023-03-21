@@ -2,14 +2,14 @@
 pragma solidity 0.8.19;
 
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import { ERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Utils } from "../utility/Utils.sol";
 import { IVoucher } from "./interfaces/IVoucher.sol";
 import { CarbonController } from "../carbon/CarbonController.sol";
 
-contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
+contract Voucher is IVoucher, ERC721, Utils, Ownable {
     using Strings for uint256;
 
     error CarbonControllerNotSet();
@@ -25,6 +25,9 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
 
     // the suffix of a dynamic URI for e.g. `.json`
     string private _baseExtension;
+
+    // a mapping between an owner to its tokenIds
+    mapping(address => EnumerableSet.UintSet) private _owned;
 
     /**
      @dev triggered when updating useGlobalURI
@@ -59,15 +62,19 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     /**
      * @inheritdoc IVoucher
      */
-    function mint(address provider, uint256 strategyId) external only(address(_carbonController)) {
-        _safeMint(provider, strategyId);
+    function mint(address provider, uint256 tokenId) external only(address(_carbonController)) {
+        _safeMint(provider, tokenId);
+
+        _owned[provider].add(tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(uint256 strategyId) external only(address(_carbonController)) {
-        _burn(strategyId);
+    function burn(address provider, uint256 tokenId) external only(address(_carbonController)) {
+        _burn(tokenId);
+
+        _owned[provider].remove(tokenId);
     }
 
     /**
