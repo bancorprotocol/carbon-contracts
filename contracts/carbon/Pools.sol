@@ -63,7 +63,7 @@ abstract contract Pools is Initializable {
         Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
         // increment pool id
-        _lastPoolId += 1;
+        _lastPoolId++;
         uint256 id = _lastPoolId;
 
         // store pool
