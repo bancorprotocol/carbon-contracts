@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { EnumerableSetUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import { MathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
@@ -121,7 +120,6 @@ struct TradeAction {
 }
 
 abstract contract Strategies is Initializable {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using TokenLibrary for Token;
     using Address for address payable;
@@ -163,7 +161,7 @@ abstract contract Strategies is Initializable {
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
     // total number of strategies
-    CountersUpgradeable.Counter private _strategyCounter;
+    uint256 private _strategyCounter;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
@@ -260,8 +258,8 @@ abstract contract Strategies is Initializable {
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
-        _strategyCounter.increment();
-        uint256 id = _strategyId(pool.id, _strategyCounter.current());
+        _strategyCounter += 1;
+        uint256 id = _strategyId(pool.id, _strategyCounter);
         _strategiesByPoolIdStorage[pool.id].add(id);
 
         // store orders
