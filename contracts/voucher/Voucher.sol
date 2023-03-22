@@ -95,12 +95,11 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
         string memory baseURI = _baseURI();
-        if (_useGlobalURI == true) {
+        if (_useGlobalURI) {
             return baseURI;
-        } else {
-            return
-                bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), _baseExtension)) : "";
         }
+
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), _baseExtension)) : "";
     }
 
     /**

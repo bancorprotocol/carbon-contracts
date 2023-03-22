@@ -58,7 +58,7 @@ abstract contract Pools is Initializable {
      * @dev generates and stores a new pool, tokens are assumed unique and valid
      */
     function _createPool(Token token0, Token token1) internal returns (Pool memory) {
-        // validate pool existance
+        // validate pool existence
         if (_poolExists(token0, token1)) {
             revert PoolAlreadyExists();
         }
@@ -86,7 +86,7 @@ abstract contract Pools is Initializable {
         // sort tokens
         Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
-        // validate pool existance
+        // validate pool existence
         if (!_poolExists(token0, token1)) {
             revert PoolDoesNotExist();
         }
@@ -105,7 +105,7 @@ abstract contract Pools is Initializable {
     }
 
     /**
-     * @dev check for the existance of a pool (pool id's are sequential intergers starting at 1)
+     * @dev check for the existence of a pool (pool id's are sequential integers starting at 1)
      */
     function _poolExists(Token token0, Token token1) internal view returns (bool) {
         // sort tokens

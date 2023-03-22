@@ -14,7 +14,7 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns the type of the pool
      */
-    function controllerType() external view returns (uint16);
+    function controllerType() external pure returns (uint16);
 
     /**
      * @dev returns the trading fee (in units of PPM)

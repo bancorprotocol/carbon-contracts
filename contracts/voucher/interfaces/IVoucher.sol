@@ -8,7 +8,7 @@ import { IERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensio
  */
 interface IVoucher is IERC721Enumerable {
     /**
-     * @dev creatds a new voucher token for the given strategyId, transfers it to the provider
+     * @dev creates a new voucher token for the given strategyId, transfers it to the provider
      *
      * requirements:
      *
@@ -18,7 +18,7 @@ interface IVoucher is IERC721Enumerable {
     function mint(address provider, uint256 strategyId) external;
 
     /**
-     * @dev destorys the voucher token for the given strategyId
+     * @dev destroys the voucher token for the given strategyId
      *
      * requirements:
      *

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
@@ -16,7 +15,7 @@ import { OnlyProxyDelegate } from "../utility/OnlyProxyDelegate.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
 
 /**
- * @dev Carbon Contrller contract
+ * @dev Carbon Controller contract
  */
 contract CarbonController is
     ICarbonController,
@@ -28,7 +27,6 @@ contract CarbonController is
     OnlyProxyDelegate,
     Utils
 {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
     using TokenLibrary for Token;
 
     // the emergency manager role is required to pause/unpause
@@ -71,11 +69,11 @@ contract CarbonController is
      * @dev initializes the contract and its parents
      */
     function __CarbonController_init() internal onlyInitializing {
+        __Pools_init();
+        __Strategies_init();
         __Upgradeable_init();
         __ReentrancyGuard_init();
         __Pausable_init();
-        __Strategies_init();
-        __Pools_init();
 
         __CarbonController_init_unchained();
     }
@@ -100,7 +98,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function controllerType() external view virtual returns (uint16) {
+    function controllerType() external pure virtual returns (uint16) {
         return CONTROLLER_TYPE;
     }
 
@@ -188,7 +186,7 @@ contract CarbonController is
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate {
-        Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
+        Pool memory __pool = _poolById(_poolIdByStrategyId(strategyId));
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
@@ -214,7 +212,7 @@ contract CarbonController is
      */
     function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
         // find strategy, reverts if none
-        Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
+        Pool memory __pool = _poolById(_poolIdByStrategyId(strategyId));
         Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
 
         // only the owner of the strategy is allowed to delete it
@@ -230,7 +228,7 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function strategy(uint256 id) external view returns (Strategy memory) {
-        Pool memory __pool = _poolById(_poolIdbyStrategyId(id));
+        Pool memory __pool = _poolById(_poolIdByStrategyId(id));
         return _strategy(id, _voucher, __pool);
     }
 
@@ -395,7 +393,7 @@ contract CarbonController is
     }
 
     /**
-     * performs all necessary valdations on the trade parameters
+     * performs all necessary validations on the trade parameters
      */
     function _validateTradeParams(
         Token sourceToken,

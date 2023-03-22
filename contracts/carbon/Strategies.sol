@@ -384,7 +384,7 @@ abstract contract Strategies is Initializable {
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
             // make sure strategyIds match the provided source/target tokens
-            if (_poolIdbyStrategyId(strategyId) != params.pool.id) {
+            if (_poolIdByStrategyId(strategyId) != params.pool.id) {
                 revert TokensMismatch();
             }
 
@@ -462,7 +462,7 @@ abstract contract Strategies is Initializable {
         // update fee counters
         _accumulatedFees[tradingFeeToken] += tradingFeeAmount;
 
-        // tokens traded sucesfully, emit event
+        // tokens traded successfully, emit event
         emit TokensTraded({
             trader: params.trader,
             sourceToken: address(params.tokens.source),
@@ -585,7 +585,7 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     @dev retuns a strategy object matching the provided id.
+     @dev returns a strategy object matching the provided id.
      */
     function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
         // fetch data
@@ -844,7 +844,7 @@ abstract contract Strategies is Initializable {
     /**
      * returns the poolId associated with a given strategyId
      */
-    function _poolIdbyStrategyId(uint256 strategyId) internal pure returns (uint256) {
+    function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint256) {
         return strategyId >> 128;
     }
 
@@ -863,7 +863,7 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * retuns tokens sorted accordingly to a strategy orders inversion
+     * returns tokens sorted accordingly to a strategy orders inversion
      */
     function _sortStrategyTokens(Pool memory pool, bool ordersInverted) private pure returns (Token[2] memory) {
         return ordersInverted ? [pool.tokens[1], pool.tokens[0]] : pool.tokens;
