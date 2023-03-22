@@ -69,11 +69,11 @@ contract CarbonController is
      * @dev initializes the contract and its parents
      */
     function __CarbonController_init() internal onlyInitializing {
+        __Pools_init();
+        __Strategies_init();
         __Upgradeable_init();
         __ReentrancyGuard_init();
         __Pausable_init();
-        __Strategies_init();
-        __Pools_init();
 
         __CarbonController_init_unchained();
     }
