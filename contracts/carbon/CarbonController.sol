@@ -98,7 +98,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function controllerType() external view virtual returns (uint16) {
+    function controllerType() external pure virtual returns (uint16) {
         return CONTROLLER_TYPE;
     }
 
