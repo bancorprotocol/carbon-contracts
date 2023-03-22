@@ -258,8 +258,9 @@ abstract contract Strategies is Initializable {
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
-        _strategyCounter++;
-        uint256 id = _strategyId(pool.id, _strategyCounter);
+        uint256 counter = _strategyCounter + 1;
+        _strategyCounter = counter;
+        uint256 id = _strategyId(pool.id, counter);
         _strategiesByPoolIdStorage[pool.id].add(id);
 
         // store orders
