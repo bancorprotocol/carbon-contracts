@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
@@ -28,7 +27,6 @@ contract CarbonController is
     OnlyProxyDelegate,
     Utils
 {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
     using TokenLibrary for Token;
 
     // the emergency manager role is required to pause/unpause
