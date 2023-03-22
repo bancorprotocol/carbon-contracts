@@ -110,8 +110,8 @@ describe('Pools', () => {
     describe('_poolById unit tests', () => {
         it('reverts when trying to fetch a pool by an id that does not exist', async () => {
             const testPools = await Contracts.TestPools.deploy();
-            await testPools.test_createPool(token0.address, token1.address);
-            await expect(testPools.test_poolById(2)).to.be.revertedWithError('PoolDoesNotExist');
+            await testPools.testCreatePool(token0.address, token1.address);
+            await expect(testPools.testPoolById(2)).to.be.revertedWithError('PoolDoesNotExist');
         });
     });
 });

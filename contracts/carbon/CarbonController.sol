@@ -15,7 +15,7 @@ import { OnlyProxyDelegate } from "../utility/OnlyProxyDelegate.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
 
 /**
- * @dev Carbon Contrller contract
+ * @dev Carbon Controller contract
  */
 contract CarbonController is
     ICarbonController,
@@ -186,7 +186,7 @@ contract CarbonController is
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate {
-        Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
+        Pool memory __pool = _poolById(_poolIdByStrategyId(strategyId));
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
@@ -212,7 +212,7 @@ contract CarbonController is
      */
     function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
         // find strategy, reverts if none
-        Pool memory __pool = _poolById(_poolIdbyStrategyId(strategyId));
+        Pool memory __pool = _poolById(_poolIdByStrategyId(strategyId));
         Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
 
         // only the owner of the strategy is allowed to delete it
@@ -228,7 +228,7 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function strategy(uint256 id) external view returns (Strategy memory) {
-        Pool memory __pool = _poolById(_poolIdbyStrategyId(id));
+        Pool memory __pool = _poolById(_poolIdByStrategyId(id));
         return _strategy(id, _voucher, __pool);
     }
 
@@ -393,7 +393,7 @@ contract CarbonController is
     }
 
     /**
-     * performs all necessary valdations on the trade parameters
+     * performs all necessary validations on the trade parameters
      */
     function _validateTradeParams(
         Token sourceToken,
