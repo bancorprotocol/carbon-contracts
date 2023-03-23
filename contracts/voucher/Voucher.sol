@@ -2,17 +2,19 @@
 pragma solidity 0.8.19;
 
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import { ERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Utils } from "../utility/Utils.sol";
+import { Utils, InvalidIndices } from "../utility/Utils.sol";
 import { IVoucher } from "./interfaces/IVoucher.sol";
 import { CarbonController } from "../carbon/CarbonController.sol";
 
-contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
+contract Voucher is IVoucher, ERC721, Utils, Ownable {
     using Strings for uint256;
+    using EnumerableSet for EnumerableSet.UintSet;
 
     error CarbonControllerNotSet();
+    error BatchNotSupported();
 
     // the carbon controller contract
     CarbonController private _carbonController;
@@ -25,6 +27,9 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
 
     // the suffix of a dynamic URI for e.g. `.json`
     string private _baseExtension;
+
+    // a mapping between an owner to its tokenIds
+    mapping(address => EnumerableSet.UintSet) internal _ownedTokens;
 
     /**
      @dev triggered when updating useGlobalURI
@@ -59,15 +64,46 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
     /**
      * @inheritdoc IVoucher
      */
-    function mint(address provider, uint256 strategyId) external only(address(_carbonController)) {
-        _safeMint(provider, strategyId);
+    function mint(address owner, uint256 tokenId) external only(address(_carbonController)) {
+        _safeMint(owner, tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(uint256 strategyId) external only(address(_carbonController)) {
-        _burn(strategyId);
+    function burn(uint256 tokenId) external only(address(_carbonController)) {
+        _burn(tokenId);
+    }
+
+    /**
+     * @inheritdoc IVoucher
+     */
+    function tokensByOwner(
+        address owner,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view validAddress(owner) returns (uint256[] memory) {
+        EnumerableSet.UintSet storage tokenIds = _ownedTokens[owner];
+        uint256 allLength = tokenIds.length();
+
+        // when the endIndex is 0 or out of bound, set the endIndex to the last valid value
+        if (endIndex == 0 || endIndex > allLength) {
+            endIndex = allLength;
+        }
+
+        // revert when startIndex is out of bound
+        if (startIndex > endIndex) {
+            revert InvalidIndices();
+        }
+
+        // populate the result
+        uint256 resultLength = endIndex - startIndex;
+        uint256[] memory result = new uint256[](resultLength);
+        for (uint256 i = 0; i < resultLength; i++) {
+            result[i] = tokenIds.at(startIndex + i);
+        }
+
+        return result;
     }
 
     /**
@@ -150,5 +186,32 @@ contract Voucher is IVoucher, ERC721Enumerable, Utils, Ownable {
      */
     function _baseURI() internal view virtual override returns (string memory) {
         return __baseURI;
+    }
+
+    /**
+     * @dev See {ERC721-_beforeTokenTransfer}.
+     */
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 firstTokenId,
+        uint256 batchSize
+    ) internal virtual override {
+        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+
+        if (batchSize > 1) {
+            revert BatchNotSupported();
+        }
+
+        if (from == address(0)) {
+            _ownedTokens[to].add(firstTokenId);
+        } else if (from != to) {
+            _ownedTokens[from].remove(firstTokenId);
+        }
+        if (to == address(0)) {
+            _ownedTokens[from].remove(firstTokenId);
+        } else if (to != from) {
+            _ownedTokens[to].add(firstTokenId);
+        }
     }
 }

@@ -89,7 +89,7 @@ export const createCarbonController = async (voucher: string | Voucher) => {
 };
 
 const createSystemFixture = async () => {
-    const voucher = await Contracts.Voucher.deploy(true, 'ipfs://xxx', '');
+    const voucher = await Contracts.TestVoucher.deploy(true, 'ipfs://xxx', '');
 
     const carbonController = await createCarbonController(voucher);
 

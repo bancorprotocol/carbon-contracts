@@ -341,9 +341,9 @@ describe('Strategy', () => {
         it('mints a voucher token to the caller', async () => {
             await createStrategy();
             const balance = await voucher.balanceOf(owner.address);
-            const tokenId = await voucher.tokenOfOwnerByIndex(owner.address, balance.sub(1));
+            const tokenOwner = await voucher.ownerOf(SID1);
             expect(balance).to.eq(1);
-            expect(tokenId).to.eq(SID1);
+            expect(tokenOwner).to.eq(owner.address);
         });
 
         it('emits the voucher Transfer event', async () => {
@@ -954,13 +954,8 @@ describe('Strategy', () => {
             for (const { token0, token1 } of permutations) {
                 it(`(${token0}->${token1})`, async () => {
                     await createStrategy({ token0: tokens[token0], token1: tokens[token1] });
-                    const beforeTotalSupply = await voucher.totalSupply();
-
                     await carbonController.connect(owner).deleteStrategy(SID1);
-                    const afterTotalSupply = await voucher.totalSupply();
-
-                    expect(beforeTotalSupply).to.eq(1);
-                    expect(afterTotalSupply).to.eq(0);
+                    await expect(voucher.ownerOf(SID1)).to.be.revertedWithError('ERC721: invalid token ID');
                 });
             }
         });
@@ -1308,15 +1303,15 @@ describe('Strategy', () => {
                 // transfer the voucher
                 await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
-                // original owner should not have a voucher
-                let balance = await voucher.balanceOf(owner.address);
-                expect(balance).to.eq(0);
+                // fetch tokens by owner
+                const oldTokenIds = await voucher.tokensByOwner(owner.address, 0, 100);
+                const newTokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, 100);
+                const newOwner = await voucher.ownerOf(SID1);
 
-                // new owner should have a voucher
-                balance = await voucher.balanceOf(nonAdmin.address);
-                const tokenId = await voucher.tokenOfOwnerByIndex(nonAdmin.address, balance.sub(1));
-                expect(balance).to.eq(1);
-                expect(tokenId).to.eq(SID1);
+                // assert
+                expect(oldTokenIds.length === 0);
+                expect(newTokenIds[0].eq(SID1)).to.eq(true);
+                expect(newOwner).to.eq(nonAdmin.address);
             });
 
             it('updates the strategy owner following a transfer', async () => {
