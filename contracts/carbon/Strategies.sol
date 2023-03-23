@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { EnumerableSetUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import { MathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
@@ -122,7 +121,6 @@ struct TradeAction {
 }
 
 abstract contract Strategies is Initializable {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using TokenLibrary for Token;
     using Address for address payable;
@@ -163,7 +161,7 @@ abstract contract Strategies is Initializable {
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
     // total number of strategies
-    CountersUpgradeable.Counter private _strategyCounter;
+    uint256 private _strategyCounter;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
@@ -260,8 +258,9 @@ abstract contract Strategies is Initializable {
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
-        _strategyCounter.increment();
-        uint256 id = _strategyId(pool.id, _strategyCounter.current());
+        uint256 counter = _strategyCounter + 1;
+        _strategyCounter = counter;
+        uint256 id = _strategyId(pool.id, counter);
         _strategiesByPoolIdStorage[pool.id].add(id);
 
         // store orders
@@ -384,7 +383,7 @@ abstract contract Strategies is Initializable {
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
             // make sure strategyIds match the provided source/target tokens
-            if (_poolIdbyStrategyId(strategyId) != params.pool.id) {
+            if (_poolIdByStrategyId(strategyId) != params.pool.id) {
                 revert TokensMismatch();
             }
 
@@ -462,7 +461,7 @@ abstract contract Strategies is Initializable {
         // update fee counters
         _accumulatedFees[tradingFeeToken] += tradingFeeAmount;
 
-        // tokens traded sucesfully, emit event
+        // tokens traded successfully, emit event
         emit TokensTraded({
             trader: params.trader,
             sourceToken: address(params.tokens.source),
@@ -585,7 +584,7 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     @dev retuns a strategy object matching the provided id.
+     @dev returns a strategy object matching the provided id.
      */
     function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
         // fetch data
@@ -844,7 +843,7 @@ abstract contract Strategies is Initializable {
     /**
      * returns the poolId associated with a given strategyId
      */
-    function _poolIdbyStrategyId(uint256 strategyId) internal pure returns (uint256) {
+    function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint256) {
         return strategyId >> 128;
     }
 
@@ -863,7 +862,7 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * retuns tokens sorted accordingly to a strategy orders inversion
+     * returns tokens sorted accordingly to a strategy orders inversion
      */
     function _sortStrategyTokens(Pool memory pool, bool ordersInverted) private pure returns (Token[2] memory) {
         return ordersInverted ? [pool.tokens[1], pool.tokens[0]] : pool.tokens;

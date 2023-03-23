@@ -18,7 +18,7 @@ interface IVoucher is IERC721 {
     function mint(address owner, uint256 strategyId) external;
 
     /**
-     * @dev destorys the voucher token for the given strategyId
+     * @dev destroys the voucher token for the given strategyId
      *
      * requirements:
      *

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
 
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import { IVersioned } from "../../utility/interfaces/IVersioned.sol";
 import { Pool } from "../Pools.sol";
 import { Token } from "../../token/Token.sol";
@@ -14,7 +13,7 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns the type of the pool
      */
-    function controllerType() external view returns (uint16);
+    function controllerType() external pure returns (uint16);
 
     /**
      * @dev returns the trading fee (in units of PPM)

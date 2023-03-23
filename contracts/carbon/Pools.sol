@@ -4,16 +4,12 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { Token } from "../token/Token.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
 
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-
 struct Pool {
     uint256 id;
     Token[2] tokens;
 }
 
 abstract contract Pools is Initializable {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
-
     struct StoredPool {
         Token[2] tokens;
     }
@@ -22,7 +18,7 @@ abstract contract Pools is Initializable {
     error PoolDoesNotExist();
 
     // unique incremental id representing a pool
-    CountersUpgradeable.Counter private _lastPoolId;
+    uint256 private _lastPoolId;
 
     // mapping of pairs of tokens to their pool id, tokens are sorted at any order
     mapping(Token => mapping(Token => uint256)) private _poolIds;
@@ -58,7 +54,7 @@ abstract contract Pools is Initializable {
      * @dev generates and stores a new pool, tokens are assumed unique and valid
      */
     function _createPool(Token token0, Token token1) internal returns (Pool memory) {
-        // validate pool existance
+        // validate pool existence
         if (_poolExists(token0, token1)) {
             revert PoolAlreadyExists();
         }
@@ -67,8 +63,8 @@ abstract contract Pools is Initializable {
         Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
         // increment pool id
-        _lastPoolId.increment();
-        uint256 id = _lastPoolId.current();
+        uint256 id = _lastPoolId + 1;
+        _lastPoolId = id;
 
         // store pool
         StoredPool memory newPool = StoredPool({ tokens: sortedTokens });
@@ -86,7 +82,7 @@ abstract contract Pools is Initializable {
         // sort tokens
         Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
-        // validate pool existance
+        // validate pool existence
         if (!_poolExists(token0, token1)) {
             revert PoolDoesNotExist();
         }
@@ -105,7 +101,7 @@ abstract contract Pools is Initializable {
     }
 
     /**
-     * @dev check for the existance of a pool (pool id's are sequential intergers starting at 1)
+     * @dev check for the existence of a pool (pool id's are sequential integers starting at 1)
      */
     function _poolExists(Token token0, Token token1) internal view returns (bool) {
         // sort tokens
@@ -121,7 +117,7 @@ abstract contract Pools is Initializable {
      * @dev returns a list of all supported pairs
      */
     function _pairs() internal view returns (Token[2][] memory) {
-        uint256 length = _lastPoolId.current();
+        uint256 length = _lastPoolId;
         Token[2][] memory list = new Token[2][](length);
         for (uint256 i = 0; i < length; i++) {
             StoredPool memory pool = _poolsStorage[i + 1];
