@@ -14,6 +14,7 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
     using EnumerableSet for EnumerableSet.UintSet;
 
     error CarbonControllerNotSet();
+    error BatchNotSupported();
 
     // the carbon controller contract
     CarbonController private _carbonController;
@@ -198,6 +199,10 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
         uint256 batchSize
     ) internal virtual override {
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+
+        if (batchSize > 1) {
+            revert BatchNotSupported();
+        }
 
         _owned[from].remove(firstTokenId);
         _owned[to].add(firstTokenId);
