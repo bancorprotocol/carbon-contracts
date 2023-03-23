@@ -108,7 +108,7 @@ library MathEx {
         // approximate the root of `f(x) = 1 / x - d` using the newton–raphson convergence method
         uint256 x = 1;
         unchecked {
-            // safe because no `i < 8`
+            // safe because `i < 8`
             for (uint256 i = 0; i < 8; i++) {
                 x = _unsafeMul(x, _unsafeSub(2, _unsafeMul(x, d))); // `x = x * (2 - x * d) mod 2 ^ 256`
             }
