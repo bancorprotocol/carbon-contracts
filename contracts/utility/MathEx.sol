@@ -15,7 +15,7 @@ library MathEx {
     /**
      * @dev returns the largest integer smaller than or equal to `x * y / z`
      */
-    function mulDivF(uint256 x, uint256 y, uint256 z) internal pure returns (uint256) {
+    function mulDivF(uint256 x, uint256 y, uint256 z) internal pure returns (uint256) { unchecked {
         Uint512 memory xy = _mul512(x, y);
 
         // if `x * y < 2 ^ 256`
@@ -40,12 +40,12 @@ library MathEx {
         uint256 q = _div512(n, p); // `n` is divisible by `p` because `n` is divisible by `z` and `z` is divisible by `p`
         uint256 r = _inv256(z / p); // `z / p = 1 mod 2` hence `inverse(z / p) = 1 mod 2 ^ 256`
         return _unsafeMul(q, r); // `q * r = (n / p) * inverse(z / p) = n / z`
-    }
+    }}
 
     /**
      * @dev returns the smallest integer larger than or equal to `x * y / z`
      */
-    function mulDivC(uint256 x, uint256 y, uint256 z) internal pure returns (uint256) {
+    function mulDivC(uint256 x, uint256 y, uint256 z) internal pure returns (uint256) { unchecked {
         uint256 w = mulDivF(x, y, z);
         if (_mulMod(x, y, z) > 0) {
             if (w >= type(uint256).max) {
@@ -55,7 +55,7 @@ library MathEx {
             return w + 1;
         }
         return w;
-    }
+    }}
 
     /**
      * @dev returns the value of `x * y`
@@ -82,22 +82,22 @@ library MathEx {
     /**
      * @dev returns the value of `x / pow2n`, given that `x` is divisible by `pow2n`
      */
-    function _div512(Uint512 memory x, uint256 pow2n) private pure returns (uint256) {
+    function _div512(Uint512 memory x, uint256 pow2n) private pure returns (uint256) { unchecked {
         uint256 pow2nInv = _unsafeAdd(_unsafeSub(0, pow2n) / pow2n, 1); // `1 << (256 - n)`
         return _unsafeMul(x.hi, pow2nInv) | (x.lo / pow2n); // `(x.hi << (256 - n)) | (x.lo >> n)`
-    }
+    }}
 
     /**
      * @dev returns the inverse of `d` modulo `2 ^ 256`, given that `d` is congruent to `1` modulo `2`
      */
-    function _inv256(uint256 d) private pure returns (uint256) {
+    function _inv256(uint256 d) private pure returns (uint256) { unchecked {
         // approximate the root of `f(x) = 1 / x - d` using the newton–raphson convergence method
         uint256 x = 1;
         for (uint256 i = 0; i < 8; i++) {
             x = _unsafeMul(x, _unsafeSub(2, _unsafeMul(x, d))); // `x = x * (2 - x * d) mod 2 ^ 256`
         }
         return x;
-    }
+    }}
 
     /**
      * @dev returns `(x + y) % 2 ^ 256`
