@@ -12,7 +12,7 @@ interface IVoucher is IERC721 {
      *
      * requirements:
      *
-     * - the caller must be the carbonController contract
+     * - the caller must be the CarbonController contract
      *
      */
     function mint(address owner, uint256 strategyId) external;
@@ -22,14 +22,14 @@ interface IVoucher is IERC721 {
      *
      * requirements:
      *
-     * - the caller must be the carbonController contract
+     * - the caller must be the CarbonController contract
      *
      */
     function burn(uint256 strategyId) external;
 
     /**
      * @dev returns a list of tokenIds belonging to the given owner
-     * note for the full list of tokenIds pass 0 to both startIndex and endIndex
+     * note that for the full list of tokenIds pass 0 to both startIndex and endIndex
      */
     function tokensByOwner(
         address owner,

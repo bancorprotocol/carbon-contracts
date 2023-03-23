@@ -29,7 +29,7 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
     string private _baseExtension;
 
     // a mapping between an owner to its tokenIds
-    mapping(address => EnumerableSet.UintSet) internal _owned;
+    mapping(address => EnumerableSet.UintSet) internal _ownedTokens;
 
     /**
      @dev triggered when updating useGlobalURI
@@ -83,10 +83,10 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
         uint256 startIndex,
         uint256 endIndex
     ) external view validAddress(owner) returns (uint256[] memory) {
-        EnumerableSet.UintSet storage tokenIds = _owned[owner];
+        EnumerableSet.UintSet storage tokenIds = _ownedTokens[owner];
         uint256 allLength = tokenIds.length();
 
-        // when the endIndex is 0 or out of bound, set the endIndex to the last value possible
+        // when the endIndex is 0 or out of bound, set the endIndex to the last valid value
         if (endIndex == 0 || endIndex > allLength) {
             endIndex = allLength;
         }
@@ -100,8 +100,7 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
         uint256 resultLength = endIndex - startIndex;
         uint256[] memory result = new uint256[](resultLength);
         for (uint256 i = 0; i < resultLength; i++) {
-            uint256 tokenId = tokenIds.at(startIndex + i);
-            result[i] = tokenId;
+            result[i] = tokenIds.at(startIndex + i);
         }
 
         return result;
@@ -205,14 +204,14 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
         }
 
         if (from == address(0)) {
-            _owned[to].add(firstTokenId);
+            _ownedTokens[to].add(firstTokenId);
         } else if (from != to) {
-            _owned[from].remove(firstTokenId);
+            _ownedTokens[from].remove(firstTokenId);
         }
         if (to == address(0)) {
-            _owned[from].remove(firstTokenId);
+            _ownedTokens[from].remove(firstTokenId);
         } else if (to != from) {
-            _owned[to].add(firstTokenId);
+            _ownedTokens[to].add(firstTokenId);
         }
     }
 }
