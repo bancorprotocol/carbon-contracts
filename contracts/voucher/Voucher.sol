@@ -65,14 +65,14 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
      * @inheritdoc IVoucher
      */
     function mint(address owner, uint256 tokenId) external only(address(_carbonController)) {
-        _mintAndMapToOwner(owner, tokenId);
+        _safeMint(owner, tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(address owner, uint256 tokenId) external only(address(_carbonController)) {
-        _burnAndClearOwnerMapping(owner, tokenId);
+    function burn(uint256 tokenId) external only(address(_carbonController)) {
+        _burn(tokenId);
     }
 
     /**
@@ -204,23 +204,15 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
             revert BatchNotSupported();
         }
 
-        _owned[from].remove(firstTokenId);
-        _owned[to].add(firstTokenId);
-    }
-
-    /**
-     * mints a new token for the given owner, updates owned mapping
-     */
-    function _mintAndMapToOwner(address owner, uint256 tokenId) internal {
-        _safeMint(owner, tokenId);
-        _owned[owner].add(tokenId);
-    }
-
-    /**
-     * burns a token of the given owner, updates owned mapping
-     */
-    function _burnAndClearOwnerMapping(address owner, uint256 tokenId) internal {
-        _burn(tokenId);
-        _owned[owner].remove(tokenId);
+        if (from == address(0)) {
+            _owned[to].add(firstTokenId);
+        } else if (from != to) {
+            _owned[from].remove(firstTokenId);
+        }
+        if (to == address(0)) {
+            _owned[from].remove(firstTokenId);
+        } else if (to != from) {
+            _owned[to].add(firstTokenId);
+        }
     }
 }

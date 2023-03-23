@@ -13,7 +13,11 @@ contract TestVoucher is Voucher {
         string memory newBaseExtension
     ) Voucher(newUseGlobalURI, newBaseURI, newBaseExtension) {}
 
-    function testMintAndMapToOwner(address owner, uint256 tokenId) external {
-        _mintAndMapToOwner(owner, tokenId);
+    function testSafeMint(address owner, uint256 tokenId) external {
+        _safeMint(owner, tokenId);
+    }
+
+    function testBurn(uint256 tokenId) external {
+        _burn(tokenId);
     }
 }

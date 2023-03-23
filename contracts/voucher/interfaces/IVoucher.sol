@@ -25,7 +25,7 @@ interface IVoucher is IERC721 {
      * - the caller must be the carbonController contract
      *
      */
-    function burn(address owner, uint256 strategyId) external;
+    function burn(uint256 strategyId) external;
 
     /**
      * @dev returns a list of tokenIds belonging to the given owner

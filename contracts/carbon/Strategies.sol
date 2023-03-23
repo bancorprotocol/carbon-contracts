@@ -342,7 +342,7 @@ abstract contract Strategies is Initializable {
      */
     function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pool memory pool) internal {
         // burn the voucher nft token
-        voucher.burn(strategy.owner, strategy.id);
+        voucher.burn(strategy.id);
 
         // clear storage
         delete _packedOrdersByStrategyId[strategy.id];

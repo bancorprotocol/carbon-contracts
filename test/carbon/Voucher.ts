@@ -28,7 +28,7 @@ describe('Voucher', () => {
     });
 
     it('reverts when it is not the carbonController attempting to burn', async () => {
-        await expect(voucher.burn(nonAdmin.address, 1)).to.be.revertedWithError('AccessDenied');
+        await expect(voucher.burn(1)).to.be.revertedWithError('AccessDenied');
     });
 
     it('reverts when a non owner tries to set carbonController', async () => {
@@ -94,9 +94,9 @@ describe('Voucher', () => {
         });
 
         it('fetches the correct tokenIds', async () => {
-            await voucher.testMintAndMapToOwner(nonAdmin.address, 1);
-            await voucher.testMintAndMapToOwner(nonAdmin.address, 2);
-            await voucher.testMintAndMapToOwner(nonAdmin2.address, 3);
+            await voucher.testSafeMint(nonAdmin.address, 1);
+            await voucher.testSafeMint(nonAdmin.address, 2);
+            await voucher.testSafeMint(nonAdmin2.address, 3);
 
             const tokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, 100);
             expect(tokenIds.length).to.eq(2);
@@ -106,7 +106,7 @@ describe('Voucher', () => {
 
         it('sets endIndex to the maximum possible if provided with 0', async () => {
             for (let i = 1; i <= FETCH_AMOUNT; i++) {
-                await voucher.testMintAndMapToOwner(nonAdmin.address, i);
+                await voucher.testSafeMint(nonAdmin.address, i);
             }
             const tokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, 0);
             expect(tokenIds.length).to.eq(FETCH_AMOUNT);
@@ -114,7 +114,7 @@ describe('Voucher', () => {
 
         it('sets endIndex to the maximum possible if provided with an out of bound value', async () => {
             for (let i = 1; i < FETCH_AMOUNT + 1; i++) {
-                await voucher.testMintAndMapToOwner(nonAdmin.address, i);
+                await voucher.testSafeMint(nonAdmin.address, i);
             }
             const tokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, FETCH_AMOUNT + 100);
             expect(tokenIds.length).to.eq(FETCH_AMOUNT);
@@ -122,10 +122,23 @@ describe('Voucher', () => {
 
         it('reverts if startIndex is greater than endIndex', async () => {
             for (let i = 1; i < FETCH_AMOUNT + 1; i++) {
-                await voucher.testMintAndMapToOwner(nonAdmin.address, i);
+                await voucher.testSafeMint(nonAdmin.address, i);
             }
             const tx = voucher.tokensByOwner(nonAdmin.address, 6, 5);
             await expect(tx).to.have.been.revertedWithError('InvalidIndices');
         });
+    });
+
+    it('maps owner when minting', async () => {
+        await voucher.testSafeMint(nonAdmin.address, 1);
+        const tokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, 100);
+        expect(tokenIds[0]).to.eq(1);
+    });
+
+    it('clears owner mapping when burning', async () => {
+        await voucher.testSafeMint(nonAdmin.address, 1);
+        await voucher.testBurn(1);
+        const tokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, 100);
+        expect(tokenIds.length).to.eq(0);
     });
 });
