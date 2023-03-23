@@ -5,12 +5,13 @@ import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Utils } from "../utility/Utils.sol";
+import { Utils, InvalidIndices } from "../utility/Utils.sol";
 import { IVoucher } from "./interfaces/IVoucher.sol";
 import { CarbonController } from "../carbon/CarbonController.sol";
 
 contract Voucher is IVoucher, ERC721, Utils, Ownable {
     using Strings for uint256;
+    using EnumerableSet for EnumerableSet.UintSet;
 
     error CarbonControllerNotSet();
 
@@ -27,7 +28,7 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
     string private _baseExtension;
 
     // a mapping between an owner to its tokenIds
-    mapping(address => EnumerableSet.UintSet) private _owned;
+    mapping(address => EnumerableSet.UintSet) internal _owned;
 
     /**
      @dev triggered when updating useGlobalURI
@@ -62,19 +63,47 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
     /**
      * @inheritdoc IVoucher
      */
-    function mint(address provider, uint256 tokenId) external only(address(_carbonController)) {
-        _safeMint(provider, tokenId);
-
-        _owned[provider].add(tokenId);
+    function mint(address owner, uint256 tokenId) external only(address(_carbonController)) {
+        _mintAndMapToOwner(owner, tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(address provider, uint256 tokenId) external only(address(_carbonController)) {
-        _burn(tokenId);
+    function burn(address owner, uint256 tokenId) external only(address(_carbonController)) {
+        _burnAndClearOwnerMapping(owner, tokenId);
+    }
 
-        _owned[provider].remove(tokenId);
+    /**
+     * @inheritdoc IVoucher
+     */
+    function tokensByOwner(
+        address owner,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view validAddress(owner) returns (uint256[] memory) {
+        EnumerableSet.UintSet storage tokenIds = _owned[owner];
+        uint256 allLength = tokenIds.length();
+
+        // when the endIndex is 0 or out of bound, set the endIndex to the last value possible
+        if (endIndex == 0 || endIndex > allLength) {
+            endIndex = allLength;
+        }
+
+        // revert when startIndex is out of bound
+        if (startIndex > endIndex) {
+            revert InvalidIndices();
+        }
+
+        // populate the result
+        uint256 resultLength = endIndex - startIndex;
+        uint256[] memory result = new uint256[](resultLength);
+        for (uint256 i = 0; i < resultLength; i++) {
+            uint256 tokenId = tokenIds.at(startIndex + i);
+            result[i] = tokenId;
+        }
+
+        return result;
     }
 
     /**
@@ -158,5 +187,36 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
      */
     function _baseURI() internal view virtual override returns (string memory) {
         return __baseURI;
+    }
+
+    /**
+     * @dev See {ERC721-_beforeTokenTransfer}.
+     */
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 firstTokenId,
+        uint256 batchSize
+    ) internal virtual override {
+        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+
+        _owned[from].remove(firstTokenId);
+        _owned[to].add(firstTokenId);
+    }
+
+    /**
+     * mints a new token for the given owner, updates owned mapping
+     */
+    function _mintAndMapToOwner(address owner, uint256 tokenId) internal {
+        _safeMint(owner, tokenId);
+        _owned[owner].add(tokenId);
+    }
+
+    /**
+     * burns a token of the given owner, updates owned mapping
+     */
+    function _burnAndClearOwnerMapping(address owner, uint256 tokenId) internal {
+        _burn(tokenId);
+        _owned[owner].remove(tokenId);
     }
 }

@@ -8,14 +8,14 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  */
 interface IVoucher is IERC721 {
     /**
-     * @dev creatds a new voucher token for the given strategyId, transfers it to the provider
+     * @dev creates a new voucher token for the given strategyId, transfers it to the owner
      *
      * requirements:
      *
      * - the caller must be the carbonController contract
      *
      */
-    function mint(address provider, uint256 strategyId) external;
+    function mint(address owner, uint256 strategyId) external;
 
     /**
      * @dev destorys the voucher token for the given strategyId
@@ -25,5 +25,15 @@ interface IVoucher is IERC721 {
      * - the caller must be the carbonController contract
      *
      */
-    function burn(address provider, uint256 strategyId) external;
+    function burn(address owner, uint256 strategyId) external;
+
+    /**
+     * @dev returns a list of tokenIds belonging to the given owner
+     * note for the full list of tokenIds pass 0 to both startIndex and endIndex
+     */
+    function tokensByOwner(
+        address owner,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view returns (uint256[] memory);
 }

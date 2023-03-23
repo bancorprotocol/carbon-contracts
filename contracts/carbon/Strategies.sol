@@ -7,6 +7,7 @@ import { MathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/
 import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
+import { InvalidIndices } from "../utility/Utils.sol";
 import { Token } from "../token/Token.sol";
 import { TokenLibrary } from "../token/TokenLibrary.sol";
 import { Pool } from "./Pools.sol";
@@ -131,7 +132,6 @@ abstract contract Strategies is Initializable {
     error NativeAmountMismatch();
     error GreaterThanMaxInput();
     error LowerThanMinReturn();
-    error InvalidIndices();
     error InsufficientCapacity();
     error InvalidRate();
     error InsufficientLiquidity();

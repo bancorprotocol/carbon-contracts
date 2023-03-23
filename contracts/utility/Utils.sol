@@ -18,6 +18,7 @@ error InvalidParam();
 error NotEmpty();
 error NotPayable();
 error ZeroValue();
+error InvalidIndices();
 
 /**
  * @dev common utilities
