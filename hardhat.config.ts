@@ -125,7 +125,7 @@ const config: HardhatUserConfig = {
                 settings: {
                     optimizer: {
                         enabled: true,
-                        runs: 18500
+                        runs: 500
                     },
                     metadata: {
                         bytecodeHash: 'none'

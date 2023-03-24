@@ -161,5 +161,10 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns the amount of fees accumulated for the specified token
      */
-    function accumulatedFees(address token) external view returns (uint256);
+    function accumulatedFees(Token token) external view returns (uint256);
+
+    /**
+     * @dev transfers the accumlated fees to the specified recipient
+     */
+    function withdrawFees(uint256 amount, Token token, address recipient) external;
 }

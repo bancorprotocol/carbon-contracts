@@ -32,6 +32,9 @@ contract CarbonController is
     // the emergency manager role is required to pause/unpause
     bytes32 private constant ROLE_EMERGENCY_STOPPER = keccak256("ROLE_EMERGENCY_STOPPER");
 
+    // the fees manager role is required to withdraw fees
+    bytes32 private constant ROLE_FEES_MANAGER = keccak256("ROLE_FEES_MANAGER");
+
     uint16 private constant CONTROLLER_TYPE = 1;
 
     // the voucher contract
@@ -84,6 +87,7 @@ contract CarbonController is
     function __CarbonController_init_unchained() internal onlyInitializing {
         // set up administrative roles
         _setRoleAdmin(ROLE_EMERGENCY_STOPPER, ROLE_ADMIN);
+        _setRoleAdmin(ROLE_FEES_MANAGER, ROLE_ADMIN);
     }
 
     // solhint-enable func-name-mixedcase
@@ -346,9 +350,28 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function accumulatedFees(address token) external view returns (uint256) {
-        _validAddress(token);
+    function accumulatedFees(Token token) external view returns (uint256) {
+        _validAddress(address(token));
         return _getAccumulatedFees(token);
+    }
+
+    /**
+     * @inheritdoc ICarbonController
+     */
+    function withdrawFees(
+        uint256 amount,
+        Token token,
+        address recipient
+    )
+        external
+        whenNotPaused
+        onlyRoleMember(ROLE_FEES_MANAGER)
+        validAddress(recipient)
+        validAddress(address(token))
+        greaterThanZero(amount)
+        nonReentrant
+    {
+        _withdrawFees(msg.sender, amount, token, recipient);
     }
 
     /**
