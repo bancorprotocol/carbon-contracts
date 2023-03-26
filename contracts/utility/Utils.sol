@@ -4,8 +4,7 @@ pragma solidity 0.8.19;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { PPM_RESOLUTION } from "./Constants.sol";
-import { Token } from "../token/Token.sol";
-import { TokenLibrary } from "../token/TokenLibrary.sol";
+import { Token, TokenLibrary } from "../token/TokenLibrary.sol";
 
 error AccessDenied();
 error AlreadyExists();

@@ -7,8 +7,7 @@ import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/m
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { InvalidIndices } from "../utility/Utils.sol";
-import { Token } from "../token/Token.sol";
-import { TokenLibrary } from "../token/TokenLibrary.sol";
+import { Token, TokenLibrary } from "../token/TokenLibrary.sol";
 import { Pool } from "./Pools.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
@@ -219,8 +218,8 @@ abstract contract Strategies is Initializable {
      */
     event TokensTraded(
         address indexed trader,
-        address indexed sourceToken,
-        address indexed targetToken,
+        Token indexed sourceToken,
+        Token indexed targetToken,
         uint256 sourceAmount,
         uint256 targetAmount,
         uint128 tradingFeeAmount,
@@ -476,8 +475,8 @@ abstract contract Strategies is Initializable {
         // tokens traded successfully, emit event
         emit TokensTraded({
             trader: params.trader,
-            sourceToken: address(params.tokens.source),
-            targetToken: address(params.tokens.target),
+            sourceToken: params.tokens.source,
+            targetToken: params.tokens.target,
             sourceAmount: totals.sourceAmount,
             targetAmount: totals.targetAmount,
             tradingFeeAmount: tradingFeeAmount,
@@ -867,7 +866,7 @@ abstract contract Strategies is Initializable {
 
         _accumulatedFees[token] = accumulatedAmount - amount;
         _withdrawFunds(token, payable(recipient), amount);
-        emit FeesWithdrawn(address(token), recipient, amount, sender);
+        emit FeesWithdrawn(Token.unwrap(token), recipient, amount, sender);
     }
 
     /**

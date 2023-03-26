@@ -8,7 +8,12 @@ import { IERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/dra
 
 import { SafeERC20Ex } from "./SafeERC20Ex.sol";
 
-import { Token } from "./Token.sol";
+type Token is address;
+using {equal as ==} for Token global;
+
+function equal(Token a, Token b) pure returns (bool) {
+    return Token.unwrap(a) == Token.unwrap(b);
+}
 
 /**
  * @dev This library implements ERC20 and SafeERC20 utilities for both the native token and for ERC20 tokens
@@ -29,13 +34,13 @@ library TokenLibrary {
     uint8 private constant NATIVE_TOKEN_DECIMALS = 18;
 
     // the token representing the native token
-    Token public constant NATIVE_TOKEN = Token(NATIVE_TOKEN_ADDRESS);
+    Token public constant NATIVE_TOKEN = Token.wrap(NATIVE_TOKEN_ADDRESS);
 
     /**
      * @dev returns whether the provided token represents an ERC20 or the native token reserve
      */
     function isNative(Token token) internal pure returns (bool) {
-        return address(token) == NATIVE_TOKEN_ADDRESS;
+        return Token.unwrap(token) == NATIVE_TOKEN_ADDRESS;
     }
 
     /**
@@ -136,13 +141,13 @@ library TokenLibrary {
      * @dev utility function that converts a token to an IERC20
      */
     function toIERC20(Token token) internal pure returns (IERC20) {
-        return IERC20(address(token));
+        return IERC20(Token.unwrap(token));
     }
 
     /**
      * @dev utility function that converts a token to an ERC20
      */
     function toERC20(Token token) internal pure returns (ERC20) {
-        return ERC20(address(token));
+        return ERC20(Token.unwrap(token));
     }
 }

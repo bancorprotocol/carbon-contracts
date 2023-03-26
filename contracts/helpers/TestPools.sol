@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 import { Pools, Pool } from "../carbon/Pools.sol";
-import { Token } from "../token/Token.sol";
+import { Token } from "../token/TokenLibrary.sol";
 
 contract TestPools is Pools {
     function testPoolById(uint256 poolId) external view returns (Pool memory) {
