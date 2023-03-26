@@ -47,7 +47,6 @@ contract CarbonController is
     error UnnecessaryNativeTokenReceived();
     error InsufficientNativeTokenReceived();
     error DeadlineExpired();
-    error InvalidTradeActionAmount();
     error NoIdsProvided();
 
     /**
@@ -271,7 +270,7 @@ contract CarbonController is
         uint256 deadline,
         uint128 minReturn
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
-        _validateTradeParams(sourceToken, targetToken, deadline, msg.value, minReturn, tradeActions);
+        _validateTradeParams(sourceToken, targetToken, deadline, msg.value, minReturn);
         Pool memory _pool = _pool(sourceToken, targetToken);
         TradeParams memory params = TradeParams({
             trader: msg.sender,
@@ -295,7 +294,7 @@ contract CarbonController is
         uint256 deadline,
         uint128 maxInput
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
-        _validateTradeParams(sourceToken, targetToken, deadline, msg.value, maxInput, tradeActions);
+        _validateTradeParams(sourceToken, targetToken, deadline, msg.value, maxInput);
 
         if (sourceToken.isNative()) {
             // tx's value should at least match the maxInput
@@ -423,8 +422,7 @@ contract CarbonController is
         Token targetToken,
         uint256 deadline,
         uint256 value,
-        uint128 constraint,
-        TradeAction[] calldata tradeActions
+        uint128 constraint
     ) private view {
         // revert if deadline has passed
         if (deadline < block.timestamp) {
@@ -440,14 +438,6 @@ contract CarbonController is
         // there shouldn't be any native token sent unless the source token is the native token
         if (!sourceToken.isNative() && value > 0) {
             revert UnnecessaryNativeTokenReceived();
-        }
-
-        // validate tradeActions
-        for (uint256 i = 0; i < tradeActions.length; i++) {
-            // make sure all tradeActions are provided with a positive amount
-            if (tradeActions[i].amount == 0) {
-                revert InvalidTradeActionAmount();
-            }
         }
     }
 }

@@ -133,7 +133,8 @@ abstract contract Strategies is Initializable {
     error InsufficientCapacity();
     error InvalidRate();
     error InsufficientLiquidity();
-    error TokensMismatch();
+    error InvalidTradeActionStrategyId();
+    error InvalidTradeActionAmount();
     error StrategyDoesNotExist();
     error OutDated();
     error AmountExceedsBalance();
@@ -312,7 +313,7 @@ abstract contract Strategies is Initializable {
 
         // store new values if necessary
         uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
-        for (uint256 n = 0; n < 3; n++) {
+        for (uint256 n = 0; n < 3; n = uncheckedInc(n)) {
             if (packedOrdersMemory[n] != newPackedOrders[n]) {
                 packedOrders[n] = newPackedOrders[n];
             }
@@ -320,7 +321,7 @@ abstract contract Strategies is Initializable {
 
         // deposit and withdraw
         Token[2] memory sortedTokens = _sortStrategyTokens(pool, ordersInverted);
-        for (uint256 i = 0; i < 2; i++) {
+        for (uint256 i = 0; i < 2; i = uncheckedInc(i)) {
             Token token = sortedTokens[i];
             if (newOrders[i].y < orders[i].y) {
                 // liquidity decreased - withdraw the difference
@@ -381,7 +382,7 @@ abstract contract Strategies is Initializable {
         TradeParams memory params
     ) internal returns (SourceAndTargetAmounts memory totals) {
         // process trade actions
-        for (uint256 i = 0; i < tradeActions.length; i++) {
+        for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
             // prepare variables
             uint256 strategyId = tradeActions[i].strategyId;
             uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
@@ -390,7 +391,12 @@ abstract contract Strategies is Initializable {
 
             // make sure strategyIds match the provided source/target tokens
             if (_poolIdByStrategyId(strategyId) != params.pool.id) {
-                revert TokensMismatch();
+                revert InvalidTradeActionStrategyId();
+            }
+
+            // make sure all tradeActions are provided with a positive amount
+            if (tradeActions[i].amount == 0) {
+                revert InvalidTradeActionAmount();
             }
 
             // calculate the orders new values
@@ -414,7 +420,7 @@ abstract contract Strategies is Initializable {
 
             // store new values if necessary
             uint256[3] memory newPackedOrders = _packOrders(orders, ordersInverted);
-            for (uint256 n = 0; n < 3; n++) {
+            for (uint256 n = 0; n < 3; n = uncheckedInc(n)) {
                 if (packedOrdersMemory[n] != newPackedOrders[n]) {
                     packedOrders[n] = newPackedOrders[n];
                 }
@@ -522,7 +528,7 @@ abstract contract Strategies is Initializable {
         bool byTargetAmount
     ) internal view returns (SourceAndTargetAmounts memory totals) {
         // process trade actions
-        for (uint256 i = 0; i < tradeActions.length; i++) {
+        for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
             // prepare variables
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[tradeActions[i].strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
@@ -573,7 +579,7 @@ abstract contract Strategies is Initializable {
         // populate the result
         uint256 resultLength = endIndex - startIndex;
         Strategy[] memory result = new Strategy[](resultLength);
-        for (uint256 i = 0; i < resultLength; i++) {
+        for (uint256 i = 0; i < resultLength; i = uncheckedInc(i)) {
             uint256 strategyId = strategyIds.at(startIndex + i);
             result[i] = _strategy(strategyId, voucher, pool);
         }
@@ -664,7 +670,7 @@ abstract contract Strategies is Initializable {
      */
     function _equalStrategyOrders(Order[2] memory orders0, Order[2] memory orders1) internal pure returns (bool) {
         uint256 i;
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 2; i = uncheckedInc(i)) {
             if (
                 orders0[i].y != orders1[i].y ||
                 orders0[i].z != orders1[i].z ||
@@ -826,7 +832,7 @@ abstract contract Strategies is Initializable {
      * revert if any of the orders is invalid
      */
     function _validateOrders(Order[2] calldata orders) internal pure {
-        for (uint256 i = 0; i < 2; i++) {
+        for (uint256 i = 0; i < 2; i = uncheckedInc(i)) {
             if (orders[i].z < orders[i].y) {
                 revert InsufficientCapacity();
             }
@@ -898,6 +904,12 @@ abstract contract Strategies is Initializable {
             target.sendValue(amount);
         } else {
             token.safeTransfer(target, amount);
+        }
+    }
+
+    function uncheckedInc(uint256 i) private pure returns (uint256 j) {
+        unchecked {
+            j = i + 1;
         }
     }
 }

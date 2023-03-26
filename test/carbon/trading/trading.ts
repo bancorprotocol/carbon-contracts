@@ -13,6 +13,8 @@ import Decimal from 'decimal.js';
 import { BigNumber, BigNumberish, ContractReceipt } from 'ethers';
 import { ethers } from 'hardhat';
 
+const generateStrategyId = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
+
 type TradeTestReturnValues = {
     tradingFeeAmount: BigNumber;
     gasUsed: BigNumber;
@@ -503,8 +505,8 @@ describe('Trading', () => {
                             sourceAmount: 1,
                             byTargetAmount,
                             tradeActions: [
-                                { strategyId: 1, amount: 1 },
-                                { strategyId: 2, amount: 0 }
+                                { strategyId: generateStrategyId(1, 1), amount: 1 },
+                                { strategyId: generateStrategyId(1, 2), amount: 0 }
                             ]
                         })
                     ).to.be.revertedWithError('InvalidTradeActionAmount');
@@ -534,7 +536,7 @@ describe('Trading', () => {
                     await createStrategies(testCase2.strategies);
 
                     // edit one of the actions to use the extra strategy created
-                    tradeActions[2].strategyId = BigNumber.from(2).shl(128).or(strategies.length + 1).toString();
+                    tradeActions[2].strategyId = generateStrategyId(2, strategies.length + 1).toString();
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
@@ -549,7 +551,7 @@ describe('Trading', () => {
                             targetSymbol: TokenSymbol.TKN0,
                             byTargetAmount
                         })
-                    ).to.be.revertedWithError('TokensMismatch');
+                    ).to.be.revertedWithError('InvalidTradeActionStrategyId');
                 });
             }
         });
@@ -569,7 +571,7 @@ describe('Trading', () => {
                     await createStrategies(strategies);
 
                     // edit one of the actions to use a strategy that does not exist
-                    tradeActions[2].strategyId = BigNumber.from(2).shl(128).or(1).toString();
+                    tradeActions[2].strategyId = generateStrategyId(2, 1).toString();
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
