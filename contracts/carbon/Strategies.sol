@@ -228,7 +228,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev emits following a fees withdrawal
      */
-    event FeesWithdrawn(address indexed token, address indexed recipient, uint256 indexed amount, address sender);
+    event FeesWithdrawn(Token indexed token, address indexed recipient, uint256 indexed amount, address sender);
 
     // solhint-disable func-name-mixedcase
     /**
@@ -865,7 +865,7 @@ abstract contract Strategies is Initializable {
 
         _accumulatedFees[token] = accumulatedAmount - amount;
         _withdrawFunds(token, payable(recipient), amount);
-        emit FeesWithdrawn(Token.unwrap(token), recipient, amount, sender);
+        emit FeesWithdrawn(token, recipient, amount, sender);
     }
 
     /**

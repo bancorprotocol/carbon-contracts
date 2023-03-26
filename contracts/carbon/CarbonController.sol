@@ -401,10 +401,10 @@ contract CarbonController is
     /**
      * @dev validates both tokens are valid addresses and unique
      */
-    function _validateInputTokens(Token token0, Token token1) private pure {
-        _validAddress(Token.unwrap(token0));
-        _validAddress(Token.unwrap(token1));
-
+    function _validateInputTokens(
+        Token token0,
+        Token token1
+    ) private pure validAddress(Token.unwrap(token0)) validAddress(Token.unwrap(token1)) {
         if (token0 == token1) {
             revert IdenticalAddresses();
         }
