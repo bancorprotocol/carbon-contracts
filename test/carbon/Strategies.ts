@@ -9,7 +9,7 @@ import { shouldHaveGap } from '../helpers/Proxy';
 import { getBalance, transfer } from '../helpers/Utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
+import { BigNumber, ContractTransaction } from 'ethers';
 import { ethers } from 'hardhat';
 
 const generateStrategyId = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
@@ -1449,17 +1449,27 @@ describe('Strategy', () => {
         });
 
         it('emits the FeesWithdrawn', async () => {
-            const amount = 10;
+            const amount = BigNumber.from(10);
             await transfer(deployer, token0, carbonController.address, amount);
-            await carbonController.testSetAccumulatedFees(token0.address, amount);
-            await carbonController
-                .connect(deployer)
-                .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, deployer.address);
-            const tx = await carbonController.connect(deployer).withdrawFees(amount, token0.address, owner.address);
+            const tx = await withdrawFees(amount, token0);
 
             await expect(tx)
                 .to.emit(carbonController, 'FeesWithdrawn')
-                .withArgs(deployer.address, amount.toFixed(), owner.address, token0.address);
+                .withArgs(owner.address, amount.toNumber(), owner.address, token0.address);
+        });
+
+        const withdrawFees = async (amount: BigNumber, token: TestERC20Burnable): Promise<ContractTransaction> => {
+            await carbonController.testSetAccumulatedFees(token.address, amount);
+            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+            return carbonController.connect(owner).withdrawFees(amount, token.address, owner.address);
+        };
+
+        it('updates accumulatedFees balance', async () => {
+            const amount = BigNumber.from(10);
+            await transfer(deployer, token0, carbonController.address, amount);
+            await withdrawFees(amount, token0);
+            const accumulatedFees = await carbonController.testAccumulatedFees(token0.address);
+            expect(accumulatedFees).to.eq(0);
         });
 
         describe('balances are updated correctly', () => {
@@ -1471,10 +1481,7 @@ describe('Strategy', () => {
                     const amount = BigNumber.from(2);
                     const _token = tokens[token];
                     await transfer(deployer, _token, carbonController.address, amount);
-                    await carbonController.testSetAccumulatedFees(_token.address, amount);
-                    await carbonController
-                        .connect(deployer)
-                        .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+
                     const balanceTypes = [
                         { type: 'recipient', token: _token, account: owner.address },
                         { type: 'controller', token: _token, account: carbonController.address }
@@ -1487,9 +1494,7 @@ describe('Strategy', () => {
                     }
 
                     // perform withdraw
-                    const tx = await carbonController
-                        .connect(owner)
-                        .withdrawFees(amount, _token.address, owner.address);
+                    const tx = await withdrawFees(amount, _token);
                     const receipt = await tx.wait();
                     const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
 

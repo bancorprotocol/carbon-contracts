@@ -858,8 +858,8 @@ abstract contract Strategies is Initializable {
             revert AmountExceedsBalance();
         }
 
+        _accumulatedFees[token] = _accumulatedFees[token] - amount;
         _withdrawFunds(token, payable(recipient), amount);
-
         emit FeesWithdrawn(sender, amount, recipient, address(token));
     }
 

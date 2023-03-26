@@ -12,5 +12,9 @@ contract TestCarbonController is CarbonController {
         _accumulatedFees[token] = amount;
     }
 
+    function testAccumulatedFees(Token token) external view returns (uint256) {
+        return _accumulatedFees[token];
+    }
+
     receive() external payable {}
 }
