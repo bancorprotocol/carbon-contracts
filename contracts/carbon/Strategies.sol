@@ -186,7 +186,7 @@ abstract contract Strategies is Initializable {
     event TradingFeePPMUpdated(uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
-     * @dev emits following a pool's creation
+     * @dev triggered when a strategy is created
      */
     event StrategyCreated(
         uint256 id,
@@ -198,7 +198,7 @@ abstract contract Strategies is Initializable {
     );
 
     /**
-     * @dev emits following a pool's creation
+     * @dev triggered when a strategy is deleted
      */
     event StrategyDeleted(
         uint256 id,
@@ -210,12 +210,24 @@ abstract contract Strategies is Initializable {
     );
 
     /**
-     * @dev emits following an update to either or both of the orders
+     * @dev triggered when a strategy is edited
      */
-    event StrategyUpdated(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
+    event StrategyEdited(
+        uint256 id,
+        address indexed owner,
+        Token indexed token0,
+        Token indexed token1,
+        Order order0,
+        Order order1
+    );
 
     /**
-     * @dev emits following a user initiated trade
+     * @dev triggered when a strategy is traded on
+     */
+    event StrategyTraded(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
+
+    /**
+     * @dev triggered when tokens are traded
      */
     event TokensTraded(
         address indexed trader,
@@ -228,7 +240,7 @@ abstract contract Strategies is Initializable {
     );
 
     /**
-     * @dev emits following a fees withdrawal
+     * @dev triggered when fees are withdrawn
      */
     event FeesWithdrawn(address indexed token, address indexed recipient, uint256 indexed amount, address sender);
 
@@ -335,8 +347,9 @@ abstract contract Strategies is Initializable {
         }
 
         // emit event
-        emit StrategyUpdated({
+        emit StrategyEdited({
             id: strategyId,
+            owner: owner,
             token0: sortedTokens[0],
             token1: sortedTokens[1],
             order0: newOrders[0],
@@ -428,7 +441,7 @@ abstract contract Strategies is Initializable {
 
             // emit update events if necessary
             Token[2] memory sortedTokens = _sortStrategyTokens(params.pool, ordersInverted);
-            emit StrategyUpdated({
+            emit StrategyTraded({
                 id: strategyId,
                 token0: sortedTokens[0],
                 token1: sortedTokens[1],

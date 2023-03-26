@@ -784,7 +784,7 @@ describe('Trading', () => {
         }
     });
 
-    describe('emits StrategyUpdated event for every trade action', () => {
+    describe('emits StrategyTraded event for every trade action', () => {
         for (const { sourceSymbol, targetSymbol, byTargetAmount, inverseOrders } of permutations) {
             it(`(${sourceSymbol}->${targetSymbol}) | byTargetAmount: ${byTargetAmount} | inverseOrders: ${inverseOrders}`, async () => {
                 const testCase = testCaseFactory({ sourceSymbol, targetSymbol, byTargetAmount, inverseOrders });
@@ -826,7 +826,7 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
                         expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
-                        expect(event.event).to.eq('StrategyUpdated');
+                        expect(event.event).to.eq('StrategyTraded');
                     }
                 }
             });
