@@ -231,6 +231,15 @@ describe('Strategy', () => {
         };
     };
 
+    /**
+     * performs a fee withdrawal
+     */
+    const withdrawFees = async (amount: BigNumber, token: TestERC20Burnable): Promise<ContractTransaction> => {
+        await carbonController.testSetAccumulatedFees(token.address, amount);
+        await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+        return carbonController.connect(owner).withdrawFees(amount, token.address, owner.address);
+    };
+
     describe('strategy creation', async () => {
         it('reverts when addresses are identical', async () => {
             const order = generateTestOrder();
@@ -1457,12 +1466,6 @@ describe('Strategy', () => {
                 .to.emit(carbonController, 'FeesWithdrawn')
                 .withArgs(owner.address, amount.toNumber(), owner.address, token0.address);
         });
-
-        const withdrawFees = async (amount: BigNumber, token: TestERC20Burnable): Promise<ContractTransaction> => {
-            await carbonController.testSetAccumulatedFees(token.address, amount);
-            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
-            return carbonController.connect(owner).withdrawFees(amount, token.address, owner.address);
-        };
 
         it('updates accumulatedFees balance', async () => {
             const amount = BigNumber.from(10);
