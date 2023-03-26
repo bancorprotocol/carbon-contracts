@@ -1464,7 +1464,7 @@ describe('Strategy', () => {
 
             await expect(tx)
                 .to.emit(carbonController, 'FeesWithdrawn')
-                .withArgs(owner.address, amount.toNumber(), owner.address, token0.address);
+                .withArgs(token0.address, owner.address, amount.toNumber(), owner.address);
         });
 
         it('updates accumulatedFees balance', async () => {

@@ -349,8 +349,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function accumulatedFees(Token token) external view returns (uint256) {
-        _validAddress(address(token));
+    function accumulatedFees(Token token) external view validAddress(address(token)) returns (uint256) {
         return _getAccumulatedFees(token);
     }
 

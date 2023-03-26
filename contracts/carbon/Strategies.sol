@@ -230,7 +230,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev emits following a fees withdrawal
      */
-    event FeesWithdrawn(address sender, uint256 amount, address recipient, address token);
+    event FeesWithdrawn(address indexed token, address indexed recipient, uint256 indexed amount, address sender);
 
     // solhint-disable func-name-mixedcase
     /**
@@ -860,13 +860,14 @@ abstract contract Strategies is Initializable {
     }
 
     function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal {
-        if (amount > _accumulatedFees[token]) {
+        uint256 accumulatedAmount = _accumulatedFees[token];
+        if (amount > accumulatedAmount) {
             revert AmountExceedsBalance();
         }
 
-        _accumulatedFees[token] = _accumulatedFees[token] - amount;
+        _accumulatedFees[token] = accumulatedAmount - amount;
         _withdrawFunds(token, payable(recipient), amount);
-        emit FeesWithdrawn(sender, amount, recipient, address(token));
+        emit FeesWithdrawn(address(token), recipient, amount, sender);
     }
 
     /**
