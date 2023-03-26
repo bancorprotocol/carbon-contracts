@@ -6,14 +6,11 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 
-import { SafeERC20Ex } from "./SafeERC20Ex.sol";
-
 /**
  * @dev This type implements ERC20 and SafeERC20 utilities for both the native token and for ERC20 tokens
  */
 type Token is address;
 using SafeERC20 for IERC20;
-using SafeERC20Ex for IERC20;
 
 error PermitUnsupported();
 
@@ -38,7 +35,6 @@ using {
     safeTransfer,
     safeTransferFrom,
     safeApprove,
-    ensureApprove, 
     isEqual
 } for Token global;
 
@@ -119,18 +115,6 @@ function safeApprove(Token token, address spender, uint256 amount) {
         return;
     }
     toIERC20(token).safeApprove(spender, amount);
-}
-
-/**
- * @dev ensures that the spender has sufficient allowance
- *
- * note that the function does not perform any action if the native token is provided
- */
-function ensureApprove(Token token, address spender, uint256 amount) {
-    if (isNative(token)) {
-        return;
-    }
-    toIERC20(token).ensureApprove(spender, amount);
 }
 
 /**

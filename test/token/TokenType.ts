@@ -88,18 +88,6 @@ describe('TokenType', () => {
                     expect(await getBalance(token, tokenType.address)).to.equal(prevLibraryBalance);
                     expect(await getBalance(token, recipient)).to.equal(prevRecipientBalance);
                 });
-
-                it('should ignore the request to transfer the reserve token on behalf of a different account using ensure approve', async () => {
-                    const prevLibraryBalance = await getBalance(token, tokenType.address);
-                    const prevRecipientBalance = await getBalance(token, recipient);
-
-                    const amount = 100_000;
-                    await tokenType.ensureApprove(token.address, tokenType.address, amount);
-                    await tokenType.safeTransferFrom(token.address, tokenType.address, recipient.address, amount);
-
-                    expect(await getBalance(token, tokenType.address)).to.equal(prevLibraryBalance);
-                    expect(await getBalance(token, recipient)).to.equal(prevRecipientBalance);
-                });
             } else {
                 for (const amount of [0, 10_000]) {
                     beforeEach(async () => {
@@ -116,31 +104,12 @@ describe('TokenType', () => {
                         expect(await getBalance(token, tokenType.address)).to.equal(prevLibraryBalance.sub(amount));
                         expect(await getBalance(token, recipient)).to.equal(prevRecipientBalance.add(amount));
                     });
-
-                    it('should properly transfer the reserve token on behalf of a different account using ensure approve', async () => {
-                        const prevLibraryBalance = await getBalance(token, tokenType.address);
-                        const prevRecipientBalance = await getBalance(token, recipient);
-
-                        await tokenType.ensureApprove(token.address, tokenType.address, amount);
-                        await tokenType.safeTransferFrom(token.address, tokenType.address, recipient.address, amount);
-
-                        expect(await getBalance(token, tokenType.address)).to.equal(prevLibraryBalance.sub(amount));
-                        expect(await getBalance(token, recipient)).to.equal(prevRecipientBalance.add(amount));
-                    });
                 }
 
                 it('should allow setting the allowance using safe approve', async () => {
                     const allowance = 1_000_000;
 
                     await tokenType.safeApprove(token.address, spender.address, allowance);
-
-                    expect(await token.allowance(tokenType.address, spender.address)).to.equal(allowance);
-                });
-
-                it('should allow setting the allowance using ensure approve', async () => {
-                    const allowance = 1_000_000;
-
-                    await tokenType.ensureApprove(token.address, spender.address, allowance);
 
                     expect(await token.allowance(tokenType.address, spender.address)).to.equal(allowance);
                 });
