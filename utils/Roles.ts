@@ -8,7 +8,8 @@ export const Roles = {
     },
 
     CarbonController: {
-        ROLE_EMERGENCY_STOPPER: id('ROLE_EMERGENCY_STOPPER')
+        ROLE_EMERGENCY_STOPPER: id('ROLE_EMERGENCY_STOPPER'),
+        ROLE_FEES_MANAGER: id('ROLE_FEES_MANAGER')
     }
 };
 

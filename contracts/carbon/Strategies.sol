@@ -137,6 +137,7 @@ abstract contract Strategies is Initializable {
     error InvalidTradeActionAmount();
     error StrategyDoesNotExist();
     error OutDated();
+    error AmountExceedsBalance();
 
     struct SourceAndTargetAmounts {
         uint128 sourceAmount;
@@ -174,7 +175,7 @@ abstract contract Strategies is Initializable {
     uint32 private _tradingFeePPM;
 
     // accumulated fees per token
-    mapping(address => uint256) private _accumulatedFees;
+    mapping(Token => uint256) internal _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 5] private __gap;
@@ -225,6 +226,11 @@ abstract contract Strategies is Initializable {
         uint128 tradingFeeAmount,
         bool byTargetAmount
     );
+
+    /**
+     * @dev emits following a fees withdrawal
+     */
+    event FeesWithdrawn(address indexed token, address indexed recipient, uint256 indexed amount, address sender);
 
     // solhint-disable func-name-mixedcase
     /**
@@ -436,11 +442,11 @@ abstract contract Strategies is Initializable {
 
         // apply trading fee
         uint128 tradingFeeAmount;
-        address tradingFeeToken;
+        Token tradingFeeToken;
         if (params.byTargetAmount) {
             uint128 amountIncludingFee = _addFee(totals.sourceAmount);
             tradingFeeAmount = amountIncludingFee - totals.sourceAmount;
-            tradingFeeToken = address(params.tokens.source);
+            tradingFeeToken = params.tokens.source;
             totals.sourceAmount = amountIncludingFee;
             if (totals.sourceAmount > params.constraint) {
                 revert GreaterThanMaxInput();
@@ -448,7 +454,7 @@ abstract contract Strategies is Initializable {
         } else {
             uint128 amountIncludingFee = _subtractFee(totals.targetAmount);
             tradingFeeAmount = totals.targetAmount - amountIncludingFee;
-            tradingFeeToken = address(params.tokens.target);
+            tradingFeeToken = params.tokens.target;
             totals.targetAmount = amountIncludingFee;
             if (totals.targetAmount < params.constraint) {
                 revert LowerThanMinReturn();
@@ -655,7 +661,7 @@ abstract contract Strategies is Initializable {
     /**
      * returns the current amount of accumulated fees for a specific token
      */
-    function _getAccumulatedFees(address token) internal view returns (uint256) {
+    function _getAccumulatedFees(Token token) internal view returns (uint256) {
         return _accumulatedFees[token];
     }
 
@@ -851,6 +857,17 @@ abstract contract Strategies is Initializable {
      */
     function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint256) {
         return strategyId >> 128;
+    }
+
+    function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal {
+        uint256 accumulatedAmount = _accumulatedFees[token];
+        if (amount > accumulatedAmount) {
+            revert AmountExceedsBalance();
+        }
+
+        _accumulatedFees[token] = accumulatedAmount - amount;
+        _withdrawFunds(token, payable(recipient), amount);
+        emit FeesWithdrawn(address(token), recipient, amount, sender);
     }
 
     /**

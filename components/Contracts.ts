@@ -4,6 +4,7 @@ import {
     OptimizedTransparentUpgradeableProxy__factory,
     ProxyAdmin__factory,
     TestBlockNumber__factory,
+    TestCarbonController__factory,
     TestERC20Burnable__factory,
     TestERC20Token__factory,
     TestLogic__factory,
@@ -43,6 +44,7 @@ const getContracts = (signer?: Signer) => ({
     TestUpgradeable: deployOrAttach('TestUpgradeable', TestUpgradeable__factory, signer),
     TestOnlyProxyDelegate: deployOrAttach('TestOnlyProxyDelegate', TestOnlyProxyDelegate__factory, signer),
     TestVoucher: deployOrAttach('TestVoucher', TestVoucher__factory, signer),
+    TestCarbonController: deployOrAttach('TestCarbonController', TestCarbonController__factory, signer),
     OptimizedTransparentUpgradeableProxy: deployOrAttach(
         'OptimizedTransparentUpgradeableProxy',
         OptimizedTransparentUpgradeableProxy__factory,
