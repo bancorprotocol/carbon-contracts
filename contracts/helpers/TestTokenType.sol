@@ -3,11 +3,9 @@ pragma solidity 0.8.19;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { Token, TokenLibrary } from "../token/TokenLibrary.sol";
+import { Token } from "../token/Token.sol";
 
-contract TestTokenLibrary {
-    using TokenLibrary for Token;
-
+contract TestTokenType {
     receive() external payable {}
 
     function isNative(Token token) external pure returns (bool) {

@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import { CarbonController } from "../carbon/CarbonController.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
-import { Token } from "../token/TokenLibrary.sol";
+import { Token } from "../token/Token.sol";
 
 contract TestCarbonController is CarbonController {
     constructor(IVoucher initVoucher, address proxy) CarbonController(initVoucher, proxy) {}

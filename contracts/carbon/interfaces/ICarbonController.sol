@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import { IVersioned } from "../../utility/interfaces/IVersioned.sol";
 import { Pool } from "../Pools.sol";
-import { Token } from "../../token/TokenLibrary.sol";
+import { Token } from "../../token/Token.sol";
 import { Strategy, TradeAction, Order } from "../Strategies.sol";
 
 /**

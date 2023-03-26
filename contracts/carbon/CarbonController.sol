@@ -4,7 +4,7 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { Pools, Pool } from "./Pools.sol";
-import { Token, TokenLibrary } from "../token/TokenLibrary.sol";
+import { Token } from "../token/Token.sol";
 import { Strategies, Strategy, TradeAction, Order, TradeTokens } from "./Strategies.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
@@ -26,8 +26,6 @@ contract CarbonController is
     OnlyProxyDelegate,
     Utils
 {
-    using TokenLibrary for Token;
-
     // the emergency manager role is required to pause/unpause
     bytes32 private constant ROLE_EMERGENCY_STOPPER = keccak256("ROLE_EMERGENCY_STOPPER");
 

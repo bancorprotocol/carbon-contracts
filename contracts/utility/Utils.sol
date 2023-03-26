@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { PPM_RESOLUTION } from "./Constants.sol";
-import { Token, TokenLibrary } from "../token/TokenLibrary.sol";
+import { Token } from "../token/Token.sol";
 
 error AccessDenied();
 error AlreadyExists();
@@ -23,7 +23,6 @@ error InvalidIndices();
  * @dev common utilities
  */
 abstract contract Utils {
-    using TokenLibrary for Token;
     using Address for address payable;
 
     // allows execution by the caller only

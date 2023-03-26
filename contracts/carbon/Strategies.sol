@@ -7,7 +7,7 @@ import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/m
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { InvalidIndices } from "../utility/Utils.sol";
-import { Token, TokenLibrary } from "../token/TokenLibrary.sol";
+import { Token } from "../token/Token.sol";
 import { Pool } from "./Pools.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
@@ -121,7 +121,6 @@ struct TradeAction {
 
 abstract contract Strategies is Initializable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-    using TokenLibrary for Token;
     using Address for address payable;
     using MathUpgradeable for uint256;
     using SafeCastUpgradeable for uint256;

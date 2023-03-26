@@ -14,7 +14,7 @@ import {
     TestSafeERC20Ex__factory,
     TestStrategies__factory,
     TestTime__factory,
-    TestTokenLibrary__factory,
+    TestTokenType__factory,
     TestUpgradeable__factory,
     TestVoucher__factory,
     Voucher__factory
@@ -40,7 +40,7 @@ const getContracts = (signer?: Signer) => ({
     TestStrategies: deployOrAttach('TestStrategies', TestStrategies__factory, signer),
     TestPools: deployOrAttach('TestPools', TestPools__factory, signer),
     TestTime: deployOrAttach('TestTime', TestTime__factory, signer),
-    TestTokenLibrary: deployOrAttach('TestTokenLibrary', TestTokenLibrary__factory, signer),
+    TestTokenType: deployOrAttach('TestTokenType', TestTokenType__factory, signer),
     TestUpgradeable: deployOrAttach('TestUpgradeable', TestUpgradeable__factory, signer),
     TestOnlyProxyDelegate: deployOrAttach('TestOnlyProxyDelegate', TestOnlyProxyDelegate__factory, signer),
     TestVoucher: deployOrAttach('TestVoucher', TestVoucher__factory, signer),
