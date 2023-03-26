@@ -34,8 +34,7 @@ using {
     balanceOf,
     safeTransfer,
     safeTransferFrom,
-    safeApprove,
-    isEqual
+    safeApprove
 } for Token global;
 
 function equal(Token a, Token b) pure returns (bool) {
@@ -115,13 +114,6 @@ function safeApprove(Token token, address spender, uint256 amount) {
         return;
     }
     toIERC20(token).safeApprove(spender, amount);
-}
-
-/**
- * @dev compares between a token and another raw ERC20 token
- */
-function isEqual(Token token, IERC20 erc20Token) pure returns (bool) {
-    return toIERC20(token) == erc20Token;
 }
 
 /**

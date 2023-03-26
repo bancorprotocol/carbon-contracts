@@ -36,7 +36,7 @@ contract TestTokenType {
         token.safeApprove(spender, amount);
     }
 
-    function isEqual(Token token, IERC20 erc20Token) external pure returns (bool) {
-        return token.isEqual(erc20Token);
+    function isEqual(Token token1, Token token2) external pure returns (bool) {
+        return token1 == token2;
     }
 }
