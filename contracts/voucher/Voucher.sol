@@ -191,7 +191,11 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
             return baseURI;
         }
 
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), _baseExtension)) : "";
+        if (bytes(baseURI).length > 0) {
+            return string(abi.encodePacked(baseURI, tokenId.toString(), _baseExtension));
+        }
+
+        return "";
     }
 
     /**
