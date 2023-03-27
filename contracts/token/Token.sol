@@ -12,8 +12,6 @@ import { IERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/dra
 type Token is address;
 using SafeERC20 for IERC20;
 
-error PermitUnsupported();
-
 // the address that represents the native token reserve
 address constant NATIVE_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
