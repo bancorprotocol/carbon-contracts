@@ -94,7 +94,7 @@ abstract contract Pools is Initializable {
 
     function _poolById(uint256 poolId) internal view returns (Pool memory) {
         StoredPool memory storedPool = _poolsStorage[poolId];
-        if (address(storedPool.tokens[0]) == address(0)) {
+        if (Token.unwrap(storedPool.tokens[0]) == address(0)) {
             revert PoolDoesNotExist();
         }
         return Pool({ id: poolId, tokens: storedPool.tokens });
@@ -131,6 +131,6 @@ abstract contract Pools is Initializable {
      * returns the given tokens sorted by address value, smaller first
      */
     function _sortTokens(Token token0, Token token1) private pure returns (Token[2] memory) {
-        return token0 < token1 ? [token0, token1] : [token1, token0];
+        return Token.unwrap(token0) < Token.unwrap(token1) ? [token0, token1] : [token1, token0];
     }
 }

@@ -8,7 +8,6 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { InvalidIndices } from "../utility/Utils.sol";
 import { Token } from "../token/Token.sol";
-import { TokenLibrary } from "../token/TokenLibrary.sol";
 import { Pool } from "./Pools.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
@@ -122,7 +121,6 @@ struct TradeAction {
 
 abstract contract Strategies is Initializable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
-    using TokenLibrary for Token;
     using Address for address payable;
     using MathUpgradeable for uint256;
     using SafeCastUpgradeable for uint256;
@@ -231,8 +229,8 @@ abstract contract Strategies is Initializable {
      */
     event TokensTraded(
         address indexed trader,
-        address indexed sourceToken,
-        address indexed targetToken,
+        Token indexed sourceToken,
+        Token indexed targetToken,
         uint256 sourceAmount,
         uint256 targetAmount,
         uint128 tradingFeeAmount,
@@ -242,7 +240,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev triggered when fees are withdrawn
      */
-    event FeesWithdrawn(address indexed token, address indexed recipient, uint256 indexed amount, address sender);
+    event FeesWithdrawn(Token indexed token, address indexed recipient, uint256 indexed amount, address sender);
 
     // solhint-disable func-name-mixedcase
     /**
@@ -489,8 +487,8 @@ abstract contract Strategies is Initializable {
         // tokens traded successfully, emit event
         emit TokensTraded({
             trader: params.trader,
-            sourceToken: address(params.tokens.source),
-            targetToken: address(params.tokens.target),
+            sourceToken: params.tokens.source,
+            targetToken: params.tokens.target,
             sourceAmount: totals.sourceAmount,
             targetAmount: totals.targetAmount,
             tradingFeeAmount: tradingFeeAmount,
@@ -880,7 +878,7 @@ abstract contract Strategies is Initializable {
 
         _accumulatedFees[token] = accumulatedAmount - amount;
         _withdrawFunds(token, payable(recipient), amount);
-        emit FeesWithdrawn(address(token), recipient, amount, sender);
+        emit FeesWithdrawn(token, recipient, amount, sender);
     }
 
     /**

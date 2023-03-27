@@ -5,7 +5,6 @@ import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/securit
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { Pools, Pool } from "./Pools.sol";
 import { Token } from "../token/Token.sol";
-import { TokenLibrary } from "../token/TokenLibrary.sol";
 import { Strategies, Strategy, TradeAction, Order, TradeTokens } from "./Strategies.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
@@ -27,8 +26,6 @@ contract CarbonController is
     OnlyProxyDelegate,
     Utils
 {
-    using TokenLibrary for Token;
-
     // the emergency manager role is required to pause/unpause
     bytes32 private constant ROLE_EMERGENCY_STOPPER = keccak256("ROLE_EMERGENCY_STOPPER");
 
@@ -349,7 +346,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function accumulatedFees(Token token) external view validAddress(address(token)) returns (uint256) {
+    function accumulatedFees(Token token) external view validAddress(Token.unwrap(token)) returns (uint256) {
         return _getAccumulatedFees(token);
     }
 
@@ -365,7 +362,7 @@ contract CarbonController is
         whenNotPaused
         onlyRoleMember(ROLE_FEES_MANAGER)
         validAddress(recipient)
-        validAddress(address(token))
+        validAddress(Token.unwrap(token))
         greaterThanZero(amount)
         nonReentrant
     {
@@ -404,10 +401,10 @@ contract CarbonController is
     /**
      * @dev validates both tokens are valid addresses and unique
      */
-    function _validateInputTokens(Token token0, Token token1) private pure {
-        _validAddress(address(token0));
-        _validAddress(address(token1));
-
+    function _validateInputTokens(
+        Token token0,
+        Token token1
+    ) private pure validAddress(Token.unwrap(token0)) validAddress(Token.unwrap(token1)) {
         if (token0 == token1) {
             revert IdenticalAddresses();
         }
