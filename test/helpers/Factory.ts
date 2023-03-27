@@ -3,6 +3,7 @@ import Contracts, { ProxyAdmin, TestERC20Burnable, TestERC20Token, Voucher } fro
 import { ZERO_ADDRESS } from '../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { Addressable, toWei } from '../../utils/Types';
+import { Roles } from './AccessControl';
 import { toAddress } from './Utils';
 import { BaseContract, BigNumberish, BytesLike, ContractFactory } from 'ethers';
 import { waffle } from 'hardhat';
@@ -93,7 +94,7 @@ const createSystemFixture = async () => {
 
     const carbonController = await createCarbonController(voucher);
 
-    await voucher.setController(carbonController.address);
+    await voucher.grantRole(Roles.Voucher.ROLE_MINTER, carbonController.address);
 
     return {
         carbonController,

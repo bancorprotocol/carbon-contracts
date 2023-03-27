@@ -5,7 +5,6 @@ import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgr
 import { IERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
 import { ERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
@@ -15,15 +14,14 @@ import { MAX_GAP } from "../utility/Constants.sol";
 
 import { IVoucher } from "./interfaces/IVoucher.sol";
 
-contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable, Utils {
+contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
     using Strings for uint256;
     using EnumerableSet for EnumerableSet.UintSet;
 
-    error ControllerNotSet();
     error BatchNotSupported();
 
-    // the controller contract
-    address private _controller;
+    // the minter role is required to mint/burn
+    bytes32 private constant ROLE_MINTER = keccak256("ROLE_MINTER");
 
     // a flag used to toggle between a unique URI per token / one global URI for all tokens
     bool private _useGlobalURI;
@@ -56,11 +54,6 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     event BaseExtensionUpdated(string newBaseExtension);
 
     /**
-     * @dev triggered when updating the address of the controller contract
-     */
-    event ControllerUpdated(address indexed controller);
-
-    /**
      * @dev fully initializes the contract and its parents
      */
     function initialize(
@@ -83,7 +76,6 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     ) internal onlyInitializing {
         __Upgradeable_init();
         __ERC721_init("Carbon Automated Trading Strategy", "CARBON-STRAT");
-        __Ownable_init();
 
         __Voucher_init_unchained(newUseGlobalURI, newBaseURI, newBaseExtension);
     }
@@ -96,6 +88,9 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
         string memory newBaseURI,
         string memory newBaseExtension
     ) internal onlyInitializing {
+        // set up administrative roles
+        _setRoleAdmin(ROLE_MINTER, ROLE_ADMIN);
+
         _useGlobalURI = newUseGlobalURI;
         __baseURI = newBaseURI;
         _baseExtension = newBaseExtension;
@@ -120,16 +115,23 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     }
 
     /**
+     * @dev returns the minter role
+     */
+    function roleMinter() external pure returns (bytes32) {
+        return ROLE_MINTER;
+    }
+
+    /**
      * @inheritdoc IVoucher
      */
-    function mint(address owner, uint256 tokenId) external only(address(_controller)) {
+    function mint(address owner, uint256 tokenId) external onlyRoleMember(ROLE_MINTER) {
         _safeMint(owner, tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(uint256 tokenId) external only(address(_controller)) {
+    function burn(uint256 tokenId) external onlyRoleMember(ROLE_MINTER) {
         _burn(tokenId);
     }
 
@@ -165,22 +167,6 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     }
 
     /**
-     * @dev stores the controller address
-     *
-     * requirements:
-     *
-     * - the caller must be the owner of this contract
-     */
-    function setController(address controller) external onlyOwner validAddress(address(controller)) {
-        if (_controller == controller) {
-            return;
-        }
-
-        _controller = controller;
-        emit ControllerUpdated(controller);
-    }
-
-    /**
      * @dev depending on the useGlobalURI flag, returns a unique URI point to a json representing the voucher,
      * or a URI of a global json used for all tokens
      */
@@ -203,9 +189,9 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
      *
      * requirements:
      *
-     * - the caller must be the owner of this contract
+     * - the caller must be the admin of this contract
      */
-    function setBaseURI(string memory newBaseURI) public onlyOwner {
+    function setBaseURI(string memory newBaseURI) public onlyAdmin {
         __baseURI = newBaseURI;
 
         emit BaseURIUpdated(newBaseURI);
@@ -216,9 +202,9 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
      *
      * requirements:
      *
-     * - the caller must be the owner of this contract
+     * - the caller must be the admin of this contract
      */
-    function setBaseExtension(string memory newBaseExtension) public onlyOwner {
+    function setBaseExtension(string memory newBaseExtension) public onlyAdmin {
         _baseExtension = newBaseExtension;
 
         emit BaseExtensionUpdated(newBaseExtension);
@@ -229,9 +215,9 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
      *
      * requirements:
      *
-     * - the caller must be the owner of this contract
+     * - the caller must be the admin of this contract
      */
-    function useGlobalURI(bool newUseGlobalURI) public onlyOwner {
+    function useGlobalURI(bool newUseGlobalURI) public onlyAdmin {
         if (_useGlobalURI == newUseGlobalURI) {
             return;
         }

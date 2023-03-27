@@ -14,7 +14,7 @@ interface IVoucher is IUpgradeable, IERC721Upgradeable {
      *
      * requirements:
      *
-     * - the caller must be the controller contract
+     * - the caller must have the ROLE_MINTER privilege
      *
      */
     function mint(address owner, uint256 strategyId) external;
@@ -24,7 +24,7 @@ interface IVoucher is IUpgradeable, IERC721Upgradeable {
      *
      * requirements:
      *
-     * - the caller must be the controller contract
+     * - the caller must have the ROLE_MINTER privilege
      *
      */
     function burn(uint256 strategyId) external;

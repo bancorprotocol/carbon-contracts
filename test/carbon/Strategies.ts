@@ -70,7 +70,6 @@ describe('Strategy', () => {
 
     beforeEach(async () => {
         ({ carbonController, voucher } = await createSystem());
-        await voucher.setController(carbonController.address);
 
         tokens = {};
         for (const symbol of [TokenSymbol.ETH, TokenSymbol.TKN0, TokenSymbol.TKN1, TokenSymbol.TKN2]) {
@@ -1374,7 +1373,6 @@ describe('Strategy', () => {
 
         describe('tokenURI', () => {
             it('generates a global URI', async () => {
-                await voucher.setController(carbonController.address);
                 await createStrategy();
                 await voucher.setBaseURI('ipfs://test321');
                 await voucher.useGlobalURI(true);
@@ -1383,7 +1381,6 @@ describe('Strategy', () => {
             });
 
             it('generates a unique URI', async () => {
-                await voucher.setController(carbonController.address);
                 await voucher.setBaseURI('ipfs://test123/');
                 await voucher.useGlobalURI(false);
                 await createStrategy();
@@ -1392,7 +1389,6 @@ describe('Strategy', () => {
             });
 
             it('generates a unique URI with baseExtension', async () => {
-                await voucher.setController(carbonController.address);
                 await voucher.setBaseURI('ipfs://test123/');
                 await voucher.setBaseExtension('.json');
                 await voucher.useGlobalURI(false);

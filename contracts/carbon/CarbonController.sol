@@ -96,6 +96,20 @@ contract CarbonController is
     }
 
     /**
+     * @dev returns the emergency stopper role
+     */
+    function roleEmergencyStopper() external pure returns (bytes32) {
+        return ROLE_EMERGENCY_STOPPER;
+    }
+
+    /**
+     * @dev returns the fees manaager role
+     */
+    function roleFeesManager() external pure returns (bytes32) {
+        return ROLE_FEES_MANAGER;
+    }
+
+    /**
      * @inheritdoc ICarbonController
      */
     function controllerType() external pure virtual returns (uint16) {
@@ -389,13 +403,6 @@ contract CarbonController is
      */
     function unpause() external onlyRoleMember(ROLE_EMERGENCY_STOPPER) {
         _unpause();
-    }
-
-    /**
-     * @dev returns the emergency stopper role
-     */
-    function roleEmergencyStopper() external pure returns (bytes32) {
-        return ROLE_EMERGENCY_STOPPER;
     }
 
     /**
