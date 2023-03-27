@@ -42,7 +42,7 @@ function equal(Token a, Token b) pure returns (bool) {
  * @dev returns whether the provided token represents an ERC20 or the native token reserve
  */
 function isNative(Token token) pure returns (bool) {
-    return Token.unwrap(token) == NATIVE_TOKEN_ADDRESS;
+    return token == NATIVE_TOKEN;
 }
 
 /**
