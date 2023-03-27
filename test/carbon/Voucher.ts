@@ -11,7 +11,7 @@ describe('Voucher', () => {
     let nonAdmin2: SignerWithAddress;
     let voucher: TestVoucher;
 
-    shouldHaveGap('Voucher', '_carbonController');
+    shouldHaveGap('Voucher', '_controller');
 
     before(async () => {
         [, nonAdmin, nonAdmin2] = await ethers.getSigners();
@@ -28,16 +28,16 @@ describe('Voucher', () => {
         await expect(await voucher.name()).to.eq('Carbon Automated Trading Strategy');
     });
 
-    it('reverts when it is not the carbonController attempting to mint', async () => {
+    it('reverts when it is not the controller attempting to mint', async () => {
         await expect(voucher.mint(nonAdmin.address, 1)).to.be.revertedWithError('AccessDenied');
     });
 
-    it('reverts when it is not the carbonController attempting to burn', async () => {
+    it('reverts when it is not the controller attempting to burn', async () => {
         await expect(voucher.burn(1)).to.be.revertedWithError('AccessDenied');
     });
 
-    it('reverts when a non owner tries to set carbonController', async () => {
-        await expect(voucher.connect(nonAdmin).setCarbonController(ZERO_ADDRESS)).to.be.revertedWithError(
+    it('reverts when a non owner tries to set controller', async () => {
+        await expect(voucher.connect(nonAdmin).setController(ZERO_ADDRESS)).to.be.revertedWithError(
             'Ownable: caller is not the owner'
         );
     });
@@ -46,7 +46,7 @@ describe('Voucher', () => {
         const voucher = await createProxy(Contracts.Voucher, {
             initArgs: [true, '', '']
         });
-        const tx = voucher.setCarbonController(ZERO_ADDRESS);
+        const tx = voucher.setController(ZERO_ADDRESS);
         await expect(tx).to.have.been.revertedWithError('InvalidAddress');
     });
 
@@ -60,15 +60,15 @@ describe('Voucher', () => {
         await expect(tx).to.have.been.revertedWithError('Ownable: caller is not the owner');
     });
 
-    it('emits CarbonControllerUpdated event', async () => {
-        const res = await voucher.setCarbonController(voucher.address);
-        await expect(res).to.emit(voucher, 'CarbonControllerUpdated').withArgs(voucher.address);
+    it('emits ControllerUpdated event', async () => {
+        const res = await voucher.setController(voucher.address);
+        await expect(res).to.emit(voucher, 'ControllerUpdated').withArgs(voucher.address);
     });
 
-    it('does not emit the CarbonControllerUpdated event if an update was attempted with the current value', async () => {
-        await voucher.setCarbonController(voucher.address);
-        const res = await voucher.setCarbonController(voucher.address);
-        await expect(res).to.not.emit(voucher, 'CarbonControllerUpdated');
+    it('does not emit the ControllerUpdated event if an update was attempted with the current value', async () => {
+        await voucher.setController(voucher.address);
+        const res = await voucher.setController(voucher.address);
+        await expect(res).to.not.emit(voucher, 'ControllerUpdated');
     });
 
     it('emits BaseURIUpdated event', async () => {

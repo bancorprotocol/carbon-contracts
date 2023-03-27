@@ -30,7 +30,7 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
 
     await execute({
         name: InstanceName.Voucher,
-        methodName: 'setCarbonController',
+        methodName: 'setController',
         args: [carbonController.address],
         from: deployer
     });

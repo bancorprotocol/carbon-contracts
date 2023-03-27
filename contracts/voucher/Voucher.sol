@@ -14,17 +14,16 @@ import { Utils, InvalidIndices } from "../utility/Utils.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
 
 import { IVoucher } from "./interfaces/IVoucher.sol";
-import { ICarbonController } from "../carbon/interfaces/ICarbonController.sol";
 
 contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable, Utils {
     using Strings for uint256;
     using EnumerableSet for EnumerableSet.UintSet;
 
-    error CarbonControllerNotSet();
+    error ControllerNotSet();
     error BatchNotSupported();
 
-    // the carbon controller contract
-    ICarbonController private _carbonController;
+    // the controller contract
+    address private _controller;
 
     // a flag used to toggle between a unique URI per token / one global URI for all tokens
     bool private _useGlobalURI;
@@ -57,9 +56,9 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     event BaseExtensionUpdated(string newBaseExtension);
 
     /**
-     * @dev triggered when updating the address of the carbonController contract
+     * @dev triggered when updating the address of the controller contract
      */
-    event CarbonControllerUpdated(ICarbonController carbonController);
+    event ControllerUpdated(address indexed controller);
 
     /**
      * @dev fully initializes the contract and its parents
@@ -123,14 +122,14 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     /**
      * @inheritdoc IVoucher
      */
-    function mint(address owner, uint256 tokenId) external only(address(_carbonController)) {
+    function mint(address owner, uint256 tokenId) external only(address(_controller)) {
         _safeMint(owner, tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(uint256 tokenId) external only(address(_carbonController)) {
+    function burn(uint256 tokenId) external only(address(_controller)) {
         _burn(tokenId);
     }
 
@@ -166,21 +165,19 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable
     }
 
     /**
-     * @dev stores the carbonController address
+     * @dev stores the controller address
      *
      * requirements:
      *
      * - the caller must be the owner of this contract
      */
-    function setCarbonController(
-        ICarbonController carbonController
-    ) external onlyOwner validAddress(address(carbonController)) {
-        if (_carbonController == carbonController) {
+    function setController(address controller) external onlyOwner validAddress(address(controller)) {
+        if (_controller == controller) {
             return;
         }
 
-        _carbonController = carbonController;
-        emit CarbonControllerUpdated(carbonController);
+        _controller = controller;
+        emit ControllerUpdated(controller);
     }
 
     /**

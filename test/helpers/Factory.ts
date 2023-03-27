@@ -93,7 +93,7 @@ const createSystemFixture = async () => {
 
     const carbonController = await createCarbonController(voucher);
 
-    await voucher.setCarbonController(carbonController.address);
+    await voucher.setController(carbonController.address);
 
     return {
         carbonController,
