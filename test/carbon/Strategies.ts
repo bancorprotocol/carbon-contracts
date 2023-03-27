@@ -850,7 +850,7 @@ describe('Strategy', () => {
             }
         });
 
-        it('emits the StrategyUpdated event', async () => {
+        it('emits the StrategyEdited event', async () => {
             const { y, z, A, B } = generateTestOrder();
             const delta = 10;
 
@@ -860,8 +860,8 @@ describe('Strategy', () => {
 
             const expectedOrder = [y.add(delta), z.add(delta), A.add(delta), B.add(delta)];
             await expect(tx)
-                .to.emit(carbonController, 'StrategyUpdated')
-                .withArgs(SID1, token0.address, token1.address, expectedOrder, expectedOrder);
+                .to.emit(carbonController, 'StrategyEdited')
+                .withArgs(SID1, owner.address, token0.address, token1.address, expectedOrder, expectedOrder);
         });
 
         it('reverts when unnecessary native token was sent', async () => {
