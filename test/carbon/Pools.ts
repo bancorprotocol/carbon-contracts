@@ -68,7 +68,7 @@ describe('Pools', () => {
             const token3 = await createTestToken();
 
             const res = await carbonController.createPool(token2.address, token3.address);
-            const tokens = [token2.address, token3.address];
+            const tokens = sortTokens(token2.address, token3.address);
 
             await expect(res).to.emit(carbonController, 'PoolCreated').withArgs(2, tokens[0], tokens[1]);
         });

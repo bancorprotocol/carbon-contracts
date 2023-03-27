@@ -4,7 +4,7 @@ import { DEFAULT_TRADING_FEE_PPM, PPM_RESOLUTION, ZERO_ADDRESS } from '../../uti
 import { Roles } from '../../utils/Roles';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { toPPM } from '../../utils/Types';
-import { createBurnableToken, createCarbonController, createSystem, Tokens } from '../helpers/Factory';
+import { createBurnableToken, createCarbonController, createProxy, createSystem, Tokens } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { getBalance, transfer } from '../helpers/Utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -1403,7 +1403,9 @@ describe('Strategy', () => {
         });
 
         it('reverts if a transfer occurs before the carbonController was set', async () => {
-            const voucher = await Contracts.Voucher.deploy(true, 'ipfs://xxx', '');
+            const voucher = await createProxy(Contracts.Voucher, {
+                initArgs: [true, '', '']
+            });
             const carbonController = await createCarbonController(voucher);
             const order = { ...generateTestOrder(), y: BigNumber.from(0) };
             const tx = carbonController.createStrategy(token0.address, token1.address, [order, order]);

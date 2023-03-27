@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
 
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import { IERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+
+import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 
 /**
  * @dev Voucher interface
  */
-interface IVoucher is IERC721 {
+interface IVoucher is IUpgradeable, IERC721Upgradeable {
     /**
      * @dev creates a new voucher token for the given strategyId, transfers it to the owner
      *

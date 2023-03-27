@@ -1,15 +1,22 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
 
-import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import { IERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/interfaces/IERC165Upgradeable.sol";
+import { ERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Utils, InvalidIndices } from "../utility/Utils.sol";
-import { IVoucher } from "./interfaces/IVoucher.sol";
-import { CarbonController } from "../carbon/CarbonController.sol";
 
-contract Voucher is IVoucher, ERC721, Utils, Ownable {
+import { IVersioned } from "../utility/interfaces/IVersioned.sol";
+import { Upgradeable } from "../utility/Upgradeable.sol";
+import { Utils, InvalidIndices } from "../utility/Utils.sol";
+import { MAX_GAP } from "../utility/Constants.sol";
+
+import { IVoucher } from "./interfaces/IVoucher.sol";
+import { ICarbonController } from "../carbon/interfaces/ICarbonController.sol";
+
+contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, OwnableUpgradeable, Utils {
     using Strings for uint256;
     using EnumerableSet for EnumerableSet.UintSet;
 
@@ -17,7 +24,7 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
     error BatchNotSupported();
 
     // the carbon controller contract
-    CarbonController private _carbonController;
+    ICarbonController private _carbonController;
 
     // a flag used to toggle between a unique URI per token / one global URI for all tokens
     bool private _useGlobalURI;
@@ -30,6 +37,9 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
 
     // a mapping between an owner to its tokenIds
     mapping(address => EnumerableSet.UintSet) internal _ownedTokens;
+
+    // upgrade forward-compatibility storage gap
+    uint256[MAX_GAP - 4] private __gap;
 
     /**
      @dev triggered when updating useGlobalURI
@@ -49,16 +59,65 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
     /**
      * @dev triggered when updating the address of the carbonController contract
      */
-    event CarbonControllerUpdated(CarbonController carbonController);
+    event CarbonControllerUpdated(ICarbonController carbonController);
 
-    constructor(
+    /**
+     * @dev fully initializes the contract and its parents
+     */
+    function initialize(
         bool newUseGlobalURI,
         string memory newBaseURI,
         string memory newBaseExtension
-    ) ERC721("Carbon Automated Trading Strategy", "CARBON-STRAT") {
-        useGlobalURI(newUseGlobalURI);
-        setBaseURI(newBaseURI);
-        setBaseExtension(newBaseExtension);
+    ) external initializer {
+        __Voucher_init(newUseGlobalURI, newBaseURI, newBaseExtension);
+    }
+
+    // solhint-disable func-name-mixedcase
+
+    /**
+     * @dev initializes the contract and its parents
+     */
+    function __Voucher_init(
+        bool newUseGlobalURI,
+        string memory newBaseURI,
+        string memory newBaseExtension
+    ) internal onlyInitializing {
+        __Upgradeable_init();
+        __ERC721_init("Carbon Automated Trading Strategy", "CARBON-STRAT");
+        __Ownable_init();
+
+        __Voucher_init_unchained(newUseGlobalURI, newBaseURI, newBaseExtension);
+    }
+
+    /**
+     * @dev performs contract-specific initialization
+     */
+    function __Voucher_init_unchained(
+        bool newUseGlobalURI,
+        string memory newBaseURI,
+        string memory newBaseExtension
+    ) internal onlyInitializing {
+        _useGlobalURI = newUseGlobalURI;
+        __baseURI = newBaseURI;
+        _baseExtension = newBaseExtension;
+    }
+
+    /**
+     * @inheritdoc IERC165Upgradeable
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(AccessControlEnumerableUpgradeable, ERC721Upgradeable, IERC165Upgradeable) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    // solhint-enable func-name-mixedcase
+
+    /**
+     * @inheritdoc Upgradeable
+     */
+    function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
+        return 1;
     }
 
     /**
@@ -114,7 +173,7 @@ contract Voucher is IVoucher, ERC721, Utils, Ownable {
      * - the caller must be the owner of this contract
      */
     function setCarbonController(
-        CarbonController carbonController
+        ICarbonController carbonController
     ) external onlyOwner validAddress(address(carbonController)) {
         if (_carbonController == carbonController) {
             return;

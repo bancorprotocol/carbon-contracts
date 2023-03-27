@@ -1,6 +1,7 @@
 import Contracts, { TestVoucher } from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
-import { createSystem } from '../helpers/Factory';
+import { createProxy, createSystem } from '../helpers/Factory';
+import { shouldHaveGap } from '../helpers/Proxy';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
@@ -9,6 +10,8 @@ describe('Voucher', () => {
     let nonAdmin: SignerWithAddress;
     let nonAdmin2: SignerWithAddress;
     let voucher: TestVoucher;
+
+    shouldHaveGap('Voucher', '_carbonController');
 
     before(async () => {
         [, nonAdmin, nonAdmin2] = await ethers.getSigners();
@@ -19,6 +22,8 @@ describe('Voucher', () => {
     });
 
     it('initializes', async () => {
+        expect(await voucher.version()).to.equal(1);
+
         await expect(await voucher.symbol()).to.eq('CARBON-STRAT');
         await expect(await voucher.name()).to.eq('Carbon Automated Trading Strategy');
     });
@@ -38,7 +43,9 @@ describe('Voucher', () => {
     });
 
     it('reverts when trying to set the carbon controller with an invalid address', async () => {
-        const voucher = await Contracts.Voucher.deploy(true, '', '');
+        const voucher = await createProxy(Contracts.Voucher, {
+            initArgs: [true, '', '']
+        });
         const tx = voucher.setCarbonController(ZERO_ADDRESS);
         await expect(tx).to.have.been.revertedWithError('InvalidAddress');
     });

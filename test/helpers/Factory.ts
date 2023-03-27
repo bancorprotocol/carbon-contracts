@@ -76,12 +76,10 @@ export const upgradeProxy = async <F extends ContractFactory>(
 
 export const createCarbonController = async (voucher: string | Voucher) => {
     const carbonController = await createProxy(Contracts.TestCarbonController, {
-        skipInitialization: false,
         ctorArgs: [toAddress(voucher), ZERO_ADDRESS]
     });
 
     const upgradedCarbonController = await upgradeProxy(carbonController, Contracts.TestCarbonController, {
-        skipInitialization: false,
         ctorArgs: [toAddress(voucher), carbonController.address]
     });
 
@@ -89,7 +87,9 @@ export const createCarbonController = async (voucher: string | Voucher) => {
 };
 
 const createSystemFixture = async () => {
-    const voucher = await Contracts.TestVoucher.deploy(true, 'ipfs://xxx', '');
+    const voucher = await createProxy(Contracts.TestVoucher, {
+        initArgs: [true, 'ipfs://xxx', '']
+    });
 
     const carbonController = await createCarbonController(voucher);
 
