@@ -1,6 +1,6 @@
 import Contracts, { CarbonController, Voucher } from '../../components/Contracts';
 import { ControllerType, DEFAULT_TRADING_FEE_PPM, ZERO_ADDRESS } from '../../utils/Constants';
-import { Roles } from '../helpers/AccessControl';
+import { expectRole, expectRoles, Roles } from '../helpers/AccessControl';
 import { createProxy, createSystem } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -27,6 +27,18 @@ describe('CarbonController', () => {
     describe('construction', () => {
         it('should be properly initialized', async () => {
             expect(await carbonController.version()).to.equal(2);
+
+            await expectRoles(carbonController, Roles.CarbonController);
+
+            await expectRole(carbonController, Roles.Upgradeable.ROLE_ADMIN, Roles.Upgradeable.ROLE_ADMIN, [
+                deployer.address
+            ]);
+            await expectRole(
+                carbonController,
+                Roles.CarbonController.ROLE_EMERGENCY_STOPPER,
+                Roles.Upgradeable.ROLE_ADMIN
+            );
+            await expectRole(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, Roles.Upgradeable.ROLE_ADMIN);
 
             expect(await carbonController.controllerType()).to.equal(ControllerType.Standard);
             expect(await carbonController.tradingFeePPM()).to.equal(DEFAULT_TRADING_FEE_PPM);

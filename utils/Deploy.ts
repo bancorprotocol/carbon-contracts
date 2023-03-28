@@ -159,6 +159,7 @@ const saveTypes = async (options: SaveTypeOptions) => {
 
 interface ProxyOptions {
     skipInitialization?: boolean;
+    args?: any[];
 }
 
 interface BaseDeployOptions {
@@ -254,7 +255,9 @@ export const deploy = async (options: DeployOptions) => {
             proxyContract: PROXY_CONTRACT,
             owner: await proxyAdmin.owner(),
             viaAdminContract: InstanceName.ProxyAdmin,
-            execute: proxy.skipInitialization ? undefined : { init: { methodName: INITIALIZE, args: [] } }
+            execute: proxy.skipInitialization
+                ? undefined
+                : { init: { methodName: INITIALIZE, args: proxy.args ? proxy.args : [] } }
         };
 
         Logger.log(`  deploying proxy ${contractName}${customAlias}`);

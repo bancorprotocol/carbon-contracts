@@ -3,6 +3,7 @@ import Contracts, { ProxyAdmin, TestERC20Burnable, TestERC20Token, Voucher } fro
 import { ZERO_ADDRESS } from '../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { Addressable, toWei } from '../../utils/Types';
+import { Roles } from './AccessControl';
 import { toAddress } from './Utils';
 import { BaseContract, BigNumberish, BytesLike, ContractFactory } from 'ethers';
 import { waffle } from 'hardhat';
@@ -76,12 +77,10 @@ export const upgradeProxy = async <F extends ContractFactory>(
 
 export const createCarbonController = async (voucher: string | Voucher) => {
     const carbonController = await createProxy(Contracts.TestCarbonController, {
-        skipInitialization: false,
         ctorArgs: [toAddress(voucher), ZERO_ADDRESS]
     });
 
     const upgradedCarbonController = await upgradeProxy(carbonController, Contracts.TestCarbonController, {
-        skipInitialization: false,
         ctorArgs: [toAddress(voucher), carbonController.address]
     });
 
@@ -89,11 +88,13 @@ export const createCarbonController = async (voucher: string | Voucher) => {
 };
 
 const createSystemFixture = async () => {
-    const voucher = await Contracts.TestVoucher.deploy(true, 'ipfs://xxx', '');
+    const voucher = await createProxy(Contracts.TestVoucher, {
+        initArgs: [true, 'ipfs://xxx', '']
+    });
 
     const carbonController = await createCarbonController(voucher);
 
-    await voucher.setCarbonController(carbonController.address);
+    await voucher.grantRole(Roles.Voucher.ROLE_MINTER, carbonController.address);
 
     return {
         carbonController,

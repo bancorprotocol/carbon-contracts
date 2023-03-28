@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.19;
 
-import { IVersioned } from "../../utility/interfaces/IVersioned.sol";
+import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 import { Pool } from "../Pools.sol";
 import { Token } from "../../token/Token.sol";
 import { Strategy, TradeAction, Order } from "../Strategies.sol";
@@ -9,7 +9,7 @@ import { Strategy, TradeAction, Order } from "../Strategies.sol";
 /**
  * @dev Carbon Controller interface
  */
-interface ICarbonController is IVersioned {
+interface ICarbonController is IUpgradeable {
     /**
      * @dev returns the type of the pool
      */

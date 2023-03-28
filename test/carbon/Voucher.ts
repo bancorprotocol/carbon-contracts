@@ -1,67 +1,57 @@
-import Contracts, { TestVoucher } from '../../components/Contracts';
+import { CarbonController, TestVoucher } from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
+import { expectRole, expectRoles, Roles } from '../helpers/AccessControl';
 import { createSystem } from '../helpers/Factory';
+import { shouldHaveGap } from '../helpers/Proxy';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
 describe('Voucher', () => {
+    let deployer: SignerWithAddress;
     let nonAdmin: SignerWithAddress;
     let nonAdmin2: SignerWithAddress;
+    let carbonController: CarbonController;
     let voucher: TestVoucher;
 
+    shouldHaveGap('Voucher', '_useGlobalURI');
+
     before(async () => {
-        [, nonAdmin, nonAdmin2] = await ethers.getSigners();
+        [deployer, nonAdmin, nonAdmin2] = await ethers.getSigners();
     });
 
     beforeEach(async () => {
-        ({ voucher } = await createSystem());
+        ({ carbonController, voucher } = await createSystem());
     });
 
     it('initializes', async () => {
+        expect(await voucher.version()).to.equal(1);
+
+        await expectRoles(voucher, Roles.Voucher);
+
+        await expectRole(voucher, Roles.Upgradeable.ROLE_ADMIN, Roles.Upgradeable.ROLE_ADMIN, [deployer.address]);
+        await expectRole(voucher, Roles.Voucher.ROLE_MINTER, Roles.Upgradeable.ROLE_ADMIN, [carbonController.address]);
+
         await expect(await voucher.symbol()).to.eq('CARBON-STRAT');
         await expect(await voucher.name()).to.eq('Carbon Automated Trading Strategy');
     });
 
-    it('reverts when it is not the carbonController attempting to mint', async () => {
+    it('reverts when attempting to mint without the minter role', async () => {
         await expect(voucher.mint(nonAdmin.address, 1)).to.be.revertedWithError('AccessDenied');
     });
 
-    it('reverts when it is not the carbonController attempting to burn', async () => {
+    it('reverts when attempting to burn without the minter role', async () => {
         await expect(voucher.burn(1)).to.be.revertedWithError('AccessDenied');
     });
 
-    it('reverts when a non owner tries to set carbonController', async () => {
-        await expect(voucher.connect(nonAdmin).setCarbonController(ZERO_ADDRESS)).to.be.revertedWithError(
-            'Ownable: caller is not the owner'
-        );
-    });
-
-    it('reverts when trying to set the carbon controller with an invalid address', async () => {
-        const voucher = await Contracts.Voucher.deploy(true, '', '');
-        const tx = voucher.setCarbonController(ZERO_ADDRESS);
-        await expect(tx).to.have.been.revertedWithError('InvalidAddress');
-    });
-
-    it('reverts when a non owner tries to update the base URI', async () => {
+    it('reverts when a non admin tries to update the base URI', async () => {
         const tx = voucher.connect(nonAdmin).setBaseURI('123');
-        await expect(tx).to.have.been.revertedWithError('Ownable: caller is not the owner');
+        await expect(tx).to.have.been.revertedWithError('AccessDenied');
     });
 
-    it('reverts when a non owner tries to update the extension URI', async () => {
+    it('reverts when a non admin tries to update the extension URI', async () => {
         const tx = voucher.connect(nonAdmin).setBaseExtension('123');
-        await expect(tx).to.have.been.revertedWithError('Ownable: caller is not the owner');
-    });
-
-    it('emits CarbonControllerUpdated event', async () => {
-        const res = await voucher.setCarbonController(voucher.address);
-        await expect(res).to.emit(voucher, 'CarbonControllerUpdated').withArgs(voucher.address);
-    });
-
-    it('does not emit the CarbonControllerUpdated event if an update was attempted with the current value', async () => {
-        await voucher.setCarbonController(voucher.address);
-        const res = await voucher.setCarbonController(voucher.address);
-        await expect(res).to.not.emit(voucher, 'CarbonControllerUpdated');
+        await expect(tx).to.have.been.revertedWithError('AccessDenied');
     });
 
     it('emits BaseURIUpdated event', async () => {
