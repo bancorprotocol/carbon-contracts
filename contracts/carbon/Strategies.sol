@@ -392,6 +392,8 @@ abstract contract Strategies is Initializable {
         TradeAction[] calldata tradeActions,
         TradeParams memory params
     ) internal returns (SourceAndTargetAmounts memory totals) {
+        bool isTargetToken0 = params.tokens.target == params.pool.tokens[0];
+
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
             // prepare variables
@@ -410,12 +412,10 @@ abstract contract Strategies is Initializable {
                 revert InvalidTradeActionAmount();
             }
 
+            (Order memory targetOrder, Order memory sourceOrder) =
+                isTargetToken0 == ordersInverted ? (orders[1], orders[0]) : (orders[0], orders[1]);
+
             // calculate the orders new values
-            uint256 targetTokenIndex = _findTargetOrderIndex(params.pool, params.tokens, ordersInverted);
-
-            Order memory targetOrder = orders[targetTokenIndex];
-            Order memory sourceOrder = orders[1 - targetTokenIndex];
-
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
                 targetOrder,
                 tradeActions[i].amount,
@@ -515,21 +515,6 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * @dev returns the index of a trade's target token in a strategy
-     */
-    function _findTargetOrderIndex(
-        Pool memory pool,
-        TradeTokens memory tokens,
-        bool ordersInverted
-    ) private pure returns (uint256) {
-        uint256 index = tokens.target == pool.tokens[0] ? 0 : 1;
-        if (ordersInverted) {
-            index = 1 - index;
-        }
-        return index;
-    }
-
-    /**
      * @dev calculates and returns the total source and target amounts of a trade, including fees
      */
     function _tradeSourceAndTargetAmounts(
@@ -538,16 +523,19 @@ abstract contract Strategies is Initializable {
         Pool memory pool,
         bool byTargetAmount
     ) internal view returns (SourceAndTargetAmounts memory totals) {
+        bool isTargetToken0 = tokens.target == pool.tokens[0];
+
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
             // prepare variables
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[tradeActions[i].strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
+            Order memory targetOrder = isTargetToken0 == ordersInverted ? orders[1] : orders[0];
+
             // calculate the orders new values
-            uint256 targetTokenIndex = _findTargetOrderIndex(pool, tokens, ordersInverted);
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
-                orders[targetTokenIndex],
+                targetOrder,
                 tradeActions[i].amount,
                 byTargetAmount
             );
