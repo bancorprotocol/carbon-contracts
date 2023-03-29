@@ -1,6 +1,11 @@
 import Contracts, { TestCarbonController, TestERC20Burnable, Voucher } from '../../components/Contracts';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
-import { DEFAULT_TRADING_FEE_PPM, PPM_RESOLUTION, ZERO_ADDRESS } from '../../utils/Constants';
+import {
+    DEFAULT_TRADING_FEE_PPM,
+    PPM_RESOLUTION,
+    STRATEGY_UPDATE_REASON_EDIT,
+    ZERO_ADDRESS
+} from '../../utils/Constants';
 import { Roles } from '../../utils/Roles';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { toPPM } from '../../utils/Types';
@@ -849,7 +854,7 @@ describe('Strategy', () => {
             }
         });
 
-        it('emits the StrategyEdited event', async () => {
+        it('emits the StrategyUpdated event on edit', async () => {
             const { y, z, A, B } = generateTestOrder();
             const delta = 10;
 
@@ -859,8 +864,15 @@ describe('Strategy', () => {
 
             const expectedOrder = [y.add(delta), z.add(delta), A.add(delta), B.add(delta)];
             await expect(tx)
-                .to.emit(carbonController, 'StrategyEdited')
-                .withArgs(SID1, owner.address, token0.address, token1.address, expectedOrder, expectedOrder);
+                .to.emit(carbonController, 'StrategyUpdated')
+                .withArgs(
+                    SID1,
+                    token0.address,
+                    token1.address,
+                    expectedOrder,
+                    expectedOrder,
+                    STRATEGY_UPDATE_REASON_EDIT
+                );
         });
 
         it('reverts when unnecessary native token was sent', async () => {
