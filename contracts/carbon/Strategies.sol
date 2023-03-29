@@ -119,6 +119,10 @@ struct TradeAction {
     uint128 amount;
 }
 
+// strategy update reasons
+uint8 constant STRATEGY_UPDATE_REASON_EDIT = 0;
+uint8 constant STRATEGY_UPDATE_REASON_TRADE = 1;
+
 abstract contract Strategies is Initializable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using Address for address payable;
@@ -208,21 +212,16 @@ abstract contract Strategies is Initializable {
     );
 
     /**
-     * @dev triggered when a strategy is edited
+     * @dev triggered when a strategy is updated
      */
-    event StrategyEdited(
-        uint256 id,
-        address indexed owner,
+    event StrategyUpdated(
+        uint256 indexed id,
         Token indexed token0,
         Token indexed token1,
         Order order0,
-        Order order1
+        Order order1,
+        uint8 reason
     );
-
-    /**
-     * @dev triggered when a strategy is traded on
-     */
-    event StrategyTraded(uint256 indexed id, Token indexed token0, Token indexed token1, Order order0, Order order1);
 
     /**
      * @dev triggered when tokens are traded
@@ -345,13 +344,13 @@ abstract contract Strategies is Initializable {
         }
 
         // emit event
-        emit StrategyEdited({
+        emit StrategyUpdated({
             id: strategyId,
-            owner: owner,
             token0: sortedTokens[0],
             token1: sortedTokens[1],
             order0: newOrders[0],
-            order1: newOrders[1]
+            order1: newOrders[1],
+            reason: STRATEGY_UPDATE_REASON_EDIT
         });
     }
 
@@ -412,8 +411,9 @@ abstract contract Strategies is Initializable {
                 revert InvalidTradeActionAmount();
             }
 
-            (Order memory targetOrder, Order memory sourceOrder) =
-                isTargetToken0 == ordersInverted ? (orders[1], orders[0]) : (orders[0], orders[1]);
+            (Order memory targetOrder, Order memory sourceOrder) = isTargetToken0 == ordersInverted
+                ? (orders[1], orders[0])
+                : (orders[0], orders[1]);
 
             // calculate the orders new values
             SourceAndTargetAmounts memory tempTradeAmounts = _singleTradeActionSourceAndTargetAmounts(
@@ -439,12 +439,13 @@ abstract contract Strategies is Initializable {
 
             // emit update events if necessary
             Token[2] memory sortedTokens = _sortStrategyTokens(params.pool, ordersInverted);
-            emit StrategyTraded({
+            emit StrategyUpdated({
                 id: strategyId,
                 token0: sortedTokens[0],
                 token1: sortedTokens[1],
                 order0: orders[0],
-                order1: orders[1]
+                order1: orders[1],
+                reason: STRATEGY_UPDATE_REASON_TRADE
             });
 
             totals.sourceAmount += tempTradeAmounts.sourceAmount;

@@ -1,6 +1,12 @@
 import { CarbonController, TestERC20Burnable } from '../../../components/Contracts';
 import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
-import { DEFAULT_TRADING_FEE_PPM, MAX_UINT128, PPM_RESOLUTION, ZERO_ADDRESS } from '../../../utils/Constants';
+import {
+    DEFAULT_TRADING_FEE_PPM,
+    MAX_UINT128,
+    PPM_RESOLUTION,
+    STRATEGY_UPDATE_REASON_TRADE,
+    ZERO_ADDRESS
+} from '../../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
 import { createBurnableToken, createSystem, Tokens } from '../../helpers/Factory';
 import { latest } from '../../helpers/Time';
@@ -784,7 +790,7 @@ describe('Trading', () => {
         }
     });
 
-    describe('emits StrategyTraded event for every trade action', () => {
+    describe('emits StrategyUpdated event for every trade action', () => {
         for (const { sourceSymbol, targetSymbol, byTargetAmount, inverseOrders } of permutations) {
             it(`(${sourceSymbol}->${targetSymbol}) | byTargetAmount: ${byTargetAmount} | inverseOrders: ${inverseOrders}`, async () => {
                 const testCase = testCaseFactory({ sourceSymbol, targetSymbol, byTargetAmount, inverseOrders });
@@ -826,7 +832,8 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
                         expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
-                        expect(event.event).to.eq('StrategyTraded');
+                        expect(event.args[`reason`]).to.eq(STRATEGY_UPDATE_REASON_TRADE);
+                        expect(event.event).to.eq('StrategyUpdated');
                     }
                 }
             });
