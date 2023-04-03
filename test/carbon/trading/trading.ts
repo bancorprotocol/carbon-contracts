@@ -1281,4 +1281,44 @@ describe('Trading', () => {
             });
         }
     });
+
+    describe('reverts if tradeActions in trading amount functions are provided with strategyIds not matching the source/target tokens', () => {
+        const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+        for (const { byTargetAmount } of permutations) {
+            it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                // create testCase and strategies to use for assertions
+                const testCase = testCaseFactory({
+                    byTargetAmount,
+                    sourceSymbol: TokenSymbol.ETH,
+                    targetSymbol: TokenSymbol.TKN0
+                });
+                const { strategies, sourceAmount, targetAmount, tradeActions, sourceSymbol } = testCase;
+                await createStrategies(strategies);
+
+                // create additional strategies using different tokens
+                const testCase2 = testCaseFactory({
+                    byTargetAmount,
+                    sourceSymbol: TokenSymbol.TKN1,
+                    targetSymbol: TokenSymbol.TKN2
+                });
+                await createStrategies(testCase2.strategies);
+
+                // edit one of the actions to use the extra strategy created
+                tradeActions[2].strategyId = generateStrategyId(2, strategies.length + 1).toString();
+
+                const amountFn = byTargetAmount
+                    ? carbonController.tradeSourceAmount
+                    : carbonController.tradeTargetAmount;
+
+                // assert
+                await expect(
+                    amountFn(
+                        tokens[testCase.sourceSymbol].address,
+                        tokens[testCase.targetSymbol].address,
+                        testCase.tradeActions
+                    )
+                ).to.be.revertedWithError('InvalidTradeActionStrategyId');
+            });
+        }
+    });
 });

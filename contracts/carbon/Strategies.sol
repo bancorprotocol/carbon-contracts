@@ -529,8 +529,14 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
             // prepare variables
-            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[tradeActions[i].strategyId];
+            uint256 strategyId = tradeActions[i].strategyId;
+            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
+
+            // make sure strategyIds match the provided source/target tokens
+            if (_poolIdByStrategyId(strategyId) != pool.id) {
+                revert InvalidTradeActionStrategyId();
+            }
 
             Order memory targetOrder = isTargetToken0 == ordersInverted ? orders[1] : orders[0];
 
