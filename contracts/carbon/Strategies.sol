@@ -869,7 +869,7 @@ abstract contract Strategies is Initializable {
      * returns the poolId associated with a given strategyId
      */
     function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint128) {
-        return (strategyId >> 128).toUint128();
+        return uint128(strategyId >> 128);
     }
 
     function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal {
