@@ -1321,4 +1321,62 @@ describe('Trading', () => {
             });
         }
     });
+
+    describe('reverts if orders have insufficient liquidity to execute the requested trade', () => {
+        const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+        for (const { byTargetAmount } of permutations) {
+            it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                // create testCase and strategies to use for assertions
+                const testCase = testCaseFactory({
+                    byTargetAmount,
+                    sourceSymbol: TokenSymbol.ETH,
+                    targetSymbol: TokenSymbol.TKN0
+                });
+                const { strategies, tradeActions, sourceSymbol, targetSymbol } = testCase;
+
+                await createStrategies(strategies);
+
+                // get the strategy of the first trade action
+                const tradeAction = tradeActions[0];
+                const strategy = await carbonController.strategy(tradeAction.strategyId);
+
+                // get the target order
+                let order =
+                    strategy.tokens[0] == tokens[targetSymbol].address ? strategy.orders[0] : strategy.orders[1];
+
+                // increase the input amount so that the target amount is higher than the total liquidity
+                // and calculate the new source amount
+                let sourceAmount;
+                if (byTargetAmount) {
+                    tradeAction.amount = order.y.add(100).toString();
+                    sourceAmount = await carbonController.tradeSourceAmount(
+                        tokens[sourceSymbol].address,
+                        tokens[targetSymbol].address,
+                        [tradeAction]
+                    );
+                } else {
+                    tradeAction.amount = order.y.toString();
+                    sourceAmount = await carbonController.tradeSourceAmount(
+                        tokens[sourceSymbol].address,
+                        tokens[targetSymbol].address,
+                        [tradeAction]
+                    );
+                    sourceAmount = sourceAmount.add(100).toString();
+                    tradeAction.amount = sourceAmount;
+                }
+
+                // assert
+                await expect(
+                    simpleTrade({
+                        byTargetAmount,
+                        sourceAmount,
+                        sourceToken: tokens[sourceSymbol].address,
+                        targetToken: tokens[targetSymbol].address,
+                        tradeActions: [tradeAction],
+                        txValue: BigNumber.from(sourceAmount)
+                    })
+                ).to.be.revertedWithError('InsufficientLiquidity');
+            });
+        }
+    });
 });

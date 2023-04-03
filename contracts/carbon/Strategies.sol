@@ -133,6 +133,7 @@ abstract contract Strategies is Initializable {
     error GreaterThanMaxInput();
     error LowerThanMinReturn();
     error InsufficientCapacity();
+    error InsufficientLiquidity();
     error InvalidRate();
     error InvalidTradeActionStrategyId();
     error InvalidTradeActionAmount();
@@ -422,8 +423,17 @@ abstract contract Strategies is Initializable {
                 params.byTargetAmount
             );
 
+            // handled specifically for a custom error message
+            if (tempTradeAmounts.targetAmount > targetOrder.y) {
+                revert InsufficientLiquidity();
+            }
+
             // update the orders with the new values
-            targetOrder.y -= tempTradeAmounts.targetAmount;
+            // safe since it's checked above
+            unchecked {
+                targetOrder.y -= tempTradeAmounts.targetAmount;
+            }
+
             sourceOrder.y += tempTradeAmounts.sourceAmount;
             if (sourceOrder.z < sourceOrder.y) {
                 sourceOrder.z = sourceOrder.y;
