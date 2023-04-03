@@ -578,7 +578,7 @@ abstract contract Strategies is Initializable {
         }
 
         // revert when startIndex is out of bound
-        if (startIndex > endIndex) {
+        if (startIndex >= endIndex) {
             revert InvalidIndices();
         }
 
