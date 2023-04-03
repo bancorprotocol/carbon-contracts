@@ -50,7 +50,7 @@ interface ICarbonController is IUpgradeable {
      *
      * notes:
      * - currentOrders should reflect the orders values at the time of sending the tx
-     * these prevent cases in which the strategy was updated due to a trade between
+     * this prevents cases in which the strategy was updated due to a trade between
      * the time the transaction was sent and the time it was mined, thus, giving more
      * control to the strategy owner.
      * - reduced liquidity is refunded to the owner
