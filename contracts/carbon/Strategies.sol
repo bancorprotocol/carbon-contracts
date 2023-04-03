@@ -166,7 +166,7 @@ abstract contract Strategies is Initializable {
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
 
     // mapping between a pool id to its strategies ids
-    mapping(uint128 => EnumerableSetUpgradeable.UintSet) private _strategiesByPoolIdStorage;
+    mapping(uint128 => EnumerableSetUpgradeable.UintSet) private _strategyIdsByPoolIdStorage;
 
     // the global trading fee (in units of PPM)
     uint32 private _tradingFeePPM;
@@ -272,7 +272,7 @@ abstract contract Strategies is Initializable {
         uint128 counter = _strategyCounter + 1;
         _strategyCounter = counter;
         uint256 id = _strategyId(pool.id, counter);
-        _strategiesByPoolIdStorage[pool.id].add(id);
+        _strategyIdsByPoolIdStorage[pool.id].add(id);
 
         // store orders
         bool ordersInverted = tokens[0] == pool.tokens[1];
@@ -364,7 +364,7 @@ abstract contract Strategies is Initializable {
 
         // clear storage
         delete _packedOrdersByStrategyId[strategy.id];
-        _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
+        _strategyIdsByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
         _withdrawFunds(strategy.tokens[0], payable(strategy.owner), strategy.orders[0].y);
@@ -568,7 +568,7 @@ abstract contract Strategies is Initializable {
         uint256 endIndex,
         IVoucher voucher
     ) internal view returns (Strategy[] memory) {
-        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategiesByPoolIdStorage[pool.id];
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPoolIdStorage[pool.id];
         uint256 allLength = strategyIds.length();
 
         // when the endIndex is 0 or out of bound, set the endIndex to the last value possible
@@ -596,7 +596,7 @@ abstract contract Strategies is Initializable {
      * @dev returns the count of stored strategies of a pool
      */
     function _strategiesByPoolCount(Pool memory pool) internal view returns (uint256) {
-        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategiesByPoolIdStorage[pool.id];
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPoolIdStorage[pool.id];
         return strategyIds.length();
     }
 
