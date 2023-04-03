@@ -424,7 +424,7 @@ abstract contract Strategies is Initializable {
             );
 
             // handled specifically for a custom error message
-            if (tempTradeAmounts.targetAmount > targetOrder.y) {
+            if (targetOrder.y < tempTradeAmounts.targetAmount) {
                 revert InsufficientLiquidity();
             }
 
