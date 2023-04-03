@@ -548,6 +548,11 @@ abstract contract Strategies is Initializable {
                 revert InvalidTradeActionStrategyId();
             }
 
+            // make sure all tradeActions are provided with a positive amount
+            if (tradeActions[i].amount == 0) {
+                revert InvalidTradeActionAmount();
+            }
+
             Order memory targetOrder = isTargetToken0 == ordersInverted ? orders[1] : orders[0];
 
             // calculate the orders new values
