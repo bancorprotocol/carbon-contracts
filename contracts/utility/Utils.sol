@@ -7,15 +7,9 @@ import { PPM_RESOLUTION } from "./Constants.sol";
 import { Token } from "../token/Token.sol";
 
 error AccessDenied();
-error AlreadyExists();
-error DoesNotExist();
 error InvalidAddress();
 error InvalidExternalAddress();
 error InvalidFee();
-error InvalidToken();
-error InvalidParam();
-error NotEmpty();
-error NotPayable();
 error ZeroValue();
 error InvalidIndices();
 

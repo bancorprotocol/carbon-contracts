@@ -133,8 +133,8 @@ abstract contract Strategies is Initializable {
     error GreaterThanMaxInput();
     error LowerThanMinReturn();
     error InsufficientCapacity();
-    error InvalidRate();
     error InsufficientLiquidity();
+    error InvalidRate();
     error InvalidTradeActionStrategyId();
     error InvalidTradeActionAmount();
     error StrategyDoesNotExist();
@@ -153,11 +153,6 @@ abstract contract Strategies is Initializable {
         uint128 constraint;
         uint256 txValue;
         Pool pool;
-    }
-
-    struct TradeOrders {
-        uint256[3] packedOrders;
-        Order[2] orders;
     }
 
     uint256 private constant ONE = 1 << 48;
@@ -304,11 +299,11 @@ abstract contract Strategies is Initializable {
      */
     function _updateStrategy(
         uint256 strategyId,
-        Pool memory pool,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders,
-        uint256 value,
-        address owner
+        Pool memory pool,
+        address owner,
+        uint256 value
     ) internal {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
@@ -340,6 +335,12 @@ abstract contract Strategies is Initializable {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - orders[i].y;
                 _validateDepositAndRefundExcessNativeToken(token, owner, delta, value);
+            }
+
+            // refund native token when there's no deposit in the order
+            // note that deposit handles refunds internally
+            if (token.isNative() && value > 0 && newOrders[i].y <= orders[i].y) {
+                payable(address(owner)).sendValue(value);
             }
         }
 
@@ -401,15 +402,7 @@ abstract contract Strategies is Initializable {
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
-            // make sure strategyIds match the provided source/target tokens
-            if (_poolIdByStrategyId(strategyId) != params.pool.id) {
-                revert InvalidTradeActionStrategyId();
-            }
-
-            // make sure all tradeActions are provided with a positive amount
-            if (tradeActions[i].amount == 0) {
-                revert InvalidTradeActionAmount();
-            }
+            _validateTradeParams(params.pool.id, strategyId, tradeActions[i].amount);
 
             (Order memory targetOrder, Order memory sourceOrder) = isTargetToken0 == ordersInverted
                 ? (orders[1], orders[0])
@@ -422,8 +415,17 @@ abstract contract Strategies is Initializable {
                 params.byTargetAmount
             );
 
+            // handled specifically for a custom error message
+            if (targetOrder.y < tempTradeAmounts.targetAmount) {
+                revert InsufficientLiquidity();
+            }
+
             // update the orders with the new values
-            targetOrder.y -= tempTradeAmounts.targetAmount;
+            // safe since it's checked above
+            unchecked {
+                targetOrder.y -= tempTradeAmounts.targetAmount;
+            }
+
             sourceOrder.y += tempTradeAmounts.sourceAmount;
             if (sourceOrder.z < sourceOrder.y) {
                 sourceOrder.z = sourceOrder.y;
@@ -464,10 +466,10 @@ abstract contract Strategies is Initializable {
                 revert GreaterThanMaxInput();
             }
         } else {
-            uint128 amountIncludingFee = _subtractFee(totals.targetAmount);
-            tradingFeeAmount = totals.targetAmount - amountIncludingFee;
+            uint128 amountExcludingFee = _subtractFee(totals.targetAmount);
+            tradingFeeAmount = totals.targetAmount - amountExcludingFee;
             tradingFeeToken = params.tokens.target;
-            totals.targetAmount = amountIncludingFee;
+            totals.targetAmount = amountExcludingFee;
             if (totals.targetAmount < params.constraint) {
                 revert LowerThanMinReturn();
             }
@@ -529,8 +531,11 @@ abstract contract Strategies is Initializable {
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
             // prepare variables
-            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[tradeActions[i].strategyId];
+            uint256 strategyId = tradeActions[i].strategyId;
+            uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
+
+            _validateTradeParams(pool.id, strategyId, tradeActions[i].amount);
 
             Order memory targetOrder = isTargetToken0 == ordersInverted ? orders[1] : orders[0];
 
@@ -619,10 +624,6 @@ abstract contract Strategies is Initializable {
         uint256 depositAmount,
         uint256 txValue
     ) private {
-        if (depositAmount == 0) {
-            return;
-        }
-
         if (token.isNative()) {
             if (txValue < depositAmount) {
                 revert NativeAmountMismatch();
@@ -632,8 +633,20 @@ abstract contract Strategies is Initializable {
             if (txValue > depositAmount) {
                 payable(address(owner)).sendValue(txValue - depositAmount);
             }
-        } else {
+        } else if (depositAmount > 0) {
             token.safeTransferFrom(owner, address(this), depositAmount);
+        }
+    }
+
+    function _validateTradeParams(uint256 poolId, uint256 strategyId, uint128 tradeAmount) private pure {
+        // make sure the strategy id matches the pool id
+        if (_poolIdByStrategyId(strategyId) != poolId) {
+            revert InvalidTradeActionStrategyId();
+        }
+
+        // make sure the trade amount is nonzero
+        if (tradeAmount == 0) {
+            revert InvalidTradeActionAmount();
         }
     }
 

@@ -29,7 +29,7 @@ interface TestOrder {
     B: BigNumber;
 }
 
-interface createStrategyParams {
+interface CreateStrategyParams {
     owner?: SignerWithAddress;
     token0?: TestERC20Burnable;
     token1?: TestERC20Burnable;
@@ -37,9 +37,10 @@ interface createStrategyParams {
     token1Amount?: number;
     skipFunding?: boolean;
     order?: TestOrder;
+    sendWithExcessNativeTokenValue?: boolean;
 }
 
-interface updateStrategyParams {
+interface UpdateStrategyParams {
     strategyId?: number;
     owner?: SignerWithAddress;
     token0?: TestERC20Burnable;
@@ -90,7 +91,7 @@ describe('Strategy', () => {
      * creates a test strategy, handles funding and approvals
      * @returns a createStrategy transaction
      */
-    const createStrategy = async (params?: createStrategyParams) => {
+    const createStrategy = async (params?: CreateStrategyParams) => {
         // prepare variables
         const _params = { ...params };
         const order = _params.order ? _params.order : generateTestOrder();
@@ -126,6 +127,10 @@ describe('Strategy', () => {
             }
         }
 
+        if (_params.sendWithExcessNativeTokenValue) {
+            txValue = BigNumber.from(txValue).add(10000);
+        }
+
         // create strategy
         const tx = await carbonController.connect(_owner).createStrategy(
             _tokens[0].address,
@@ -146,7 +151,7 @@ describe('Strategy', () => {
      * updates a test strategy, handles funding and approvals
      * @returns an updateStrategy transaction
      */
-    const updateStrategy = async (params?: updateStrategyParams) => {
+    const updateStrategy = async (params?: UpdateStrategyParams) => {
         const defaults = {
             owner,
             token0,
@@ -447,6 +452,78 @@ describe('Strategy', () => {
             }
         });
 
+        describe('excess native token is refunded', () => {
+            const _permutations = [
+                { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 100 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 0 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.TKN0, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 100 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.TKN0, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 0 }
+            ];
+
+            for (const { token0, token1, token0Amount, token1Amount } of _permutations) {
+                it(`(${token0}->${token1}) token0Amount: ${token0Amount} | token1Amount: ${token1Amount}`, async () => {
+                    // prepare variables
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    const amounts = [BigNumber.from(token0Amount), BigNumber.from(token1Amount)];
+
+                    const balanceTypes = [
+                        { type: 'ownerToken0', token: _token0, account: owner.address },
+                        { type: 'ownerToken1', token: _token1, account: owner.address },
+                        { type: 'controllerToken0', token: _token0, account: carbonController.address },
+                        { type: 'controllerToken1', token: _token1, account: carbonController.address }
+                    ];
+
+                    // fund the owner
+                    await transfer(deployer, _token0, owner, amounts[0]);
+                    await transfer(deployer, _token1, owner, amounts[1]);
+
+                    // fetch balances before creating
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // create strategy
+                    const { gasUsed } = await createStrategy({
+                        token0Amount,
+                        token1Amount,
+                        token0: _token0,
+                        token1: _token1,
+                        skipFunding: true,
+                        sendWithExcessNativeTokenValue: true
+                    });
+
+                    // fetch balances after creating
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // account for gas costs if the token is the native token;
+                    const expectedOwnerAmountToken0 =
+                        _token0.address === NATIVE_TOKEN_ADDRESS ? amounts[0].add(gasUsed) : amounts[0];
+                    const expectedOwnerAmountToken1 =
+                        _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(gasUsed) : amounts[1];
+
+                    // owner's balance should decrease y amount
+                    expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
+                    expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
+
+                    // controller's balance should increase y amount
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(amounts[0]));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(amounts[1]));
+                });
+            }
+        });
+
         it('reverts when unnecessary native token was sent', async () => {
             const order = generateTestOrder();
             await expect(
@@ -609,6 +686,50 @@ describe('Strategy', () => {
                 order0Delta: 100,
                 order1Delta: 100,
                 sendWithExcessNativeTokenValue: false
+            },
+
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.TKN1,
+                order0Delta: 100,
+                order1Delta: 0,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.ETH,
+                order0Delta: 100,
+                order1Delta: 0,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.ETH,
+                token1: TokenSymbol.TKN0,
+                order0Delta: 100,
+                order1Delta: 0,
+                sendWithExcessNativeTokenValue: false
+            },
+
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.TKN1,
+                order0Delta: 0,
+                order1Delta: 100,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.ETH,
+                order0Delta: 0,
+                order1Delta: 100,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.ETH,
+                token1: TokenSymbol.TKN0,
+                order0Delta: 0,
+                order1Delta: 100,
+                sendWithExcessNativeTokenValue: false
             }
         ];
 
@@ -766,6 +887,191 @@ describe('Strategy', () => {
                     token1: TokenSymbol.TKN0,
                     order0Delta: 100,
                     order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                }
+            ];
+            for (const {
+                token0,
+                token1,
+                order0Delta,
+                order1Delta,
+                sendWithExcessNativeTokenValue
+            } of strategyUpdatingPermutations) {
+                // eslint-disable-next-line max-len
+                it(`(${token0},${token1}) | order0Delta: ${order0Delta} | order1Delta: ${order1Delta} | excess: ${sendWithExcessNativeTokenValue}`, async () => {
+                    // prepare variables
+                    const _tokens = [tokens[token0], tokens[token1]];
+                    const deltas = [BigNumber.from(order0Delta), BigNumber.from(order1Delta)];
+
+                    const delta0 = deltas[0];
+                    const delta1 = deltas[1];
+                    const balanceTypes = [
+                        { type: 'ownerToken0', token: _tokens[0], account: owner.address },
+                        { type: 'ownerToken1', token: _tokens[1], account: owner.address },
+                        { type: 'controllerToken0', token: _tokens[0], account: carbonController.address },
+                        { type: 'controllerToken1', token: _tokens[1], account: carbonController.address }
+                    ];
+
+                    // create strategy
+                    await createStrategy({ token0: _tokens[0], token1: _tokens[1] });
+
+                    // fund user
+                    for (let i = 0; i < 2; i++) {
+                        const delta = deltas[i];
+                        if (delta.gt(0)) {
+                            await transfer(deployer, _tokens[i], owner, deltas[i]);
+                        }
+                    }
+
+                    // fetch balances before updating
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // perform update
+                    const { gasUsed } = await updateStrategy({
+                        order0Delta,
+                        order1Delta,
+                        token0: _tokens[0],
+                        token1: _tokens[1],
+                        skipFunding: true,
+                        sendWithExcessNativeTokenValue
+                    });
+
+                    // fetch balances after creating
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // account for gas costs if the token is the native token;
+                    const expectedOwnerDeltaToken0 =
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(gasUsed) : delta0;
+                    const expectedOwnerDeltaToken1 =
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(gasUsed) : delta1;
+
+                    // assert
+                    expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerDeltaToken0));
+                    expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerDeltaToken1));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(delta0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(delta1));
+                });
+            }
+        });
+
+        describe('excess native token is refunded when updating without full withdrawal', () => {
+            const strategyUpdatingPermutations = [
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: -100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: -100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: -100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: -100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 0,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 0,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: -100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: -100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 0,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 0,
+                    order1Delta: -100,
                     sendWithExcessNativeTokenValue: true
                 }
             ];

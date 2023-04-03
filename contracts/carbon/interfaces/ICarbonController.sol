@@ -50,6 +50,9 @@ interface ICarbonController is IUpgradeable {
      *
      * notes:
      * - currentOrders should reflect the orders values at the time of sending the tx
+     * this prevents cases in which the strategy was updated due to a trade between
+     * the time the transaction was sent and the time it was mined, thus, giving more
+     * control to the strategy owner.
      * - reduced liquidity is refunded to the owner
      * - increased liquidity is deposited
      * - excess native token is returned to the sender if any
@@ -88,7 +91,7 @@ interface ICarbonController is IUpgradeable {
 
     /**
      * @dev returns strategies belonging to a specific pool
-     * note for the full list of strategies pass 0 to both startIndex and endIndex
+     * note that for the full list of strategies pass 0 to both startIndex and endIndex
      */
     function strategiesByPool(
         Token token0,
