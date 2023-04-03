@@ -152,7 +152,7 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
         }
 
         // revert when startIndex is out of bound
-        if (startIndex >= endIndex) {
+        if (startIndex > endIndex) {
             revert InvalidIndices();
         }
 

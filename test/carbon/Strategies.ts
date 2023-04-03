@@ -1241,7 +1241,7 @@ describe('Strategy', () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const tx = carbonController.strategiesByPool(token0.address, token1.address, 6, 6);
+            const tx = carbonController.strategiesByPool(token0.address, token1.address, 6, 5);
             await expect(tx).to.have.been.revertedWithError('InvalidIndices');
         });
     });

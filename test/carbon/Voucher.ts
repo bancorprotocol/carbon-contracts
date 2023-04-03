@@ -114,7 +114,7 @@ describe('Voucher', () => {
             for (let i = 1; i < FETCH_AMOUNT + 1; i++) {
                 await voucher.testSafeMint(nonAdmin.address, i);
             }
-            const tx = voucher.tokensByOwner(nonAdmin.address, 6, 6);
+            const tx = voucher.tokensByOwner(nonAdmin.address, 6, 5);
             await expect(tx).to.have.been.revertedWithError('InvalidIndices');
         });
     });

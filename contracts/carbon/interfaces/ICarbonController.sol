@@ -91,7 +91,7 @@ interface ICarbonController is IUpgradeable {
 
     /**
      * @dev returns strategies belonging to a specific pool
-     * note for the full list of strategies pass 0 to both startIndex and endIndex
+     * note that for the full list of strategies pass 0 to both startIndex and endIndex
      */
     function strategiesByPool(
         Token token0,
