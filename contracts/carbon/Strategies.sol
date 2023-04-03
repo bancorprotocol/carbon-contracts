@@ -160,13 +160,13 @@ abstract contract Strategies is Initializable {
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
     // total number of strategies
-    uint256 private _strategyCounter;
+    uint128 private _strategyCounter;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
 
     // mapping between a pool id to its strategies ids
-    mapping(uint256 => EnumerableSetUpgradeable.UintSet) private _strategiesByPoolIdStorage;
+    mapping(uint128 => EnumerableSetUpgradeable.UintSet) private _strategyIdsByPoolIdStorage;
 
     // the global trading fee (in units of PPM)
     uint32 private _tradingFeePPM;
@@ -269,10 +269,10 @@ abstract contract Strategies is Initializable {
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
-        uint256 counter = _strategyCounter + 1;
+        uint128 counter = _strategyCounter + 1;
         _strategyCounter = counter;
         uint256 id = _strategyId(pool.id, counter);
-        _strategiesByPoolIdStorage[pool.id].add(id);
+        _strategyIdsByPoolIdStorage[pool.id].add(id);
 
         // store orders
         bool ordersInverted = tokens[0] == pool.tokens[1];
@@ -364,7 +364,7 @@ abstract contract Strategies is Initializable {
 
         // clear storage
         delete _packedOrdersByStrategyId[strategy.id];
-        _strategiesByPoolIdStorage[pool.id].remove(strategy.id);
+        _strategyIdsByPoolIdStorage[pool.id].remove(strategy.id);
 
         // withdraw funds
         _withdrawFunds(strategy.tokens[0], payable(strategy.owner), strategy.orders[0].y);
@@ -568,7 +568,7 @@ abstract contract Strategies is Initializable {
         uint256 endIndex,
         IVoucher voucher
     ) internal view returns (Strategy[] memory) {
-        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategiesByPoolIdStorage[pool.id];
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPoolIdStorage[pool.id];
         uint256 allLength = strategyIds.length();
 
         // when the endIndex is 0 or out of bound, set the endIndex to the last value possible
@@ -596,7 +596,7 @@ abstract contract Strategies is Initializable {
      * @dev returns the count of stored strategies of a pool
      */
     function _strategiesByPoolCount(Pool memory pool) internal view returns (uint256) {
-        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategiesByPoolIdStorage[pool.id];
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPoolIdStorage[pool.id];
         return strategyIds.length();
     }
 
@@ -638,7 +638,7 @@ abstract contract Strategies is Initializable {
         }
     }
 
-    function _validateTradeParams(uint256 poolId, uint256 strategyId, uint128 tradeAmount) private pure {
+    function _validateTradeParams(uint128 poolId, uint256 strategyId, uint128 tradeAmount) private pure {
         // make sure the strategy id matches the pool id
         if (_poolIdByStrategyId(strategyId) != poolId) {
             revert InvalidTradeActionStrategyId();
@@ -861,15 +861,15 @@ abstract contract Strategies is Initializable {
     /**
      * returns the strategyId for a given poolId and a given strategyIndex
      */
-    function _strategyId(uint256 poolId, uint256 strategyIndex) internal pure returns (uint256) {
-        return (uint256(poolId.toUint128()) << 128) | strategyIndex.toUint128();
+    function _strategyId(uint128 poolId, uint128 strategyIndex) internal pure returns (uint256) {
+        return (uint256(poolId) << 128) | strategyIndex;
     }
 
     /**
      * returns the poolId associated with a given strategyId
      */
-    function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint256) {
-        return strategyId >> 128;
+    function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint128) {
+        return uint128(strategyId >> 128);
     }
 
     function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal {
