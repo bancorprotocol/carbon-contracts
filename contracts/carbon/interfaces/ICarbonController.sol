@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
-import { Pool } from "../Pools.sol";
+import { Pair } from "../Pairs.sol";
 import { Token } from "../../token/Token.sol";
 import { Strategy, TradeAction, Order } from "../Strategies.sol";
 
@@ -11,7 +11,7 @@ import { Strategy, TradeAction, Order } from "../Strategies.sol";
  */
 interface ICarbonController is IUpgradeable {
     /**
-     * @dev returns the type of the pool
+     * @dev returns the type of the controller
      */
     function controllerType() external pure returns (uint16);
 
@@ -21,14 +21,14 @@ interface ICarbonController is IUpgradeable {
     function tradingFeePPM() external view returns (uint32);
 
     /**
-     * @dev creates a new pool of provided token0 and token1
+     * @dev creates a new pair of provided token0 and token1
      */
-    function createPool(Token token0, Token token1) external returns (Pool memory);
+    function createPair(Token token0, Token token1) external returns (Pair memory);
 
     /**
-     * @dev returns a pool's metadata matching the provided token0 and token1
+     * @dev returns a pair's metadata matching the provided token0 and token1
      */
-    function pool(Token token0, Token token1) external view returns (Pool memory);
+    function pair(Token token0, Token token1) external view returns (Pair memory);
 
     /**
      * @dev returns a list of all supported pairs
@@ -90,10 +90,10 @@ interface ICarbonController is IUpgradeable {
     function strategy(uint256 id) external view returns (Strategy memory);
 
     /**
-     * @dev returns strategies belonging to a specific pool
+     * @dev returns strategies belonging to a specific pair
      * note that for the full list of strategies pass 0 to both startIndex and endIndex
      */
-    function strategiesByPool(
+    function strategiesByPair(
         Token token0,
         Token token1,
         uint256 startIndex,
@@ -101,9 +101,9 @@ interface ICarbonController is IUpgradeable {
     ) external view returns (Strategy[] memory);
 
     /**
-     * @dev returns the count of strategies belonging to a specific pool
+     * @dev returns the count of strategies belonging to a specific pair
      */
-    function strategiesByPoolCount(Token token0, Token token1) external view returns (uint256);
+    function strategiesByPairCount(Token token0, Token token1) external view returns (uint256);
 
     /**
      * @dev performs a trade by specifying a fixed source amount
