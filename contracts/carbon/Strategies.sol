@@ -402,15 +402,7 @@ abstract contract Strategies is Initializable {
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
-            // make sure strategyIds match the provided source/target tokens
-            if (_poolIdByStrategyId(strategyId) != params.pool.id) {
-                revert InvalidTradeActionStrategyId();
-            }
-
-            // make sure all tradeActions are provided with a positive amount
-            if (tradeActions[i].amount == 0) {
-                revert InvalidTradeActionAmount();
-            }
+            _validateTradeParams(params.pool.id, strategyId, tradeActions[i].amount);
 
             (Order memory targetOrder, Order memory sourceOrder) = isTargetToken0 == ordersInverted
                 ? (orders[1], orders[0])
@@ -543,15 +535,7 @@ abstract contract Strategies is Initializable {
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
-            // make sure strategyIds match the provided source/target tokens
-            if (_poolIdByStrategyId(strategyId) != pool.id) {
-                revert InvalidTradeActionStrategyId();
-            }
-
-            // make sure all tradeActions are provided with a positive amount
-            if (tradeActions[i].amount == 0) {
-                revert InvalidTradeActionAmount();
-            }
+            _validateTradeParams(pool.id, strategyId, tradeActions[i].amount);
 
             Order memory targetOrder = isTargetToken0 == ordersInverted ? orders[1] : orders[0];
 
@@ -651,6 +635,18 @@ abstract contract Strategies is Initializable {
             }
         } else if (depositAmount > 0) {
             token.safeTransferFrom(owner, address(this), depositAmount);
+        }
+    }
+
+    function _validateTradeParams(uint256 poolId, uint256 strategyId, uint128 tradeAmount) private pure {
+        // make sure the strategy id matches the pool id
+        if (_poolIdByStrategyId(strategyId) != poolId) {
+            revert InvalidTradeActionStrategyId();
+        }
+
+        // make sure the trade amount is nonzero
+        if (tradeAmount == 0) {
+            revert InvalidTradeActionAmount();
         }
     }
 
