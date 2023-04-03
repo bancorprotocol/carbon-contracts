@@ -464,10 +464,10 @@ abstract contract Strategies is Initializable {
                 revert GreaterThanMaxInput();
             }
         } else {
-            uint128 amountIncludingFee = _subtractFee(totals.targetAmount);
-            tradingFeeAmount = totals.targetAmount - amountIncludingFee;
+            uint128 amountExcludingFee = _subtractFee(totals.targetAmount);
+            tradingFeeAmount = totals.targetAmount - amountExcludingFee;
             tradingFeeToken = params.tokens.target;
-            totals.targetAmount = amountIncludingFee;
+            totals.targetAmount = amountExcludingFee;
             if (totals.targetAmount < params.constraint) {
                 revert LowerThanMinReturn();
             }
