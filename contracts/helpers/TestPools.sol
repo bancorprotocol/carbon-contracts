@@ -5,7 +5,7 @@ import { Pools, Pool } from "../carbon/Pools.sol";
 import { Token } from "../token/Token.sol";
 
 contract TestPools is Pools {
-    function testPoolById(uint256 poolId) external view returns (Pool memory) {
+    function testPoolById(uint128 poolId) external view returns (Pool memory) {
         return _poolById(poolId);
     }
 

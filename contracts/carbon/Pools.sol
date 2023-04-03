@@ -5,7 +5,7 @@ import { Token } from "../token/Token.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
 
 struct Pool {
-    uint256 id;
+    uint128 id;
     Token[2] tokens;
 }
 
@@ -18,13 +18,13 @@ abstract contract Pools is Initializable {
     error PoolDoesNotExist();
 
     // unique incremental id representing a pool
-    uint256 private _lastPoolId;
+    uint128 private _lastPoolId;
 
     // mapping of pairs of tokens to their pool id, tokens are sorted at any order
-    mapping(Token => mapping(Token => uint256)) private _poolIds;
+    mapping(Token => mapping(Token => uint128)) private _poolIds;
 
     // mapping between a poolId to its Pool object
-    mapping(uint256 => StoredPool) private _poolsStorage;
+    mapping(uint128 => StoredPool) private _poolsStorage;
 
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 3] private __gap;
@@ -32,7 +32,7 @@ abstract contract Pools is Initializable {
     /**
      * @dev triggered when a new pool is created
      */
-    event PoolCreated(uint256 indexed poolId, Token indexed token0, Token indexed token1);
+    event PoolCreated(uint128 indexed poolId, Token indexed token0, Token indexed token1);
 
     // solhint-disable func-name-mixedcase
 
@@ -63,7 +63,7 @@ abstract contract Pools is Initializable {
         Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
         // increment pool id
-        uint256 id = _lastPoolId + 1;
+        uint128 id = _lastPoolId + 1;
         _lastPoolId = id;
 
         // store pool
@@ -88,11 +88,11 @@ abstract contract Pools is Initializable {
         }
 
         // return pool
-        uint256 id = _poolIds[sortedTokens[0]][sortedTokens[1]];
+        uint128 id = _poolIds[sortedTokens[0]][sortedTokens[1]];
         return Pool({ id: id, tokens: sortedTokens });
     }
 
-    function _poolById(uint256 poolId) internal view returns (Pool memory) {
+    function _poolById(uint128 poolId) internal view returns (Pool memory) {
         StoredPool memory storedPool = _poolsStorage[poolId];
         if (Token.unwrap(storedPool.tokens[0]) == address(0)) {
             revert PoolDoesNotExist();
@@ -117,9 +117,9 @@ abstract contract Pools is Initializable {
      * @dev returns a list of all supported pairs
      */
     function _pairs() internal view returns (Token[2][] memory) {
-        uint256 length = _lastPoolId;
+        uint128 length = _lastPoolId;
         Token[2][] memory list = new Token[2][](length);
-        for (uint256 i = 0; i < length; i++) {
+        for (uint128 i = 0; i < length; i++) {
             StoredPool memory pool = _poolsStorage[i + 1];
             list[i] = pool.tokens;
         }
