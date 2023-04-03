@@ -134,7 +134,6 @@ abstract contract Strategies is Initializable {
     error LowerThanMinReturn();
     error InsufficientCapacity();
     error InvalidRate();
-    error InsufficientLiquidity();
     error InvalidTradeActionStrategyId();
     error InvalidTradeActionAmount();
     error StrategyDoesNotExist();
@@ -153,11 +152,6 @@ abstract contract Strategies is Initializable {
         uint128 constraint;
         uint256 txValue;
         Pool pool;
-    }
-
-    struct TradeOrders {
-        uint256[3] packedOrders;
-        Order[2] orders;
     }
 
     uint256 private constant ONE = 1 << 48;

@@ -44,7 +44,6 @@ contract CarbonController is
     error UnnecessaryNativeTokenReceived();
     error InsufficientNativeTokenReceived();
     error DeadlineExpired();
-    error NoIdsProvided();
 
     /**
      * @dev a "virtual" constructor that is only used to set immutable state variables
