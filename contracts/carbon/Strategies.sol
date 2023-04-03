@@ -298,11 +298,11 @@ abstract contract Strategies is Initializable {
      */
     function _updateStrategy(
         uint256 strategyId,
-        Pool memory pool,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders,
-        uint256 value,
-        address owner
+        Pool memory pool,
+        address owner,
+        uint256 value
     ) internal {
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
@@ -334,6 +334,12 @@ abstract contract Strategies is Initializable {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - orders[i].y;
                 _validateDepositAndRefundExcessNativeToken(token, owner, delta, value);
+            }
+
+            // refund native token when there's no deposit in the order
+            // note that deposit handles refunds internally
+            if (token.isNative() && value > 0 && newOrders[i].y <= orders[i].y) {
+                payable(address(owner)).sendValue(value);
             }
         }
 
@@ -619,10 +625,6 @@ abstract contract Strategies is Initializable {
         uint256 depositAmount,
         uint256 txValue
     ) private {
-        if (depositAmount == 0) {
-            return;
-        }
-
         if (token.isNative()) {
             if (txValue < depositAmount) {
                 revert NativeAmountMismatch();
@@ -632,7 +634,7 @@ abstract contract Strategies is Initializable {
             if (txValue > depositAmount) {
                 payable(address(owner)).sendValue(txValue - depositAmount);
             }
-        } else {
+        } else if (depositAmount > 0) {
             token.safeTransferFrom(owner, address(this), depositAmount);
         }
     }

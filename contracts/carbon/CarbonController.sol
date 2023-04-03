@@ -215,7 +215,7 @@ contract CarbonController is
         _validateOrders(newOrders);
 
         // perform update
-        _updateStrategy(strategyId, __pool, currentOrders, newOrders, msg.value, msg.sender);
+        _updateStrategy(strategyId, currentOrders, newOrders, __pool, msg.sender, msg.value);
     }
 
     // solhint-enable var-name-mixedcase
