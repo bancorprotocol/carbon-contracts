@@ -79,12 +79,12 @@ describe('CarbonController', () => {
     });
 
     describe('unknown delegator', () => {
-        it('reverts when an unknown delegator tries creating a pool', async () => {
+        it('reverts when an unknown delegator tries creating a pair', async () => {
             const carbonController = await createProxy(Contracts.CarbonController, {
                 skipInitialization: false,
                 ctorArgs: [voucher.address, voucher.address]
             });
-            const tx = carbonController.createPool(ZERO_ADDRESS, ZERO_ADDRESS);
+            const tx = carbonController.createPair(ZERO_ADDRESS, ZERO_ADDRESS);
             await expect(tx).to.have.been.revertedWithError('UnknownDelegator');
         });
 

@@ -19,7 +19,7 @@ import Decimal from 'decimal.js';
 import { BigNumber, BigNumberish, ContractReceipt } from 'ethers';
 import { ethers } from 'hardhat';
 
-const generateStrategyId = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
+const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
 
 type TradeTestReturnValues = {
     tradingFeeAmount: BigNumber;
@@ -952,7 +952,7 @@ describe('Trading', () => {
                 // fetch updated data from the chain
                 const token0 = tokens[testCase.sourceSymbol];
                 const token1 = tokens[testCase.targetSymbol];
-                const strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+                const strategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
 
                 // assertions
                 strategies.forEach((strategy, i) => {
@@ -994,7 +994,7 @@ describe('Trading', () => {
                 // save current state for later assertions
                 const token0 = tokens[testCase.sourceSymbol];
                 const token1 = tokens[testCase.targetSymbol];
-                const currentStrategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+                const currentStrategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
 
                 // fund user for a trade
                 const { sourceAmount, targetAmount } = testCase;
@@ -1011,7 +1011,7 @@ describe('Trading', () => {
                 });
 
                 // fetch updated data from the chain
-                const newStrategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+                const newStrategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
 
                 // assertions
                 newStrategies.forEach((newStrategy, i) => {

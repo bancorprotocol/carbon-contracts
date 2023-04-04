@@ -8,7 +8,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { InvalidIndices } from "../utility/Utils.sol";
 import { Token } from "../token/Token.sol";
-import { Pool } from "./Pools.sol";
+import { Pair } from "./Pairs.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
 import { MAX_GAP } from "../utility/Constants.sol";
@@ -152,7 +152,7 @@ abstract contract Strategies is Initializable {
         bool byTargetAmount;
         uint128 constraint;
         uint256 txValue;
-        Pool pool;
+        Pair pair;
     }
 
     uint256 private constant ONE = 1 << 48;
@@ -165,8 +165,8 @@ abstract contract Strategies is Initializable {
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
 
-    // mapping between a pool id to its strategies ids
-    mapping(uint128 => EnumerableSetUpgradeable.UintSet) private _strategyIdsByPoolIdStorage;
+    // mapping between a pair id to its strategies ids
+    mapping(uint128 => EnumerableSetUpgradeable.UintSet) private _strategyIdsByPairIdStorage;
 
     // the global trading fee (in units of PPM)
     uint32 private _tradingFeePPM;
@@ -260,7 +260,7 @@ abstract contract Strategies is Initializable {
         IVoucher voucher,
         Token[2] memory tokens,
         Order[2] calldata orders,
-        Pool memory pool,
+        Pair memory pair,
         address owner,
         uint256 value
     ) internal returns (uint256) {
@@ -271,11 +271,11 @@ abstract contract Strategies is Initializable {
         // store id
         uint128 counter = _strategyCounter + 1;
         _strategyCounter = counter;
-        uint256 id = _strategyId(pool.id, counter);
-        _strategyIdsByPoolIdStorage[pool.id].add(id);
+        uint256 id = _strategyId(pair.id, counter);
+        _strategyIdsByPairIdStorage[pair.id].add(id);
 
         // store orders
-        bool ordersInverted = tokens[0] == pool.tokens[1];
+        bool ordersInverted = tokens[0] == pair.tokens[1];
         _packedOrdersByStrategyId[id] = _packOrders(orders, ordersInverted);
 
         // mint voucher
@@ -301,7 +301,7 @@ abstract contract Strategies is Initializable {
         uint256 strategyId,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders,
-        Pool memory pool,
+        Pair memory pair,
         address owner,
         uint256 value
     ) internal {
@@ -324,7 +324,7 @@ abstract contract Strategies is Initializable {
         }
 
         // deposit and withdraw
-        Token[2] memory sortedTokens = _sortStrategyTokens(pool, ordersInverted);
+        Token[2] memory sortedTokens = _sortStrategyTokens(pair, ordersInverted);
         for (uint256 i = 0; i < 2; i = uncheckedInc(i)) {
             Token token = sortedTokens[i];
             if (newOrders[i].y < orders[i].y) {
@@ -358,13 +358,13 @@ abstract contract Strategies is Initializable {
     /**
      * @dev deletes a strategy
      */
-    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pool memory pool) internal {
+    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pair memory pair) internal {
         // burn the voucher nft token
         voucher.burn(strategy.id);
 
         // clear storage
         delete _packedOrdersByStrategyId[strategy.id];
-        _strategyIdsByPoolIdStorage[pool.id].remove(strategy.id);
+        _strategyIdsByPairIdStorage[pair.id].remove(strategy.id);
 
         // withdraw funds
         _withdrawFunds(strategy.tokens[0], payable(strategy.owner), strategy.orders[0].y);
@@ -392,7 +392,7 @@ abstract contract Strategies is Initializable {
         TradeAction[] calldata tradeActions,
         TradeParams memory params
     ) internal returns (SourceAndTargetAmounts memory totals) {
-        bool isTargetToken0 = params.tokens.target == params.pool.tokens[0];
+        bool isTargetToken0 = params.tokens.target == params.pair.tokens[0];
 
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
@@ -402,7 +402,7 @@ abstract contract Strategies is Initializable {
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
-            _validateTradeParams(params.pool.id, strategyId, tradeActions[i].amount);
+            _validateTradeParams(params.pair.id, strategyId, tradeActions[i].amount);
 
             (Order memory targetOrder, Order memory sourceOrder) = isTargetToken0 == ordersInverted
                 ? (orders[1], orders[0])
@@ -440,7 +440,7 @@ abstract contract Strategies is Initializable {
             }
 
             // emit update events if necessary
-            Token[2] memory sortedTokens = _sortStrategyTokens(params.pool, ordersInverted);
+            Token[2] memory sortedTokens = _sortStrategyTokens(params.pair, ordersInverted);
             emit StrategyUpdated({
                 id: strategyId,
                 token0: sortedTokens[0],
@@ -523,10 +523,10 @@ abstract contract Strategies is Initializable {
     function _tradeSourceAndTargetAmounts(
         TradeTokens memory tokens,
         TradeAction[] calldata tradeActions,
-        Pool memory pool,
+        Pair memory pair,
         bool byTargetAmount
     ) internal view returns (SourceAndTargetAmounts memory totals) {
-        bool isTargetToken0 = tokens.target == pool.tokens[0];
+        bool isTargetToken0 = tokens.target == pair.tokens[0];
 
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
@@ -535,7 +535,7 @@ abstract contract Strategies is Initializable {
             uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
             (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
-            _validateTradeParams(pool.id, strategyId, tradeActions[i].amount);
+            _validateTradeParams(pair.id, strategyId, tradeActions[i].amount);
 
             Order memory targetOrder = isTargetToken0 == ordersInverted ? orders[1] : orders[0];
 
@@ -560,15 +560,15 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * @dev returns stored strategies of a pool
+     * @dev returns stored strategies of a pair
      */
-    function _strategiesByPool(
-        Pool memory pool,
+    function _strategiesByPair(
+        Pair memory pair,
         uint256 startIndex,
         uint256 endIndex,
         IVoucher voucher
     ) internal view returns (Strategy[] memory) {
-        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPoolIdStorage[pool.id];
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPairIdStorage[pair.id];
         uint256 allLength = strategyIds.length();
 
         // when the endIndex is 0 or out of bound, set the endIndex to the last value possible
@@ -586,31 +586,31 @@ abstract contract Strategies is Initializable {
         Strategy[] memory result = new Strategy[](resultLength);
         for (uint256 i = 0; i < resultLength; i = uncheckedInc(i)) {
             uint256 strategyId = strategyIds.at(startIndex + i);
-            result[i] = _strategy(strategyId, voucher, pool);
+            result[i] = _strategy(strategyId, voucher, pair);
         }
 
         return result;
     }
 
     /**
-     * @dev returns the count of stored strategies of a pool
+     * @dev returns the count of stored strategies of a pair
      */
-    function _strategiesByPoolCount(Pool memory pool) internal view returns (uint256) {
-        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPoolIdStorage[pool.id];
+    function _strategiesByPairCount(Pair memory pair) internal view returns (uint256) {
+        EnumerableSetUpgradeable.UintSet storage strategyIds = _strategyIdsByPairIdStorage[pair.id];
         return strategyIds.length();
     }
 
     /**
      @dev returns a strategy object matching the provided id.
      */
-    function _strategy(uint256 id, IVoucher voucher, Pool memory pool) internal view returns (Strategy memory) {
+    function _strategy(uint256 id, IVoucher voucher, Pair memory pair) internal view returns (Strategy memory) {
         // fetch data
         address _owner = voucher.ownerOf(id);
         uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[id];
         (Order[2] memory _orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
 
         // handle sorting
-        Token[2] memory sortedTokens = _sortStrategyTokens(pool, ordersInverted);
+        Token[2] memory sortedTokens = _sortStrategyTokens(pair, ordersInverted);
 
         return Strategy({ id: id, owner: _owner, tokens: sortedTokens, orders: _orders });
     }
@@ -638,9 +638,9 @@ abstract contract Strategies is Initializable {
         }
     }
 
-    function _validateTradeParams(uint128 poolId, uint256 strategyId, uint128 tradeAmount) private pure {
-        // make sure the strategy id matches the pool id
-        if (_poolIdByStrategyId(strategyId) != poolId) {
+    function _validateTradeParams(uint128 pairId, uint256 strategyId, uint128 tradeAmount) private pure {
+        // make sure the strategy id matches the pair id
+        if (_pairIdByStrategyId(strategyId) != pairId) {
             revert InvalidTradeActionStrategyId();
         }
 
@@ -859,16 +859,16 @@ abstract contract Strategies is Initializable {
     }
 
     /**
-     * returns the strategyId for a given poolId and a given strategyIndex
+     * returns the strategyId for a given pairId and a given strategyIndex
      */
-    function _strategyId(uint128 poolId, uint128 strategyIndex) internal pure returns (uint256) {
-        return (uint256(poolId) << 128) | strategyIndex;
+    function _strategyId(uint128 pairId, uint128 strategyIndex) internal pure returns (uint256) {
+        return (uint256(pairId) << 128) | strategyIndex;
     }
 
     /**
-     * returns the poolId associated with a given strategyId
+     * returns the pairId associated with a given strategyId
      */
-    function _poolIdByStrategyId(uint256 strategyId) internal pure returns (uint128) {
+    function _pairIdByStrategyId(uint256 strategyId) internal pure returns (uint128) {
         return uint128(strategyId >> 128);
     }
 
@@ -900,8 +900,8 @@ abstract contract Strategies is Initializable {
     /**
      * returns tokens sorted accordingly to a strategy orders inversion
      */
-    function _sortStrategyTokens(Pool memory pool, bool ordersInverted) private pure returns (Token[2] memory) {
-        return ordersInverted ? [pool.tokens[1], pool.tokens[0]] : pool.tokens;
+    function _sortStrategyTokens(Pair memory pair, bool ordersInverted) private pure returns (Token[2] memory) {
+        return ordersInverted ? [pair.tokens[1], pair.tokens[0]] : pair.tokens;
     }
 
     /**

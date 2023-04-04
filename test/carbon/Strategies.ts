@@ -17,7 +17,7 @@ import { expect } from 'chai';
 import { BigNumber, ContractTransaction } from 'ethers';
 import { ethers } from 'hardhat';
 
-const generateStrategyId = (poolId: number, strategyIndex: number) => BigNumber.from(poolId).shl(128).or(strategyIndex);
+const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
 const SID1 = generateStrategyId(1, 1);
 const SID2 = generateStrategyId(1, 2);
 const SID3 = generateStrategyId(2, 3);
@@ -1203,7 +1203,7 @@ describe('Strategy', () => {
             await expect(tx).to.be.revertedWithError('Pausable: paused');
         });
 
-        it('reverts when trying to update a non existing strategy on an existing pool', async () => {
+        it('reverts when trying to update a non existing strategy on an existing pair', async () => {
             await createStrategy();
             const order = generateTestOrder();
             await expect(
@@ -1211,19 +1211,19 @@ describe('Strategy', () => {
             ).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
-        it('reverts when trying to update a non existing strategy on a non existing pool', async () => {
+        it('reverts when trying to update a non existing strategy on a non existing pair', async () => {
             await createStrategy();
             const order = generateTestOrder();
             await expect(
                 carbonController.connect(owner).updateStrategy(SID3, [order, order], [order, order])
-            ).to.be.revertedWithError('PoolDoesNotExist');
+            ).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('reverts when the provided strategy id is zero', async () => {
             const order = generateTestOrder();
             await expect(
                 carbonController.connect(owner).updateStrategy(0, [order, order], [order, order])
-            ).to.be.revertedWithError('PoolDoesNotExist');
+            ).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
@@ -1347,14 +1347,14 @@ describe('Strategy', () => {
 
                     // assert before deleting
                     const strategy = await carbonController.strategy(SID1);
-                    let strategiesByPool = await carbonController.strategiesByPool(
+                    let strategiesByPair = await carbonController.strategiesByPair(
                         tokens[token0].address,
                         tokens[token1].address,
                         0,
                         0
                     );
                     expect(strategy.id).to.eq(SID1);
-                    expect(strategiesByPool[0].id).to.eq(SID1);
+                    expect(strategiesByPair[0].id).to.eq(SID1);
 
                     // delete strategy
                     await carbonController.connect(owner).deleteStrategy(strategy.id);
@@ -1363,13 +1363,13 @@ describe('Strategy', () => {
                     await expect(carbonController.connect(owner).strategy(strategy.id)).to.be.revertedWithError(
                         'ERC721: invalid token ID'
                     );
-                    strategiesByPool = await carbonController.strategiesByPool(
+                    strategiesByPair = await carbonController.strategiesByPair(
                         tokens[token0].address,
                         tokens[token1].address,
                         0,
                         0
                     );
-                    expect(strategiesByPool.length).to.eq(0);
+                    expect(strategiesByPair.length).to.eq(0);
                 });
             }
         });
@@ -1398,7 +1398,7 @@ describe('Strategy', () => {
         it('reverts when provided strategy id is zero', async () => {
             await createStrategy();
 
-            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('PoolDoesNotExist');
+            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
@@ -1409,7 +1409,7 @@ describe('Strategy', () => {
             );
         });
 
-        it('reverts when trying to delete a non existing strategy on an existing pool', async () => {
+        it('reverts when trying to delete a non existing strategy on an existing pair', async () => {
             await createStrategy();
 
             await expect(carbonController.connect(owner).deleteStrategy(SID2)).to.be.revertedWithError(
@@ -1417,11 +1417,11 @@ describe('Strategy', () => {
             );
         });
 
-        it('reverts when trying to delete a non existing strategy on a non existing pool', async () => {
+        it('reverts when trying to delete a non existing strategy on a non existing pair', async () => {
             await createStrategy();
 
             await expect(carbonController.connect(owner).deleteStrategy(SID3)).to.be.revertedWithError(
-                'PoolDoesNotExist'
+                'PairDoesNotExist'
             );
         });
 
@@ -1471,17 +1471,17 @@ describe('Strategy', () => {
         });
     });
 
-    describe('fetch by pool', () => {
+    describe('fetch by pair', () => {
         const FETCH_AMOUNT = 5;
 
         it('reverts when addresses are identical', async () => {
-            const tx = carbonController.strategiesByPool(token0.address, token0.address, 0, 0);
+            const tx = carbonController.strategiesByPair(token0.address, token0.address, 0, 0);
             await expect(tx).to.be.revertedWithError('IdenticalAddresses');
         });
 
-        it('reverts when no pool found for given tokens', async () => {
-            const tx = carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
-            await expect(tx).to.be.revertedWithError('PoolDoesNotExist');
+        it('reverts when no pair found for given tokens', async () => {
+            const tx = carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
+            await expect(tx).to.be.revertedWithError('PairDoesNotExist');
         });
 
         describe('reverts for non valid addresses', async () => {
@@ -1495,7 +1495,7 @@ describe('Strategy', () => {
                 it(`(${token0}->${token1})`, async () => {
                     const _token0 = tokens[token0] ? tokens[token0].address : ZERO_ADDRESS;
                     const _token1 = tokens[token1] ? tokens[token1].address : ZERO_ADDRESS;
-                    const tx = carbonController.strategiesByPool(_token0, _token1, 0, 0);
+                    const tx = carbonController.strategiesByPair(_token0, _token1, 0, 0);
                     await expect(tx).to.be.revertedWithError('InvalidAddress');
                 });
             }
@@ -1506,7 +1506,7 @@ describe('Strategy', () => {
             await createStrategy();
             await createStrategy({ token0, token1: token2 });
 
-            let strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+            let strategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
             expect(strategies.length).to.eq(2);
             expect(strategies[0].id).to.eq(SID1);
             expect(strategies[1].id).to.eq(SID2);
@@ -1515,7 +1515,7 @@ describe('Strategy', () => {
             expect(strategies[1].tokens[0]).to.eq(token0.address);
             expect(strategies[1].tokens[1]).to.eq(token1.address);
 
-            strategies = await carbonController.strategiesByPool(token0.address, token2.address, 0, 0);
+            strategies = await carbonController.strategiesByPair(token0.address, token2.address, 0, 0);
             expect(strategies.length).to.eq(1);
             expect(strategies[0].id).to.eq(SID3);
             expect(strategies[0].tokens[0]).to.eq(token0.address);
@@ -1526,7 +1526,7 @@ describe('Strategy', () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+            const strategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
             expect(strategies.length).to.eq(FETCH_AMOUNT);
         });
 
@@ -1534,7 +1534,7 @@ describe('Strategy', () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const strategies = await carbonController.strategiesByPool(
+            const strategies = await carbonController.strategiesByPair(
                 token0.address,
                 token1.address,
                 0,
@@ -1547,20 +1547,20 @@ describe('Strategy', () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const tx = carbonController.strategiesByPool(token0.address, token1.address, 6, 5);
+            const tx = carbonController.strategiesByPair(token0.address, token1.address, 6, 5);
             await expect(tx).to.have.been.revertedWithError('InvalidIndices');
         });
     });
 
-    describe('fetch by pool count', () => {
+    describe('fetch by pair count', () => {
         it('reverts when addresses are identical', async () => {
-            const tx = carbonController.strategiesByPoolCount(token0.address, token0.address);
+            const tx = carbonController.strategiesByPairCount(token0.address, token0.address);
             await expect(tx).to.be.revertedWithError('IdenticalAddresses');
         });
 
-        it('reverts when no pool found for given tokens', async () => {
-            const tx = carbonController.strategiesByPoolCount(token0.address, token1.address);
-            await expect(tx).to.be.revertedWithError('PoolDoesNotExist');
+        it('reverts when no pair found for given tokens', async () => {
+            const tx = carbonController.strategiesByPairCount(token0.address, token1.address);
+            await expect(tx).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('returns the correct count', async () => {
@@ -1571,8 +1571,8 @@ describe('Strategy', () => {
             await createStrategy({ token0: tokens[TokenSymbol.TKN2], token1: tokens[TokenSymbol.ETH] });
             await createStrategy({ token0: tokens[TokenSymbol.TKN2], token1: tokens[TokenSymbol.ETH] });
 
-            const result1 = await carbonController.strategiesByPoolCount(token0.address, token1.address);
-            const result2 = await carbonController.strategiesByPoolCount(
+            const result1 = await carbonController.strategiesByPairCount(token0.address, token1.address);
+            const result2 = await carbonController.strategiesByPairCount(
                 tokens[TokenSymbol.TKN2].address,
                 tokens[TokenSymbol.ETH].address
             );
@@ -1591,7 +1591,7 @@ describe('Strategy', () => {
                 it(`(${token0}->${token1})`, async () => {
                     const _token0 = tokens[token0] ? tokens[token0].address : ZERO_ADDRESS;
                     const _token1 = tokens[token1] ? tokens[token1].address : ZERO_ADDRESS;
-                    const tx = carbonController.strategiesByPoolCount(_token0, _token1);
+                    const tx = carbonController.strategiesByPairCount(_token0, _token1);
                     await expect(tx).to.be.revertedWithError('InvalidAddress');
                 });
             }
@@ -1599,17 +1599,17 @@ describe('Strategy', () => {
     });
 
     describe('fetch by a single id', async () => {
-        it('reverts when fetching a non existing strategy on an existing pool', async () => {
+        it('reverts when fetching a non existing strategy on an existing pair', async () => {
             await createStrategy();
             await expect(carbonController.strategy(SID2)).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
-        it('reverts when fetching a non existing strategy on a non existing pool', async () => {
-            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('PoolDoesNotExist');
+        it('reverts when fetching a non existing strategy on a non existing pair', async () => {
+            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('reverts when the provided strategy id is zero', async () => {
-            await expect(carbonController.strategy(0)).to.be.revertedWithError('PoolDoesNotExist');
+            await expect(carbonController.strategy(0)).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('returns the correct strategy', async () => {

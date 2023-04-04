@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
-import { Pools, Pool } from "./Pools.sol";
+import { Pairs, Pair } from "./Pairs.sol";
 import { Token } from "../token/Token.sol";
 import { Strategies, Strategy, TradeAction, Order, TradeTokens } from "./Strategies.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
@@ -18,7 +18,7 @@ import { MAX_GAP } from "../utility/Constants.sol";
  */
 contract CarbonController is
     ICarbonController,
-    Pools,
+    Pairs,
     Strategies,
     Upgradeable,
     ReentrancyGuardUpgradeable,
@@ -67,7 +67,7 @@ contract CarbonController is
      * @dev initializes the contract and its parents
      */
     function __CarbonController_init() internal onlyInitializing {
-        __Pools_init();
+        __Pairs_init();
         __Strategies_init();
         __Upgradeable_init();
         __ReentrancyGuard_init();
@@ -136,12 +136,12 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function createPool(
+    function createPair(
         Token token0,
         Token token1
-    ) external nonReentrant whenNotPaused onlyProxyDelegate returns (Pool memory) {
+    ) external nonReentrant whenNotPaused onlyProxyDelegate returns (Pair memory) {
         _validateInputTokens(token0, token1);
-        return _createPool(token0, token1);
+        return _createPair(token0, token1);
     }
 
     /**
@@ -154,9 +154,9 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function pool(Token token0, Token token1) external view returns (Pool memory) {
+    function pair(Token token0, Token token1) external view returns (Pair memory) {
         _validateInputTokens(token0, token1);
-        return _pool(token0, token1);
+        return _pair(token0, token1);
     }
 
     // solhint-disable var-name-mixedcase
@@ -179,16 +179,16 @@ contract CarbonController is
         // revert if any of the orders is invalid
         _validateOrders(orders);
 
-        // create the pool if it does not exist
-        Pool memory __pool;
-        if (!_poolExists(token0, token1)) {
-            __pool = _createPool(token0, token1);
+        // create the pair if it does not exist
+        Pair memory __pair;
+        if (!_pairExists(token0, token1)) {
+            __pair = _createPair(token0, token1);
         } else {
-            __pool = _pool(token0, token1);
+            __pair = _pair(token0, token1);
         }
 
         Token[2] memory tokens = [token0, token1];
-        return _createStrategy(_voucher, tokens, orders, __pool, msg.sender, msg.value);
+        return _createStrategy(_voucher, tokens, orders, __pair, msg.sender, msg.value);
     }
 
     /**
@@ -199,7 +199,7 @@ contract CarbonController is
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate {
-        Pool memory __pool = _poolById(_poolIdByStrategyId(strategyId));
+        Pair memory __pair = _pairById(_pairIdByStrategyId(strategyId));
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
@@ -207,7 +207,7 @@ contract CarbonController is
         }
 
         // don't allow unnecessary eth
-        if (!__pool.tokens[0].isNative() && !__pool.tokens[1].isNative() && msg.value > 0) {
+        if (!__pair.tokens[0].isNative() && !__pair.tokens[1].isNative() && msg.value > 0) {
             revert UnnecessaryNativeTokenReceived();
         }
 
@@ -215,7 +215,7 @@ contract CarbonController is
         _validateOrders(newOrders);
 
         // perform update
-        _updateStrategy(strategyId, currentOrders, newOrders, __pool, msg.sender, msg.value);
+        _updateStrategy(strategyId, currentOrders, newOrders, __pair, msg.sender, msg.value);
     }
 
     // solhint-enable var-name-mixedcase
@@ -225,8 +225,8 @@ contract CarbonController is
      */
     function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
         // find strategy, reverts if none
-        Pool memory __pool = _poolById(_poolIdByStrategyId(strategyId));
-        Strategy memory __strategy = _strategy(strategyId, _voucher, __pool);
+        Pair memory __pair = _pairById(_pairIdByStrategyId(strategyId));
+        Strategy memory __strategy = _strategy(strategyId, _voucher, __pair);
 
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
@@ -234,21 +234,21 @@ contract CarbonController is
         }
 
         // delete strategy
-        _deleteStrategy(__strategy, _voucher, __pool);
+        _deleteStrategy(__strategy, _voucher, __pair);
     }
 
     /**
      * @inheritdoc ICarbonController
      */
     function strategy(uint256 id) external view returns (Strategy memory) {
-        Pool memory __pool = _poolById(_poolIdByStrategyId(id));
-        return _strategy(id, _voucher, __pool);
+        Pair memory __pair = _pairById(_pairIdByStrategyId(id));
+        return _strategy(id, _voucher, __pair);
     }
 
     /**
      * @inheritdoc ICarbonController
      */
-    function strategiesByPool(
+    function strategiesByPair(
         Token token0,
         Token token1,
         uint256 startIndex,
@@ -256,18 +256,18 @@ contract CarbonController is
     ) external view returns (Strategy[] memory) {
         _validateInputTokens(token0, token1);
 
-        Pool memory __pool = _pool(token0, token1);
-        return _strategiesByPool(__pool, startIndex, endIndex, _voucher);
+        Pair memory __pair = _pair(token0, token1);
+        return _strategiesByPair(__pair, startIndex, endIndex, _voucher);
     }
 
     /**
      * @inheritdoc ICarbonController
      */
-    function strategiesByPoolCount(Token token0, Token token1) external view returns (uint256) {
+    function strategiesByPairCount(Token token0, Token token1) external view returns (uint256) {
         _validateInputTokens(token0, token1);
 
-        Pool memory __pool = _pool(token0, token1);
-        return _strategiesByPoolCount(__pool);
+        Pair memory __pair = _pair(token0, token1);
+        return _strategiesByPairCount(__pair);
     }
 
     /**
@@ -281,14 +281,14 @@ contract CarbonController is
         uint128 minReturn
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
         _validateTradeParams(sourceToken, targetToken, deadline, msg.value, minReturn);
-        Pool memory _pool = _pool(sourceToken, targetToken);
+        Pair memory _pair = _pair(sourceToken, targetToken);
         TradeParams memory params = TradeParams({
             trader: msg.sender,
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
             byTargetAmount: false,
             constraint: minReturn,
             txValue: msg.value,
-            pool: _pool
+            pair: _pair
         });
         SourceAndTargetAmounts memory amounts = _trade(tradeActions, params);
         return amounts.targetAmount;
@@ -313,14 +313,14 @@ contract CarbonController is
             }
         }
 
-        Pool memory _pool = _pool(sourceToken, targetToken);
+        Pair memory _pair = _pair(sourceToken, targetToken);
         TradeParams memory params = TradeParams({
             trader: msg.sender,
             tokens: TradeTokens({ source: sourceToken, target: targetToken }),
             byTargetAmount: true,
             constraint: maxInput,
             txValue: msg.value,
-            pool: _pool
+            pair: _pair
         });
         SourceAndTargetAmounts memory amounts = _trade(tradeActions, params);
         return amounts.sourceAmount;
@@ -335,9 +335,9 @@ contract CarbonController is
         TradeAction[] calldata tradeActions
     ) external view returns (uint128) {
         _validateInputTokens(sourceToken, targetToken);
-        Pool memory __pool = _pool(sourceToken, targetToken);
+        Pair memory __pair = _pair(sourceToken, targetToken);
         TradeTokens memory tokens = TradeTokens({ source: sourceToken, target: targetToken });
-        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, __pool, true);
+        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, __pair, true);
         return amounts.sourceAmount;
     }
 
@@ -350,9 +350,9 @@ contract CarbonController is
         TradeAction[] calldata tradeActions
     ) external view returns (uint128) {
         _validateInputTokens(sourceToken, targetToken);
-        Pool memory __pool = _pool(sourceToken, targetToken);
+        Pair memory __pair = _pair(sourceToken, targetToken);
         TradeTokens memory tokens = TradeTokens({ source: sourceToken, target: targetToken });
-        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, __pool, false);
+        SourceAndTargetAmounts memory amounts = _tradeSourceAndTargetAmounts(tokens, tradeActions, __pair, false);
         return amounts.targetAmount;
     }
 
