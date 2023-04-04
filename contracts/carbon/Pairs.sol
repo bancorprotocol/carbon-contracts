@@ -10,10 +10,6 @@ struct Pair {
 }
 
 abstract contract Pairs is Initializable {
-    struct StoredPair {
-        Token[2] tokens;
-    }
-
     error PairAlreadyExists();
     error PairDoesNotExist();
 
@@ -24,7 +20,7 @@ abstract contract Pairs is Initializable {
     mapping(Token => mapping(Token => uint128)) private _pairIds;
 
     // mapping between a pairId to its Pair object
-    mapping(uint128 => StoredPair) private _pairsStorage;
+    mapping(uint128 => Token[2]) private _pairsStorage;
 
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 3] private __gap;
@@ -67,11 +63,10 @@ abstract contract Pairs is Initializable {
         _lastPairId = id;
 
         // store pair
-        StoredPair memory newPair = StoredPair({ tokens: sortedTokens });
-        _pairsStorage[id] = newPair;
+        _pairsStorage[id] = sortedTokens;
         _pairIds[sortedTokens[0]][sortedTokens[1]] = id;
 
-        emit PairCreated(id, newPair.tokens[0], newPair.tokens[1]);
+        emit PairCreated(id, sortedTokens[0], sortedTokens[1]);
         return Pair({ id: id, tokens: sortedTokens });
     }
 
@@ -93,11 +88,11 @@ abstract contract Pairs is Initializable {
     }
 
     function _pairById(uint128 pairId) internal view returns (Pair memory) {
-        StoredPair memory storedPair = _pairsStorage[pairId];
-        if (Token.unwrap(storedPair.tokens[0]) == address(0)) {
+        Token[2] memory tokens = _pairsStorage[pairId];
+        if (Token.unwrap(tokens[0]) == address(0)) {
             revert PairDoesNotExist();
         }
-        return Pair({ id: pairId, tokens: storedPair.tokens });
+        return Pair({ id: pairId, tokens: tokens });
     }
 
     /**
@@ -120,8 +115,7 @@ abstract contract Pairs is Initializable {
         uint128 length = _lastPairId;
         Token[2][] memory list = new Token[2][](length);
         for (uint128 i = 0; i < length; i++) {
-            StoredPair memory pair = _pairsStorage[i + 1];
-            list[i] = pair.tokens;
+            list[i] = _pairsStorage[i + 1];
         }
 
         return list;
