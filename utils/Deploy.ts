@@ -5,7 +5,7 @@ import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
 import { toWei } from './Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, Contract, ContractInterface, utils } from 'ethers';
+import { BigNumber, Contract, ContractInterface, ContractTransaction, utils } from 'ethers';
 import fs from 'fs';
 import glob from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
@@ -160,6 +160,8 @@ const saveTypes = async (options: SaveTypeOptions) => {
 interface ProxyOptions {
     skipInitialization?: boolean;
     args?: any[];
+    initImpl?: boolean;
+    initImplArgs?: any[];
 }
 
 interface BaseDeployOptions {
@@ -277,6 +279,19 @@ export const deploy = async (options: DeployOptions) => {
         log: true
     });
 
+    if (isProxy && proxy.initImpl) {
+        if (!res.implementation) {
+            throw new Error(`Implementation address for ${contractName} missing`);
+        }
+        await initializeImplementation({
+            name,
+            address: res.implementation,
+            args: proxy.initImplArgs,
+            from
+        });
+        Logger.log(`  initialized proxy implementation`);
+    }
+
     // if (!proxy) {
     const data = { name, contract: contractName };
 
@@ -317,10 +332,13 @@ export const deployProxy = async (options: DeployOptions, proxy: ProxyOptions = 
 // ]
 interface UpgradeProxyOptions extends DeployOptions {
     postUpgradeArgs?: TypedParam[];
+    initImpl?: boolean;
+    initImplArgs?: any[];
 }
 
 export const upgradeProxy = async (options: UpgradeProxyOptions) => {
-    const { name, contract, from, value, args, postUpgradeArgs, contractArtifactData } = options;
+    const { name, contract, from, value, args, postUpgradeArgs, initImpl, initImplArgs, contractArtifactData } =
+        options;
     const contractName = contract ?? name;
 
     await fundAccount(from);
@@ -365,6 +383,19 @@ export const upgradeProxy = async (options: UpgradeProxyOptions) => {
         waitConfirmations: WAIT_CONFIRMATIONS,
         log: true
     });
+
+    if (initImpl) {
+        if (!res.implementation) {
+            throw new Error(`Implementation address for ${contractName} missing`);
+        }
+        await initializeImplementation({
+            name,
+            address: res.implementation,
+            args: initImplArgs,
+            from
+        });
+        Logger.log(`  initialized proxy implementation`);
+    }
 
     const newVersion = await (deployed as IVersioned).version();
 
@@ -436,6 +467,29 @@ export const initializeProxy = async (options: InitializeProxyOptions) => {
     });
 
     return address;
+};
+
+interface InitializeImplementationOptions {
+    name: InstanceName;
+    address: string;
+    args?: any[];
+    from: string;
+}
+
+export const initializeImplementation = async (options: InitializeImplementationOptions) => {
+    const { name, address, args, from } = options;
+    const signer = await ethers.getSigner(from);
+    const contract: Contract = await ethers.getContractAt(name, address, signer);
+
+    Logger.log(`  initializing implementation of ${name}`);
+
+    let tx: ContractTransaction;
+    if (!args) {
+        tx = await contract[INITIALIZE]();
+    } else {
+        tx = await contract[INITIALIZE](...args);
+    }
+    await tx.wait();
 };
 
 interface RolesOptions {

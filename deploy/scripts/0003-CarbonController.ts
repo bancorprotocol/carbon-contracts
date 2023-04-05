@@ -26,7 +26,8 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     await upgradeProxy({
         name: InstanceName.CarbonController,
         from: deployer,
-        args: [voucher.address, carbonController.address]
+        args: [voucher.address, carbonController.address],
+        initImpl: true
     });
 
     await grantRole({

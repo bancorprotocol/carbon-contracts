@@ -11,7 +11,9 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
             from: deployer
         },
         {
-            args: [true, 'ipfs://QmNmM9iSZt4FK3HZWMadboQ4nB1W3tjyZDeqyZ9g4xesAt', '']
+            args: [true, 'ipfs://QmNmM9iSZt4FK3HZWMadboQ4nB1W3tjyZDeqyZ9g4xesAt', ''],
+            initImpl: true,
+            initImplArgs: [true, 'ipfs://QmNmM9iSZt4FK3HZWMadboQ4nB1W3tjyZDeqyZ9g4xesAt', '']
         }
     );
 
