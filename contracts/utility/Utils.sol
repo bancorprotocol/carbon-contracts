@@ -8,7 +8,6 @@ import { Token } from "../token/Token.sol";
 
 error AccessDenied();
 error InvalidAddress();
-error InvalidExternalAddress();
 error InvalidFee();
 error ZeroValue();
 error InvalidIndices();
@@ -57,20 +56,6 @@ abstract contract Utils {
     function _validAddress(address addr) internal pure {
         if (addr == address(0)) {
             revert InvalidAddress();
-        }
-    }
-
-    // validates an external address - currently only checks that it isn't null or this
-    modifier validExternalAddress(address addr) {
-        _validExternalAddress(addr);
-
-        _;
-    }
-
-    // error message binary size optimization
-    function _validExternalAddress(address addr) internal view {
-        if (addr == address(0) || addr == address(this)) {
-            revert InvalidExternalAddress();
         }
     }
 
