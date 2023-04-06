@@ -144,13 +144,12 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         // withdraw tokens and convert them to BNT
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
-            uint256 fees = _carbonController.accumulatedFees(tokens[i]);
+            // withdraw token fees
+            uint256 fees = _carbonController.withdrawFees(tokens[i], type(uint256).max, address(this));
             // skip token if no fees have been accumulated
             if (fees == 0) {
                 continue;
             }
-            // withdraw token fees
-            _carbonController.withdrawFees(fees, tokens[i], address(this));
 
             // check if token is BNT - we don't need to swap in this case
             if (tokens[i] == _bnt) {
@@ -192,7 +191,7 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
         uint256 burnAmount = totalAmount - rewardAmount;
 
         // add to the total burnt amount
-        if(burnAmount > 0) {
+        if (burnAmount > 0) {
             _totalBurnt += burnAmount;
         }
 

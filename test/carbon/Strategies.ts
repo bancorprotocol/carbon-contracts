@@ -246,7 +246,7 @@ describe('Strategy', () => {
     const withdrawFees = async (amount: BigNumber, token: TestERC20Burnable): Promise<ContractTransaction> => {
         await carbonController.testSetAccumulatedFees(token.address, amount);
         await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
-        return carbonController.connect(owner).withdrawFees(amount, token.address, owner.address);
+        return carbonController.connect(owner).withdrawFees(token.address, amount, owner.address);
     };
 
     describe('strategy creation', async () => {
@@ -1740,12 +1740,12 @@ describe('Strategy', () => {
                 .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
             await carbonController.connect(nonAdmin).pause();
 
-            const tx = carbonController.withdrawFees(1, token0.address, nonAdmin.address);
+            const tx = carbonController.withdrawFees(token0.address, 1, nonAdmin.address);
             await expect(tx).to.be.revertedWithError('Pausable: paused');
         });
 
         it('reverts when the caller is missing the required role', async () => {
-            const tx = carbonController.withdrawFees(1, token0.address, nonAdmin.address);
+            const tx = carbonController.withdrawFees(token0.address, 1, nonAdmin.address);
             await expect(tx).to.be.revertedWithError('AccessDenied');
         });
 
@@ -1753,7 +1753,7 @@ describe('Strategy', () => {
             await carbonController
                 .connect(deployer)
                 .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, nonAdmin.address);
-            const tx = carbonController.connect(nonAdmin).withdrawFees(1, token0.address, ZERO_ADDRESS);
+            const tx = carbonController.connect(nonAdmin).withdrawFees(token0.address, 1, ZERO_ADDRESS);
             await expect(tx).to.be.revertedWithError('InvalidAddress');
         });
 
@@ -1761,7 +1761,7 @@ describe('Strategy', () => {
             await carbonController
                 .connect(deployer)
                 .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, nonAdmin.address);
-            const tx = carbonController.connect(nonAdmin).withdrawFees(1, ZERO_ADDRESS, nonAdmin.address);
+            const tx = carbonController.connect(nonAdmin).withdrawFees(ZERO_ADDRESS, 1, nonAdmin.address);
             await expect(tx).to.be.revertedWithError('InvalidAddress');
         });
 
@@ -1769,7 +1769,7 @@ describe('Strategy', () => {
             await carbonController
                 .connect(deployer)
                 .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, nonAdmin.address);
-            const tx = carbonController.connect(nonAdmin).withdrawFees(0, token0.address, nonAdmin.address);
+            const tx = carbonController.connect(nonAdmin).withdrawFees(token0.address, 0, nonAdmin.address);
             await expect(tx).to.be.revertedWithError('ZeroValue');
         });
 

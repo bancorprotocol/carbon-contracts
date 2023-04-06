@@ -367,8 +367,8 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function withdrawFees(
-        uint256 amount,
         Token token,
+        uint256 amount,
         address recipient
     )
         external
@@ -378,8 +378,9 @@ contract CarbonController is
         validAddress(Token.unwrap(token))
         greaterThanZero(amount)
         nonReentrant
+        returns (uint256)
     {
-        _withdrawFees(msg.sender, amount, token, recipient);
+        return _withdrawFees(msg.sender, amount, token, recipient);
     }
 
     /**
