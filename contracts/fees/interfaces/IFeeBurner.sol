@@ -39,13 +39,18 @@ interface IFeeBurner is IUpgradeable {
      * @dev returns the rewards settings
      */
     function rewards() external view returns (Rewards memory);
+
+    /**
+     * @dev returns the total amount burnt
+     */
+    function totalBurnt() external view returns (uint256);
     
     /**
      * @dev withdraws the fees of the provided tokens from Carbon
      * @dev converts them to BNT, 
      * @dev rewards the caller and burns the rest of the tokens
      */
-    function burn(Token[] calldata tokens) external;
+    function execute(Token[] calldata tokens) external;
 
     /**
      * @dev sets the rewards settings

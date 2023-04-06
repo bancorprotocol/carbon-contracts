@@ -6,12 +6,24 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { IFeeBurner } from "./interfaces/IFeeBurner.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { ICarbonController } from "../carbon/interfaces/ICarbonController.sol";
-import { IBancorNetwork } from "./interfaces/IBancorNetwork.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { Token } from "../token/Token.sol";
 import { Utils } from "../utility/Utils.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { MAX_GAP, PPM_RESOLUTION } from "../utility/Constants.sol";
+
+interface IBancorNetwork {
+    function collectionByPool(Token pool) external view returns (address);
+
+    function tradeBySourceAmount(
+        Token sourceToken,
+        Token targetToken,
+        uint256 sourceAmount,
+        uint256 minReturnAmount,
+        uint256 deadline,
+        address beneficiary
+    ) external payable returns (uint256);
+}
 
 /**
  * @dev FeeBurner contract
@@ -21,11 +33,13 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
     IBancorNetwork private immutable _bancorNetwork;
     Token private immutable _bnt;
 
+    uint256 private _totalBurnt;
+
     // rewards percentage and max amount
     Rewards private _rewards;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 1] private __gap;
+    uint256[MAX_GAP - 2] private __gap;
 
     /**
      * @dev a "virtual" constructor that is only used to set immutable state variables
@@ -112,17 +126,24 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc IFeeBurner
      */
-    function burn(Token[] calldata tokens) external nonReentrant {
+    function totalBurnt() external view returns (uint256) {
+        return _totalBurnt;
+    }
+
+    /**
+     * @inheritdoc IFeeBurner
+     */
+    function execute(Token[] calldata tokens) external nonReentrant {
         uint256 len = tokens.length;
-        for (uint256 i = 0; i < len; ++i) {
-            // validate token can be traded on V3
+        for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
+            // validate the token can be traded on V3
             if (tokens[i] != _bnt && _bancorNetwork.collectionByPool(tokens[i]) == address(0)) {
                 revert InvalidToken();
             }
         }
 
-        // withdraw tokens and convert to BNT
-        for (uint256 i = 0; i < len; ++i) {
+        // withdraw tokens and convert them to BNT
+        for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             uint256 fees = _carbonController.accumulatedFees(tokens[i]);
             // skip token if no fees have been accumulated
             if (fees == 0) {
@@ -167,6 +188,9 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // calculate the burn amount
         uint256 burnAmount = totalAmount - rewardAmount;
 
+        // add to the total burnt amount
+        _totalBurnt += burnAmount;
+
         // burn the tokens
         _bnt.safeTransfer(Token.unwrap(_bnt), burnAmount);
 
@@ -187,6 +211,12 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
         if (allowance < inputAmount) {
             // increase allowance to the max amount if allowance < inputAmount
             token.safeIncreaseAllowance(address(_bancorNetwork), type(uint256).max - allowance);
+        }
+    }
+
+    function uncheckedInc(uint256 i) private pure returns (uint256 j) {
+        unchecked {
+            j = i + 1;
         }
     }
 }

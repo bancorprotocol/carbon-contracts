@@ -161,7 +161,7 @@ describe('FeeBurner', () => {
                 const expectedUserRewards = amount.mul(rewards.percentagePPM).div(PPM_RESOLUTION);
                 const expectedBntBurnt = amount.sub(expectedUserRewards);
 
-                await expect(feeBurner.burn([bnt.address]))
+                await expect(feeBurner.execute([bnt.address]))
                     .to.emit(feeBurner, 'FeesBurnt')
                     .withArgs(deployer.address, expectedBntBurnt, expectedUserRewards);
 
@@ -198,7 +198,7 @@ describe('FeeBurner', () => {
 
                 const expectedBntBurnt = totalAmount.sub(expectedUserRewards);
 
-                await expect(feeBurner.burn([token0.address, token1.address, NATIVE_TOKEN_ADDRESS]))
+                await expect(feeBurner.execute([token0.address, token1.address, NATIVE_TOKEN_ADDRESS]))
                     .to.emit(feeBurner, 'FeesBurnt')
                     .withArgs(deployer.address, expectedBntBurnt, expectedUserRewards);
 
@@ -241,7 +241,7 @@ describe('FeeBurner', () => {
 
                 const expectedBntBurnt = totalAmount.sub(expectedUserRewards);
 
-                await expect(feeBurner.burn([token0.address, token1.address, NATIVE_TOKEN_ADDRESS]))
+                await expect(feeBurner.execute([token0.address, token1.address, NATIVE_TOKEN_ADDRESS]))
                     .to.emit(feeBurner, 'FeesBurnt')
                     .withArgs(deployer.address, expectedBntBurnt, expectedUserRewards);
 
@@ -270,7 +270,7 @@ describe('FeeBurner', () => {
             for (let i = 0; i < tokens.length; ++i) {
                 await carbonController.testSetAccumulatedFees(tokens[i], amounts[i]);
 
-                await expect(feeBurner.burn([tokens[i]]))
+                await expect(feeBurner.execute([tokens[i]]))
                     .to.emit(carbonController, 'FeesWithdrawn')
                     .withArgs(tokens[i], feeBurner.address, amounts[i], feeBurner.address);
             }
@@ -286,9 +286,27 @@ describe('FeeBurner', () => {
 
             const burnAmount = amount.sub(rewardAmount);
 
-            await expect(feeBurner.burn([bnt.address]))
+            await expect(feeBurner.execute([bnt.address]))
                 .to.emit(feeBurner, 'FeesBurnt')
                 .withArgs(deployer.address, burnAmount, rewardAmount);
+        });
+
+        it('should correctly increase total burnt amount on burn', async () => {
+            // set accumulated fees
+            const amount = toWei(50);
+            await carbonController.testSetAccumulatedFees(bnt.address, amount);
+
+            // we don't convert bnt, so we expect to get 10% of 50 BNT
+            const rewardAmount = amount.mul(ArbitrageRewardsDefaults.percentagePPM).div(PPM_RESOLUTION);
+
+            const burnAmount = amount.sub(rewardAmount);
+
+            const totalBurntBefore = await feeBurner.totalBurnt();
+
+            await feeBurner.execute([bnt.address]);
+
+            const totalBurntAfter = await feeBurner.totalBurnt();
+            expect(totalBurntBefore.add(burnAmount)).to.be.equal(totalBurntAfter);
         });
 
         it("should skip tokens which don't have accumulated fees", async () => {
@@ -304,7 +322,7 @@ describe('FeeBurner', () => {
 
             // burn token0, bnt and token1
             // token1 has 0 accumulated fees
-            await expect(feeBurner.burn([token0.address, bnt.address, token1.address]))
+            await expect(feeBurner.execute([token0.address, bnt.address, token1.address]))
                 .to.emit(feeBurner, 'FeesBurnt')
                 .withArgs(deployer.address, burnAmount, rewardAmount);
         });
@@ -325,7 +343,7 @@ describe('FeeBurner', () => {
                 const contract = await Contracts.TestERC20Token.attach(token);
                 const allowance = await contract.allowance(feeBurner.address, approveExchange);
                 if (allowance.eq(0)) {
-                    await expect(feeBurner.burn([token]))
+                    await expect(feeBurner.execute([token]))
                         .to.emit(contract, 'Approval')
                         .withArgs(feeBurner.address, approveExchange, approveAmount);
                 }
@@ -341,7 +359,7 @@ describe('FeeBurner', () => {
                 const approveAmount = MAX_UINT256;
                 const approveExchange = bancorNetworkV3.address;
                 const contract = await Contracts.TestERC20Token.attach(token);
-                await expect(feeBurner.burn([token]))
+                await expect(feeBurner.execute([token]))
                     .not.to.emit(contract, 'Approval')
                     .withArgs(feeBurner.address, approveExchange, approveAmount);
             }
@@ -354,7 +372,7 @@ describe('FeeBurner', () => {
             await carbonController.testSetAccumulatedFees(bnt.address, amount);
 
             // burn nonTradeableToken and bnt
-            await expect(feeBurner.burn([bnt.address, nonTradeableToken.address])).to.be.revertedWithError(
+            await expect(feeBurner.execute([bnt.address, nonTradeableToken.address])).to.be.revertedWithError(
                 'InvalidToken'
             );
         });
