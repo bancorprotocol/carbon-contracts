@@ -5,6 +5,7 @@ export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
 export enum TokenSymbol {
     ETH = 'ETH',
+    BNT = 'BNT',
     USDC = 'USDC',
     TKN = 'TKN',
     TKN0 = 'TKN0',
@@ -31,6 +32,11 @@ const TOKEN_DATA = {
         errors: {
             exceedsBalance: 'Address: insufficient balance'
         }
+    },
+    [TokenSymbol.BNT]: {
+        name: 'Bancor Network Token',
+        decimals: DEFAULT_DECIMALS,
+        errors: DEFAULT_ERRORS
     },
     [TokenSymbol.USDC]: {
         name: 'USDC Token',
