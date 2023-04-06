@@ -243,10 +243,14 @@ describe('Strategy', () => {
     /**
      * performs a fee withdrawal
      */
-    const withdrawFees = async (amount: BigNumber, token: TestERC20Burnable): Promise<ContractTransaction> => {
-        await carbonController.testSetAccumulatedFees(token.address, amount);
+    const withdrawFees = async (
+        feeAmount: BigNumber,
+        withdrawAmount: BigNumber,
+        token: TestERC20Burnable
+    ): Promise<ContractTransaction> => {
+        await carbonController.testSetAccumulatedFees(token.address, feeAmount);
         await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
-        return carbonController.connect(owner).withdrawFees(token.address, amount, owner.address);
+        return carbonController.connect(owner).withdrawFees(token.address, withdrawAmount, owner.address);
     };
 
     describe('strategy creation', async () => {
@@ -1776,7 +1780,7 @@ describe('Strategy', () => {
         it('emits the FeesWithdrawn', async () => {
             const amount = BigNumber.from(10);
             await transfer(deployer, token0, carbonController.address, amount);
-            const tx = await withdrawFees(amount, token0);
+            const tx = await withdrawFees(amount, amount, token0);
 
             await expect(tx)
                 .to.emit(carbonController, 'FeesWithdrawn')
@@ -1786,48 +1790,79 @@ describe('Strategy', () => {
         it('updates accumulatedFees balance', async () => {
             const amount = BigNumber.from(10);
             await transfer(deployer, token0, carbonController.address, amount);
-            await withdrawFees(amount, token0);
+            await withdrawFees(amount, amount, token0);
             const accumulatedFees = await carbonController.testAccumulatedFees(token0.address);
             expect(accumulatedFees).to.eq(0);
         });
+
+        it('should return the withdrawn fee amount', async () => {
+            const amount = BigNumber.from(10);
+            await transfer(deployer, token0, carbonController.address, amount);
+            await carbonController.testSetAccumulatedFees(token0.address, amount);
+            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+            const feeAmount = await carbonController
+                .connect(owner)
+                .callStatic.withdrawFees(token0.address, amount, owner.address);
+            expect(feeAmount).to.eq(amount);
+        });
+
+        it('should cap the fee amount to the available balance', async () => {
+            const feeAmount = BigNumber.from(10);
+            const withdrawAmount = feeAmount.add(1);
+            await transfer(deployer, token0, carbonController.address, feeAmount);
+            await carbonController.testSetAccumulatedFees(token0.address, feeAmount);
+            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+            const feeReturnAmount = await carbonController
+                .connect(owner)
+                .callStatic.withdrawFees(token0.address, withdrawAmount, owner.address);
+            expect(feeReturnAmount).to.eq(feeAmount);
+        });
+
+        async function checkBalancesAreUpdated(token: TokenSymbol, feeAmount: BigNumber, withdrawAmount: BigNumber) {
+            // prepare
+            const _token = tokens[token];
+            await transfer(deployer, _token, carbonController.address, feeAmount);
+
+            const balanceTypes = [
+                { type: 'recipient', token: _token, account: owner.address },
+                { type: 'controller', token: _token, account: carbonController.address }
+            ];
+
+            // fetch balances before withdraw
+            const before: any = {};
+            for (const b of balanceTypes) {
+                before[b.type] = await getBalance(b.token, b.account);
+            }
+
+            // perform withdraw
+            const tx = await withdrawFees(feeAmount, withdrawAmount, _token);
+            const receipt = await tx.wait();
+            const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
+
+            // fetch balances after creating
+            const after: any = {};
+            for (const b of balanceTypes) {
+                after[b.type] = await getBalance(b.token, b.account);
+            }
+
+            // assert
+            const expectedAmountWithGasAccounted =
+                _token.address === NATIVE_TOKEN_ADDRESS ? feeAmount.sub(gasUsed) : feeAmount;
+            expect(after.recipient).to.eq(before.recipient.add(expectedAmountWithGasAccounted));
+            expect(after.controller).to.eq(before.controller.sub(feeAmount));
+        }
 
         describe('balances are updated correctly', () => {
             const _permutations = [{ token: TokenSymbol.TKN0 }, { token: TokenSymbol.ETH }];
 
             for (const { token } of _permutations) {
                 it(`${token}`, async () => {
-                    // prepare
-                    const amount = BigNumber.from(2);
-                    const _token = tokens[token];
-                    await transfer(deployer, _token, carbonController.address, amount);
-
-                    const balanceTypes = [
-                        { type: 'recipient', token: _token, account: owner.address },
-                        { type: 'controller', token: _token, account: carbonController.address }
-                    ];
-
-                    // fetch balances before withdraw
-                    const before: any = {};
-                    for (const b of balanceTypes) {
-                        before[b.type] = await getBalance(b.token, b.account);
-                    }
-
-                    // perform withdraw
-                    const tx = await withdrawFees(amount, _token);
-                    const receipt = await tx.wait();
-                    const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
-
-                    // fetch balances after creating
-                    const after: any = {};
-                    for (const b of balanceTypes) {
-                        after[b.type] = await getBalance(b.token, b.account);
-                    }
-
-                    // assert
-                    const expectedAmountWithGasAccounted =
-                        _token.address === NATIVE_TOKEN_ADDRESS ? amount.sub(gasUsed) : amount;
-                    expect(after.recipient).to.eq(before.recipient.add(expectedAmountWithGasAccounted));
-                    expect(after.controller).to.eq(before.controller.sub(amount));
+                    const feeAmount = BigNumber.from(2);
+                    const withdrawAmount = BigNumber.from(3);
+                    // check withdrawing the available fee amount
+                    await checkBalancesAreUpdated(token, feeAmount, feeAmount);
+                    // check withdrawing more than the available fee amount
+                    await checkBalancesAreUpdated(token, feeAmount, withdrawAmount);
                 });
             }
         });
