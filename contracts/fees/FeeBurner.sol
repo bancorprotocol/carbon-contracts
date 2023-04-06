@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity ^0.8.0;
+pragma solidity 0.8.19;
 
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
@@ -177,19 +177,24 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // get the total amount
         uint256 totalAmount = _bnt.balanceOf(address(this));
 
+        // load reward amounts in memory
+        Rewards memory rewardAmounts = _rewards;
+
         // calculate the rewards to send to the caller
-        uint256 rewardAmount = MathEx.mulDivF(totalAmount, _rewards.percentagePPM, PPM_RESOLUTION);
+        uint256 rewardAmount = MathEx.mulDivF(totalAmount, rewardAmounts.percentagePPM, PPM_RESOLUTION);
 
         // limit the rewards by the defined limit
-        if (rewardAmount > _rewards.maxAmount) {
-            rewardAmount = _rewards.maxAmount;
+        if (rewardAmount > rewardAmounts.maxAmount) {
+            rewardAmount = rewardAmounts.maxAmount;
         }
 
         // calculate the burn amount
         uint256 burnAmount = totalAmount - rewardAmount;
 
         // add to the total burnt amount
-        _totalBurnt += burnAmount;
+        if(burnAmount > 0) {
+            _totalBurnt += burnAmount;
+        }
 
         // burn the tokens
         _bnt.safeTransfer(Token.unwrap(_bnt), burnAmount);
