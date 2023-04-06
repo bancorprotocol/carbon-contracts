@@ -1,5 +1,5 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
+import { CarbonController, FeeBurner, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
@@ -40,7 +40,8 @@ const { TEST_FORK: isTestFork }: EnvOptions = process.env as any as EnvOptions;
 enum NewInstanceName {
     CarbonController = 'CarbonController',
     ProxyAdmin = 'ProxyAdmin',
-    Voucher = 'Voucher'
+    Voucher = 'Voucher',
+    FeeBurner = 'FeeBurner'
 }
 
 export const LegacyInstanceName = {};
@@ -59,7 +60,8 @@ const deployed = <F extends Contract>(name: InstanceName) => ({
 const DeployedNewContracts = {
     CarbonController: deployed<CarbonController>(InstanceName.CarbonController),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
-    Voucher: deployed<Voucher>(InstanceName.Voucher)
+    Voucher: deployed<Voucher>(InstanceName.Voucher),
+    FeeBurner: deployed<FeeBurner>(InstanceName.FeeBurner)
 };
 
 export const DeployedContracts = {
