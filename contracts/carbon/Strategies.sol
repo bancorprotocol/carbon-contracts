@@ -175,7 +175,7 @@ abstract contract Strategies is Initializable {
     mapping(Token => uint256) internal _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 5] private __gap;
+    uint256[MAX_GAP - 4] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
