@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity ^0.8.0;
+pragma solidity 0.8.19;
 
 /**
  * @dev this contract abstracts the block number in order to allow for more flexible control in tests
