@@ -39,7 +39,7 @@ describe('FeeBurner', () => {
         maxAmount: toWei(10)
     };
 
-    shouldHaveGap('FeeBurner', '_rewards');
+    shouldHaveGap('FeeBurner', '_totalBurnt');
 
     before(async () => {
         [deployer, , nonAdmin] = await ethers.getSigners();
