@@ -25,17 +25,24 @@ Token constant NATIVE_TOKEN = Token.wrap(NATIVE_TOKEN_ADDRESS);
 
 using {
     equal as ==,
+    notEqual as !=,
     isNative,
     symbol,
     decimals,
     balanceOf,
+    allowance,
     safeTransfer,
     safeTransferFrom,
-    safeApprove
+    safeApprove,
+    safeIncreaseAllowance
 } for Token global;
 
 function equal(Token a, Token b) pure returns (bool) {
     return Token.unwrap(a) == Token.unwrap(b);
+}
+
+function notEqual(Token a, Token b) pure returns (bool) {
+    return Token.unwrap(a) != Token.unwrap(b);
 }
 
 /**
@@ -76,6 +83,16 @@ function balanceOf(Token token, address account) view returns (uint256) {
 }
 
 /**
+ * @dev returns the allowance of an `owner` to a `spender`
+ */
+function allowance(Token token, address owner, address spender) view returns (uint256) {
+    if (isNative(token)) {
+        return 0;
+    }
+    return toIERC20(token).allowance(owner, spender);
+}
+
+/**
  * @dev transfers a specific amount of the native token/ERC20 token
  */
 function safeTransfer(Token token, address to, uint256 amount) {
@@ -111,6 +128,18 @@ function safeApprove(Token token, address spender, uint256 amount) {
         return;
     }
     toIERC20(token).safeApprove(spender, amount);
+}
+
+/**
+ * @dev atomically increases the allowance granted to `spender` by the caller.
+ *
+ * note that the function does not perform any action if the native token is provided
+ */
+function safeIncreaseAllowance(Token token, address spender, uint256 amount) {
+    if (isNative(token)) {
+        return;
+    }
+    toIERC20(token).safeIncreaseAllowance(spender, amount);
 }
 
 /**
