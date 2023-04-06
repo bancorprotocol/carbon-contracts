@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { Token } from "../../token/Token.sol";
-
 
 /**
  * @dev Bancor Network interface
@@ -23,7 +22,6 @@ interface IBancorNetwork {
      *
      * - the caller must have approved the network to transfer the source tokens on its behalf (except for in the
      *   native token case)
-     * - the caller must be the _bancorArbitrage contract
      */
     function tradeBySourceAmount(
         Token sourceToken,
@@ -42,7 +40,6 @@ interface IBancorNetwork {
      *
      * - the caller must have approved the network to transfer the source tokens on its behalf (except for in the
      *   native token case)
-     * - the caller must be the _bancorArbitrage contract
      */
     function tradeByTargetAmount(
         Token sourceToken,
