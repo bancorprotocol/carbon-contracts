@@ -29,10 +29,8 @@ interface IFeeBurner is IUpgradeable {
      * @dev triggered when the rewards settings are updated
      */
     event RewardsUpdated(
-        uint32 prevPercentagePPM,
-        uint32 newPercentagePPM,
-        uint224 prevMaxAmount,
-        uint224 newMaxAmount
+        Rewards prevRewards,
+        Rewards newRewards
     );
 
     /**

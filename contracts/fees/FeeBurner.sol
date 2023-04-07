@@ -98,22 +98,16 @@ contract FeeBurner is IFeeBurner, Upgradeable, ReentrancyGuardUpgradeable, Utils
     function setRewards(
         Rewards memory newRewards
     ) public onlyAdmin validFee(newRewards.percentagePPM) greaterThanZero(newRewards.maxAmount) {
-        uint32 prevPercentagePPM = _rewards.percentagePPM;
-        uint224 prevMaxAmount = _rewards.maxAmount;
+        Rewards memory prevRewards = _rewards;
 
         // return if the rewards are the same
-        if (prevPercentagePPM == newRewards.percentagePPM && prevMaxAmount == newRewards.maxAmount) {
+        if (prevRewards.percentagePPM == newRewards.percentagePPM && prevRewards.maxAmount == newRewards.maxAmount) {
             return;
         }
 
         _rewards = newRewards;
 
-        emit RewardsUpdated({
-            prevPercentagePPM: prevPercentagePPM,
-            newPercentagePPM: newRewards.percentagePPM,
-            prevMaxAmount: prevMaxAmount,
-            newMaxAmount: newRewards.maxAmount
-        });
+        emit RewardsUpdated({ prevRewards: prevRewards, newRewards: newRewards });
     }
 
     /**
