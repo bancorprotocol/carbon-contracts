@@ -102,7 +102,7 @@ contract CarbonController is
     }
 
     /**
-     * @dev returns the fees manaager role
+     * @dev returns the fees manager role
      */
     function roleFeesManager() external pure returns (bytes32) {
         return ROLE_FEES_MANAGER;

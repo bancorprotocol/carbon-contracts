@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.19;
+pragma solidity ^0.8.0;
 
 import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 import { Pair } from "../Pairs.sol";
@@ -167,7 +167,7 @@ interface ICarbonController is IUpgradeable {
     function accumulatedFees(Token token) external view returns (uint256);
 
     /**
-     * @dev transfers the accumlated fees to the specified recipient
+     * @dev transfers the accumulated fees to the specified recipient
      */
     function withdrawFees(uint256 amount, Token token, address recipient) external;
 }

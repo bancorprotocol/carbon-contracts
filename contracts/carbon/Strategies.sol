@@ -162,20 +162,20 @@ abstract contract Strategies is Initializable {
     // total number of strategies
     uint128 private _strategyCounter;
 
+    // the global trading fee (in units of PPM)
+    uint32 private _tradingFeePPM;
+
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
 
     // mapping between a pair id to its strategies ids
     mapping(uint128 => EnumerableSetUpgradeable.UintSet) private _strategyIdsByPairIdStorage;
 
-    // the global trading fee (in units of PPM)
-    uint32 private _tradingFeePPM;
-
     // accumulated fees per token
     mapping(Token => uint256) internal _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 5] private __gap;
+    uint256[MAX_GAP - 4] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
