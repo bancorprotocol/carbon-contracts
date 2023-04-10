@@ -329,7 +329,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function tradeSourceAmount(
+    function calculateTradeSourceAmount(
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
@@ -344,7 +344,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function tradeTargetAmount(
+    function calculateTradeTargetAmount(
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
