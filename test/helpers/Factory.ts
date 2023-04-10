@@ -1,5 +1,13 @@
 import { ContractBuilder } from '../../components/ContractBuilder';
-import Contracts, { ProxyAdmin, TestERC20Burnable, TestERC20Token, Voucher } from '../../components/Contracts';
+import Contracts, {
+    MockBancorNetworkV3,
+    ProxyAdmin,
+    TestBNT,
+    TestCarbonController,
+    TestERC20Burnable,
+    TestERC20Token,
+    Voucher
+} from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { Addressable, toWei } from '../../utils/Types';
@@ -87,6 +95,17 @@ export const createCarbonController = async (voucher: string | Voucher) => {
     return upgradedCarbonController;
 };
 
+export const createFeeBurner = async (
+    bnt: string | TestBNT,
+    carbonController: string | TestCarbonController,
+    bancorNetworkV3: string | MockBancorNetworkV3
+) => {
+    const feeBurner = await createProxy(Contracts.FeeBurner, {
+        ctorArgs: [toAddress(bnt), toAddress(carbonController), toAddress(bancorNetworkV3)]
+    });
+    return feeBurner;
+};
+
 const createSystemFixture = async () => {
     const voucher = await createProxy(Contracts.TestVoucher, {
         initArgs: [true, 'ipfs://xxx', '']
@@ -132,6 +151,10 @@ export const createToken = async (
 
             return token;
         }
+        case TokenSymbol.BNT: {
+            const token = await Contracts.TestBNT.deploy('Bancor Network Token', 'BNT', totalSupply);
+            return token;
+        }
 
         default:
             throw new Error(`Unsupported type ${symbol}`);
@@ -143,3 +166,6 @@ export const createBurnableToken = async (tokenData: TokenData, totalSupply: Big
 
 export const createTestToken = async (totalSupply: BigNumberish = toWei(1_000_000_000)) =>
     createToken(new TokenData(TokenSymbol.TKN), totalSupply) as Promise<TestERC20Burnable>;
+
+export const createBNT = async (totalSupply: BigNumberish = toWei(1_000_000_000)) =>
+    createToken(new TokenData(TokenSymbol.BNT), totalSupply) as Promise<TestBNT>;

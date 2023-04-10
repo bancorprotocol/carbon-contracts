@@ -168,6 +168,10 @@ interface ICarbonController is IUpgradeable {
 
     /**
      * @dev transfers the accumulated fees to the specified recipient
+     *
+     * notes:
+     * `amount` is capped to the available amount
+     * returns the amount withdrawn
      */
-    function withdrawFees(uint256 amount, Token token, address recipient) external;
+    function withdrawFees(Token token, uint256 amount, address recipient) external returns (uint256);
 }

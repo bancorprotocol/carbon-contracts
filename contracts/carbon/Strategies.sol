@@ -139,7 +139,6 @@ abstract contract Strategies is Initializable {
     error InvalidTradeActionAmount();
     error StrategyDoesNotExist();
     error OutDated();
-    error AmountExceedsBalance();
 
     struct SourceAndTargetAmounts {
         uint128 sourceAmount;
@@ -872,15 +871,16 @@ abstract contract Strategies is Initializable {
         return uint128(strategyId >> 128);
     }
 
-    function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal {
+    function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal returns (uint256) {
         uint256 accumulatedAmount = _accumulatedFees[token];
         if (amount > accumulatedAmount) {
-            revert AmountExceedsBalance();
+            amount = accumulatedAmount;
         }
 
         _accumulatedFees[token] = accumulatedAmount - amount;
         _withdrawFunds(token, payable(recipient), amount);
         emit FeesWithdrawn(token, recipient, amount, sender);
+        return amount;
     }
 
     /**

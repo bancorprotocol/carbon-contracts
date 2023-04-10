@@ -4,7 +4,7 @@ import { Addressable } from '../../utils/Types';
 import { TokenWithAddress } from './Factory';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 
 export const toAddress = (account: string | Addressable) => (typeof account === 'string' ? account : account.address);
 
@@ -36,6 +36,10 @@ export const getBalances = async (tokens: TokenWithAddress[], account: string | 
     }
 
     return balances;
+};
+
+export const setBalance = async (account: string | Addressable, amount: BigNumber) => {
+    await network.provider.send('hardhat_setBalance', [account, amount.toHexString()]);
 };
 
 export const transfer = async (
