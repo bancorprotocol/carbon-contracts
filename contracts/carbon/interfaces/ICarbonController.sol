@@ -146,7 +146,7 @@ interface ICarbonController is IUpgradeable {
     /**
      * @dev returns the source amount required when trading by target amount
      */
-    function tradeSourceAmount(
+    function calculateTradeSourceAmount(
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
@@ -155,7 +155,7 @@ interface ICarbonController is IUpgradeable {
     /**
      * @dev returns the target amount expected when trading by source amount
      */
-    function tradeTargetAmount(
+    function calculateTradeTargetAmount(
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions

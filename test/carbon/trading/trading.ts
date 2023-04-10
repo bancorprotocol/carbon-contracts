@@ -1258,8 +1258,8 @@ describe('Trading', () => {
 
                 const { sourceAmount, targetAmount } = testCase;
                 const amountFn = byTargetAmount
-                    ? carbonController.tradeSourceAmount
-                    : carbonController.tradeTargetAmount;
+                    ? carbonController.calculateTradeSourceAmount
+                    : carbonController.calculateTradeTargetAmount;
                 const result = await amountFn(
                     tokens[sourceSymbol].address,
                     tokens[targetSymbol].address,
@@ -1307,8 +1307,8 @@ describe('Trading', () => {
                 tradeActions[2].strategyId = generateStrategyId(2, strategies.length + 1).toString();
 
                 const amountFn = byTargetAmount
-                    ? carbonController.tradeSourceAmount
-                    : carbonController.tradeTargetAmount;
+                    ? carbonController.calculateTradeSourceAmount
+                    : carbonController.calculateTradeTargetAmount;
 
                 // assert
                 await expect(
@@ -1349,14 +1349,14 @@ describe('Trading', () => {
                 let sourceAmount;
                 if (byTargetAmount) {
                     tradeAction.amount = order.y.add(100).toString();
-                    sourceAmount = await carbonController.tradeSourceAmount(
+                    sourceAmount = await carbonController.calculateTradeSourceAmount(
                         tokens[sourceSymbol].address,
                         tokens[targetSymbol].address,
                         [tradeAction]
                     );
                 } else {
                     tradeAction.amount = order.y.toString();
-                    sourceAmount = await carbonController.tradeSourceAmount(
+                    sourceAmount = await carbonController.calculateTradeSourceAmount(
                         tokens[sourceSymbol].address,
                         tokens[targetSymbol].address,
                         [tradeAction]
