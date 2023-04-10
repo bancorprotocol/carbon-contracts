@@ -8,7 +8,6 @@ abstract contract OnlyProxyDelegate {
     address private immutable _proxy;
 
     error UnknownDelegator();
-    error UnsetDelegator();
 
     constructor(address proxy) {
         _proxy = proxy;
@@ -21,9 +20,6 @@ abstract contract OnlyProxyDelegate {
     }
 
     function _onlyProxyDelegate() internal view {
-        if (_proxy == address(0)) {
-            revert UnsetDelegator();
-        }
         if (address(this) != _proxy) {
             revert UnknownDelegator();
         }

@@ -7,7 +7,7 @@ describe('OnlyProxyDelegate', () => {
     it('reverts when the proxy address was not set', async () => {
         const testOnlyProxyDelegate = await Contracts.TestOnlyProxyDelegate.deploy(ZERO_ADDRESS);
         const tx = testOnlyProxyDelegate.testOnlyProxyDelegate();
-        await expect(tx).to.have.been.revertedWithError('UnsetDelegator');
+        await expect(tx).to.have.been.revertedWithError('UnknownDelegator');
     });
 
     it('reverts when the address provided is not equal to the proxy', async () => {
