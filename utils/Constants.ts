@@ -2,7 +2,8 @@ import { toPPM } from './Types';
 import { ethers } from 'ethers';
 
 const {
-    constants: { AddressZero, MaxUint256 }
+    constants: { AddressZero, MaxUint256 },
+    utils
 } = ethers;
 
 export enum DeploymentNetwork {
@@ -21,6 +22,8 @@ export const ZERO_FRACTION = { n: 0, d: 1 };
 export const PPM_RESOLUTION = 1_000_000;
 
 export const DEFAULT_TRADING_FEE_PPM = toPPM(0.2);
+export const DEFAULT_MAKER_FEE = utils.parseEther('0.0005');
+export const MAX_MAKER_FEE = utils.parseEther('1');
 
 // strategy update reasons
 export const STRATEGY_UPDATE_REASON_EDIT = 0;
