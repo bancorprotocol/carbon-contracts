@@ -158,7 +158,7 @@ abstract contract Strategies is Initializable {
 
     uint256 private constant ONE = 1 << 48;
 
-    uint256 private constant DEFAULT_MAKER_FEE = 5e14; // 1 USD worth of ETH
+    uint256 private constant DEFAULT_MAKER_FEE = 5e14; // 0.0005 ETH
 
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
@@ -277,8 +277,8 @@ abstract contract Strategies is Initializable {
         uint256 value
     ) internal returns (uint256) {
         // account for maker fee
-        bool shouldRevertOnExcessETH = !tokens[0].isNative() && !tokens[1].isNative();
-        value = _accountForMakerFee(shouldRevertOnExcessETH, value);
+        bool revertOnExcess = !tokens[0].isNative() && !tokens[1].isNative();
+        value = _deductMakerFee(revertOnExcess, value);
         // transfer funds
         _validateDepositAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value);
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
@@ -321,8 +321,8 @@ abstract contract Strategies is Initializable {
         uint256 value
     ) internal {
         // account for maker fee
-        bool shouldRevertOnExcessETH = !pair.tokens[0].isNative() && !pair.tokens[1].isNative();
-        value = _accountForMakerFee(shouldRevertOnExcessETH, value);
+        bool revertOnExcess = !pair.tokens[0].isNative() && !pair.tokens[1].isNative();
+        value = _deductMakerFee(revertOnExcess, value);
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
         uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
@@ -376,9 +376,9 @@ abstract contract Strategies is Initializable {
     /**
      * @dev deletes a strategy
      */
-    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pair memory pair) internal {
+    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pair memory pair, uint256 value) internal {
         // account for maker fee
-        _accountForMakerFee(true, msg.value);
+        _deductMakerFee(true, value);
         // burn the voucher nft token
         voucher.burn(strategy.id);
 
@@ -661,7 +661,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev checks if maker fee has been sent with the transaction and returns updated tx value
      */
-    function _accountForMakerFee(bool shouldRevertOnExcessETH, uint256 txValue) private returns (uint256) {
+    function _deductMakerFee(bool revertOnExcess, uint256 txValue) private returns (uint256) {
         uint fee = _makerFee;
         // revert if not enough native token is sent
         if (txValue < fee) {
@@ -672,7 +672,7 @@ abstract contract Strategies is Initializable {
             _accumulatedFees[NATIVE_TOKEN] += fee;
         }
         // revert if excess native token is sent
-        if (shouldRevertOnExcessETH && txValue > fee) {
+        if (revertOnExcess && txValue > fee) {
             revert UnnecessaryNativeTokenReceived();
         }
         return txValue - fee;

@@ -240,7 +240,7 @@ contract CarbonController is
         }
 
         // delete strategy
-        _deleteStrategy(__strategy, _voucher, __pair);
+        _deleteStrategy(__strategy, _voucher, __pair, msg.value);
     }
 
     /**
