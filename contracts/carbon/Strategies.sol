@@ -158,7 +158,7 @@ abstract contract Strategies is Initializable {
 
     uint256 private constant ONE = 1 << 48;
 
-    uint256 private constant DEFAULT_MAKER_FEE = 5e14; // 0.0005 ETH
+    uint256 private constant DEFAULT_MAKER_FEE = 0.0005 ether;
 
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
@@ -662,18 +662,18 @@ abstract contract Strategies is Initializable {
      * @dev checks if maker fee has been sent with the transaction and returns updated tx value
      */
     function _deductMakerFee(bool revertOnExcess, uint256 txValue) private returns (uint256) {
-        uint fee = _makerFee;
+        uint256 fee = _makerFee;
         // revert if not enough native token is sent
         if (txValue < fee) {
             revert InsufficientNativeTokenReceived();
         }
-        // update accumulated fees
-        if (fee != 0) {
-            _accumulatedFees[NATIVE_TOKEN] += fee;
-        }
         // revert if excess native token is sent
         if (revertOnExcess && txValue > fee) {
             revert UnnecessaryNativeTokenReceived();
+        }
+        // update accumulated fees
+        if (fee != 0) {
+            _accumulatedFees[NATIVE_TOKEN] += fee;
         }
         return txValue - fee;
     }
