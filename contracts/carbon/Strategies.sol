@@ -7,7 +7,7 @@ import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/m
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { InvalidIndices } from "../utility/Utils.sol";
-import { Token } from "../token/Token.sol";
+import { Token, NATIVE_TOKEN } from "../token/Token.sol";
 import { Pair } from "./Pairs.sol";
 import { IVoucher } from "../voucher/interfaces/IVoucher.sol";
 import { PPM_RESOLUTION } from "../utility/Constants.sol";
@@ -137,6 +137,8 @@ abstract contract Strategies is Initializable {
     error InvalidRate();
     error InvalidTradeActionStrategyId();
     error InvalidTradeActionAmount();
+    error UnnecessaryNativeTokenReceived();
+    error InsufficientNativeTokenReceived();
     error StrategyDoesNotExist();
     error OutDated();
 
@@ -156,6 +158,8 @@ abstract contract Strategies is Initializable {
 
     uint256 private constant ONE = 1 << 48;
 
+    uint256 private constant DEFAULT_MAKER_FEE = 0.0005 ether;
+
     uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
 
     // total number of strategies
@@ -163,6 +167,9 @@ abstract contract Strategies is Initializable {
 
     // the global trading fee (in units of PPM)
     uint32 private _tradingFeePPM;
+
+    // the global maker fee (for strategy owners, in native token units)
+    uint256 private _makerFee;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
@@ -174,12 +181,17 @@ abstract contract Strategies is Initializable {
     mapping(Token => uint256) internal _accumulatedFees;
 
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 4] private __gap;
+    uint256[MAX_GAP - 5] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
      */
     event TradingFeePPMUpdated(uint32 prevFeePPM, uint32 newFeePPM);
+
+    /**
+     * @dev triggered when the maker fee is updated
+     */
+    event MakerFeeUpdated(uint256 prevFee, uint256 newFee);
 
     /**
      * @dev triggered when a strategy is created
@@ -248,6 +260,7 @@ abstract contract Strategies is Initializable {
      */
     function __Strategies_init_unchained() internal onlyInitializing {
         _setTradingFeePPM(DEFAULT_TRADING_FEE_PPM);
+        _setMakerFee(DEFAULT_MAKER_FEE);
     }
 
     // solhint-enable func-name-mixedcase
@@ -263,6 +276,9 @@ abstract contract Strategies is Initializable {
         address owner,
         uint256 value
     ) internal returns (uint256) {
+        // account for maker fee
+        bool revertOnExcess = !tokens[0].isNative() && !tokens[1].isNative();
+        value = _deductMakerFee(revertOnExcess, value);
         // transfer funds
         _validateDepositAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value);
         _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
@@ -304,6 +320,9 @@ abstract contract Strategies is Initializable {
         address owner,
         uint256 value
     ) internal {
+        // account for maker fee
+        bool revertOnExcess = !pair.tokens[0].isNative() && !pair.tokens[1].isNative();
+        value = _deductMakerFee(revertOnExcess, value);
         // prepare storage variable
         uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
         uint256[3] memory packedOrdersMemory = _packedOrdersByStrategyId[strategyId];
@@ -357,7 +376,9 @@ abstract contract Strategies is Initializable {
     /**
      * @dev deletes a strategy
      */
-    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pair memory pair) internal {
+    function _deleteStrategy(Strategy memory strategy, IVoucher voucher, Pair memory pair, uint256 value) internal {
+        // account for maker fee
+        _deductMakerFee(true, value);
         // burn the voucher nft token
         voucher.burn(strategy.id);
 
@@ -637,6 +658,26 @@ abstract contract Strategies is Initializable {
         }
     }
 
+    /**
+     * @dev checks if maker fee has been sent with the transaction and returns updated tx value
+     */
+    function _deductMakerFee(bool revertOnExcess, uint256 txValue) private returns (uint256) {
+        uint256 fee = _makerFee;
+        // revert if not enough native token is sent
+        if (txValue < fee) {
+            revert InsufficientNativeTokenReceived();
+        }
+        // revert if excess native token is sent
+        if (revertOnExcess && txValue > fee) {
+            revert UnnecessaryNativeTokenReceived();
+        }
+        // update accumulated fees
+        if (fee != 0) {
+            _accumulatedFees[NATIVE_TOKEN] += fee;
+        }
+        return txValue - fee;
+    }
+
     function _validateTradeParams(uint128 pairId, uint256 strategyId, uint128 tradeAmount) private pure {
         // make sure the strategy id matches the pair id
         if (_pairIdByStrategyId(strategyId) != pairId) {
@@ -664,10 +705,31 @@ abstract contract Strategies is Initializable {
     }
 
     /**
+     * @dev sets the maker fee (in native token units)
+     */
+    function _setMakerFee(uint256 newMakerFee) internal {
+        uint256 prevMakerFee = _makerFee;
+        if (prevMakerFee == newMakerFee) {
+            return;
+        }
+
+        _makerFee = newMakerFee;
+
+        emit MakerFeeUpdated(prevMakerFee, newMakerFee);
+    }
+
+    /**
      * returns the current trading fee
      */
     function _currentTradingFeePPM() internal view returns (uint32) {
         return _tradingFeePPM;
+    }
+
+    /**
+     * returns the current maker fee
+     */
+    function _currentMakerFee() internal view returns (uint256) {
+        return _makerFee;
     }
 
     /**

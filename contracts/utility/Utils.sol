@@ -72,4 +72,18 @@ abstract contract Utils {
             revert InvalidFee();
         }
     }
+
+    // ensures that the maker fee is valid
+    modifier validMakerFee(uint256 fee) {
+        _validMakerFee(fee);
+
+        _;
+    }
+
+    // error message binary size optimization
+    function _validMakerFee(uint256 fee) internal pure {
+        if (fee > 1 ether) {
+            revert InvalidFee();
+        }
+    }
 }

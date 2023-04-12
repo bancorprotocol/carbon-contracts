@@ -41,8 +41,6 @@ contract CarbonController is
     uint256[MAX_GAP] private __gap;
 
     error IdenticalAddresses();
-    error UnnecessaryNativeTokenReceived();
-    error InsufficientNativeTokenReceived();
     error DeadlineExpired();
 
     /**
@@ -123,6 +121,13 @@ contract CarbonController is
     }
 
     /**
+     * @inheritdoc ICarbonController
+     */
+    function makerFee() external view returns (uint256) {
+        return _currentMakerFee();
+    }
+
+    /**
      * @dev sets the trading fee (in units of PPM)
      *
      * requirements:
@@ -131,6 +136,17 @@ contract CarbonController is
      */
     function setTradingFeePPM(uint32 newTradingFeePPM) external onlyAdmin validFee(newTradingFeePPM) {
         _setTradingFeePPM(newTradingFeePPM);
+    }
+
+    /**
+     * @dev sets the maker fee (in native token units)
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
+     */
+    function setMakerFee(uint256 newMakerFee) external onlyAdmin validMakerFee(newMakerFee) {
+        _setMakerFee(newMakerFee);
     }
 
     /**
@@ -171,11 +187,6 @@ contract CarbonController is
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint256) {
         _validateInputTokens(token0, token1);
 
-        // don't allow unnecessary eth
-        if (!token0.isNative() && !token1.isNative() && msg.value > 0) {
-            revert UnnecessaryNativeTokenReceived();
-        }
-
         // revert if any of the orders is invalid
         _validateOrders(orders);
 
@@ -206,11 +217,6 @@ contract CarbonController is
             revert AccessDenied();
         }
 
-        // don't allow unnecessary eth
-        if (!__pair.tokens[0].isNative() && !__pair.tokens[1].isNative() && msg.value > 0) {
-            revert UnnecessaryNativeTokenReceived();
-        }
-
         // revert if any of the orders is invalid
         _validateOrders(newOrders);
 
@@ -223,7 +229,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
+    function deleteStrategy(uint256 strategyId) external payable nonReentrant whenNotPaused onlyProxyDelegate {
         // find strategy, reverts if none
         Pair memory __pair = _pairById(_pairIdByStrategyId(strategyId));
         Strategy memory __strategy = _strategy(strategyId, _voucher, __pair);
@@ -234,7 +240,7 @@ contract CarbonController is
         }
 
         // delete strategy
-        _deleteStrategy(__strategy, _voucher, __pair);
+        _deleteStrategy(__strategy, _voucher, __pair, msg.value);
     }
 
     /**

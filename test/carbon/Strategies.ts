@@ -1,7 +1,9 @@
 import Contracts, { TestCarbonController, TestERC20Burnable, Voucher } from '../../components/Contracts';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
 import {
+    DEFAULT_MAKER_FEE,
     DEFAULT_TRADING_FEE_PPM,
+    MAX_MAKER_FEE,
     PPM_RESOLUTION,
     STRATEGY_UPDATE_REASON_EDIT,
     ZERO_ADDRESS
@@ -38,6 +40,8 @@ interface CreateStrategyParams {
     skipFunding?: boolean;
     order?: TestOrder;
     sendWithExcessNativeTokenValue?: boolean;
+    sendMakerFee?: boolean;
+    makerFeeAmount?: BigNumber;
 }
 
 interface UpdateStrategyParams {
@@ -49,6 +53,8 @@ interface UpdateStrategyParams {
     order1Delta?: number;
     skipFunding?: boolean;
     sendWithExcessNativeTokenValue?: boolean;
+    sendMakerFee?: boolean;
+    makerFeeAmount?: BigNumber;
 }
 
 const permutations = [
@@ -98,6 +104,8 @@ describe('Strategy', () => {
         const _owner = _params.owner ? _params.owner : owner;
         const _tokens = [_params.token0 ? _params.token0 : token0, _params.token1 ? _params.token1 : token1];
         const amounts = [order.y, order.y];
+        const sendMakerFee = _params.sendMakerFee === false ? _params.sendMakerFee : true;
+        const makerFeeAmount = _params.makerFeeAmount ? _params.makerFeeAmount : DEFAULT_MAKER_FEE;
 
         if (_params.token0Amount != null) {
             amounts[0] = BigNumber.from(_params.token0Amount);
@@ -109,13 +117,13 @@ describe('Strategy', () => {
 
         // keep track of gas usage
         let gasUsed = BigNumber.from(0);
-        let txValue = BigNumber.from(0);
+        let txValue = sendMakerFee ? BigNumber.from(makerFeeAmount) : BigNumber.from(0);
 
         // fund and approve
         for (let i = 0; i < 2; i++) {
             const token = _tokens[i];
             if (token.address === NATIVE_TOKEN_ADDRESS) {
-                txValue = amounts[i];
+                txValue = txValue.add(amounts[i]);
             } else {
                 // optionally skip funding
                 if (!_params.skipFunding) {
@@ -159,7 +167,9 @@ describe('Strategy', () => {
             strategyId: SID1,
             skipFunding: false,
             order0Delta: 100,
-            order1Delta: -100
+            order1Delta: -100,
+            sendMakerFee: true,
+            makerFeeAmount: DEFAULT_MAKER_FEE
         };
         const _params = { ...defaults, ...params };
 
@@ -169,7 +179,7 @@ describe('Strategy', () => {
         const tokens = [_params.token0, _params.token1];
         const deltas = [BigNumber.from(_params.order0Delta), BigNumber.from(_params.order1Delta)];
 
-        let txValue = BigNumber.from(0);
+        let txValue = _params.sendMakerFee ? _params.makerFeeAmount : BigNumber.from(0);
         for (let i = 0; i < 2; i++) {
             const token = tokens[i];
             const delta = deltas[i];
@@ -381,6 +391,36 @@ describe('Strategy', () => {
             expect(strategy.id).to.eq(SID2);
         });
 
+        it('increases accumulated fees in ETH by maker fee', async () => {
+            let feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await createStrategy();
+            let feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(DEFAULT_MAKER_FEE));
+
+            // change maker fee
+            const newFeeAmount = ethers.utils.parseEther('0.01');
+            await carbonController.setMakerFee(newFeeAmount);
+            feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await createStrategy({
+                makerFeeAmount: newFeeAmount
+            });
+            feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(newFeeAmount));
+        });
+
+        it('allows strategy creation with maker fee set to 0', async () => {
+            await carbonController.setMakerFee(0);
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await createStrategy({
+                sendMakerFee: false
+            });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore);
+        });
+
         describe('balances are updated correctly', () => {
             const _permutations = [
                 { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 100 },
@@ -439,19 +479,29 @@ describe('Strategy', () => {
                         after[b.type] = await getBalance(b.token, b.account);
                     }
 
-                    // account for gas costs if the token is the native token;
+                    // account for gas costs and maker fee if the token is the native token;
                     const expectedOwnerAmountToken0 =
-                        _token0.address === NATIVE_TOKEN_ADDRESS ? amounts[0].add(gasUsed) : amounts[0];
+                        _token0.address === NATIVE_TOKEN_ADDRESS
+                            ? amounts[0].add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : amounts[0];
                     const expectedOwnerAmountToken1 =
-                        _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(gasUsed) : amounts[1];
+                        _token1.address === NATIVE_TOKEN_ADDRESS
+                            ? amounts[1].add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : amounts[1];
+
+                    // account for maker fee if the token is the native token
+                    const expectedControllerAmountToken0 =
+                        _token0.address === NATIVE_TOKEN_ADDRESS ? amounts[0].add(DEFAULT_MAKER_FEE) : amounts[0];
+                    const expectedControllerAmountToken1 =
+                        _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(DEFAULT_MAKER_FEE) : amounts[1];
 
                     // owner's balance should decrease y amount
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
 
                     // controller's balance should increase y amount
-                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(amounts[0]));
-                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(amounts[1]));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(expectedControllerAmountToken0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(expectedControllerAmountToken1));
                 });
             }
         });
@@ -511,27 +561,126 @@ describe('Strategy', () => {
                         after[b.type] = await getBalance(b.token, b.account);
                     }
 
-                    // account for gas costs if the token is the native token;
+                    // account for gas costs and maker fee if the token is the native token
                     const expectedOwnerAmountToken0 =
-                        _token0.address === NATIVE_TOKEN_ADDRESS ? amounts[0].add(gasUsed) : amounts[0];
+                        _token0.address === NATIVE_TOKEN_ADDRESS
+                            ? amounts[0].add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : amounts[0];
                     const expectedOwnerAmountToken1 =
-                        _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(gasUsed) : amounts[1];
+                        _token1.address === NATIVE_TOKEN_ADDRESS
+                            ? amounts[1].add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : amounts[1];
+
+                    // account for maker fee if the token is the native token
+                    const expectedControllerAmountToken0 =
+                        _token0.address === NATIVE_TOKEN_ADDRESS ? amounts[0].add(DEFAULT_MAKER_FEE) : amounts[0];
+                    const expectedControllerAmountToken1 =
+                        _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(DEFAULT_MAKER_FEE) : amounts[1];
 
                     // owner's balance should decrease y amount
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
 
                     // controller's balance should increase y amount
-                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(amounts[0]));
-                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(amounts[1]));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(expectedControllerAmountToken0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(expectedControllerAmountToken1));
                 });
             }
         });
 
+        describe('maker fee is transferred correctly', () => {
+            const _permutations = [
+                { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.TKN1, token1Amount: 100 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.TKN1, token1Amount: 0 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.TKN0, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.TKN1, token1Amount: 100 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.TKN0, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.TKN1, token1Amount: 0 }
+            ];
+
+            for (const { token0, token1, token0Amount, token1Amount } of _permutations) {
+                it(`(${token0}->${token1}) token0Amount: ${token0Amount} | token1Amount: ${token1Amount}`, async () => {
+                    // prepare variables
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    const amounts = [BigNumber.from(token0Amount), BigNumber.from(token1Amount)];
+                    const ETH = TokenSymbol.ETH;
+
+                    const balanceTypes = [
+                        { type: 'ownerETH', token: tokens[ETH], account: owner.address },
+                        { type: 'controllerETH', token: tokens[ETH], account: carbonController.address }
+                    ];
+
+                    // fund the owner
+                    await transfer(deployer, _token0, owner, amounts[0]);
+                    await transfer(deployer, _token1, owner, amounts[1]);
+
+                    // fetch balances before creating
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // create strategy
+                    const { gasUsed } = await createStrategy({
+                        token0Amount,
+                        token1Amount,
+                        token0: _token0,
+                        token1: _token1,
+                        skipFunding: true
+                    });
+
+                    // fetch balances after creating
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // set base sent and received amounts
+                    let expectedOwnerETHSent = gasUsed.add(DEFAULT_MAKER_FEE);
+                    let expectedControllerETHReceived = DEFAULT_MAKER_FEE;
+
+                    // account for token amount if the any of the tokens is the native token
+                    if (_token0.address === NATIVE_TOKEN_ADDRESS) {
+                        expectedOwnerETHSent = expectedOwnerETHSent.add(amounts[0]);
+                        expectedControllerETHReceived = expectedControllerETHReceived.add(amounts[0]);
+                    }
+                    if (_token1.address === NATIVE_TOKEN_ADDRESS) {
+                        expectedOwnerETHSent = expectedOwnerETHSent.add(amounts[1]);
+                        expectedControllerETHReceived = expectedControllerETHReceived.add(amounts[1]);
+                    }
+
+                    // owner's ETH balance should decrease y amount
+                    expect(after.ownerETH).to.eq(before.ownerETH.sub(expectedOwnerETHSent));
+
+                    // controller's balance should increase y amount
+                    expect(after.controllerETH).to.eq(before.controllerETH.add(expectedControllerETHReceived));
+                });
+            }
+        });
+
+        it('reverts when sending less than DEFAULT_MAKER_FEE', async () => {
+            const order = generateTestOrder();
+            const value = DEFAULT_MAKER_FEE.sub(1);
+            await expect(
+                carbonController.createStrategy(token0.address, token1.address, [order, order], { value })
+            ).to.be.revertedWithError('InsufficientNativeTokenReceived');
+        });
+
         it('reverts when unnecessary native token was sent', async () => {
             const order = generateTestOrder();
+            const value = DEFAULT_MAKER_FEE.add(1000);
             await expect(
-                carbonController.createStrategy(token0.address, token1.address, [order, order], { value: 1000 })
+                carbonController.createStrategy(token0.address, token1.address, [order, order], { value })
             ).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
         });
 
@@ -562,7 +711,11 @@ describe('Strategy', () => {
                     const order1 = order1Insufficient ? newInvalidOrder : newValidOrder;
 
                     await expect(
-                        carbonController.connect(owner).createStrategy(token0.address, token1.address, [order0, order1])
+                        carbonController
+                            .connect(owner)
+                            .createStrategy(token0.address, token1.address, [order0, order1], {
+                                value: DEFAULT_MAKER_FEE
+                            })
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
             }
@@ -576,7 +729,9 @@ describe('Strategy', () => {
                         orders[orderId] = { ...orders[orderId], [rateId]: BigNumber.from(2).pow(64).sub(1) };
 
                         await expect(
-                            carbonController.connect(owner).createStrategy(token0.address, token1.address, orders)
+                            carbonController
+                                .connect(owner)
+                                .createStrategy(token0.address, token1.address, orders, { value: DEFAULT_MAKER_FEE })
                         ).to.be.revertedWithError('InvalidRate');
                     });
                 }
@@ -844,7 +999,9 @@ describe('Strategy', () => {
                     // update strategy
                     await carbonController
                         .connect(owner)
-                        .updateStrategy(SID1, [order, order], [newOrders[0], newOrders[1]]);
+                        .updateStrategy(SID1, [order, order], [newOrders[0], newOrders[1]], {
+                            value: DEFAULT_MAKER_FEE
+                        });
 
                     // fetch the strategy created
                     const strategy = await carbonController.strategy(SID1);
@@ -943,23 +1100,32 @@ describe('Strategy', () => {
                         sendWithExcessNativeTokenValue
                     });
 
-                    // fetch balances after creating
+                    // fetch balances after updating
                     const after: any = {};
                     for (const b of balanceTypes) {
                         after[b.type] = await getBalance(b.token, b.account);
                     }
 
-                    // account for gas costs if the token is the native token;
+                    // account for gas costs and maker fee if the token is the native token;
                     const expectedOwnerDeltaToken0 =
-                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(gasUsed) : delta0;
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS
+                            ? delta0.add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : delta0;
                     const expectedOwnerDeltaToken1 =
-                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(gasUsed) : delta1;
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS
+                            ? delta1.add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : delta1;
+
+                    const expectedControllerDeltaToken0 =
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(DEFAULT_MAKER_FEE) : delta0;
+                    const expectedControllerDeltaToken1 =
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(DEFAULT_MAKER_FEE) : delta1;
 
                     // assert
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerDeltaToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerDeltaToken1));
-                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(delta0));
-                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(delta1));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(expectedControllerDeltaToken0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(expectedControllerDeltaToken1));
                 });
             }
         });
@@ -1128,23 +1294,123 @@ describe('Strategy', () => {
                         sendWithExcessNativeTokenValue
                     });
 
-                    // fetch balances after creating
+                    // fetch balances after updating
                     const after: any = {};
                     for (const b of balanceTypes) {
                         after[b.type] = await getBalance(b.token, b.account);
                     }
 
-                    // account for gas costs if the token is the native token;
+                    // account for gas costs and maker fee if the token is the native token;
                     const expectedOwnerDeltaToken0 =
-                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(gasUsed) : delta0;
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS
+                            ? delta0.add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : delta0;
                     const expectedOwnerDeltaToken1 =
-                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(gasUsed) : delta1;
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS
+                            ? delta1.add(gasUsed).add(DEFAULT_MAKER_FEE)
+                            : delta1;
+
+                    const expectedControllerDeltaToken0 =
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(DEFAULT_MAKER_FEE) : delta0;
+                    const expectedControllerDeltaToken1 =
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(DEFAULT_MAKER_FEE) : delta1;
 
                     // assert
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerDeltaToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerDeltaToken1));
-                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(delta0));
-                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(delta1));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(expectedControllerDeltaToken0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(expectedControllerDeltaToken1));
+                });
+            }
+        });
+
+        describe('maker fee is transferred correctly', () => {
+            const strategyUpdatingPermutations = [
+                ..._permutations,
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                }
+            ];
+            for (const {
+                token0,
+                token1,
+                order0Delta,
+                order1Delta,
+                sendWithExcessNativeTokenValue
+            } of strategyUpdatingPermutations) {
+                // eslint-disable-next-line max-len
+                it(`(${token0},${token1}) | order0Delta: ${order0Delta} | order1Delta: ${order1Delta} | excess: ${sendWithExcessNativeTokenValue}`, async () => {
+                    // prepare variables
+                    const _tokens = [tokens[token0], tokens[token1]];
+                    const deltas = [BigNumber.from(order0Delta), BigNumber.from(order1Delta)];
+                    const ETH = TokenSymbol.ETH;
+
+                    const delta0 = deltas[0];
+                    const delta1 = deltas[1];
+                    const balanceTypes = [
+                        { type: 'ownerETH', token: tokens[ETH], account: owner.address },
+                        { type: 'controllerETH', token: tokens[ETH], account: carbonController.address }
+                    ];
+
+                    // create strategy
+                    await createStrategy({ token0: _tokens[0], token1: _tokens[1] });
+
+                    // fund user
+                    for (let i = 0; i < 2; i++) {
+                        const delta = deltas[i];
+                        if (delta.gt(0)) {
+                            await transfer(deployer, _tokens[i], owner, deltas[i]);
+                        }
+                    }
+
+                    // fetch balances before updating
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // perform update
+                    const { gasUsed } = await updateStrategy({
+                        order0Delta,
+                        order1Delta,
+                        token0: _tokens[0],
+                        token1: _tokens[1],
+                        skipFunding: true,
+                        sendWithExcessNativeTokenValue
+                    });
+
+                    // fetch balances after updating
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // account for token amounts if any of the tokens is the native token
+                    let expectedOwnerETH = gasUsed.add(DEFAULT_MAKER_FEE);
+                    let expectedControllerETH = DEFAULT_MAKER_FEE;
+                    if (_tokens[0].address === NATIVE_TOKEN_ADDRESS) {
+                        expectedOwnerETH = expectedOwnerETH.add(delta0);
+                        expectedControllerETH = expectedControllerETH.add(delta0);
+                    }
+                    if (_tokens[1].address === NATIVE_TOKEN_ADDRESS) {
+                        expectedOwnerETH = expectedOwnerETH.add(delta1);
+                        expectedControllerETH = expectedControllerETH.add(delta1);
+                    }
+
+                    // assert
+                    expect(after.ownerETH).to.eq(before.ownerETH.sub(expectedOwnerETH));
+                    expect(after.controllerETH).to.eq(before.controllerETH.add(expectedControllerETH));
                 });
             }
         });
@@ -1157,7 +1423,9 @@ describe('Strategy', () => {
                         await createStrategy();
                         const order: any = generateTestOrder();
                         order[key] = BigNumber.from(value).add(order[key]);
-                        const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order]);
+                        const tx = carbonController
+                            .connect(owner)
+                            .updateStrategy(SID1, [order, order], [order, order], { value: DEFAULT_MAKER_FEE });
                         await expect(tx).to.have.been.revertedWithError('OutDated');
                     });
                 }
@@ -1185,12 +1453,76 @@ describe('Strategy', () => {
                 );
         });
 
+        it('increases accumulated fees in ETH by DEFAULT_MAKER_FEE', async () => {
+            const delta = 10;
+
+            await createStrategy();
+
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await updateStrategy({ order0Delta: delta, order1Delta: delta });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(DEFAULT_MAKER_FEE));
+        });
+
+        it('increases accumulated fees in ETH by DEFAULT_MAKER_FEE if maker fee is not changed', async () => {
+            const delta = 10;
+
+            await createStrategy();
+
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await updateStrategy({ order0Delta: delta, order1Delta: delta });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(DEFAULT_MAKER_FEE));
+        });
+
+        it('increases accumulated fees in ETH by maker fee if changed', async () => {
+            const delta = 10;
+
+            await createStrategy();
+
+            const newFeeAmount = ethers.utils.parseEther('0.01');
+            await carbonController.setMakerFee(newFeeAmount);
+
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await updateStrategy({ order0Delta: delta, order1Delta: delta, makerFeeAmount: newFeeAmount });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(newFeeAmount));
+        });
+
+        it('allows strategy update with maker fee set to 0', async () => {
+            const delta = 10;
+
+            await createStrategy();
+
+            await carbonController.setMakerFee(0);
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await updateStrategy({ order0Delta: delta, order1Delta: delta, sendMakerFee: false });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore);
+        });
+
+        it('reverts when less than DEFAULT_MAKER_FEE native token was sent', async () => {
+            const order = generateTestOrder();
+            await createStrategy();
+            const value = DEFAULT_MAKER_FEE.sub(1);
+
+            const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order], {
+                value
+            });
+            await expect(tx).to.be.revertedWithError('InsufficientNativeTokenReceived');
+        });
+
         it('reverts when unnecessary native token was sent', async () => {
             const order = generateTestOrder();
             await createStrategy();
+            const value = DEFAULT_MAKER_FEE.add(100);
 
             const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order], {
-                value: 100
+                value
             });
             await expect(tx).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
         });
@@ -1284,7 +1616,7 @@ describe('Strategy', () => {
             for (const { token0, token1 } of permutations) {
                 it(`(${token0}->${token1})`, async () => {
                     await createStrategy({ token0: tokens[token0], token1: tokens[token1] });
-                    await carbonController.connect(owner).deleteStrategy(SID1);
+                    await carbonController.connect(owner).deleteStrategy(SID1, { value: DEFAULT_MAKER_FEE });
                     await expect(voucher.ownerOf(SID1)).to.be.revertedWithError('ERC721: invalid token ID');
                 });
             }
@@ -1318,7 +1650,7 @@ describe('Strategy', () => {
                     }
 
                     // delete strategy
-                    const tx = await carbonController.connect(owner).deleteStrategy(SID1);
+                    const tx = await carbonController.connect(owner).deleteStrategy(SID1, { value: DEFAULT_MAKER_FEE });
                     const receipt = await tx.wait();
                     const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
 
@@ -1328,17 +1660,80 @@ describe('Strategy', () => {
                         after[b.type] = await getBalance(b.token, b.account);
                     }
 
-                    // account for gas costs if the token is the native token;
-                    const expectedOwnerAmountToken0 = _token0.address === NATIVE_TOKEN_ADDRESS ? y.sub(gasUsed) : y;
-                    const expectedOwnerAmountToken1 = _token1.address === NATIVE_TOKEN_ADDRESS ? y.sub(gasUsed) : y;
+                    // account for gas costs and maker fee if the token is the native token
+                    const expectedOwnerAmountToken0 =
+                        _token0.address === NATIVE_TOKEN_ADDRESS ? y.sub(gasUsed).sub(DEFAULT_MAKER_FEE) : y;
+                    const expectedOwnerAmountToken1 =
+                        _token1.address === NATIVE_TOKEN_ADDRESS ? y.sub(gasUsed).sub(DEFAULT_MAKER_FEE) : y;
+
+                    const expectedControllerAmountToken0 =
+                        _token0.address === NATIVE_TOKEN_ADDRESS ? y.sub(DEFAULT_MAKER_FEE) : y;
+                    const expectedControllerAmountToken1 =
+                        _token1.address === NATIVE_TOKEN_ADDRESS ? y.sub(DEFAULT_MAKER_FEE) : y;
 
                     // owner's balance should increase y amount
                     expect(after.ownerToken0).to.eq(before.ownerToken0.add(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.add(expectedOwnerAmountToken1));
 
                     // controller's balance should decrease y amount
-                    expect(after.controllerToken0).to.eq(before.controllerToken0.sub(y));
-                    expect(after.controllerToken1).to.eq(before.controllerToken1.sub(y));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.sub(expectedControllerAmountToken0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.sub(expectedControllerAmountToken1));
+                });
+            }
+        });
+
+        describe('maker fee is transferred correctly', () => {
+            for (const { token0, token1 } of permutations) {
+                it(`(${token0}->${token1})`, async () => {
+                    // prepare variables
+                    const { y } = generateTestOrder();
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    const ETH = TokenSymbol.ETH;
+                    const balanceTypes = [
+                        { type: 'ownerETH', token: tokens[ETH], account: owner.address },
+                        { type: 'controllerETH', token: tokens[ETH], account: carbonController.address }
+                    ];
+
+                    // fund the owner
+                    await transfer(deployer, _token0, owner, y);
+                    await transfer(deployer, _token1, owner, y);
+
+                    // create strategy
+                    await createStrategy({ token0: _token0, token1: _token1, skipFunding: true });
+
+                    // fetch balances before deleting
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // delete strategy
+                    const tx = await carbonController.connect(owner).deleteStrategy(SID1, { value: DEFAULT_MAKER_FEE });
+                    const receipt = await tx.wait();
+                    const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
+
+                    // fetch balances after deleting
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // account for token amounts if any of the tokens is the native token
+                    let expectedOwnerETH = before.ownerETH.sub(gasUsed.add(DEFAULT_MAKER_FEE));
+                    let expectedControllerETH = before.controllerETH.add(DEFAULT_MAKER_FEE);
+                    if (_token0.address === NATIVE_TOKEN_ADDRESS) {
+                        expectedOwnerETH = expectedOwnerETH.add(y);
+                        expectedControllerETH = expectedControllerETH.sub(y);
+                    }
+                    if (_token1.address === NATIVE_TOKEN_ADDRESS) {
+                        expectedOwnerETH = expectedOwnerETH.add(y);
+                        expectedControllerETH = expectedControllerETH.sub(y);
+                    }
+
+                    // assert
+                    expect(after.ownerETH).to.eq(expectedOwnerETH);
+                    expect(after.controllerETH).to.eq(expectedControllerETH);
                 });
             }
         });
@@ -1361,7 +1756,7 @@ describe('Strategy', () => {
                     expect(strategiesByPair[0].id).to.eq(SID1);
 
                     // delete strategy
-                    await carbonController.connect(owner).deleteStrategy(strategy.id);
+                    await carbonController.connect(owner).deleteStrategy(strategy.id, { value: DEFAULT_MAKER_FEE });
 
                     // assert after deleting
                     await expect(carbonController.connect(owner).strategy(strategy.id)).to.be.revertedWithError(
@@ -1384,7 +1779,7 @@ describe('Strategy', () => {
 
             // prepare variables and transaction
             const { y, z, A, B } = generateTestOrder();
-            const tx = carbonController.connect(owner).deleteStrategy(SID1);
+            const tx = carbonController.connect(owner).deleteStrategy(SID1, { value: DEFAULT_MAKER_FEE });
 
             // assert
             await expect(tx)
@@ -1397,6 +1792,40 @@ describe('Strategy', () => {
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)]
                 );
+        });
+
+        it('increases accumulated fees in ETH by DEFAULT_MAKER_FEE if maker fee is not changed', async () => {
+            await createStrategy();
+
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await carbonController.connect(owner).deleteStrategy(SID1, { value: DEFAULT_MAKER_FEE });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(DEFAULT_MAKER_FEE));
+        });
+
+        it('increases accumulated fees in ETH by maker fee if changed', async () => {
+            await createStrategy();
+
+            const newFeeAmount = ethers.utils.parseEther('0.01');
+            await carbonController.setMakerFee(newFeeAmount);
+
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await carbonController.connect(owner).deleteStrategy(SID1, { value: newFeeAmount });
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore.add(newFeeAmount));
+        });
+
+        it('allows strategy deletion with maker fee set to 0', async () => {
+            await createStrategy();
+
+            await carbonController.setMakerFee(0);
+            const feesBefore = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+            await carbonController.connect(owner).deleteStrategy(SID1);
+            const feesAfter = await carbonController.accumulatedFees(NATIVE_TOKEN_ADDRESS);
+
+            expect(feesAfter).to.be.eq(feesBefore);
         });
 
         it('reverts when provided strategy id is zero', async () => {
@@ -1426,6 +1855,26 @@ describe('Strategy', () => {
 
             await expect(carbonController.connect(owner).deleteStrategy(SID3)).to.be.revertedWithError(
                 'PairDoesNotExist'
+            );
+        });
+
+        it('reverts when transferring less than DEFAULT_MAKER_FEE native token', async () => {
+            await createStrategy();
+
+            const value = DEFAULT_MAKER_FEE.sub(1);
+
+            await expect(carbonController.connect(owner).deleteStrategy(SID1, { value })).to.be.revertedWithError(
+                'InsufficientNativeTokenReceived'
+            );
+        });
+
+        it('reverts when transferring more than DEFAULT_MAKER_FEE native token', async () => {
+            await createStrategy();
+
+            const value = DEFAULT_MAKER_FEE.add(1);
+
+            await expect(carbonController.connect(owner).deleteStrategy(SID1, { value })).to.be.revertedWithError(
+                'UnnecessaryNativeTokenReceived'
             );
         });
 
@@ -1472,6 +1921,38 @@ describe('Strategy', () => {
 
         it('sets the default when initializing', async () => {
             expect(await carbonController.tradingFeePPM()).to.equal(DEFAULT_TRADING_FEE_PPM);
+        });
+    });
+
+    describe('maker fee', () => {
+        const newMakerFee = ethers.utils.parseEther('0.1');
+
+        it('should revert when a non-admin attempts to set the maker fee', async () => {
+            await expect(carbonController.connect(owner).setMakerFee(newMakerFee)).to.be.revertedWithError(
+                'AccessDenied'
+            );
+        });
+
+        it('should revert when setting the maker fee to an invalid value', async () => {
+            await expect(carbonController.setMakerFee(MAX_MAKER_FEE.add(1))).to.be.revertedWithError('InvalidFee');
+        });
+
+        it('should ignore updating to the same maker fee', async () => {
+            await carbonController.setMakerFee(newMakerFee);
+
+            const res = await carbonController.setMakerFee(newMakerFee);
+            await expect(res).not.to.emit(carbonController, 'MakerFeeUpdated');
+        });
+
+        it('should be able to set and update the maker fee', async () => {
+            const res = await carbonController.setMakerFee(newMakerFee);
+            await expect(res).to.emit(carbonController, 'MakerFeeUpdated').withArgs(DEFAULT_MAKER_FEE, newMakerFee);
+
+            expect(await carbonController.makerFee()).to.equal(newMakerFee);
+        });
+
+        it('sets the default when initializing', async () => {
+            expect(await carbonController.makerFee()).to.equal(DEFAULT_MAKER_FEE);
         });
     });
 
@@ -1726,7 +2207,9 @@ describe('Strategy', () => {
             });
             const carbonController = await createCarbonController(voucher);
             const order = { ...generateTestOrder(), y: BigNumber.from(0) };
-            const tx = carbonController.createStrategy(token0.address, token1.address, [order, order]);
+            const tx = carbonController.createStrategy(token0.address, token1.address, [order, order], {
+                value: DEFAULT_MAKER_FEE
+            });
             await expect(tx).to.have.been.revertedWithError('AccessDenied');
         });
     });

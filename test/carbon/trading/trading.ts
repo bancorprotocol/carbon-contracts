@@ -1,6 +1,7 @@
 import { CarbonController, TestERC20Burnable } from '../../../components/Contracts';
 import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
 import {
+    DEFAULT_MAKER_FEE,
     DEFAULT_TRADING_FEE_PPM,
     MAX_UINT128,
     PPM_RESOLUTION,
@@ -129,7 +130,7 @@ describe('Trading', () => {
                 })
             );
 
-            let value = BigNumber.from(0);
+            let value = DEFAULT_MAKER_FEE;
             for (const i of [0, 1]) {
                 const token = tokens[strategy.orders[i].token];
                 await transfer(deployer, token, marketMaker, orders[i].y);
@@ -717,19 +718,31 @@ describe('Trading', () => {
                 const targetTokenFees = await carbonController.accumulatedFees(tokens[testCase.targetSymbol].address);
                 const tradingFeeAmount = getTradingFeeAmount(byTargetAmount, sourceAmount, targetAmount);
 
+                // account for maker fees
+                const strategyFeeAmount = DEFAULT_MAKER_FEE.mul(testCase.strategies.length);
+                let expectedSourceFeeAmount = BigNumber.from(0); 
+                let expectedTargetFeeAmount = BigNumber.from(0); 
+
+                if(sourceSymbol === TokenSymbol.ETH) {
+                    expectedSourceFeeAmount = expectedSourceFeeAmount.add(strategyFeeAmount);
+                }
+                if(targetSymbol === TokenSymbol.ETH) {
+                    expectedTargetFeeAmount = expectedTargetFeeAmount.add(strategyFeeAmount);
+                }
+
                 // assert
                 if (byTargetAmount) {
-                    expect(sourceTokenFees).to.eq(tradingFeeAmount);
-                    expect(targetTokenFees).to.eq(0);
+                    expect(sourceTokenFees).to.eq(tradingFeeAmount.add(expectedSourceFeeAmount));
+                    expect(targetTokenFees).to.eq(expectedTargetFeeAmount);
                 } else {
-                    expect(sourceTokenFees).to.eq(0);
-                    expect(targetTokenFees).to.eq(tradingFeeAmount);
+                    expect(sourceTokenFees).to.eq(expectedSourceFeeAmount);
+                    expect(targetTokenFees).to.eq(tradingFeeAmount.add(expectedTargetFeeAmount));
                 }
             });
         }
     });
 
-    describe('allows trading with tradingFree set to 0', async () => {
+    describe('allows trading with tradingFee set to 0', async () => {
         const permutations: FactoryOptions[] = [
             { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: false },
             { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: true }
@@ -832,7 +845,7 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
                         expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
-                        expect(event.args[`reason`]).to.eq(STRATEGY_UPDATE_REASON_TRADE);
+                        expect(event.args.reason).to.eq(STRATEGY_UPDATE_REASON_TRADE);
                         expect(event.event).to.eq('StrategyUpdated');
                     }
                 }
@@ -1292,7 +1305,7 @@ describe('Trading', () => {
                     sourceSymbol: TokenSymbol.ETH,
                     targetSymbol: TokenSymbol.TKN0
                 });
-                const { strategies, sourceAmount, targetAmount, tradeActions, sourceSymbol } = testCase;
+                const { strategies, tradeActions } = testCase;
                 await createStrategies(strategies);
 
                 // create additional strategies using different tokens
@@ -1341,8 +1354,8 @@ describe('Trading', () => {
                 const strategy = await carbonController.strategy(tradeAction.strategyId);
 
                 // get the target order
-                let order =
-                    strategy.tokens[0] == tokens[targetSymbol].address ? strategy.orders[0] : strategy.orders[1];
+                const order =
+                    strategy.tokens[0] === tokens[targetSymbol].address ? strategy.orders[0] : strategy.orders[1];
 
                 // increase the input amount so that the target amount is higher than the total liquidity
                 // and calculate the new source amount
