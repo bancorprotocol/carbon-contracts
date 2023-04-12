@@ -119,7 +119,7 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function tradingFeePPM() external view returns (uint32) {
-        return _currentTradingFeePPM();
+        return _tradingFeePPM;
     }
 
     /**
@@ -360,7 +360,7 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function accumulatedFees(Token token) external view validAddress(Token.unwrap(token)) returns (uint256) {
-        return _getAccumulatedFees(token);
+        return _accumulatedFees[token];
     }
 
     /**

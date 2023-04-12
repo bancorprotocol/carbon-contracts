@@ -162,7 +162,7 @@ abstract contract Strategies is Initializable {
     uint128 private _strategyCounter;
 
     // the global trading fee (in units of PPM)
-    uint32 private _tradingFeePPM;
+    uint32 internal _tradingFeePPM;
 
     // mapping between a strategy to its packed orders
     mapping(uint256 => uint256[3]) private _packedOrdersByStrategyId;
@@ -661,20 +661,6 @@ abstract contract Strategies is Initializable {
         _tradingFeePPM = newTradingFeePPM;
 
         emit TradingFeePPMUpdated({ prevFeePPM: prevTradingFeePPM, newFeePPM: newTradingFeePPM });
-    }
-
-    /**
-     * returns the current trading fee
-     */
-    function _currentTradingFeePPM() internal view returns (uint32) {
-        return _tradingFeePPM;
-    }
-
-    /**
-     * returns the current amount of accumulated fees for a specific token
-     */
-    function _getAccumulatedFees(Token token) internal view returns (uint256) {
-        return _accumulatedFees[token];
     }
 
     /**
