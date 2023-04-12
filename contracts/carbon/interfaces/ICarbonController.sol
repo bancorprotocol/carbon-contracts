@@ -21,6 +21,11 @@ interface ICarbonController is IUpgradeable {
     function tradingFeePPM() external view returns (uint32);
 
     /**
+     * @dev returns the maker fee (in native token units)
+     */
+    function makerFee() external view returns (uint256);
+
+    /**
      * @dev creates a new pair of provided token0 and token1
      */
     function createPair(Token token0, Token token1) external returns (Pair memory);
@@ -81,7 +86,7 @@ interface ICarbonController is IUpgradeable {
      *
      * - the caller must be the owner of the NFT voucher
      */
-    function deleteStrategy(uint256 strategyId) external;
+    function deleteStrategy(uint256 strategyId) external payable;
 
     /**
      * @dev returns a strategy matching the provided id,
