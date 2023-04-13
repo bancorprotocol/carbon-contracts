@@ -873,6 +873,9 @@ abstract contract Strategies is Initializable {
 
     function _withdrawFees(address sender, uint256 amount, Token token, address recipient) internal returns (uint256) {
         uint256 accumulatedAmount = _accumulatedFees[token];
+        if(accumulatedAmount == 0) {
+            return 0;
+        }
         if (amount > accumulatedAmount) {
             amount = accumulatedAmount;
         }
