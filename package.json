@@ -46,7 +46,6 @@
     "run:mainnet": "HARDHAT_NETWORK=mainnet hardhat run",
     "run:fork": "HARDHAT_NETWORK=tenderly hardhat run",
     "dev": "hardhat node --no-deploy",
-    "profile": "PROFILE=1 yarn test",
     "watch": "hardhat watch test",
     "size": "yarn rebuild && hardhat size-contracts",
     "flatten": "hardhat flatten",
