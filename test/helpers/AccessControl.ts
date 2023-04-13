@@ -1,9 +1,8 @@
 import { AccessControlEnumerableUpgradeable } from '../../components/Contracts';
 import { RoleIds } from '../../utils/Roles';
-import { TokenSymbol } from '../../utils/TokenData';
 import { expect } from 'chai';
 import { utils } from 'ethers';
-import { camelCase, capitalize, lowerCase } from 'lodash';
+import { camelCase } from 'lodash';
 
 const { id } = utils;
 
@@ -11,7 +10,7 @@ export * from '../../utils/Roles';
 
 export const expectRole = async (
     contract: AccessControlEnumerableUpgradeable,
-    roleId: typeof RoleIds[number],
+    roleId: (typeof RoleIds)[number],
     adminRole: string,
     members: string[] = []
 ) => {
@@ -22,7 +21,7 @@ export const expectRole = async (
 
 export const expectRoleMembers = async (
     contract: AccessControlEnumerableUpgradeable,
-    roleId: typeof RoleIds[number],
+    roleId: (typeof RoleIds)[number],
     members: string[] = []
 ) => {
     const actualMembers = [];
@@ -38,7 +37,7 @@ export const expectRoleMembers = async (
 
 export const expectRoles = async (
     contract: AccessControlEnumerableUpgradeable,
-    roles: Record<string, typeof RoleIds[number]>
+    roles: Record<string, (typeof RoleIds)[number]>
 ) => {
     const expectedRoles = Object.keys(roles).map((name) => ({
         methodName: camelCase(name),

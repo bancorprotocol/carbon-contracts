@@ -48,7 +48,7 @@ const decodeHardhatError = (error: any, context: any) => {
             return errorName;
         }
 
-        regexp = /VM Exception while processing transaction: reverted with reason string '(.*)'"/;
+        regexp = /VM Exception while processing transaction: reverted with reason string ["']([\w\d: ]*)["']/;
         matches = regexp.exec(errorString);
         if (matches && matches.length >= 1) {
             const errorName = matches[1];

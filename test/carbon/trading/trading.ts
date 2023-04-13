@@ -1,6 +1,12 @@
-import { CarbonController, MasterVault, TestERC20Burnable } from '../../../components/Contracts';
+import { CarbonController, TestERC20Burnable } from '../../../components/Contracts';
 import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
-import { DEFAULT_TRADING_FEE_PPM, MAX_UINT128, PPM_RESOLUTION, ZERO_ADDRESS } from '../../../utils/Constants';
+import {
+    DEFAULT_TRADING_FEE_PPM,
+    MAX_UINT128,
+    PPM_RESOLUTION,
+    STRATEGY_UPDATE_REASON_TRADE,
+    ZERO_ADDRESS
+} from '../../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
 import { createBurnableToken, createSystem, Tokens } from '../../helpers/Factory';
 import { latest } from '../../helpers/Time';
@@ -12,6 +18,8 @@ import { expect } from 'chai';
 import Decimal from 'decimal.js';
 import { BigNumber, BigNumberish, ContractReceipt } from 'ethers';
 import { ethers } from 'hardhat';
+
+const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
 
 type TradeTestReturnValues = {
     tradingFeeAmount: BigNumber;
@@ -81,7 +89,6 @@ describe('Trading', () => {
     let carbonController: CarbonController;
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
-    let masterVault: MasterVault;
     let tokens: Tokens = {};
 
     before(async () => {
@@ -89,7 +96,7 @@ describe('Trading', () => {
     });
 
     beforeEach(async () => {
-        ({ carbonController, masterVault } = await createSystem());
+        ({ carbonController } = await createSystem());
 
         tokens = {};
         for (const symbol of [
@@ -504,8 +511,8 @@ describe('Trading', () => {
                             sourceAmount: 1,
                             byTargetAmount,
                             tradeActions: [
-                                { strategyId: 1, amount: 1 },
-                                { strategyId: 2, amount: 0 }
+                                { strategyId: generateStrategyId(1, 1), amount: 1 },
+                                { strategyId: generateStrategyId(1, 2), amount: 0 }
                             ]
                         })
                     ).to.be.revertedWithError('InvalidTradeActionAmount');
@@ -523,11 +530,8 @@ describe('Trading', () => {
                         sourceSymbol: TokenSymbol.ETH,
                         targetSymbol: TokenSymbol.TKN0
                     });
-                    const { strategies, sourceAmount, tradeActions } = testCase;
+                    const { strategies, sourceAmount, targetAmount, tradeActions, sourceSymbol } = testCase;
                     await createStrategies(strategies);
-
-                    // edit one of the actions to use the extra strategy created
-                    tradeActions[2].strategyId = strategies.length.toString();
 
                     // create additional strategies using different tokens
                     const testCase2 = testCaseFactory({
@@ -537,47 +541,23 @@ describe('Trading', () => {
                     });
                     await createStrategies(testCase2.strategies);
 
-                    // assert
-                    await expect(
-                        simpleTrade({
-                            sourceAmount,
-                            tradeActions,
-                            byTargetAmount,
-                            sourceToken: tokens[TokenSymbol.ETH].address,
-                            targetToken: tokens[TokenSymbol.TKN1].address
-                        })
-                    ).to.be.revertedWithError('TokensMismatch');
-                });
-            }
-        });
+                    // edit one of the actions to use the extra strategy created
+                    tradeActions[2].strategyId = generateStrategyId(2, strategies.length + 1).toString();
 
-        describe('reverts if there is insufficient liquidity to fulfill an order', () => {
-            const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
-            for (const { byTargetAmount } of permutations) {
-                it(`byTargetAmount: ${byTargetAmount}`, async () => {
-                    // create testCase and strategies to use for assertions
-                    const testCase = testCaseFactory({
-                        byTargetAmount,
-                        sourceSymbol: TokenSymbol.TKN0,
-                        targetSymbol: TokenSymbol.TKN1
-                    });
-                    const { strategies, sourceAmount, targetAmount } = testCase;
-
-                    // remove liquidity from the first order
-                    strategies[0].orders[0].liquidity = '0';
-                    await createStrategies(strategies);
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
 
                     // assert
                     await expect(
                         trade({
                             sourceAmount,
                             targetAmount,
-                            tradeActions: testCase.tradeActions,
-                            sourceSymbol: testCase.sourceSymbol,
-                            targetSymbol: testCase.targetSymbol,
-                            byTargetAmount: testCase.byTargetAmount
+                            tradeActions,
+                            sourceSymbol: TokenSymbol.ETH,
+                            targetSymbol: TokenSymbol.TKN0,
+                            byTargetAmount
                         })
-                    ).to.be.revertedWithError('InsufficientLiquidity');
+                    ).to.be.revertedWithError('InvalidTradeActionStrategyId');
                 });
             }
         });
@@ -592,20 +572,25 @@ describe('Trading', () => {
                         sourceSymbol: TokenSymbol.ETH,
                         targetSymbol: TokenSymbol.TKN0
                     });
-                    const { strategies, sourceAmount, tradeActions } = testCase;
+                    const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
+                        testCase;
                     await createStrategies(strategies);
 
                     // edit one of the actions to use a strategy that does not exist
-                    tradeActions[2].strategyId = (strategies.length + 1).toString();
+                    tradeActions[2].strategyId = generateStrategyId(2, 1).toString();
+
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
 
                     // assert
                     await expect(
-                        simpleTrade({
+                        trade({
                             sourceAmount,
+                            targetAmount,
                             tradeActions,
-                            byTargetAmount,
-                            sourceToken: tokens[TokenSymbol.ETH].address,
-                            targetToken: tokens[TokenSymbol.TKN0].address
+                            sourceSymbol,
+                            targetSymbol,
+                            byTargetAmount
                         })
                     ).to.be.revertedWithError('StrategyDoesNotExist');
                 });
@@ -830,6 +815,7 @@ describe('Trading', () => {
                 if (!receipt || !receipt.events) {
                     expect.fail('No events emitted');
                 }
+
                 const tradeActionsAmount = testCase.tradeActions.length;
                 for (let i = 0; i < tradeActionsAmount; i++) {
                     const strategy = testCase.strategies[i];
@@ -837,6 +823,7 @@ describe('Trading', () => {
                     if (!event.args) {
                         expect.fail('Event contains no args');
                     }
+
                     for (let x = 0; x < 2; x++) {
                         const expectedOrder = strategy.orders[x].expected;
                         const emittedOrder = decodeOrder(event.args[`order${x}`]);
@@ -844,7 +831,8 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.lowestRate)).to.eq(expectedOrder.lowestRate);
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
-                        expect(event.args.owner).to.eq(marketMaker.address);
+                        expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
+                        expect(event.args[`reason`]).to.eq(STRATEGY_UPDATE_REASON_TRADE);
                         expect(event.event).to.eq('StrategyUpdated');
                     }
                 }
@@ -964,7 +952,7 @@ describe('Trading', () => {
                 // fetch updated data from the chain
                 const token0 = tokens[testCase.sourceSymbol];
                 const token1 = tokens[testCase.targetSymbol];
-                const strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+                const strategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
 
                 // assertions
                 strategies.forEach((strategy, i) => {
@@ -1006,7 +994,7 @@ describe('Trading', () => {
                 // save current state for later assertions
                 const token0 = tokens[testCase.sourceSymbol];
                 const token1 = tokens[testCase.targetSymbol];
-                const currentStrategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+                const currentStrategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
 
                 // fund user for a trade
                 const { sourceAmount, targetAmount } = testCase;
@@ -1023,7 +1011,7 @@ describe('Trading', () => {
                 });
 
                 // fetch updated data from the chain
-                const newStrategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+                const newStrategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
 
                 // assertions
                 newStrategies.forEach((newStrategy, i) => {
@@ -1070,8 +1058,8 @@ describe('Trading', () => {
                 const balanceTypes = [
                     { type: 'traderSource', symbol: sourceSymbol, account: trader.address },
                     { type: 'traderTarget', symbol: targetSymbol, account: trader.address },
-                    { type: 'vaultSource', symbol: sourceSymbol, account: masterVault.address },
-                    { type: 'vaultTarget', symbol: targetSymbol, account: masterVault.address }
+                    { type: 'controllerSource', symbol: sourceSymbol, account: carbonController.address },
+                    { type: 'controllerTarget', symbol: targetSymbol, account: carbonController.address }
                 ];
 
                 // fetch balances prior to trading
@@ -1112,8 +1100,8 @@ describe('Trading', () => {
                 // assert
                 expect(newBalances.traderTarget.sub(previousBalances.traderTarget)).to.eq(expectedTargetAmount);
                 expect(previousBalances.traderSource.sub(newBalances.traderSource)).to.eq(expectedSourceAmount);
-                expect(newBalances.vaultSource.sub(previousBalances.vaultSource)).to.eq(expectedSourceAmount);
-                expect(previousBalances.vaultTarget.sub(newBalances.vaultTarget)).to.eq(expectedTargetAmount);
+                expect(newBalances.controllerSource.sub(previousBalances.controllerSource)).to.eq(expectedSourceAmount);
+                expect(previousBalances.controllerTarget.sub(newBalances.controllerTarget)).to.eq(expectedTargetAmount);
             });
         }
     });
@@ -1147,8 +1135,8 @@ describe('Trading', () => {
                 const balanceTypes = [
                     { type: 'traderSource', symbol: sourceSymbol, account: trader.address },
                     { type: 'traderTarget', symbol: targetSymbol, account: trader.address },
-                    { type: 'vaultSource', symbol: sourceSymbol, account: masterVault.address },
-                    { type: 'vaultTarget', symbol: targetSymbol, account: masterVault.address }
+                    { type: 'controllerSource', symbol: sourceSymbol, account: carbonController.address },
+                    { type: 'controllerTarget', symbol: targetSymbol, account: carbonController.address }
                 ];
 
                 // fetch balances prior to trading
@@ -1190,8 +1178,8 @@ describe('Trading', () => {
                 // assert
                 expect(newBalances.traderTarget.sub(previousBalances.traderTarget)).to.eq(expectedTargetAmount);
                 expect(previousBalances.traderSource.sub(newBalances.traderSource)).to.eq(expectedSourceAmount);
-                expect(newBalances.vaultSource.sub(previousBalances.vaultSource)).to.eq(expectedSourceAmount);
-                expect(previousBalances.vaultTarget.sub(newBalances.vaultTarget)).to.eq(expectedTargetAmount);
+                expect(newBalances.controllerSource.sub(previousBalances.controllerSource)).to.eq(expectedSourceAmount);
+                expect(previousBalances.controllerTarget.sub(newBalances.controllerTarget)).to.eq(expectedTargetAmount);
             });
         }
     });
@@ -1270,8 +1258,8 @@ describe('Trading', () => {
 
                 const { sourceAmount, targetAmount } = testCase;
                 const amountFn = byTargetAmount
-                    ? carbonController.tradeSourceAmount
-                    : carbonController.tradeTargetAmount;
+                    ? carbonController.calculateTradeSourceAmount
+                    : carbonController.calculateTradeTargetAmount;
                 const result = await amountFn(
                     tokens[sourceSymbol].address,
                     tokens[targetSymbol].address,
@@ -1290,6 +1278,104 @@ describe('Trading', () => {
 
                 // assert
                 expect(result).to.eq(expected);
+            });
+        }
+    });
+
+    describe('reverts if tradeActions in trading amount functions are provided with strategyIds not matching the source/target tokens', () => {
+        const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+        for (const { byTargetAmount } of permutations) {
+            it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                // create testCase and strategies to use for assertions
+                const testCase = testCaseFactory({
+                    byTargetAmount,
+                    sourceSymbol: TokenSymbol.ETH,
+                    targetSymbol: TokenSymbol.TKN0
+                });
+                const { strategies, sourceAmount, targetAmount, tradeActions, sourceSymbol } = testCase;
+                await createStrategies(strategies);
+
+                // create additional strategies using different tokens
+                const testCase2 = testCaseFactory({
+                    byTargetAmount,
+                    sourceSymbol: TokenSymbol.TKN1,
+                    targetSymbol: TokenSymbol.TKN2
+                });
+                await createStrategies(testCase2.strategies);
+
+                // edit one of the actions to use the extra strategy created
+                tradeActions[2].strategyId = generateStrategyId(2, strategies.length + 1).toString();
+
+                const amountFn = byTargetAmount
+                    ? carbonController.calculateTradeSourceAmount
+                    : carbonController.calculateTradeTargetAmount;
+
+                // assert
+                await expect(
+                    amountFn(
+                        tokens[testCase.sourceSymbol].address,
+                        tokens[testCase.targetSymbol].address,
+                        testCase.tradeActions
+                    )
+                ).to.be.revertedWithError('InvalidTradeActionStrategyId');
+            });
+        }
+    });
+
+    describe('reverts if orders have insufficient liquidity to execute the requested trade', () => {
+        const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+        for (const { byTargetAmount } of permutations) {
+            it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                // create testCase and strategies to use for assertions
+                const testCase = testCaseFactory({
+                    byTargetAmount,
+                    sourceSymbol: TokenSymbol.ETH,
+                    targetSymbol: TokenSymbol.TKN0
+                });
+                const { strategies, tradeActions, sourceSymbol, targetSymbol } = testCase;
+
+                await createStrategies(strategies);
+
+                // get the strategy of the first trade action
+                const tradeAction = tradeActions[0];
+                const strategy = await carbonController.strategy(tradeAction.strategyId);
+
+                // get the target order
+                let order =
+                    strategy.tokens[0] == tokens[targetSymbol].address ? strategy.orders[0] : strategy.orders[1];
+
+                // increase the input amount so that the target amount is higher than the total liquidity
+                // and calculate the new source amount
+                let sourceAmount;
+                if (byTargetAmount) {
+                    tradeAction.amount = order.y.add(100).toString();
+                    sourceAmount = await carbonController.calculateTradeSourceAmount(
+                        tokens[sourceSymbol].address,
+                        tokens[targetSymbol].address,
+                        [tradeAction]
+                    );
+                } else {
+                    tradeAction.amount = order.y.toString();
+                    sourceAmount = await carbonController.calculateTradeSourceAmount(
+                        tokens[sourceSymbol].address,
+                        tokens[targetSymbol].address,
+                        [tradeAction]
+                    );
+                    sourceAmount = sourceAmount.add(100).toString();
+                    tradeAction.amount = sourceAmount;
+                }
+
+                // assert
+                await expect(
+                    simpleTrade({
+                        byTargetAmount,
+                        sourceAmount,
+                        sourceToken: tokens[sourceSymbol].address,
+                        targetToken: tokens[targetSymbol].address,
+                        tradeActions: [tradeAction],
+                        txValue: BigNumber.from(sourceAmount)
+                    })
+                ).to.be.revertedWithError('InsufficientLiquidity');
             });
         }
     });

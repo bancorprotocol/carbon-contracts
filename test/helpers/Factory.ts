@@ -1,15 +1,17 @@
 import { ContractBuilder } from '../../components/ContractBuilder';
 import Contracts, {
-    MasterVault,
+    MockBancorNetworkV3,
     ProxyAdmin,
+    TestBNT,
+    TestCarbonController,
     TestERC20Burnable,
     TestERC20Token,
     Voucher
 } from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
-import { Roles } from '../../utils/Roles';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { Addressable, toWei } from '../../utils/Types';
+import { Roles } from './AccessControl';
 import { toAddress } from './Utils';
 import { BaseContract, BigNumberish, BytesLike, ContractFactory } from 'ethers';
 import { waffle } from 'hardhat';
@@ -81,33 +83,39 @@ export const upgradeProxy = async <F extends ContractFactory>(
     return factory.attach(proxy.address);
 };
 
-export const createCarbonController = async (masterVault: string | MasterVault, voucher: string | Voucher) => {
-    const carbonController = await createProxy(Contracts.CarbonController, {
-        skipInitialization: false,
-        ctorArgs: [toAddress(masterVault), toAddress(voucher), ZERO_ADDRESS]
+export const createCarbonController = async (voucher: string | Voucher) => {
+    const carbonController = await createProxy(Contracts.TestCarbonController, {
+        ctorArgs: [toAddress(voucher), ZERO_ADDRESS]
     });
 
-    const upgradedCarbonController = await upgradeProxy(carbonController, Contracts.CarbonController, {
-        skipInitialization: false,
-        ctorArgs: [toAddress(masterVault), toAddress(voucher), carbonController.address]
+    const upgradedCarbonController = await upgradeProxy(carbonController, Contracts.TestCarbonController, {
+        ctorArgs: [toAddress(voucher), carbonController.address]
     });
 
     return upgradedCarbonController;
 };
 
+export const createFeeBurner = async (
+    bnt: string | TestBNT,
+    carbonController: string | TestCarbonController,
+    bancorNetworkV3: string | MockBancorNetworkV3
+) => {
+    const feeBurner = await createProxy(Contracts.FeeBurner, {
+        ctorArgs: [toAddress(bnt), toAddress(carbonController), toAddress(bancorNetworkV3)]
+    });
+    return feeBurner;
+};
+
 const createSystemFixture = async () => {
-    const masterVault = await createProxy(Contracts.MasterVault);
+    const voucher = await createProxy(Contracts.TestVoucher, {
+        initArgs: [true, 'ipfs://xxx', '']
+    });
 
-    const voucher = await Contracts.Voucher.deploy(true, 'ipfs://xxx', '');
+    const carbonController = await createCarbonController(voucher);
 
-    const carbonController = await createCarbonController(masterVault, voucher);
-
-    await voucher.setCarbonController(carbonController.address);
-
-    await masterVault.grantRole(Roles.Vault.ROLE_ASSET_MANAGER, carbonController.address);
+    await voucher.grantRole(Roles.Voucher.ROLE_MINTER, carbonController.address);
 
     return {
-        masterVault,
         carbonController,
         voucher
     };
@@ -143,6 +151,10 @@ export const createToken = async (
 
             return token;
         }
+        case TokenSymbol.BNT: {
+            const token = await Contracts.TestBNT.deploy('Bancor Network Token', 'BNT', totalSupply);
+            return token;
+        }
 
         default:
             throw new Error(`Unsupported type ${symbol}`);
@@ -154,3 +166,6 @@ export const createBurnableToken = async (tokenData: TokenData, totalSupply: Big
 
 export const createTestToken = async (totalSupply: BigNumberish = toWei(1_000_000_000)) =>
     createToken(new TokenData(TokenSymbol.TKN), totalSupply) as Promise<TestERC20Burnable>;
+
+export const createBNT = async (totalSupply: BigNumberish = toWei(1_000_000_000)) =>
+    createToken(new TokenData(TokenSymbol.BNT), totalSupply) as Promise<TestBNT>;

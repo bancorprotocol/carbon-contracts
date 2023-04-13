@@ -3,22 +3,22 @@ Business Source License 1.1
 License text copyright (c) 2017 MariaDB Corporation Ab, All Rights Reserved.
 "Business Source License" is a trademark of MariaDB Corporation Ab.
 
------------------------------------------------------------------------------
+---
 
 Parameters
 
-Licensor:             Bprotocol Foundation
+Licensor: Bprotocol Foundation
 
-Licensed Work:        Carbon v1.0
-                      The Licensed Work is (c) 2022 Bprotocol Foundation
+Licensed Work: Carbon v1.0
+The Licensed Work is (c) 2023 Bprotocol Foundation
 
 Additional Use Grant: None
 
-Change Date:          2025-01-01
+Change Date: 2026-01-01
 
-Change License:       MIT
+Change License: MIT
 
------------------------------------------------------------------------------
+---
 
 Terms
 
@@ -66,7 +66,7 @@ MariaDB hereby grants you permission to use this License’s text to license
 your works, and to refer to it using the trademark "Business Source License",
 as long as you comply with the Covenants of Licensor below.
 
------------------------------------------------------------------------------
+---
 
 Covenants of Licensor
 
@@ -88,7 +88,7 @@ other recipients of the licensed work to be provided by Licensor:
 
 4. Not to modify this License in any other way.
 
------------------------------------------------------------------------------
+---
 
 Notice
 

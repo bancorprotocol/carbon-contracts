@@ -1,16 +1,26 @@
-import Contracts, { CarbonController, MasterVault, TestERC20Burnable, Voucher } from '../../components/Contracts';
+import Contracts, { TestCarbonController, TestERC20Burnable, Voucher } from '../../components/Contracts';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
-import { DEFAULT_TRADING_FEE_PPM, PPM_RESOLUTION, ZERO_ADDRESS } from '../../utils/Constants';
+import {
+    DEFAULT_TRADING_FEE_PPM,
+    PPM_RESOLUTION,
+    STRATEGY_UPDATE_REASON_EDIT,
+    ZERO_ADDRESS
+} from '../../utils/Constants';
 import { Roles } from '../../utils/Roles';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { toPPM } from '../../utils/Types';
-import { createBurnableToken, createCarbonController, createSystem, Tokens } from '../helpers/Factory';
+import { createBurnableToken, createCarbonController, createProxy, createSystem, Tokens } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { getBalance, transfer } from '../helpers/Utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
+import { BigNumber, ContractTransaction } from 'ethers';
 import { ethers } from 'hardhat';
+
+const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
+const SID1 = generateStrategyId(1, 1);
+const SID2 = generateStrategyId(1, 2);
+const SID3 = generateStrategyId(2, 3);
 
 interface TestOrder {
     y: BigNumber;
@@ -19,7 +29,7 @@ interface TestOrder {
     B: BigNumber;
 }
 
-interface createStrategyParams {
+interface CreateStrategyParams {
     owner?: SignerWithAddress;
     token0?: TestERC20Burnable;
     token1?: TestERC20Burnable;
@@ -27,9 +37,10 @@ interface createStrategyParams {
     token1Amount?: number;
     skipFunding?: boolean;
     order?: TestOrder;
+    sendWithExcessNativeTokenValue?: boolean;
 }
 
-interface updateStrategyParams {
+interface UpdateStrategyParams {
     strategyId?: number;
     owner?: SignerWithAddress;
     token0?: TestERC20Burnable;
@@ -50,23 +61,21 @@ describe('Strategy', () => {
     let deployer: SignerWithAddress;
     let owner: SignerWithAddress;
     let nonAdmin: SignerWithAddress;
-    let carbonController: CarbonController;
+    let carbonController: TestCarbonController;
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
     let token2: TestERC20Burnable;
-    let masterVault: MasterVault;
     let voucher: Voucher;
     let tokens: Tokens = {};
 
-    shouldHaveGap('Strategies', '_lastStrategyId');
+    shouldHaveGap('Strategies', '_strategyCounter');
 
     before(async () => {
         [deployer, owner, nonAdmin] = await ethers.getSigners();
     });
 
     beforeEach(async () => {
-        ({ carbonController, masterVault, voucher } = await createSystem());
-        await voucher.setCarbonController(carbonController.address);
+        ({ carbonController, voucher } = await createSystem());
 
         tokens = {};
         for (const symbol of [TokenSymbol.ETH, TokenSymbol.TKN0, TokenSymbol.TKN1, TokenSymbol.TKN2]) {
@@ -82,7 +91,7 @@ describe('Strategy', () => {
      * creates a test strategy, handles funding and approvals
      * @returns a createStrategy transaction
      */
-    const createStrategy = async (params?: createStrategyParams) => {
+    const createStrategy = async (params?: CreateStrategyParams) => {
         // prepare variables
         const _params = { ...params };
         const order = _params.order ? _params.order : generateTestOrder();
@@ -118,6 +127,10 @@ describe('Strategy', () => {
             }
         }
 
+        if (_params.sendWithExcessNativeTokenValue) {
+            txValue = BigNumber.from(txValue).add(10000);
+        }
+
         // create strategy
         const tx = await carbonController.connect(_owner).createStrategy(
             _tokens[0].address,
@@ -138,12 +151,12 @@ describe('Strategy', () => {
      * updates a test strategy, handles funding and approvals
      * @returns an updateStrategy transaction
      */
-    const updateStrategy = async (params?: updateStrategyParams) => {
+    const updateStrategy = async (params?: UpdateStrategyParams) => {
         const defaults = {
             owner,
             token0,
             token1,
-            strategyId: 1,
+            strategyId: SID1,
             skipFunding: false,
             order0Delta: 100,
             order1Delta: -100
@@ -155,6 +168,7 @@ describe('Strategy', () => {
 
         const tokens = [_params.token0, _params.token1];
         const deltas = [BigNumber.from(_params.order0Delta), BigNumber.from(_params.order1Delta)];
+
         let txValue = BigNumber.from(0);
         for (let i = 0; i < 2; i++) {
             const token = tokens[i];
@@ -198,11 +212,15 @@ describe('Strategy', () => {
         }
 
         // update strategy
-        const tx = await carbonController
-            .connect(owner)
-            .updateStrategy(_params.strategyId, [currentOrder, currentOrder], [token0NewOrder, token1NewOrder], {
+        const tx = await carbonController.connect(owner).updateStrategy(
+            _params.strategyId,
+
+            [currentOrder, currentOrder],
+            [token0NewOrder, token1NewOrder],
+            {
                 value: txValue
-            });
+            }
+        );
         const receipt = await tx.wait();
         gasUsed = gasUsed.add(receipt.gasUsed.mul(receipt.effectiveGasPrice));
 
@@ -220,6 +238,19 @@ describe('Strategy', () => {
             A: BigNumber.from(736899889),
             B: BigNumber.from(12148001999)
         };
+    };
+
+    /**
+     * performs a fee withdrawal
+     */
+    const withdrawFees = async (
+        feeAmount: BigNumber,
+        withdrawAmount: BigNumber,
+        token: TestERC20Burnable
+    ): Promise<ContractTransaction> => {
+        await carbonController.testSetAccumulatedFees(token.address, feeAmount);
+        await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+        return carbonController.connect(owner).withdrawFees(token.address, withdrawAmount, owner.address);
     };
 
     describe('strategy creation', async () => {
@@ -254,19 +285,18 @@ describe('Strategy', () => {
                     const { z, A, B } = generateTestOrder();
                     const _token0 = tokens[token0];
                     const _token1 = tokens[token1];
-                    const amounts = [token0Amount, token1Amount];
 
                     // create strategy
                     await createStrategy({ token0: _token0, token1: _token1, token0Amount, token1Amount });
 
                     // fetch the strategy created
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
 
                     // prepare a result object
                     const result = {
                         id: strategy.id.toString(),
                         owner: strategy.owner,
-                        pair: { token0: strategy.pair.token0, token1: strategy.pair.token1 },
+                        tokens: strategy.tokens,
                         orders: strategy.orders.map((o: any) => ({
                             y: o.y.toString(),
                             z: o.z.toString(),
@@ -276,10 +306,13 @@ describe('Strategy', () => {
                     };
 
                     // prepare the expected result object
+                    const amounts = [token0Amount, token1Amount];
+                    const _tokens = [tokens[token0], tokens[token1]];
+
                     const expectedResult: StrategyStruct = {
-                        id: '1',
+                        id: SID1.toString(),
                         owner: owner.address,
-                        pair: { token0: _token0.address, token1: _token1.address },
+                        tokens: [_tokens[0].address, _tokens[1].address],
                         orders: [
                             { y: amounts[0].toString(), z: z.toString(), A: A.toString(), B: B.toString() },
                             { y: amounts[1].toString(), z: z.toString(), A: A.toString(), B: B.toString() }
@@ -318,7 +351,7 @@ describe('Strategy', () => {
             await expect(tx)
                 .to.emit(carbonController, 'StrategyCreated')
                 .withArgs(
-                    BigNumber.from(1),
+                    SID1,
                     owner.address,
                     token0.address,
                     token1.address,
@@ -330,22 +363,22 @@ describe('Strategy', () => {
         it('mints a voucher token to the caller', async () => {
             await createStrategy();
             const balance = await voucher.balanceOf(owner.address);
-            const tokenId = await voucher.tokenOfOwnerByIndex(owner.address, balance.sub(1));
+            const tokenOwner = await voucher.ownerOf(SID1);
             expect(balance).to.eq(1);
-            expect(tokenId).to.eq(1);
+            expect(tokenOwner).to.eq(owner.address);
         });
 
         it('emits the voucher Transfer event', async () => {
             const { tx } = await createStrategy();
-            await expect(tx).to.emit(voucher, 'Transfer').withArgs(ZERO_ADDRESS, owner.address, 1);
+            await expect(tx).to.emit(voucher, 'Transfer').withArgs(ZERO_ADDRESS, owner.address, SID1);
         });
 
         it('increases strategyId', async () => {
             await createStrategy();
             await createStrategy();
 
-            const strategy = await carbonController.strategy(2);
-            expect(strategy.id).to.eq(2);
+            const strategy = await carbonController.strategy(SID2);
+            expect(strategy.id).to.eq(SID2);
         });
 
         describe('balances are updated correctly', () => {
@@ -377,8 +410,8 @@ describe('Strategy', () => {
                     const balanceTypes = [
                         { type: 'ownerToken0', token: _token0, account: owner.address },
                         { type: 'ownerToken1', token: _token1, account: owner.address },
-                        { type: 'vaultToken0', token: _token0, account: masterVault.address },
-                        { type: 'vaultToken1', token: _token1, account: masterVault.address }
+                        { type: 'controllerToken0', token: _token0, account: carbonController.address },
+                        { type: 'controllerToken1', token: _token1, account: carbonController.address }
                     ];
 
                     // fund the owner
@@ -416,9 +449,81 @@ describe('Strategy', () => {
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
 
-                    // vault's balance should increase y amount
-                    expect(after.vaultToken0).to.eq(before.vaultToken0.add(amounts[0]));
-                    expect(after.vaultToken1).to.eq(before.vaultToken1.add(amounts[1]));
+                    // controller's balance should increase y amount
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(amounts[0]));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(amounts[1]));
+                });
+            }
+        });
+
+        describe('excess native token is refunded', () => {
+            const _permutations = [
+                { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 100 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.TKN0, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 0 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.TKN0, token1Amount: 100 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 100 },
+
+                { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.TKN0, token1Amount: 0 },
+                { token0: TokenSymbol.TKN0, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 0 }
+            ];
+
+            for (const { token0, token1, token0Amount, token1Amount } of _permutations) {
+                it(`(${token0}->${token1}) token0Amount: ${token0Amount} | token1Amount: ${token1Amount}`, async () => {
+                    // prepare variables
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    const amounts = [BigNumber.from(token0Amount), BigNumber.from(token1Amount)];
+
+                    const balanceTypes = [
+                        { type: 'ownerToken0', token: _token0, account: owner.address },
+                        { type: 'ownerToken1', token: _token1, account: owner.address },
+                        { type: 'controllerToken0', token: _token0, account: carbonController.address },
+                        { type: 'controllerToken1', token: _token1, account: carbonController.address }
+                    ];
+
+                    // fund the owner
+                    await transfer(deployer, _token0, owner, amounts[0]);
+                    await transfer(deployer, _token1, owner, amounts[1]);
+
+                    // fetch balances before creating
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // create strategy
+                    const { gasUsed } = await createStrategy({
+                        token0Amount,
+                        token1Amount,
+                        token0: _token0,
+                        token1: _token1,
+                        skipFunding: true,
+                        sendWithExcessNativeTokenValue: true
+                    });
+
+                    // fetch balances after creating
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // account for gas costs if the token is the native token;
+                    const expectedOwnerAmountToken0 =
+                        _token0.address === NATIVE_TOKEN_ADDRESS ? amounts[0].add(gasUsed) : amounts[0];
+                    const expectedOwnerAmountToken1 =
+                        _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(gasUsed) : amounts[1];
+
+                    // owner's balance should decrease y amount
+                    expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
+                    expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
+
+                    // controller's balance should increase y amount
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(amounts[0]));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(amounts[1]));
                 });
             }
         });
@@ -475,6 +580,24 @@ describe('Strategy', () => {
                         ).to.be.revertedWithError('InvalidRate');
                     });
                 }
+            }
+        });
+
+        describe('tokens sorting persist', () => {
+            const _permutations = [
+                { token0: TokenSymbol.TKN0, token1: TokenSymbol.TKN1 },
+                { token0: TokenSymbol.TKN1, token1: TokenSymbol.TKN0 }
+            ];
+
+            for (const { token0, token1 } of _permutations) {
+                it(`${token0}, ${token1}`, async () => {
+                    const _token0 = tokens[token0];
+                    const _token1 = tokens[token1];
+                    await createStrategy({ token0: _token0, token1: _token1 });
+                    const strategy = await carbonController.strategy(SID1);
+                    expect(strategy.tokens[0]).to.eq(_token0.address);
+                    expect(strategy.tokens[1]).to.eq(_token1.address);
+                });
             }
         });
     });
@@ -567,6 +690,50 @@ describe('Strategy', () => {
                 order0Delta: 100,
                 order1Delta: 100,
                 sendWithExcessNativeTokenValue: false
+            },
+
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.TKN1,
+                order0Delta: 100,
+                order1Delta: 0,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.ETH,
+                order0Delta: 100,
+                order1Delta: 0,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.ETH,
+                token1: TokenSymbol.TKN0,
+                order0Delta: 100,
+                order1Delta: 0,
+                sendWithExcessNativeTokenValue: false
+            },
+
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.TKN1,
+                order0Delta: 0,
+                order1Delta: 100,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.TKN0,
+                token1: TokenSymbol.ETH,
+                order0Delta: 0,
+                order1Delta: 100,
+                sendWithExcessNativeTokenValue: false
+            },
+            {
+                token0: TokenSymbol.ETH,
+                token1: TokenSymbol.TKN0,
+                order0Delta: 0,
+                order1Delta: 100,
+                sendWithExcessNativeTokenValue: false
             }
         ];
 
@@ -577,21 +744,27 @@ describe('Strategy', () => {
                     const { y, z, A, B } = generateTestOrder();
                     const _token0 = tokens[token0];
                     const _token1 = tokens[token1];
+                    const _tokens = [_token0, _token1];
 
                     // create strategy
-                    await createStrategy({ token0: _token0, token1: _token1 });
+                    await createStrategy({ token0: _tokens[0], token1: _tokens[1] });
 
                     // update strategy
-                    await updateStrategy({ token0: _token0, token1: _token1, order0Delta, order1Delta });
+                    await updateStrategy({
+                        token0: _tokens[0],
+                        token1: _tokens[1],
+                        order0Delta,
+                        order1Delta
+                    });
 
                     // fetch the strategy created
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
 
                     // prepare a result object
                     const result = {
                         id: strategy.id.toString(),
                         owner: strategy.owner,
-                        pair: { token0: strategy.pair.token0, token1: strategy.pair.token1 },
+                        tokens: strategy.tokens,
                         orders: strategy.orders.map((o: any) => ({
                             y: o.y.toString(),
                             z: o.z.toString(),
@@ -601,22 +774,23 @@ describe('Strategy', () => {
                     };
 
                     // prepare the expected result object
+                    const deltas = [order0Delta, order1Delta];
                     const expectedResult: StrategyStruct = {
-                        id: '1',
+                        id: SID1.toString(),
                         owner: owner.address,
-                        pair: { token0: _token0.address, token1: _token1.address },
+                        tokens: [_tokens[0].address, _tokens[1].address],
                         orders: [
                             {
-                                y: y.add(order0Delta).toString(),
-                                z: z.add(order0Delta).toString(),
-                                A: A.add(order0Delta).toString(),
-                                B: B.add(order0Delta).toString()
+                                y: y.add(deltas[0]).toString(),
+                                z: z.add(deltas[0]).toString(),
+                                A: A.add(deltas[0]).toString(),
+                                B: B.add(deltas[0]).toString()
                             },
                             {
-                                y: y.add(order1Delta).toString(),
-                                z: z.add(order1Delta).toString(),
-                                A: A.add(order1Delta).toString(),
-                                B: B.add(order1Delta).toString()
+                                y: y.add(deltas[1]).toString(),
+                                z: z.add(deltas[1]).toString(),
+                                A: A.add(deltas[1]).toString(),
+                                B: B.add(deltas[1]).toString()
                             }
                         ]
                     };
@@ -650,9 +824,9 @@ describe('Strategy', () => {
                     // prepare variables
                     const order = generateTestOrder();
                     const newOrders: TestOrder[] = [];
-                    const deltas = [order0Delta, order1Delta];
                     const _token0 = tokens[token0];
                     const _token1 = tokens[token1];
+                    const deltas = [order0Delta, order1Delta];
 
                     // prepare new orders
                     for (let i = 0; i < 2; i++) {
@@ -670,16 +844,16 @@ describe('Strategy', () => {
                     // update strategy
                     await carbonController
                         .connect(owner)
-                        .updateStrategy(1, [order, order], [newOrders[0], newOrders[1]]);
+                        .updateStrategy(SID1, [order, order], [newOrders[0], newOrders[1]]);
 
                     // fetch the strategy created
-                    const strategy = await carbonController.strategy(1);
+                    const strategy = await carbonController.strategy(SID1);
 
                     // prepare a result object
                     const result = {
                         id: strategy.id.toString(),
                         owner: strategy.owner,
-                        pair: { token0: strategy.pair.token0, token1: strategy.pair.token1 },
+                        tokens: strategy.tokens,
                         orders: strategy.orders.map((o: any) => ({
                             y: o.y,
                             z: o.z,
@@ -690,9 +864,9 @@ describe('Strategy', () => {
 
                     // prepare the expected result object
                     const expectedResult: StrategyStruct = {
-                        id: '1',
+                        id: SID1.toString(),
                         owner: owner.address,
-                        pair: { token0: _token0.address, token1: _token1.address },
+                        tokens: [_token0.address, _token1.address],
                         orders: [newOrders[0], newOrders[1]]
                     };
 
@@ -731,20 +905,19 @@ describe('Strategy', () => {
                 it(`(${token0},${token1}) | order0Delta: ${order0Delta} | order1Delta: ${order1Delta} | excess: ${sendWithExcessNativeTokenValue}`, async () => {
                     // prepare variables
                     const _tokens = [tokens[token0], tokens[token1]];
-                    const _token0 = _tokens[0];
-                    const _token1 = _tokens[1];
                     const deltas = [BigNumber.from(order0Delta), BigNumber.from(order1Delta)];
+
                     const delta0 = deltas[0];
                     const delta1 = deltas[1];
                     const balanceTypes = [
-                        { type: 'ownerToken0', token: _token0, account: owner.address },
-                        { type: 'ownerToken1', token: _token1, account: owner.address },
-                        { type: 'vaultToken0', token: _token0, account: masterVault.address },
-                        { type: 'vaultToken1', token: _token1, account: masterVault.address }
+                        { type: 'ownerToken0', token: _tokens[0], account: owner.address },
+                        { type: 'ownerToken1', token: _tokens[1], account: owner.address },
+                        { type: 'controllerToken0', token: _tokens[0], account: carbonController.address },
+                        { type: 'controllerToken1', token: _tokens[1], account: carbonController.address }
                     ];
 
                     // create strategy
-                    await createStrategy({ token0: _token0, token1: _token1 });
+                    await createStrategy({ token0: _tokens[0], token1: _tokens[1] });
 
                     // fund user
                     for (let i = 0; i < 2; i++) {
@@ -764,8 +937,8 @@ describe('Strategy', () => {
                     const { gasUsed } = await updateStrategy({
                         order0Delta,
                         order1Delta,
-                        token0: _token0,
-                        token1: _token1,
+                        token0: _tokens[0],
+                        token1: _tokens[1],
                         skipFunding: true,
                         sendWithExcessNativeTokenValue
                     });
@@ -778,15 +951,200 @@ describe('Strategy', () => {
 
                     // account for gas costs if the token is the native token;
                     const expectedOwnerDeltaToken0 =
-                        _token0.address === NATIVE_TOKEN_ADDRESS ? delta0.add(gasUsed) : delta0;
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(gasUsed) : delta0;
                     const expectedOwnerDeltaToken1 =
-                        _token1.address === NATIVE_TOKEN_ADDRESS ? delta1.add(gasUsed) : delta1;
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(gasUsed) : delta1;
 
                     // assert
                     expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerDeltaToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerDeltaToken1));
-                    expect(after.vaultToken0).to.eq(before.vaultToken0.add(delta0));
-                    expect(after.vaultToken1).to.eq(before.vaultToken1.add(delta1));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(delta0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(delta1));
+                });
+            }
+        });
+
+        describe('excess native token is refunded when updating without full withdrawal', () => {
+            const strategyUpdatingPermutations = [
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: -100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: -100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: -100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: -100,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 0,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 0,
+                    order1Delta: 100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: -100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: -100,
+                    order1Delta: 0,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.TKN0,
+                    token1: TokenSymbol.ETH,
+                    order0Delta: 0,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                },
+                {
+                    token0: TokenSymbol.ETH,
+                    token1: TokenSymbol.TKN0,
+                    order0Delta: 0,
+                    order1Delta: -100,
+                    sendWithExcessNativeTokenValue: true
+                }
+            ];
+            for (const {
+                token0,
+                token1,
+                order0Delta,
+                order1Delta,
+                sendWithExcessNativeTokenValue
+            } of strategyUpdatingPermutations) {
+                // eslint-disable-next-line max-len
+                it(`(${token0},${token1}) | order0Delta: ${order0Delta} | order1Delta: ${order1Delta} | excess: ${sendWithExcessNativeTokenValue}`, async () => {
+                    // prepare variables
+                    const _tokens = [tokens[token0], tokens[token1]];
+                    const deltas = [BigNumber.from(order0Delta), BigNumber.from(order1Delta)];
+
+                    const delta0 = deltas[0];
+                    const delta1 = deltas[1];
+                    const balanceTypes = [
+                        { type: 'ownerToken0', token: _tokens[0], account: owner.address },
+                        { type: 'ownerToken1', token: _tokens[1], account: owner.address },
+                        { type: 'controllerToken0', token: _tokens[0], account: carbonController.address },
+                        { type: 'controllerToken1', token: _tokens[1], account: carbonController.address }
+                    ];
+
+                    // create strategy
+                    await createStrategy({ token0: _tokens[0], token1: _tokens[1] });
+
+                    // fund user
+                    for (let i = 0; i < 2; i++) {
+                        const delta = deltas[i];
+                        if (delta.gt(0)) {
+                            await transfer(deployer, _tokens[i], owner, deltas[i]);
+                        }
+                    }
+
+                    // fetch balances before updating
+                    const before: any = {};
+                    for (const b of balanceTypes) {
+                        before[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // perform update
+                    const { gasUsed } = await updateStrategy({
+                        order0Delta,
+                        order1Delta,
+                        token0: _tokens[0],
+                        token1: _tokens[1],
+                        skipFunding: true,
+                        sendWithExcessNativeTokenValue
+                    });
+
+                    // fetch balances after creating
+                    const after: any = {};
+                    for (const b of balanceTypes) {
+                        after[b.type] = await getBalance(b.token, b.account);
+                    }
+
+                    // account for gas costs if the token is the native token;
+                    const expectedOwnerDeltaToken0 =
+                        _tokens[0].address === NATIVE_TOKEN_ADDRESS ? delta0.add(gasUsed) : delta0;
+                    const expectedOwnerDeltaToken1 =
+                        _tokens[1].address === NATIVE_TOKEN_ADDRESS ? delta1.add(gasUsed) : delta1;
+
+                    // assert
+                    expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerDeltaToken0));
+                    expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerDeltaToken1));
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.add(delta0));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.add(delta1));
                 });
             }
         });
@@ -798,15 +1156,15 @@ describe('Strategy', () => {
                     it(`reverts for a mutation in ${key}`, async () => {
                         await createStrategy();
                         const order: any = generateTestOrder();
-                        order[key] = BigNumber.from(value);
-                        const tx = carbonController.connect(owner).updateStrategy(1, [order, order], [order, order]);
+                        order[key] = BigNumber.from(value).add(order[key]);
+                        const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order]);
                         await expect(tx).to.have.been.revertedWithError('OutDated');
                     });
                 }
             }
         });
 
-        it('emits the StrategyUpdated event', async () => {
+        it('emits the StrategyUpdated event on edit', async () => {
             const { y, z, A, B } = generateTestOrder();
             const delta = 10;
 
@@ -818,12 +1176,12 @@ describe('Strategy', () => {
             await expect(tx)
                 .to.emit(carbonController, 'StrategyUpdated')
                 .withArgs(
-                    BigNumber.from(1),
-                    owner.address,
+                    SID1,
                     token0.address,
                     token1.address,
                     expectedOrder,
-                    expectedOrder
+                    expectedOrder,
+                    STRATEGY_UPDATE_REASON_EDIT
                 );
         });
 
@@ -831,15 +1189,14 @@ describe('Strategy', () => {
             const order = generateTestOrder();
             await createStrategy();
 
-            const tx = carbonController
-                .connect(owner)
-                .updateStrategy(1, [order, order], [order, order], { value: 100 });
+            const tx = carbonController.connect(owner).updateStrategy(SID1, [order, order], [order, order], {
+                value: 100
+            });
             await expect(tx).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
         });
 
         it('reverts when paused', async () => {
             await createStrategy();
-
             await carbonController
                 .connect(deployer)
                 .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
@@ -850,26 +1207,34 @@ describe('Strategy', () => {
             await expect(tx).to.be.revertedWithError('Pausable: paused');
         });
 
-        it('reverts when trying to update a non existing strategy', async () => {
+        it('reverts when trying to update a non existing strategy on an existing pair', async () => {
             await createStrategy();
             const order = generateTestOrder();
             await expect(
-                carbonController.connect(owner).updateStrategy(2, [order, order], [order, order])
-            ).to.be.revertedWithError('StrategyDoesNotExist');
+                carbonController.connect(owner).updateStrategy(SID2, [order, order], [order, order])
+            ).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
-        it('reverts when the provided id is invalid', async () => {
+        it('reverts when trying to update a non existing strategy on a non existing pair', async () => {
+            await createStrategy();
+            const order = generateTestOrder();
+            await expect(
+                carbonController.connect(owner).updateStrategy(SID3, [order, order], [order, order])
+            ).to.be.revertedWithError('PairDoesNotExist');
+        });
+
+        it('reverts when the provided strategy id is zero', async () => {
             const order = generateTestOrder();
             await expect(
                 carbonController.connect(owner).updateStrategy(0, [order, order], [order, order])
-            ).to.be.revertedWithError('ZeroValue');
+            ).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
             const order = generateTestOrder();
             await expect(
-                carbonController.connect(nonAdmin).updateStrategy(1, [order, order], [order, order])
+                carbonController.connect(nonAdmin).updateStrategy(SID1, [order, order], [order, order])
             ).to.be.revertedWithError('AccessDenied');
         });
 
@@ -890,7 +1255,7 @@ describe('Strategy', () => {
 
                     await createStrategy();
                     await expect(
-                        carbonController.connect(owner).updateStrategy(1, [order, order], [order0, order1])
+                        carbonController.connect(owner).updateStrategy(SID1, [order, order], [order0, order1])
                     ).to.be.revertedWithError('InsufficientCapacity');
                 });
             }
@@ -906,7 +1271,7 @@ describe('Strategy', () => {
 
                         await createStrategy();
                         await expect(
-                            carbonController.connect(owner).updateStrategy(1, oldOrders, newOrders)
+                            carbonController.connect(owner).updateStrategy(SID1, oldOrders, newOrders)
                         ).to.be.revertedWithError('InvalidRate');
                     });
                 }
@@ -919,13 +1284,8 @@ describe('Strategy', () => {
             for (const { token0, token1 } of permutations) {
                 it(`(${token0}->${token1})`, async () => {
                     await createStrategy({ token0: tokens[token0], token1: tokens[token1] });
-                    const beforeTotalSupply = await voucher.totalSupply();
-
-                    await carbonController.connect(owner).deleteStrategy(1);
-                    const afterTotalSupply = await voucher.totalSupply();
-
-                    expect(beforeTotalSupply).to.eq(1);
-                    expect(afterTotalSupply).to.eq(0);
+                    await carbonController.connect(owner).deleteStrategy(SID1);
+                    await expect(voucher.ownerOf(SID1)).to.be.revertedWithError('ERC721: invalid token ID');
                 });
             }
         });
@@ -940,8 +1300,8 @@ describe('Strategy', () => {
                     const balanceTypes = [
                         { type: 'ownerToken0', token: _token0, account: owner.address },
                         { type: 'ownerToken1', token: _token1, account: owner.address },
-                        { type: 'vaultToken0', token: _token0, account: masterVault.address },
-                        { type: 'vaultToken1', token: _token1, account: masterVault.address }
+                        { type: 'controllerToken0', token: _token0, account: carbonController.address },
+                        { type: 'controllerToken1', token: _token1, account: carbonController.address }
                     ];
 
                     // fund the owner
@@ -958,7 +1318,7 @@ describe('Strategy', () => {
                     }
 
                     // delete strategy
-                    const tx = await carbonController.connect(owner).deleteStrategy(1);
+                    const tx = await carbonController.connect(owner).deleteStrategy(SID1);
                     const receipt = await tx.wait();
                     const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
 
@@ -976,9 +1336,9 @@ describe('Strategy', () => {
                     expect(after.ownerToken0).to.eq(before.ownerToken0.add(expectedOwnerAmountToken0));
                     expect(after.ownerToken1).to.eq(before.ownerToken1.add(expectedOwnerAmountToken1));
 
-                    // vault's balance should decrease y amount
-                    expect(after.vaultToken0).to.eq(before.vaultToken0.sub(y));
-                    expect(after.vaultToken1).to.eq(before.vaultToken1.sub(y));
+                    // controller's balance should decrease y amount
+                    expect(after.controllerToken0).to.eq(before.controllerToken0.sub(y));
+                    expect(after.controllerToken1).to.eq(before.controllerToken1.sub(y));
                 });
             }
         });
@@ -990,30 +1350,30 @@ describe('Strategy', () => {
                     await createStrategy({ token0: tokens[token0], token1: tokens[token1] });
 
                     // assert before deleting
-                    const strategy = await carbonController.strategy(1);
-                    let strategiesByPool = await carbonController.strategiesByPool(
+                    const strategy = await carbonController.strategy(SID1);
+                    let strategiesByPair = await carbonController.strategiesByPair(
                         tokens[token0].address,
                         tokens[token1].address,
                         0,
                         0
                     );
-                    expect(strategy.id).to.eq(1);
-                    expect(strategiesByPool[0].id).to.eq(1);
+                    expect(strategy.id).to.eq(SID1);
+                    expect(strategiesByPair[0].id).to.eq(SID1);
 
                     // delete strategy
                     await carbonController.connect(owner).deleteStrategy(strategy.id);
 
                     // assert after deleting
                     await expect(carbonController.connect(owner).strategy(strategy.id)).to.be.revertedWithError(
-                        'StrategyDoesNotExist'
+                        'ERC721: invalid token ID'
                     );
-                    strategiesByPool = await carbonController.strategiesByPool(
+                    strategiesByPair = await carbonController.strategiesByPair(
                         tokens[token0].address,
                         tokens[token1].address,
                         0,
                         0
                     );
-                    expect(strategiesByPool.length).to.eq(0);
+                    expect(strategiesByPair.length).to.eq(0);
                 });
             }
         });
@@ -1024,13 +1384,13 @@ describe('Strategy', () => {
 
             // prepare variables and transaction
             const { y, z, A, B } = generateTestOrder();
-            const tx = carbonController.connect(owner).deleteStrategy(1);
+            const tx = carbonController.connect(owner).deleteStrategy(SID1);
 
             // assert
             await expect(tx)
                 .to.emit(carbonController, 'StrategyDeleted')
                 .withArgs(
-                    BigNumber.from(1),
+                    SID1,
                     owner.address,
                     token0.address,
                     token1.address,
@@ -1039,23 +1399,33 @@ describe('Strategy', () => {
                 );
         });
 
-        it('reverts when provided strategy id is not valid', async () => {
+        it('reverts when provided strategy id is zero', async () => {
             await createStrategy();
 
-            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('ZeroValue');
+            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
             await createStrategy();
 
-            await expect(carbonController.connect(nonAdmin).deleteStrategy(1)).to.be.revertedWithError('AccessDenied');
+            await expect(carbonController.connect(nonAdmin).deleteStrategy(SID1)).to.be.revertedWithError(
+                'AccessDenied'
+            );
         });
 
-        it('reverts when trying to delete a non existing strategy', async () => {
+        it('reverts when trying to delete a non existing strategy on an existing pair', async () => {
             await createStrategy();
 
-            await expect(carbonController.connect(owner).deleteStrategy(2)).to.be.revertedWithError(
-                'StrategyDoesNotExist'
+            await expect(carbonController.connect(owner).deleteStrategy(SID2)).to.be.revertedWithError(
+                'ERC721: invalid token ID'
+            );
+        });
+
+        it('reverts when trying to delete a non existing strategy on a non existing pair', async () => {
+            await createStrategy();
+
+            await expect(carbonController.connect(owner).deleteStrategy(SID3)).to.be.revertedWithError(
+                'PairDoesNotExist'
             );
         });
 
@@ -1065,7 +1435,9 @@ describe('Strategy', () => {
                 .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
             await createStrategy();
             await carbonController.connect(nonAdmin).pause();
-            await expect(carbonController.connect(owner).deleteStrategy(1)).to.be.revertedWithError('Pausable: paused');
+            await expect(carbonController.connect(owner).deleteStrategy(SID1)).to.be.revertedWithError(
+                'Pausable: paused'
+            );
         });
     });
 
@@ -1103,17 +1475,17 @@ describe('Strategy', () => {
         });
     });
 
-    describe('fetch by pool', () => {
+    describe('fetch by pair', () => {
         const FETCH_AMOUNT = 5;
 
         it('reverts when addresses are identical', async () => {
-            const tx = carbonController.strategiesByPool(token0.address, token0.address, 0, 0);
+            const tx = carbonController.strategiesByPair(token0.address, token0.address, 0, 0);
             await expect(tx).to.be.revertedWithError('IdenticalAddresses');
         });
 
-        it('reverts when no pool found for given tokens', async () => {
-            const tx = carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
-            await expect(tx).to.be.revertedWithError('PoolDoesNotExists');
+        it('reverts when no pair found for given tokens', async () => {
+            const tx = carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
+            await expect(tx).to.be.revertedWithError('PairDoesNotExist');
         });
 
         describe('reverts for non valid addresses', async () => {
@@ -1127,7 +1499,7 @@ describe('Strategy', () => {
                 it(`(${token0}->${token1})`, async () => {
                     const _token0 = tokens[token0] ? tokens[token0].address : ZERO_ADDRESS;
                     const _token1 = tokens[token1] ? tokens[token1].address : ZERO_ADDRESS;
-                    const tx = carbonController.strategiesByPool(_token0, _token1, 0, 0);
+                    const tx = carbonController.strategiesByPair(_token0, _token1, 0, 0);
                     await expect(tx).to.be.revertedWithError('InvalidAddress');
                 });
             }
@@ -1138,27 +1510,27 @@ describe('Strategy', () => {
             await createStrategy();
             await createStrategy({ token0, token1: token2 });
 
-            let strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+            let strategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
             expect(strategies.length).to.eq(2);
-            expect(strategies[0].id).to.eq(1);
-            expect(strategies[1].id).to.eq(2);
-            expect(strategies[0].pair.token0).to.eq(token0.address);
-            expect(strategies[0].pair.token1).to.eq(token1.address);
-            expect(strategies[1].pair.token0).to.eq(token0.address);
-            expect(strategies[1].pair.token1).to.eq(token1.address);
+            expect(strategies[0].id).to.eq(SID1);
+            expect(strategies[1].id).to.eq(SID2);
+            expect(strategies[0].tokens[0]).to.eq(token0.address);
+            expect(strategies[0].tokens[1]).to.eq(token1.address);
+            expect(strategies[1].tokens[0]).to.eq(token0.address);
+            expect(strategies[1].tokens[1]).to.eq(token1.address);
 
-            strategies = await carbonController.strategiesByPool(token0.address, token2.address, 0, 0);
+            strategies = await carbonController.strategiesByPair(token0.address, token2.address, 0, 0);
             expect(strategies.length).to.eq(1);
-            expect(strategies[0].id).to.eq(3);
-            expect(strategies[0].pair.token0).to.eq(token0.address);
-            expect(strategies[0].pair.token1).to.eq(token2.address);
+            expect(strategies[0].id).to.eq(SID3);
+            expect(strategies[0].tokens[0]).to.eq(token0.address);
+            expect(strategies[0].tokens[1]).to.eq(token2.address);
         });
 
         it('sets endIndex to the maximum possible if provided with 0', async () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const strategies = await carbonController.strategiesByPool(token0.address, token1.address, 0, 0);
+            const strategies = await carbonController.strategiesByPair(token0.address, token1.address, 0, 0);
             expect(strategies.length).to.eq(FETCH_AMOUNT);
         });
 
@@ -1166,7 +1538,7 @@ describe('Strategy', () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const strategies = await carbonController.strategiesByPool(
+            const strategies = await carbonController.strategiesByPair(
                 token0.address,
                 token1.address,
                 0,
@@ -1179,20 +1551,20 @@ describe('Strategy', () => {
             for (let i = 0; i < FETCH_AMOUNT; i++) {
                 await createStrategy({ token0, token1 });
             }
-            const tx = carbonController.strategiesByPool(token0.address, token1.address, 6, 5);
+            const tx = carbonController.strategiesByPair(token0.address, token1.address, 6, 5);
             await expect(tx).to.have.been.revertedWithError('InvalidIndices');
         });
     });
 
-    describe('fetch by pool count', () => {
+    describe('fetch by pair count', () => {
         it('reverts when addresses are identical', async () => {
-            const tx = carbonController.strategiesByPoolCount(token0.address, token0.address);
+            const tx = carbonController.strategiesByPairCount(token0.address, token0.address);
             await expect(tx).to.be.revertedWithError('IdenticalAddresses');
         });
 
-        it('reverts when no pool found for given tokens', async () => {
-            const tx = carbonController.strategiesByPoolCount(token0.address, token1.address);
-            await expect(tx).to.be.revertedWithError('PoolDoesNotExists');
+        it('reverts when no pair found for given tokens', async () => {
+            const tx = carbonController.strategiesByPairCount(token0.address, token1.address);
+            await expect(tx).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('returns the correct count', async () => {
@@ -1203,8 +1575,8 @@ describe('Strategy', () => {
             await createStrategy({ token0: tokens[TokenSymbol.TKN2], token1: tokens[TokenSymbol.ETH] });
             await createStrategy({ token0: tokens[TokenSymbol.TKN2], token1: tokens[TokenSymbol.ETH] });
 
-            const result1 = await carbonController.strategiesByPoolCount(token0.address, token1.address);
-            const result2 = await carbonController.strategiesByPoolCount(
+            const result1 = await carbonController.strategiesByPairCount(token0.address, token1.address);
+            const result2 = await carbonController.strategiesByPairCount(
                 tokens[TokenSymbol.TKN2].address,
                 tokens[TokenSymbol.ETH].address
             );
@@ -1223,44 +1595,32 @@ describe('Strategy', () => {
                 it(`(${token0}->${token1})`, async () => {
                     const _token0 = tokens[token0] ? tokens[token0].address : ZERO_ADDRESS;
                     const _token1 = tokens[token1] ? tokens[token1].address : ZERO_ADDRESS;
-                    const tx = carbonController.strategiesByPoolCount(_token0, _token1);
+                    const tx = carbonController.strategiesByPairCount(_token0, _token1);
                     await expect(tx).to.be.revertedWithError('InvalidAddress');
                 });
             }
         });
     });
 
-    describe('fetch by multiple ids', () => {
-        it('fetches the correct strategies', async () => {
-            await createStrategy();
-            await createStrategy();
-            await createStrategy();
-
-            const strategies = await carbonController.strategiesByIds([1, 3]);
-            expect(strategies.length).to.eq(2);
-            expect(strategies[0].id).to.eq(1);
-            expect(strategies[1].id).to.eq(3);
-        });
-
-        it('reverts when an empty array of ids was provided', async () => {
-            await expect(carbonController.strategiesByIds([])).to.be.revertedWithError('NoIdsProvided');
-        });
-    });
-
     describe('fetch by a single id', async () => {
-        it('reverts when fetching a strategy with an id that does not exist', async () => {
-            await expect(carbonController.strategy(2)).to.be.revertedWithError('StrategyDoesNotExist');
+        it('reverts when fetching a non existing strategy on an existing pair', async () => {
+            await createStrategy();
+            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
-        it('reverts when the provided id is invalid', async () => {
-            await expect(carbonController.strategy(0)).to.be.revertedWithError('ZeroValue');
+        it('reverts when fetching a non existing strategy on a non existing pair', async () => {
+            await expect(carbonController.strategy(SID2)).to.be.revertedWithError('PairDoesNotExist');
+        });
+
+        it('reverts when the provided strategy id is zero', async () => {
+            await expect(carbonController.strategy(0)).to.be.revertedWithError('PairDoesNotExist');
         });
 
         it('returns the correct strategy', async () => {
             await createStrategy();
             await createStrategy();
-            const strategy = await carbonController.strategy(2);
-            expect(strategy.id).to.eq(2);
+            const strategy = await carbonController.strategy(SID2);
+            expect(strategy.id).to.eq(SID2);
         });
     });
 
@@ -1271,17 +1631,17 @@ describe('Strategy', () => {
                 await createStrategy();
 
                 // transfer the voucher
-                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, 1);
+                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
-                // original owner should not have a voucher
-                let balance = await voucher.balanceOf(owner.address);
-                expect(balance).to.eq(0);
+                // fetch tokens by owner
+                const oldTokenIds = await voucher.tokensByOwner(owner.address, 0, 100);
+                const newTokenIds = await voucher.tokensByOwner(nonAdmin.address, 0, 100);
+                const newOwner = await voucher.ownerOf(SID1);
 
-                // new owner should have a voucher
-                balance = await voucher.balanceOf(nonAdmin.address);
-                const tokenId = await voucher.tokenOfOwnerByIndex(nonAdmin.address, balance.sub(1));
-                expect(balance).to.eq(1);
-                expect(tokenId).to.eq(1);
+                // assert
+                expect(oldTokenIds.length === 0);
+                expect(newTokenIds[0].eq(SID1)).to.eq(true);
+                expect(newOwner).to.eq(nonAdmin.address);
             });
 
             it('updates the strategy owner following a transfer', async () => {
@@ -1289,10 +1649,10 @@ describe('Strategy', () => {
                 await createStrategy();
 
                 // transfer the voucher
-                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, 1);
+                await voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
                 // fetch the strategy
-                const strategy = await carbonController.strategy(1);
+                const strategy = await carbonController.strategy(SID1);
 
                 // the strategy should have a new owner
                 expect(strategy.owner).to.eq(nonAdmin.address);
@@ -1307,7 +1667,7 @@ describe('Strategy', () => {
                     voucher.connect(owner).transferFrom(owner.address, deployer.address, 0)
                 ).to.have.been.revertedWithError('ERC721: invalid token ID');
                 await expect(
-                    voucher.connect(owner).transferFrom(owner.address, deployer.address, 2)
+                    voucher.connect(owner).transferFrom(owner.address, deployer.address, SID2)
                 ).to.have.been.revertedWithError('ERC721: invalid token ID');
             });
 
@@ -1317,7 +1677,7 @@ describe('Strategy', () => {
 
                 // assert
                 await expect(
-                    voucher.connect(owner).transferFrom(owner.address, ZERO_ADDRESS, 1)
+                    voucher.connect(owner).transferFrom(owner.address, ZERO_ADDRESS, SID1)
                 ).to.have.been.revertedWithError('ERC721: transfer to the zero address');
             });
 
@@ -1326,46 +1686,45 @@ describe('Strategy', () => {
                 await createStrategy();
 
                 // transfer the voucher
-                const tx = voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, 1);
+                const tx = voucher.connect(owner).transferFrom(owner.address, nonAdmin.address, SID1);
 
                 // assert
-                await expect(tx).to.emit(voucher, 'Transfer').withArgs(owner.address, nonAdmin.address, 1);
+                await expect(tx).to.emit(voucher, 'Transfer').withArgs(owner.address, nonAdmin.address, SID1);
             });
         });
 
         describe('tokenURI', () => {
             it('generates a global URI', async () => {
-                await voucher.setCarbonController(carbonController.address);
                 await createStrategy();
                 await voucher.setBaseURI('ipfs://test321');
                 await voucher.useGlobalURI(true);
-                const result = await voucher.tokenURI(1);
+                const result = await voucher.tokenURI(SID1);
                 expect(result).to.eq('ipfs://test321');
             });
 
             it('generates a unique URI', async () => {
-                await voucher.setCarbonController(carbonController.address);
                 await voucher.setBaseURI('ipfs://test123/');
                 await voucher.useGlobalURI(false);
                 await createStrategy();
-                const result = await voucher.tokenURI(1);
-                expect(result).to.eq('ipfs://test123/1');
+                const result = await voucher.tokenURI(SID1);
+                expect(result).to.eq(`ipfs://test123/${SID1}`);
             });
 
             it('generates a unique URI with baseExtension', async () => {
-                await voucher.setCarbonController(carbonController.address);
                 await voucher.setBaseURI('ipfs://test123/');
                 await voucher.setBaseExtension('.json');
                 await voucher.useGlobalURI(false);
                 await createStrategy();
-                const result = await voucher.tokenURI(1);
-                expect(result).to.eq('ipfs://test123/1.json');
+                const result = await voucher.tokenURI(SID1);
+                expect(result).to.eq(`ipfs://test123/${SID1}.json`);
             });
         });
 
         it('reverts if a transfer occurs before the carbonController was set', async () => {
-            const voucher = await Contracts.Voucher.deploy(true, 'ipfs://xxx', '');
-            const carbonController = await createCarbonController(masterVault, voucher);
+            const voucher = await createProxy(Contracts.Voucher, {
+                initArgs: [true, '', '']
+            });
+            const carbonController = await createCarbonController(voucher);
             const order = { ...generateTestOrder(), y: BigNumber.from(0) };
             const tx = carbonController.createStrategy(token0.address, token1.address, [order, order]);
             await expect(tx).to.have.been.revertedWithError('AccessDenied');
@@ -1376,5 +1735,136 @@ describe('Strategy', () => {
         const { tx } = await createStrategy({ token0, token1, token0Amount: 0, token1Amount: 0 });
         await expect(tx).to.not.emit(token0, 'Transfer');
         await expect(tx).to.not.emit(token1, 'Transfer');
+    });
+
+    describe('withdraw fees', () => {
+        it('reverts when paused', async () => {
+            await carbonController
+                .connect(deployer)
+                .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, nonAdmin.address);
+            await carbonController.connect(nonAdmin).pause();
+
+            const tx = carbonController.withdrawFees(token0.address, 1, nonAdmin.address);
+            await expect(tx).to.be.revertedWithError('Pausable: paused');
+        });
+
+        it('reverts when the caller is missing the required role', async () => {
+            const tx = carbonController.withdrawFees(token0.address, 1, nonAdmin.address);
+            await expect(tx).to.be.revertedWithError('AccessDenied');
+        });
+
+        it('reverts when the recipient address is invalid', async () => {
+            await carbonController
+                .connect(deployer)
+                .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, nonAdmin.address);
+            const tx = carbonController.connect(nonAdmin).withdrawFees(token0.address, 1, ZERO_ADDRESS);
+            await expect(tx).to.be.revertedWithError('InvalidAddress');
+        });
+
+        it('reverts when the token address is invalid', async () => {
+            await carbonController
+                .connect(deployer)
+                .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, nonAdmin.address);
+            const tx = carbonController.connect(nonAdmin).withdrawFees(ZERO_ADDRESS, 1, nonAdmin.address);
+            await expect(tx).to.be.revertedWithError('InvalidAddress');
+        });
+
+        it('reverts when the amount is invalid', async () => {
+            await carbonController
+                .connect(deployer)
+                .grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, nonAdmin.address);
+            const tx = carbonController.connect(nonAdmin).withdrawFees(token0.address, 0, nonAdmin.address);
+            await expect(tx).to.be.revertedWithError('ZeroValue');
+        });
+
+        it('emits the FeesWithdrawn', async () => {
+            const amount = BigNumber.from(10);
+            await transfer(deployer, token0, carbonController.address, amount);
+            const tx = await withdrawFees(amount, amount, token0);
+
+            await expect(tx)
+                .to.emit(carbonController, 'FeesWithdrawn')
+                .withArgs(token0.address, owner.address, amount.toNumber(), owner.address);
+        });
+
+        it('updates accumulatedFees balance', async () => {
+            const amount = BigNumber.from(10);
+            await transfer(deployer, token0, carbonController.address, amount);
+            await withdrawFees(amount, amount, token0);
+            const accumulatedFees = await carbonController.testAccumulatedFees(token0.address);
+            expect(accumulatedFees).to.eq(0);
+        });
+
+        it('should return the withdrawn fee amount', async () => {
+            const amount = BigNumber.from(10);
+            await transfer(deployer, token0, carbonController.address, amount);
+            await carbonController.testSetAccumulatedFees(token0.address, amount);
+            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+            const feeAmount = await carbonController
+                .connect(owner)
+                .callStatic.withdrawFees(token0.address, amount, owner.address);
+            expect(feeAmount).to.eq(amount);
+        });
+
+        it('should cap the fee amount to the available balance', async () => {
+            const feeAmount = BigNumber.from(10);
+            const withdrawAmount = feeAmount.add(1);
+            await transfer(deployer, token0, carbonController.address, feeAmount);
+            await carbonController.testSetAccumulatedFees(token0.address, feeAmount);
+            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+            const feeReturnAmount = await carbonController
+                .connect(owner)
+                .callStatic.withdrawFees(token0.address, withdrawAmount, owner.address);
+            expect(feeReturnAmount).to.eq(feeAmount);
+        });
+
+        async function checkBalancesAreUpdated(token: TokenSymbol, feeAmount: BigNumber, withdrawAmount: BigNumber) {
+            // prepare
+            const _token = tokens[token];
+            await transfer(deployer, _token, carbonController.address, feeAmount);
+
+            const balanceTypes = [
+                { type: 'recipient', token: _token, account: owner.address },
+                { type: 'controller', token: _token, account: carbonController.address }
+            ];
+
+            // fetch balances before withdraw
+            const before: any = {};
+            for (const b of balanceTypes) {
+                before[b.type] = await getBalance(b.token, b.account);
+            }
+
+            // perform withdraw
+            const tx = await withdrawFees(feeAmount, withdrawAmount, _token);
+            const receipt = await tx.wait();
+            const gasUsed = receipt.gasUsed.mul(receipt.effectiveGasPrice);
+
+            // fetch balances after creating
+            const after: any = {};
+            for (const b of balanceTypes) {
+                after[b.type] = await getBalance(b.token, b.account);
+            }
+
+            // assert
+            const expectedAmountWithGasAccounted =
+                _token.address === NATIVE_TOKEN_ADDRESS ? feeAmount.sub(gasUsed) : feeAmount;
+            expect(after.recipient).to.eq(before.recipient.add(expectedAmountWithGasAccounted));
+            expect(after.controller).to.eq(before.controller.sub(feeAmount));
+        }
+
+        describe('balances are updated correctly', () => {
+            const _permutations = [{ token: TokenSymbol.TKN0 }, { token: TokenSymbol.ETH }];
+
+            for (const { token } of _permutations) {
+                it(`${token}`, async () => {
+                    const feeAmount = BigNumber.from(2);
+                    const withdrawAmount = BigNumber.from(3);
+                    // check withdrawing the available fee amount
+                    await checkBalancesAreUpdated(token, feeAmount, feeAmount);
+                    // check withdrawing more than the available fee amount
+                    await checkBalancesAreUpdated(token, feeAmount, withdrawAmount);
+                });
+            }
+        });
     });
 });

@@ -23,7 +23,7 @@ const TestNamedAccounts = {
         ...mainnet('0x55FE002aefF02F77364de339a1292923A15844B8')
     },
     wbtcWhale: {
-        ...mainnet('0x218B95BE3ed99141b0144Dba6cE88807c4AD7C09')
+        ...mainnet('0x7f62f9592b823331E012D3c5DdF2A7714CfB9de2')
     }
 };
 
@@ -42,7 +42,14 @@ const TokenNamedAccounts = {
     },
     wbtc: {
         ...mainnet('0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599')
+    },
+    bnt: {
+        ...mainnet('0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
     }
+};
+
+const BancorNamedAccounts = {
+    bancorNetworkV3: { ...mainnet('0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB') }
 };
 
 export const NamedAccounts = {
@@ -57,5 +64,6 @@ export const NamedAccounts = {
     daoPauserMultisig: { ...mainnet('0xc140c1CD2e587fC04DAa780d49b616F768476660') },
 
     ...TokenNamedAccounts,
-    ...TestNamedAccounts
+    ...TestNamedAccounts,
+    ...BancorNamedAccounts
 };

@@ -1,30 +1,21 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity 0.8.19;
 
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { PPM_RESOLUTION } from "./Constants.sol";
 import { Token } from "../token/Token.sol";
-import { IMasterVault } from "../vaults/interfaces/IMasterVault.sol";
-import { TokenLibrary } from "../token/TokenLibrary.sol";
 
 error AccessDenied();
-error AlreadyExists();
-error DoesNotExist();
 error InvalidAddress();
-error InvalidExternalAddress();
 error InvalidFee();
-error InvalidToken();
-error InvalidParam();
-error NotEmpty();
-error NotPayable();
 error ZeroValue();
+error InvalidIndices();
 
 /**
  * @dev common utilities
  */
 abstract contract Utils {
-    using TokenLibrary for Token;
     using Address for address payable;
 
     // allows execution by the caller only
@@ -65,20 +56,6 @@ abstract contract Utils {
     function _validAddress(address addr) internal pure {
         if (addr == address(0)) {
             revert InvalidAddress();
-        }
-    }
-
-    // validates an external address - currently only checks that it isn't null or this
-    modifier validExternalAddress(address addr) {
-        _validExternalAddress(addr);
-
-        _;
-    }
-
-    // error message binary size optimization
-    function _validExternalAddress(address addr) internal view {
-        if (addr == address(0) || addr == address(this)) {
-            revert InvalidExternalAddress();
         }
     }
 

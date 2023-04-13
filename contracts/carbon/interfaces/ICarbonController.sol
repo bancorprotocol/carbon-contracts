@@ -1,21 +1,19 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity ^0.8.0;
 
-import { CountersUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-import { IVersioned } from "../../utility/interfaces/IVersioned.sol";
-import { Pool } from "../Pools.sol";
+import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
+import { Pair } from "../Pairs.sol";
 import { Token } from "../../token/Token.sol";
-import { IMasterVault } from "../../vaults/interfaces/IMasterVault.sol";
 import { Strategy, TradeAction, Order } from "../Strategies.sol";
 
 /**
  * @dev Carbon Controller interface
  */
-interface ICarbonController is IVersioned {
+interface ICarbonController is IUpgradeable {
     /**
-     * @dev returns the type of the pool
+     * @dev returns the type of the controller
      */
-    function controllerType() external view returns (uint16);
+    function controllerType() external pure returns (uint16);
 
     /**
      * @dev returns the trading fee (in units of PPM)
@@ -23,19 +21,19 @@ interface ICarbonController is IVersioned {
     function tradingFeePPM() external view returns (uint32);
 
     /**
-     * @dev creates a new pool of provided token0 and token1
+     * @dev creates a new pair of provided token0 and token1
      */
-    function createPool(Token token0, Token token1) external returns (Pool memory);
+    function createPair(Token token0, Token token1) external returns (Pair memory);
 
     /**
-     * @dev returns a pool's metadata matching the provided token0 and token1
+     * @dev returns a pair's metadata matching the provided token0 and token1
      */
-    function pool(Token token0, Token token1) external view returns (Pool memory);
+    function pair(Token token0, Token token1) external view returns (Pair memory);
 
     /**
      * @dev returns a list of all supported pairs
      */
-    function pairs() external view returns (address[2][] memory);
+    function pairs() external view returns (Token[2][] memory);
 
     // solhint-disable var-name-mixedcase
     /**
@@ -45,20 +43,20 @@ interface ICarbonController is IVersioned {
      *
      * - the caller must have approved the tokens with assigned liquidity in the order, if any
      */
-    function createStrategy(
-        Token token0,
-        Token token1,
-        Order[2] calldata orders
-    ) external payable returns (uint256);
+    function createStrategy(Token token0, Token token1, Order[2] calldata orders) external payable returns (uint256);
 
     /**
      * @dev updates an existing strategy
      *
      * notes:
      * - currentOrders should reflect the orders values at the time of sending the tx
+     * this prevents cases in which the strategy was updated due to a trade between
+     * the time the transaction was sent and the time it was mined, thus, giving more
+     * control to the strategy owner.
      * - reduced liquidity is refunded to the owner
-     * - increased liquidity is deposited to the vault
+     * - increased liquidity is deposited
      * - excess native token is returned to the sender if any
+     * - the sorting of orders is expected to equal the sorting upon creation
      *
      * requirements:
      *
@@ -66,8 +64,8 @@ interface ICarbonController is IVersioned {
      */
     function updateStrategy(
         uint256 strategyId,
-        Order[2] memory currentOrders,
-        Order[2] memory newOrders
+        Order[2] calldata currentOrders,
+        Order[2] calldata newOrders
     ) external payable;
 
     // solhint-enable var-name-mixedcase
@@ -86,20 +84,16 @@ interface ICarbonController is IVersioned {
     function deleteStrategy(uint256 strategyId) external;
 
     /**
-     * @dev returns a strategy matching the provided id
+     * @dev returns a strategy matching the provided id,
+     * note tokens and orders are returned sorted as provided upon creation
      */
     function strategy(uint256 id) external view returns (Strategy memory);
 
     /**
-     * @dev returns strategies matching provided ids
+     * @dev returns strategies belonging to a specific pair
+     * note that for the full list of strategies pass 0 to both startIndex and endIndex
      */
-    function strategiesByIds(uint256[] calldata ids) external view returns (Strategy[] memory);
-
-    /**
-     * @dev returns strategies belonging to a specific pool
-     * note for the full list of strategies pass 0 to both startIndex and endIndex
-     */
-    function strategiesByPool(
+    function strategiesByPair(
         Token token0,
         Token token1,
         uint256 startIndex,
@@ -107,9 +101,9 @@ interface ICarbonController is IVersioned {
     ) external view returns (Strategy[] memory);
 
     /**
-     * @dev returns the count of strategies belonging to a specific pool
+     * @dev returns the count of strategies belonging to a specific pair
      */
-    function strategiesByPoolCount(Token token0, Token token1) external view returns (uint256);
+    function strategiesByPairCount(Token token0, Token token1) external view returns (uint256);
 
     /**
      * @dev performs a trade by specifying a fixed source amount
@@ -152,7 +146,7 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns the source amount required when trading by target amount
      */
-    function tradeSourceAmount(
+    function calculateTradeSourceAmount(
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
@@ -161,7 +155,7 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns the target amount expected when trading by source amount
      */
-    function tradeTargetAmount(
+    function calculateTradeTargetAmount(
         Token sourceToken,
         Token targetToken,
         TradeAction[] calldata tradeActions
@@ -170,5 +164,14 @@ interface ICarbonController is IVersioned {
     /**
      * @dev returns the amount of fees accumulated for the specified token
      */
-    function accumulatedFees(address token) external view returns (uint256);
+    function accumulatedFees(Token token) external view returns (uint256);
+
+    /**
+     * @dev transfers the accumulated fees to the specified recipient
+     *
+     * notes:
+     * `amount` is capped to the available amount
+     * returns the amount withdrawn
+     */
+    function withdrawFees(Token token, uint256 amount, address recipient) external returns (uint256);
 }

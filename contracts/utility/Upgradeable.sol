@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity 0.8.19;
 
 import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 
@@ -95,9 +95,7 @@ abstract contract Upgradeable is IUpgradeable, AccessControlEnumerableUpgradeabl
     /**
      * @dev an optional post-upgrade callback that can be implemented by child contracts
      */
-    function _postUpgrade(
-        bytes calldata /* data */
-    ) internal virtual {}
+    function _postUpgrade(bytes calldata /* data */) internal virtual {}
 
     function _hasRole(bytes32 role, address account) internal view {
         if (!hasRole(role, account)) {

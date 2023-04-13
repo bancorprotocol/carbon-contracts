@@ -1,29 +1,41 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity ^0.8.0;
 
-import { IERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import { IERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+
+import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 
 /**
  * @dev Voucher interface
  */
-interface IVoucher is IERC721Enumerable {
+interface IVoucher is IUpgradeable, IERC721Upgradeable {
     /**
-     * @dev creatds a new voucher token for the given strategyId, transfers it to the provider
+     * @dev creates a new voucher token for the given strategyId, transfers it to the owner
      *
      * requirements:
      *
-     * - the caller must be the carbonController contract
+     * - the caller must have the ROLE_MINTER privilege
      *
      */
-    function mint(address provider, uint256 strategyId) external;
+    function mint(address owner, uint256 strategyId) external;
 
     /**
-     * @dev destorys the voucher token for the given strategyId
+     * @dev destroys the voucher token for the given strategyId
      *
      * requirements:
      *
-     * - the caller must be the carbonController contract
+     * - the caller must have the ROLE_MINTER privilege
      *
      */
     function burn(uint256 strategyId) external;
+
+    /**
+     * @dev returns a list of tokenIds belonging to the given owner
+     * note that for the full list of tokenIds pass 0 to both startIndex and endIndex
+     */
+    function tokensByOwner(
+        address owner,
+        uint256 startIndex,
+        uint256 endIndex
+    ) external view returns (uint256[] memory);
 }

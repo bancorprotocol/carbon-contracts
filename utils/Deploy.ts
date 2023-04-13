@@ -1,11 +1,11 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, IVersioned, MasterVault, ProxyAdmin, Voucher } from '../components/Contracts';
+import { CarbonController, FeeBurner, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
 import { toWei } from './Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, Contract, ContractInterface, utils } from 'ethers';
+import { BigNumber, Contract, ContractInterface, ContractTransaction, utils } from 'ethers';
 import fs from 'fs';
 import glob from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
@@ -38,14 +38,13 @@ interface EnvOptions {
 const { TEST_FORK: isTestFork }: EnvOptions = process.env as any as EnvOptions;
 
 enum NewInstanceName {
-    MasterVault = 'MasterVault',
     CarbonController = 'CarbonController',
     ProxyAdmin = 'ProxyAdmin',
-    Voucher = 'Voucher'
+    Voucher = 'Voucher',
+    FeeBurner = 'FeeBurner'
 }
 
-export const LegacyInstanceName = {
-};
+export const LegacyInstanceName = {};
 
 export const InstanceName = {
     ...LegacyInstanceName,
@@ -59,10 +58,10 @@ const deployed = <F extends Contract>(name: InstanceName) => ({
 });
 
 const DeployedNewContracts = {
-    MasterVault: deployed<MasterVault>(InstanceName.MasterVault),
     CarbonController: deployed<CarbonController>(InstanceName.CarbonController),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
-    Voucher: deployed<Voucher>(InstanceName.Voucher)
+    Voucher: deployed<Voucher>(InstanceName.Voucher),
+    FeeBurner: deployed<FeeBurner>(InstanceName.FeeBurner)
 };
 
 export const DeployedContracts = {
@@ -162,6 +161,9 @@ const saveTypes = async (options: SaveTypeOptions) => {
 
 interface ProxyOptions {
     skipInitialization?: boolean;
+    args?: any[];
+    initImpl?: boolean;
+    initImplArgs?: any[];
 }
 
 interface BaseDeployOptions {
@@ -257,7 +259,9 @@ export const deploy = async (options: DeployOptions) => {
             proxyContract: PROXY_CONTRACT,
             owner: await proxyAdmin.owner(),
             viaAdminContract: InstanceName.ProxyAdmin,
-            execute: proxy.skipInitialization ? undefined : { init: { methodName: INITIALIZE, args: [] } }
+            execute: proxy.skipInitialization
+                ? undefined
+                : { init: { methodName: INITIALIZE, args: proxy.args ? proxy.args : [] } }
         };
 
         Logger.log(`  deploying proxy ${contractName}${customAlias}`);
@@ -276,6 +280,19 @@ export const deploy = async (options: DeployOptions) => {
         waitConfirmations: WAIT_CONFIRMATIONS,
         log: true
     });
+
+    if (isProxy && proxy.initImpl) {
+        if (!res.implementation) {
+            throw new Error(`Implementation address for ${contractName} missing`);
+        }
+        await initializeImplementation({
+            name,
+            address: res.implementation,
+            args: proxy.initImplArgs,
+            from
+        });
+        Logger.log(`  initialized proxy implementation`);
+    }
 
     // if (!proxy) {
     const data = { name, contract: contractName };
@@ -317,10 +334,13 @@ export const deployProxy = async (options: DeployOptions, proxy: ProxyOptions = 
 // ]
 interface UpgradeProxyOptions extends DeployOptions {
     postUpgradeArgs?: TypedParam[];
+    initImpl?: boolean;
+    initImplArgs?: any[];
 }
 
 export const upgradeProxy = async (options: UpgradeProxyOptions) => {
-    const { name, contract, from, value, args, postUpgradeArgs, contractArtifactData } = options;
+    const { name, contract, from, value, args, postUpgradeArgs, initImpl, initImplArgs, contractArtifactData } =
+        options;
     const contractName = contract ?? name;
 
     await fundAccount(from);
@@ -365,6 +385,19 @@ export const upgradeProxy = async (options: UpgradeProxyOptions) => {
         waitConfirmations: WAIT_CONFIRMATIONS,
         log: true
     });
+
+    if (initImpl) {
+        if (!res.implementation) {
+            throw new Error(`Implementation address for ${contractName} missing`);
+        }
+        await initializeImplementation({
+            name,
+            address: res.implementation,
+            args: initImplArgs,
+            from
+        });
+        Logger.log(`  initialized proxy implementation`);
+    }
 
     const newVersion = await (deployed as IVersioned).version();
 
@@ -438,16 +471,39 @@ export const initializeProxy = async (options: InitializeProxyOptions) => {
     return address;
 };
 
+interface InitializeImplementationOptions {
+    name: InstanceName;
+    address: string;
+    args?: any[];
+    from: string;
+}
+
+export const initializeImplementation = async (options: InitializeImplementationOptions) => {
+    const { name, address, args, from } = options;
+    const signer = await ethers.getSigner(from);
+    const contract: Contract = await ethers.getContractAt(name, address, signer);
+
+    Logger.log(`  initializing implementation of ${name}`);
+
+    let tx: ContractTransaction;
+    if (!args) {
+        tx = await contract[INITIALIZE]();
+    } else {
+        tx = await contract[INITIALIZE](...args);
+    }
+    await tx.wait();
+};
+
 interface RolesOptions {
     name: InstanceName;
-    id: typeof RoleIds[number];
+    id: (typeof RoleIds)[number];
     member: string;
     from: string;
 }
 
 interface RenounceRoleOptions {
     name: InstanceName;
-    id: typeof RoleIds[number];
+    id: (typeof RoleIds)[number];
     from: string;
 }
 
