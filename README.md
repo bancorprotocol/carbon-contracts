@@ -45,7 +45,7 @@ Testing the protocol is possible via multiple approaches:
 
 ### Unit Tests
 
-You can run the full test suite (takes about two hours) via:
+You can run the full test suite via:
 
 ```sh
 yarn test
