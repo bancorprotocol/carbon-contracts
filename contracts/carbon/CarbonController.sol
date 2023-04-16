@@ -172,7 +172,7 @@ contract CarbonController is
         _validateInputTokens(token0, token1);
 
         // don't allow unnecessary eth
-        if (!token0.isNative() && !token1.isNative() && msg.value > 0) {
+        if (msg.value > 0 && !token0.isNative() && !token1.isNative()) {
             revert UnnecessaryNativeTokenReceived();
         }
 

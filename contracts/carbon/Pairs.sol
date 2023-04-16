@@ -74,13 +74,13 @@ abstract contract Pairs is Initializable {
      * @dev return a pair matching the given tokens
      */
     function _pair(Token token0, Token token1) internal view returns (Pair memory) {
-        // sort tokens
-        Token[2] memory sortedTokens = _sortTokens(token0, token1);
-
         // validate pair existence
         if (!_pairExists(token0, token1)) {
             revert PairDoesNotExist();
         }
+
+        // sort tokens
+        Token[2] memory sortedTokens = _sortTokens(token0, token1);
 
         // return pair
         uint128 id = _pairIds[sortedTokens[0]][sortedTokens[1]];
