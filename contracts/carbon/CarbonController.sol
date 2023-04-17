@@ -199,12 +199,12 @@ contract CarbonController is
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
     ) external payable nonReentrant whenNotPaused onlyProxyDelegate {
-        Pair memory stratPair = _pairById(_pairIdByStrategyId(strategyId));
-
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
             revert AccessDenied();
         }
+
+        Pair memory stratPair = _pairById(_pairIdByStrategyId(strategyId));
 
         // don't allow unnecessary eth
         if (msg.value > 0 && !stratPair.tokens[0].isNative() && !stratPair.tokens[1].isNative()) {
@@ -224,13 +224,12 @@ contract CarbonController is
      * @inheritdoc ICarbonController
      */
     function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
-        // find strategy, reverts if none
-        Pair memory stratPair = _pairById(_pairIdByStrategyId(strategyId));
-
         // only the owner of the strategy is allowed to delete it
         if (msg.sender != _voucher.ownerOf(strategyId)) {
             revert AccessDenied();
         }
+
+        Pair memory stratPair = _pairById(_pairIdByStrategyId(strategyId));
 
         // delete strategy
         _deleteStrategy(_strategy(strategyId, _voucher, stratPair), _voucher, stratPair);
