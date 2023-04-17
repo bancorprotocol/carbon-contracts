@@ -1220,14 +1220,14 @@ describe('Strategy', () => {
             const order = generateTestOrder();
             await expect(
                 carbonController.connect(owner).updateStrategy(SID3, [order, order], [order, order])
-            ).to.be.revertedWithError('PairDoesNotExist');
+            ).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
         it('reverts when the provided strategy id is zero', async () => {
             const order = generateTestOrder();
             await expect(
                 carbonController.connect(owner).updateStrategy(0, [order, order], [order, order])
-            ).to.be.revertedWithError('PairDoesNotExist');
+            ).to.be.revertedWithError('ERC721: invalid token ID');
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
@@ -1402,7 +1402,9 @@ describe('Strategy', () => {
         it('reverts when provided strategy id is zero', async () => {
             await createStrategy();
 
-            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError('PairDoesNotExist');
+            await expect(carbonController.deleteStrategy(0)).to.be.revertedWithError(
+                'ERC721: invalid token ID'
+            );
         });
 
         it('reverts when a non owner attempts to delete a strategy', async () => {
@@ -1425,7 +1427,7 @@ describe('Strategy', () => {
             await createStrategy();
 
             await expect(carbonController.connect(owner).deleteStrategy(SID3)).to.be.revertedWithError(
-                'PairDoesNotExist'
+                'ERC721: invalid token ID'
             );
         });
 
