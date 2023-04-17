@@ -338,7 +338,7 @@ abstract contract Strategies is Initializable {
 
             // refund native token when there's no deposit in the order
             // note that deposit handles refunds internally
-            if (token.isNative() && value > 0 && newOrders[i].y <= orders[i].y) {
+            if (value > 0 && token.isNative() && newOrders[i].y <= orders[i].y) {
                 payable(address(owner)).sendValue(value);
             }
         }
