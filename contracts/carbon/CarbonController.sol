@@ -207,7 +207,7 @@ contract CarbonController is
         }
 
         // don't allow unnecessary eth
-        if (!strategyPair.tokens[0].isNative() && !strategyPair.tokens[1].isNative() && msg.value > 0) {
+        if (msg.value > 0 && !strategyPair.tokens[0].isNative() && !strategyPair.tokens[1].isNative()) {
             revert UnnecessaryNativeTokenReceived();
         }
 
@@ -438,7 +438,7 @@ contract CarbonController is
         _validateInputTokens(sourceToken, targetToken);
 
         // there shouldn't be any native token sent unless the source token is the native token
-        if (!sourceToken.isNative() && value > 0) {
+        if (value > 0 && !sourceToken.isNative()) {
             revert UnnecessaryNativeTokenReceived();
         }
     }
