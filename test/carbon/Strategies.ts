@@ -1786,6 +1786,18 @@ describe('Strategy', () => {
                 .to.emit(carbonController, 'FeesWithdrawn')
                 .withArgs(token0.address, owner.address, amount.toNumber(), owner.address);
         });
+        
+        it('doesn\'t emit the FeesWithdrawn if accumulated fee amount is 0', async () => {
+            const amount = BigNumber.from(1);
+            // don't set accumulated fees
+
+            await carbonController.connect(deployer).grantRole(Roles.CarbonController.ROLE_FEES_MANAGER, owner.address);
+            const tx = carbonController.connect(owner).withdrawFees(token0.address, amount, owner.address);
+
+            await expect(tx)
+                .not.to.emit(carbonController, 'FeesWithdrawn')
+                .withArgs(token0.address, owner.address, amount.toNumber(), owner.address);
+        });
 
         it('updates accumulatedFees balance', async () => {
             const amount = BigNumber.from(10);
