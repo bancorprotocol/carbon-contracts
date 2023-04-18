@@ -49,9 +49,6 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
-      - name: Tenderly config
-        run: mkdir /Users/runner/.tenderly; touch /Users/runner/.tenderly/config.yaml
-
       - name: Lint
         run: yarn lint
 
