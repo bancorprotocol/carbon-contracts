@@ -59,4 +59,9 @@ jobs:
         run: yarn build
 
       - name: Test
-        run: yarn test
+        run: yarn test:ci
+        env:
+          TENDERLY_PROJECT: ${{ secrets.TENDERLY_PROJECT }}
+          TENDERLY_TEST_PROJECT: ${{ secrets.TENDERLY_TEST_PROJECT }}
+          TENDERLY_USERNAME: ${{ secrets.TENDERLY_USERNAME }}
+          TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
