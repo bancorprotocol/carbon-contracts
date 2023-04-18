@@ -37,6 +37,8 @@ using {
     safeIncreaseAllowance
 } for Token global;
 
+/* solhint-disable func-visibility */
+
 function equal(Token a, Token b) pure returns (bool) {
     return Token.unwrap(a) == Token.unwrap(b);
 }
@@ -155,3 +157,5 @@ function toIERC20(Token token) pure returns (IERC20) {
 function toERC20(Token token) pure returns (ERC20) {
     return ERC20(Token.unwrap(token));
 }
+
+/* solhint-disable func-visibility */

@@ -50,7 +50,7 @@ export const encodeOrder = (order: DecodedOrder): EncodedOrder => {
     const H = DecToBn(encodeRate(order.highestRate));
     const M = DecToBn(encodeRate(order.marginalRate));
     return {
-        y: y,
+        y,
         z: H.eq(M) ? y : y.mul(H.sub(L)).div(M.sub(L)),
         A: encodeFloat(H.sub(L)),
         B: encodeFloat(L)

@@ -1,4 +1,4 @@
-import Contracts, { IERC20 } from '../components/Contracts';
+import Contracts from '../components/Contracts';
 import { MAX_UINT256, ZERO_ADDRESS, ZERO_BYTES32 } from './Constants';
 import { NATIVE_TOKEN_ADDRESS } from './TokenData';
 import { Addressable } from './Types';

@@ -832,7 +832,7 @@ describe('Trading', () => {
                         expect(toFixed(emittedOrder.highestRate)).to.eq(expectedOrder.highestRate);
                         expect(toFixed(emittedOrder.marginalRate)).to.eq(expectedOrder.marginalRate);
                         expect(event.args[`token${x}`]).to.eq(tokens[strategy.orders[x].token].address);
-                        expect(event.args[`reason`]).to.eq(STRATEGY_UPDATE_REASON_TRADE);
+                        expect(event.args.reason).to.eq(STRATEGY_UPDATE_REASON_TRADE);
                         expect(event.event).to.eq('StrategyUpdated');
                     }
                 }
@@ -1292,7 +1292,7 @@ describe('Trading', () => {
                     sourceSymbol: TokenSymbol.ETH,
                     targetSymbol: TokenSymbol.TKN0
                 });
-                const { strategies, sourceAmount, targetAmount, tradeActions, sourceSymbol } = testCase;
+                const { strategies, tradeActions } = testCase;
                 await createStrategies(strategies);
 
                 // create additional strategies using different tokens
@@ -1341,8 +1341,8 @@ describe('Trading', () => {
                 const strategy = await carbonController.strategy(tradeAction.strategyId);
 
                 // get the target order
-                let order =
-                    strategy.tokens[0] == tokens[targetSymbol].address ? strategy.orders[0] : strategy.orders[1];
+                const order =
+                    strategy.tokens[0] === tokens[targetSymbol].address ? strategy.orders[0] : strategy.orders[1];
 
                 // increase the input amount so that the target amount is higher than the total liquidity
                 // and calculate the new source amount
