@@ -1,5 +1,5 @@
 import { CarbonController, FeeBurner, ProxyAdmin } from '../../components/Contracts';
-import { describeDeployment } from '../../test/helpers/Deploy';
+import { describeDeployment } from '../../utils/helpers/Deploy';
 import { DeployedContracts } from '../../utils/Deploy';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
