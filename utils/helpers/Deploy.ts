@@ -1,4 +1,4 @@
-import { deploymentMetadata, deploymentTagExists, isLive } from '../../utils/Deploy';
+import { deploymentMetadata, deploymentTagExists, isLive } from '../Deploy';
 import { deployments } from 'hardhat';
 import { Suite } from 'mocha';
 

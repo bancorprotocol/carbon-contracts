@@ -49,14 +49,6 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
-      - name: Tenderly config
-        run: |
-          mkdir ~/.tenderly
-          touch ~/.tenderly/config.yaml
-          echo "access_key: $TENDERLY_ACCESS_KEY" >> ~/.tenderly/config.yaml
-        env:
-          TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
-
       - name: Lint
         run: yarn lint
 
