@@ -481,17 +481,17 @@ interface InitializeImplementationOptions {
 export const initializeImplementation = async (options: InitializeImplementationOptions) => {
     const { name, address, args, from } = options;
     const signer = await ethers.getSigner(from);
-    const contract: Contract = await ethers.getContractAt(name, address, signer);
 
     Logger.log(`  initializing implementation of ${name}`);
 
     let tx: ContractTransaction;
-    if (!args) {
-        tx = await contract[INITIALIZE]();
-    } else {
-        tx = await contract[INITIALIZE](...args);
-    }
-    await tx.wait();
+
+    await execute({
+        name: (name + '_Implementation') as InstanceName,
+        methodName: INITIALIZE,
+        args: args ? args : [],
+        from
+    });
 };
 
 interface RolesOptions {
