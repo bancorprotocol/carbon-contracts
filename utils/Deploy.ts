@@ -5,7 +5,7 @@ import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
 import { toWei } from './Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, Contract, ContractInterface, ContractTransaction, utils } from 'ethers';
+import { BigNumber, Contract, ContractInterface, utils } from 'ethers';
 import fs from 'fs';
 import glob from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
@@ -479,17 +479,14 @@ interface InitializeImplementationOptions {
 }
 
 export const initializeImplementation = async (options: InitializeImplementationOptions) => {
-    const { name, address, args, from } = options;
-    const signer = await ethers.getSigner(from);
+    const { name, args, from } = options;
 
     Logger.log(`  initializing implementation of ${name}`);
-
-    let tx: ContractTransaction;
 
     await execute({
         name: (name + '_Implementation') as InstanceName,
         methodName: INITIALIZE,
-        args: args ? args : [],
+        args: args ?? [],
         from
     });
 };
