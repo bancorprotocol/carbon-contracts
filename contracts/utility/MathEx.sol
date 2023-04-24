@@ -7,39 +7,34 @@ pragma solidity 0.8.19;
 library MathEx {
     error Overflow();
 
-    struct Uint512 {
-        uint256 hi; // 256 most significant bits
-        uint256 lo; // 256 least significant bits
-    }
-
     /**
      * @dev returns the largest integer smaller than or equal to `x * y / z`
      */
     function mulDivF(uint256 x, uint256 y, uint256 z) internal pure returns (uint256) {
         // safe because no `+` or `-` or `*`
         unchecked {
-            Uint512 memory xy = _mul512(x, y);
+            (uint256 xyhi, uint256 xylo) = _mul512(x, y);
 
             // if `x * y < 2 ^ 256`
-            if (xy.hi == 0) {
-                return xy.lo / z;
+            if (xyhi == 0) {
+                return xylo / z;
             }
 
             // assert `x * y / z < 2 ^ 256`
-            if (xy.hi >= z) {
+            if (xyhi >= z) {
                 revert Overflow();
             }
 
             uint256 m = _mulMod(x, y, z); // `m = x * y % z`
-            Uint512 memory n = _sub512(xy, m); // `n = x * y - m` hence `n / z = floor(x * y / z)`
+            (uint256 nhi, uint256 nlo) = _sub512(xyhi, xylo, m); // `n = x * y - m` hence `n / z = floor(x * y / z)`
 
             // if `n < 2 ^ 256`
-            if (n.hi == 0) {
-                return n.lo / z;
+            if (nhi == 0) {
+                return nlo / z;
             }
 
             uint256 p = _unsafeSub(0, z) & z; // `p` is the largest power of 2 which `z` is divisible by
-            uint256 q = _div512(n, p); // `n` is divisible by `p` because `n` is divisible by `z` and `z` is divisible by `p`
+            uint256 q = _div512(nhi, nlo, p); // `n` is divisible by `p` because `n` is divisible by `z` and `z` is divisible by `p`
             uint256 r = _inv256(z / p); // `z / p = 1 mod 2` hence `inverse(z / p) = 1 mod 2 ^ 256`
             return _unsafeMul(q, r); // `q * r = (n / p) * inverse(z / p) = n / z`
         }
@@ -66,58 +61,58 @@ library MathEx {
     * @dev returns the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
     */
     function minFactor(uint256 x, uint256 y) internal pure returns (uint256) {
-        Uint512 memory xy = _mul512(x, y);
+        (uint256 xyhi, uint256 xylo) = _mul512(x, y);
         unchecked {
             // safe because:
             // - if `x < 2 ^ 256 - 1` or `y < 2 ^ 256 - 1`
-            //   then `xy.hi < 2 ^ 256 - 2`
-            //   hence neither `xy.hi + 1` nor `xy.hi + 2` overflows
+            //   then `xyhi < 2 ^ 256 - 2`
+            //   hence neither `xyhi + 1` nor `xyhi + 2` overflows
             // - if `x = 2 ^ 256 - 1` and `y = 2 ^ 256 - 1`
-            //   then `xy.hi = 2 ^ 256 - 2 = ~xy.lo`
-            //   hence `xy.hi + 1`, which does not overflow, is computed
-            return xy.hi > ~xy.lo ? xy.hi + 2 : xy.hi + 1;
+            //   then `xyhi = 2 ^ 256 - 2 = ~xylo`
+            //   hence `xyhi + 1`, which does not overflow, is computed
+            return xyhi > ~xylo ? xyhi + 2 : xyhi + 1;
         }
     }
 
     /**
      * @dev returns the value of `x * y`
      */
-    function _mul512(uint256 x, uint256 y) private pure returns (Uint512 memory) {
+    function _mul512(uint256 x, uint256 y) private pure returns (uint256, uint256) {
         uint256 p = _mulModMax(x, y);
         uint256 q = _unsafeMul(x, y);
         if (p >= q) {
             unchecked {
                 // safe because `p >= q`
-                return Uint512({ hi: p - q, lo: q });
+                return (p - q, q);
             }
         }
         unchecked {
             // safe because `p < q` hence `_unsafeSub(p, q) > 0`
-            return Uint512({ hi: _unsafeSub(p, q) - 1, lo: q });
+            return (_unsafeSub(p, q) - 1, q);
         }
     }
 
     /**
      * @dev returns the value of `x - y`
      */
-    function _sub512(Uint512 memory x, uint256 y) private pure returns (Uint512 memory) {
-        if (x.lo >= y) {
+    function _sub512(uint256 xhi, uint256 xlo, uint256 y) private pure returns (uint256, uint256) {
+        if (xlo >= y) {
             unchecked {
-                // safe because `x.lo >= y`
-                return Uint512({ hi: x.hi, lo: x.lo - y });
+                // safe because `xlo >= y`
+                return (xhi, xlo - y);
             }
         }
-        return Uint512({ hi: x.hi - 1, lo: _unsafeSub(x.lo, y) });
+        return (xhi - 1, _unsafeSub(xlo, y));
     }
 
     /**
      * @dev returns the value of `x / pow2n`, given that `x` is divisible by `pow2n`
      */
-    function _div512(Uint512 memory x, uint256 pow2n) private pure returns (uint256) {
+    function _div512(uint256 xhi, uint256 xlo, uint256 pow2n) private pure returns (uint256) {
         // safe because no `+` or `-` or `*`
         unchecked {
             uint256 pow2nInv = _unsafeAdd(_unsafeSub(0, pow2n) / pow2n, 1); // `1 << (256 - n)`
-            return _unsafeMul(x.hi, pow2nInv) | (x.lo / pow2n); // `(x.hi << (256 - n)) | (x.lo >> n)`
+            return _unsafeMul(xhi, pow2nInv) | (xlo / pow2n); // `(xhi << (256 - n)) | (xlo >> n)`
         }
     }
 
