@@ -479,12 +479,14 @@ interface InitializeImplementationOptions {
 }
 
 export const initializeImplementation = async (options: InitializeImplementationOptions) => {
-    const { name, args, from } = options;
+    const { name, args, address, from } = options;
+
+    const instanceName: InstanceName = getInstanceNameByAddress(address);
 
     Logger.log(`  initializing implementation of ${name}`);
 
     await execute({
-        name: (name + '_Implementation') as InstanceName,
+        name: instanceName,
         methodName: INITIALIZE,
         args: args ?? [],
         from
@@ -663,7 +665,7 @@ export const getInstanceNameByAddress = (address: string): InstanceName => {
     const deploymentPaths = glob.sync(`${deploymentsPath}/**/*.json`);
     for (const deploymentPath of deploymentPaths) {
         const name = path.basename(deploymentPath).split('.')[0];
-        if (name.endsWith('_Implementation') || name.endsWith('_Proxy')) {
+        if (name.endsWith('_Proxy')) {
             continue;
         }
 
