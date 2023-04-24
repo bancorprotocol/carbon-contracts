@@ -63,6 +63,23 @@ library MathEx {
     }
 
     /**
+    * @dev returns the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
+    */
+    function minFactor(uint256 x, uint256 y) internal pure returns (uint256) {
+        Uint512 memory xy = _mul512(x, y);
+        unchecked {
+            // safe because:
+            // - if `x < 2 ^ 256 - 1` or `y < 2 ^ 256 - 1`
+            //   then `xy.hi < 2 ^ 256 - 2`
+            //   hence neither `xy.hi + 1` nor `xy.hi + 2` overflows
+            // - if `x = 2 ^ 256 - 1` and `y = 2 ^ 256 - 1`
+            //   then `xy.hi = 2 ^ 256 - 2 = ~xy.lo`
+            //   hence `xy.hi + 1`, which does not overflow, is computed
+            return xy.hi > ~xy.lo ? xy.hi + 2 : xy.hi + 1;
+        }
+    }
+
+    /**
      * @dev returns the value of `x * y`
      */
     function _mul512(uint256 x, uint256 y) private pure returns (Uint512 memory) {
@@ -74,7 +91,10 @@ library MathEx {
                 return Uint512({ hi: p - q, lo: q });
             }
         }
-        return Uint512({ hi: _unsafeSub(p, q) - 1, lo: q });
+        unchecked {
+            // safe because `p < q` hence `_unsafeSub(p, q) > 0`
+            return Uint512({ hi: _unsafeSub(p, q) - 1, lo: q });
+        }
     }
 
     /**

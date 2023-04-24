@@ -16,7 +16,7 @@ describe('MathEx', () => {
         mathContract = await Contracts.TestMathEx.deploy();
     });
 
-    const testMulDiv = (x: BigNumber, y: BigNumber, z: BigNumber) => {
+    const test = (x: BigNumber, y: BigNumber, z: BigNumber) => {
         for (const funcName in mulDivFuncs) {
             it(`${funcName}(${x}, ${y}, ${z})`, async () => {
                 const expectedFunc = (mulDivFuncs as any)[funcName];
@@ -27,6 +27,18 @@ describe('MathEx', () => {
                     expect(actual).to.equal(expected);
                 } else {
                     await expect(actualFunc(x, y, z)).to.be.revertedWithError('Overflow');
+                }
+            });
+        }
+
+        const tuples = [[x, y], [x, z], [y, z], [x, y.add(z)], [x.add(z), y], [x.add(z), y.add(z)]];
+        const values = tuples.filter((tuple) => tuple.every((value) => value.lte(MAX_UINT256)));
+        for (const [x, y] of values) {
+            it(`minFactor(${x}, ${y})`, async () => {
+                const actual = await mathContract.minFactor(x, y);
+                expect(mulDivFuncs.mulDivC(x, y, actual)).to.be.lte(MAX_UINT256);
+                if (actual.gt(1)) {
+                    expect(mulDivFuncs.mulDivC(x, y, actual.sub(1))).to.be.gt(MAX_UINT256);
                 }
             });
         }
@@ -42,7 +54,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).div(ax);
                                 const y = BigNumber.from(2).pow(py).div(ay);
                                 const z = BigNumber.from(2).pow(pz).div(az);
-                                testMulDiv(x, y, z);
+                                test(x, y, z);
                             }
                         }
                     }
@@ -61,7 +73,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).add(ax);
                                 const y = BigNumber.from(2).pow(py).add(ay);
                                 const z = BigNumber.from(2).pow(pz).add(az);
-                                testMulDiv(x, y, z);
+                                test(x, y, z);
                             }
                         }
                     }
@@ -78,7 +90,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).sub(ax);
                                 const y = BigNumber.from(2).pow(py).sub(ay);
                                 const z = BigNumber.from(2).pow(pz).sub(az);
-                                testMulDiv(x, y, z);
+                                test(x, y, z);
                             }
                         }
                     }
@@ -95,7 +107,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).div(ax);
                                 const y = BigNumber.from(2).pow(py).div(ay);
                                 const z = BigNumber.from(2).pow(pz).div(az);
-                                testMulDiv(x, y, z);
+                                test(x, y, z);
                             }
                         }
                     }

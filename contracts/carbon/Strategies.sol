@@ -708,8 +708,8 @@ abstract contract Strategies is Initializable {
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 * x;
 
-        uint256 factor1 = MathEx.mulDivC(temp1, temp1, type(uint256).max);
-        uint256 factor2 = MathEx.mulDivC(temp3, A, type(uint256).max);
+        uint256 factor1 = MathEx.minFactor(temp1, temp1);
+        uint256 factor2 = MathEx.minFactor(temp3, A);
         uint256 factor = MathUpgradeable.max(factor1, factor2);
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
@@ -740,8 +740,8 @@ abstract contract Strategies is Initializable {
         uint256 temp2 = y * A + z * B;
         uint256 temp3 = temp2 - x * A;
 
-        uint256 factor1 = MathEx.mulDivC(temp1, temp1, type(uint256).max);
-        uint256 factor2 = MathEx.mulDivC(temp2, temp3, type(uint256).max);
+        uint256 factor1 = MathEx.minFactor(temp1, temp1);
+        uint256 factor2 = MathEx.minFactor(temp2, temp3);
         uint256 factor = MathUpgradeable.max(factor1, factor2);
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
