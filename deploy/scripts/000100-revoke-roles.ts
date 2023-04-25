@@ -3,7 +3,6 @@ import {
     InstanceName,
     isLive,
     renounceRole,
-    revokeRole,
     setDeploymentMetadata
 } from '../../utils/Deploy';
 import { Roles } from '../../utils/Roles';
@@ -21,10 +20,9 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         from: deployer
     });
 
-    await revokeRole({
+    await renounceRole({
         name: InstanceName.CarbonController,
         id: Roles.Upgradeable.ROLE_ADMIN,
-        member: deployer,
         from: deployer
     });
 
@@ -36,10 +34,9 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         from: deployer
     });
 
-    await revokeRole({
+    await renounceRole({
         name: InstanceName.Voucher,
         id: Roles.Upgradeable.ROLE_ADMIN,
-        member: deployer,
         from: deployer
     });
 
@@ -51,10 +48,9 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         from: deployer
     });
 
-    await revokeRole({
+    await renounceRole({
         name: InstanceName.FeeBurner,
         id: Roles.Upgradeable.ROLE_ADMIN,
-        member: deployer,
         from: deployer
     });
 
