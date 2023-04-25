@@ -65,6 +65,13 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         from: deployer
     });
 
+    // renounce CarbonController's ROLE_FEES_MANAGER role from the deployer
+    await renounceRole({
+        name: InstanceName.CarbonController,
+        id: Roles.CarbonController.ROLE_FEES_MANAGER,
+        from: deployer
+    });
+
     return true;
 };
 
