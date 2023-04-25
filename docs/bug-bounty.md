@@ -6,6 +6,16 @@ The Carbon Bug Bounty aims to incentivize responsible disclosures of any bugs in
 
 Rewards are allocated based on the severity of the bug disclosed and awarded up to USD 1 million. The scope, terms and rewards are at the sole discretion of the Bprotocol Foundation.
 
+Rewards structure:
+
+| Risk          | Reward     |
+| ------------- | ---------- |
+| Critical      | $1,000,000 |
+| High          | $40,000    |
+| Medium        | $5,000     |
+| Low           | $1,000     |
+| Informational | $0         |
+
 ## Scope
 
 The list below is not limited to the following submissions but it gives an overview of the issues we care about:
