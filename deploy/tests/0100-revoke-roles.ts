@@ -26,7 +26,7 @@ describeDeployment(
             expect(await voucher.hasRole(Roles.Upgradeable.ROLE_ADMIN, daoMultisig)).to.be.true;
             expect(await feeBurner.hasRole(Roles.Upgradeable.ROLE_ADMIN, daoMultisig)).to.be.true;
 
-            // expect deployer not to have the admin role for all contracts
+            // expect deployer not to have the admin role for any contracts
             expect(await carbon.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
             expect(await voucher.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
             expect(await feeBurner.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
