@@ -1,5 +1,4 @@
 import { CarbonController, TestERC20Burnable } from '../../../components/Contracts';
-import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
 import {
     DEFAULT_TRADING_FEE_PPM,
     MAX_UINT128,
@@ -12,58 +11,14 @@ import { createBurnableToken, createSystem, Tokens } from '../../helpers/Factory
 import { latest } from '../../helpers/Time';
 import { getBalance, transfer } from '../../helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../utility/carbon-sdk';
-import { FactoryOptions, testCaseFactory, TestStrategy, TestTradeActions } from './testDataFactory';
+import { FactoryOptions, testCaseFactory, TestStrategy } from './testDataFactory';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import Decimal from 'decimal.js';
-import { BigNumber, BigNumberish, ContractReceipt } from 'ethers';
+import { BigNumber, BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
-
-const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
-
-type TradeTestReturnValues = {
-    tradingFeeAmount: BigNumber;
-    gasUsed: BigNumber;
-    receipt: ContractReceipt;
-    value: BigNumber;
-};
-
-type TradeParams = {
-    tradeActions: TestTradeActions[];
-    sourceSymbol: string;
-    targetSymbol: string;
-    sourceAmount: BigNumberish;
-    targetAmount: BigNumberish;
-    byTargetAmount: boolean;
-    sendWithExcessNativeTokenValue?: boolean;
-    constraint?: BigNumberish;
-};
-
-type SimpleTradeParams = {
-    sourceToken: string;
-    targetToken: string;
-    byTargetAmount: boolean;
-    sourceAmount: BigNumberish;
-    tradeActions?: TradeActionStruct[];
-    deadlineDelta?: number;
-    txValue?: BigNumberish;
-    constraint?: BigNumberish;
-};
-
-const mulDivF = (x: BigNumberish, y: BigNumberish, z: BigNumberish) => BigNumber.from(x).mul(y).div(z);
-const mulDivC = (x: BigNumberish, y: BigNumberish, z: BigNumberish) => BigNumber.from(x).mul(y).add(z).sub(1).div(z);
-const toFixed = (x: Decimal) => new Decimal(x.toFixed(12)).toFixed();
-
-const setConstraint = (
-    constraint: BigNumberish | undefined,
-    byTargetAmount: boolean,
-    expectedResultAmount: BigNumberish
-): BigNumberish => {
-    if (!constraint && constraint !== 0) {
-        return byTargetAmount ? expectedResultAmount : 1;
-    }
-    return constraint;
-};
+import { SimpleTradeParams, TradeParams, TradeTestReturnValues, generateStrategyId, 
+    mulDivC, mulDivF, setConstraint, toFixed } from './tradingHelpers';
 
 const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.TKN0, byTargetAmount: true, inverseOrders: true },
