@@ -7,6 +7,8 @@ export enum TokenSymbol {
     ETH = 'ETH',
     BNT = 'BNT',
     USDC = 'USDC',
+    DAI = 'DAI',
+    WBTC = 'wBTC',
     TKN = 'TKN',
     TKN0 = 'TKN0',
     TKN1 = 'TKN1',

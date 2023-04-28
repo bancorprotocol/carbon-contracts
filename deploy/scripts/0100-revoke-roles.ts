@@ -1,10 +1,4 @@
-import {
-    grantRole,
-    InstanceName,
-    isLive,
-    renounceRole,
-    setDeploymentMetadata
-} from '../../utils/Deploy';
+import { grantRole, InstanceName, isLive, renounceRole, setDeploymentMetadata } from '../../utils/Deploy';
 import { Roles } from '../../utils/Roles';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
