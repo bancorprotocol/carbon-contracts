@@ -76,7 +76,7 @@ export class TokenData {
     constructor(symbol: TokenSymbol) {
         this._symbol = symbol;
 
-        const { name, decimals, errors } = TOKEN_DATA[symbol];
+        const { name, decimals, errors } = TOKEN_DATA[symbol as keyof typeof TOKEN_DATA];
         this._name = name;
         this._decimals = decimals;
         this._errors = errors;
