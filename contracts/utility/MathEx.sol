@@ -72,6 +72,55 @@ library MathEx {
             //   hence `xyhi + 1`, which does not overflow, is computed
             return xyhi > ~xylo ? xyhi + 2 : xyhi + 1;
         }
+
+        /* reasoning:
+        |
+        |   general:
+        |   - find the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
+        |   - the value of `x * y` is represented via `2 ^ 256 * xy.hi + xy.lo`
+        |   
+        |   symbols:
+        |   - let `H` denote `xy.hi`
+        |   - let `L` denote `xy.lo`
+        |   - let `N` denote `2 ^ 256 - 1`
+        |   
+        |   inference:
+        |   `x * y / z <= 2 ^ 256 - 1`     <-->
+        |   `x * y / (2 ^ 256 - 1) <= z`   <-->
+        |   `((N + 1) * H + L) / N <= z`   <-->
+        |   `(N * H + H + L) / N <= z`     <-->
+        |   `H + (H + L) / N <= z`
+        |   
+        |   inference:
+        |   `0 <= H <= N && 0 <= L <= N`   <-->
+        |   `0 <= H + L <= N + N`          <-->
+        |   `0 <= H + L <= N * 2`          <-->
+        |   `0 <= (H + L) / N <= 2`
+        |   
+        |   inference:
+        |   - `(H + L) / N <= 1` --> `H + (H + L) / N <= H + 1` --> `z = H + 1`
+        |   - `(H + L) / N <= 2` --> `H + (H + L) / N <= H + 2` --> `z = H + 2`
+        |   
+        |   technical:
+        |   - `~xy.lo = 2 ^ 256 - 1 - xy.lo = N - L`
+        |   
+        |   implementation:
+        |   - if `xy.hi > ~xy.lo`:
+        |     `~L < H <= N`                         <-->
+        |     `N - L < H <= N`                      <-->
+        |     `N < H + L <= N + L`                  <-->
+        |     `1 < (H + L) / N <= 2`                <-->
+        |     `H + 1 < H + (H + L) / N <= H + 2`    <-->
+        |     `z = H + 2`
+        |   - if `xy.hi <= ~xy.lo`:
+        |     `H <= ~L`                             <-->
+        |     `H <= N - L`                          <-->
+        |     `H + L <= N`                          <-->
+        |     `(H + L) / N <= 1`                    <-->
+        |     `H + (H + L) / N <= H + 1`            <-->
+        |     `z = H + 1`
+        |
+        */
     }
 
     /**
