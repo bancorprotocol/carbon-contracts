@@ -83,6 +83,7 @@ library MathEx {
         |   general:
         |   - find the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
         |   - the value of `x * y` is represented via `2 ^ 256 * xy.hi + xy.lo`
+        |   - the expression `~xy.lo` is equivalent to `2 ^ 256 - 1 - xy.lo`
         |   
         |   symbols:
         |   - let `H` denote `xy.hi`
@@ -105,9 +106,6 @@ library MathEx {
         |   inference:
         |   - `(H + L) / N <= 1` --> `H + (H + L) / N <= H + 1` --> `z = H + 1`
         |   - `(H + L) / N <= 2` --> `H + (H + L) / N <= H + 2` --> `z = H + 2`
-        |   
-        |   technical:
-        |   - `~xy.lo = 2 ^ 256 - 1 - xy.lo = N - L`
         |   
         |   implementation:
         |   - if `xy.hi > ~xy.lo`:
