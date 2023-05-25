@@ -61,28 +61,28 @@ library MathEx {
     * @dev returns the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
     */
     function minFactor(uint256 x, uint256 y) internal pure returns (uint256) {
-        (uint256 xyhi, uint256 xylo) = _mul512(x, y);
+        (uint256 hi, uint256 lo) = _mul512(x, y);
         unchecked {
             // safe because:
             // - if `x < 2 ^ 256 - 1` or `y < 2 ^ 256 - 1`
-            //   then `xyhi < 2 ^ 256 - 2`
-            //   hence neither `xyhi + 1` nor `xyhi + 2` overflows
+            //   then `hi < 2 ^ 256 - 2`
+            //   hence neither `hi + 1` nor `hi + 2` overflows
             // - if `x = 2 ^ 256 - 1` and `y = 2 ^ 256 - 1`
-            //   then `xyhi = 2 ^ 256 - 2 = ~xylo`
-            //   hence `xyhi + 1`, which does not overflow, is computed
-            return xyhi > ~xylo ? xyhi + 2 : xyhi + 1;
+            //   then `hi = 2 ^ 256 - 2 = ~lo`
+            //   hence `hi + 1`, which does not overflow, is computed
+            return hi > ~lo ? hi + 2 : hi + 1;
         }
 
         /* reasoning:
         |
         |   general:
         |   - find the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
-        |   - the value of `x * y` is represented via `2 ^ 256 * xy.hi + xy.lo`
-        |   - the expression `~xy.lo` is equivalent to `2 ^ 256 - 1 - xy.lo`
+        |   - the value of `x * y` is represented via `2 ^ 256 * hi + lo`
+        |   - the expression `~lo` is equivalent to `2 ^ 256 - 1 - lo`
         |   
         |   symbols:
-        |   - let `H` denote `xy.hi`
-        |   - let `L` denote `xy.lo`
+        |   - let `H` denote `hi`
+        |   - let `L` denote `lo`
         |   - let `N` denote `2 ^ 256 - 1`
         |   
         |   inference:
@@ -103,14 +103,14 @@ library MathEx {
         |   - `(H + L) / N <= 2` --> `H + (H + L) / N <= H + 2` --> `z = H + 2`
         |   
         |   implementation:
-        |   - if `xy.hi > ~xy.lo`:
+        |   - if `hi > ~lo`:
         |     `~L < H <= N`                         <-->
         |     `N - L < H <= N`                      <-->
         |     `N < H + L <= N + L`                  <-->
         |     `1 < (H + L) / N <= 2`                <-->
         |     `H + 1 < H + (H + L) / N <= H + 2`    <-->
         |     `z = H + 2`
-        |   - if `xy.hi <= ~xy.lo`:
+        |   - if `hi <= ~lo`:
         |     `H <= ~L`                             <-->
         |     `H <= N - L`                          <-->
         |     `H + L <= N`                          <-->
