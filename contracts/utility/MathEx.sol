@@ -104,8 +104,9 @@ library MathEx {
         |   `0 <= (H + L) / N <= 2`
         |   
         |   inference:
-        |   - `(H + L) / N <= 1` --> `H + (H + L) / N <= H + 1` --> `z = H + 1`
-        |   - `(H + L) / N <= 2` --> `H + (H + L) / N <= H + 2` --> `z = H + 2`
+        |   - `0 = (H + L) / N` --> `H + L = 0` --> `x * y = 0` --> `z = 1 = H + 1`
+        |   - `0 < (H + L) / N <= 1` --> `H + (H + L) / N <= H + 1` --> `z = H + 1`
+        |   - `1 < (H + L) / N <= 2` --> `H + (H + L) / N <= H + 2` --> `z = H + 2`
         |   
         |   implementation:
         |   - if `xy.hi > ~xy.lo`:
