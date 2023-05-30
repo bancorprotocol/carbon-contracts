@@ -1,0 +1,77 @@
+name: Nightly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # at 12:00:00pm every day
+
+jobs:
+  check-latest-commit-date:
+    name: Check the latest commit
+
+    runs-on: macos-latest
+
+    outputs:
+      should-run: ${{ steps.should-run.outputs.should-run }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check the latest commit
+        id: should-run
+        continue-on-error: true
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          [[ $(git rev-list --after="24 hours" --first-parent HEAD) ]] && echo "::set-output name=should-run::true"
+
+  test:
+    name: Full test
+
+    runs-on: macos-latest
+    timeout-minutes: 1200
+
+    needs: check-latest-commit-date
+    if: needs.check-latest-commit-date.outputs.should-run == 'true'
+
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          all_but_latest: true
+          access_token: ${{ github.token }}
+
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: |
+            **/node_modules
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test:nightly
