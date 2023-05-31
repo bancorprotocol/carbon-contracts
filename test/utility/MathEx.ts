@@ -16,7 +16,7 @@ describe('MathEx', () => {
         mathContract = await Contracts.TestMathEx.deploy();
     });
 
-    const test = (x: BigNumber, y: BigNumber, z: BigNumber) => {
+    const testMulDivAndMinFactor = (x: BigNumber, y: BigNumber, z: BigNumber) => {
         for (const funcName in mulDivFuncs) {
             it(`${funcName}(${x}, ${y}, ${z})`, async () => {
                 const expectedFunc = (mulDivFuncs as any)[funcName];
@@ -54,7 +54,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).div(ax);
                                 const y = BigNumber.from(2).pow(py).div(ay);
                                 const z = BigNumber.from(2).pow(pz).div(az);
-                                test(x, y, z);
+                                testMulDivAndMinFactor(x, y, z);
                             }
                         }
                     }
@@ -73,7 +73,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).add(ax);
                                 const y = BigNumber.from(2).pow(py).add(ay);
                                 const z = BigNumber.from(2).pow(pz).add(az);
-                                test(x, y, z);
+                                testMulDivAndMinFactor(x, y, z);
                             }
                         }
                     }
@@ -90,7 +90,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).sub(ax);
                                 const y = BigNumber.from(2).pow(py).sub(ay);
                                 const z = BigNumber.from(2).pow(pz).sub(az);
-                                test(x, y, z);
+                                testMulDivAndMinFactor(x, y, z);
                             }
                         }
                     }
@@ -107,7 +107,7 @@ describe('MathEx', () => {
                                 const x = BigNumber.from(2).pow(px).div(ax);
                                 const y = BigNumber.from(2).pow(py).div(ay);
                                 const z = BigNumber.from(2).pow(pz).div(az);
-                                test(x, y, z);
+                                testMulDivAndMinFactor(x, y, z);
                             }
                         }
                     }
