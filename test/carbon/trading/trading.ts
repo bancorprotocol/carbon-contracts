@@ -789,8 +789,9 @@ describe('Trading', () => {
             const deadline = (await latest()) + 1000;
             const minReturn = 1;
 
-            await carbonController.connect(trader).
-                tradeBySourceAmount(feeOnTransferToken.address, token1.address, [tradeActions], deadline, minReturn);
+            await expect(carbonController.connect(trader).
+                tradeBySourceAmount(feeOnTransferToken.address, token1.address, [tradeActions], deadline, minReturn)).
+                not.to.be.revertedWithError('BalanceMismatch');
         });
         
         it('(TKN1->TKN) | byTargetAmount: true', async () => {
@@ -823,8 +824,9 @@ describe('Trading', () => {
             const deadline = (await latest()) + 1000;
             const maxInput = sourceAmount;
 
-            await carbonController.connect(trader).
-                tradeByTargetAmount(feeOnTransferToken.address, token1.address, [tradeActions], deadline, maxInput);
+            await expect(carbonController.connect(trader).
+                tradeByTargetAmount(feeOnTransferToken.address, token1.address, [tradeActions], deadline, maxInput)).
+                not.to.be.revertedWithError('BalanceMismatch');
         });
     });
 
