@@ -1,27 +1,17 @@
-name: CI
+name: Health
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - dev
-      - master
-  pull_request:
+  schedule:
+    - cron: '*/30 * * * *' # every 30 minutes
 
 jobs:
   test:
-    name: Test
+    name: Health Checks
 
     runs-on: ubuntu-latest
-    timeout-minutes: 600
 
     steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - name: Check out the repository
         uses: actions/checkout@v3
 
@@ -49,11 +39,13 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
-      - name: Lint
-        run: yarn lint
-
       - name: Build
         run: yarn build
 
-      - name: Test
-        run: yarn test:ci
+      - name: Test deployment and network health
+        run: yarn test:health
+        env:
+          TENDERLY_PROJECT: carbon-temp-forks
+          TENDERLY_TEST_PROJECT: carbon-temp-forks
+          TENDERLY_USERNAME: bancor
+          TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
