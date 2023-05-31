@@ -527,19 +527,19 @@ describe('Strategy', () => {
             await token1.approve(carbonController.address, order.y);
             await expect(
                 carbonController.createStrategy(feeOnTransferToken.address, token1.address, [order, order])
-            ).to.be.revertedWithError('TokenAmountMismatch');
+            ).to.be.revertedWithError('BalanceMismatch');
             await expect(
                 carbonController.createStrategy(token0.address, feeOnTransferToken.address, [order, order])
-            ).to.be.revertedWithError('TokenAmountMismatch');
+            ).to.be.revertedWithError('BalanceMismatch');
             // set fee side
             await feeOnTransferToken.approve(carbonController.address, order.y * 2);
             await feeOnTransferToken.setFeeSide(false);
             await expect(
                 carbonController.createStrategy(feeOnTransferToken.address, token1.address, [order, order])
-            ).to.be.revertedWithError('TokenAmountMismatch');
+            ).to.be.revertedWithError('BalanceMismatch');
             await expect(
                 carbonController.createStrategy(token0.address, feeOnTransferToken.address, [order, order])
-            ).to.be.revertedWithError('TokenAmountMismatch');
+            ).to.be.revertedWithError('BalanceMismatch');
         });
 
         it('reverts when paused', async () => {
@@ -1222,11 +1222,11 @@ describe('Strategy', () => {
             await token0.approve(carbonController.address, order.y);
             await token1.approve(carbonController.address, order.y);
             let tx = carbonController.updateStrategy(SID1, [order, order], [newOrder, newOrder]);
-            await expect(tx).to.be.revertedWithError('TokenAmountMismatch');
+            await expect(tx).to.be.revertedWithError('BalanceMismatch');
             // change fee side
             await feeOnTransferToken.setFeeSide(false);
             tx = carbonController.updateStrategy(SID1, [order, order], [newOrder, newOrder]);
-            await expect(tx).to.be.revertedWithError('TokenAmountMismatch');
+            await expect(tx).to.be.revertedWithError('BalanceMismatch');
         });
 
         it('reverts when paused', async () => {

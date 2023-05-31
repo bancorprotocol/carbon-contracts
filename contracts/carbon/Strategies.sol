@@ -130,7 +130,7 @@ abstract contract Strategies is Initializable {
     using SafeCastUpgradeable for uint256;
 
     error NativeAmountMismatch();
-    error TokenAmountMismatch();
+    error BalanceMismatch();
     error GreaterThanMaxInput();
     error LowerThanMinReturn();
     error InsufficientCapacity();
@@ -639,11 +639,11 @@ abstract contract Strategies is Initializable {
             }
         } else if (depositAmount > 0) {
             if (validateDepositAmount) {
-                uint256 balanceBefore = token.balanceOf(address(this));
+                uint256 prevBalance = token.balanceOf(address(this));
                 token.safeTransferFrom(owner, address(this), depositAmount);
-                uint256 balanceAfter = token.balanceOf(address(this));
-                if (balanceAfter - balanceBefore != depositAmount) {
-                    revert TokenAmountMismatch();
+                uint256 newBalance = token.balanceOf(address(this));
+                if (newBalance - prevBalance != depositAmount) {
+                    revert BalanceMismatch();
                 }
             } else {
                 token.safeTransferFrom(owner, address(this), depositAmount);
