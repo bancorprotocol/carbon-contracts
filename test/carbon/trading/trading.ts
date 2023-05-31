@@ -556,6 +556,42 @@ describe('Trading', () => {
             }
         });
 
+        describe('reverts if attempting to trade on a non-existing strategy', () => {
+            const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+            for (const { byTargetAmount } of permutations) {
+                it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                    // create testCase and strategies to use for assertions
+                    const testCase = testCaseFactory({
+                        byTargetAmount,
+                        sourceSymbol: TokenSymbol.ETH,
+                        targetSymbol: TokenSymbol.TKN0
+                    });
+                    const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
+                        testCase;
+
+                    await createStrategies(strategies);
+
+                    // edit one of the actions to use a strategy that does not exist
+                    tradeActions[2].strategyId = generateStrategyId(1, 1000).toString();
+
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
+
+                    // assert
+                    await expect(
+                        trade({
+                            sourceAmount,
+                            targetAmount,
+                            tradeActions,
+                            sourceSymbol,
+                            targetSymbol,
+                            byTargetAmount
+                        })
+                    ).to.be.revertedWithError('OrderDisabled');
+                });
+            }
+        });
+
         describe('reverts when one of or both addresses are zero address', async () => {
             const permutations: FactoryOptions[] = [
                 { sourceSymbol: TokenSymbol.TKN0, targetSymbol: 'ZERO_ADDRESS', byTargetAmount: true },
