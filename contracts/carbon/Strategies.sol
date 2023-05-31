@@ -137,7 +137,7 @@ abstract contract Strategies is Initializable {
     error InvalidRate();
     error InvalidTradeActionStrategyId();
     error InvalidTradeActionAmount();
-    error StrategyDoesNotExist();
+    error OrderDisabled();
     error OutDated();
 
     struct SourceAndTargetAmounts {
@@ -701,6 +701,9 @@ abstract contract Strategies is Initializable {
         uint256 B
     ) private pure returns (uint256) {
         if (A == 0) {
+            if (B == 0) {
+                revert OrderDisabled();
+            }
             return MathEx.mulDivF(x, B * B, ONE * ONE);
         }
 
@@ -733,6 +736,9 @@ abstract contract Strategies is Initializable {
         uint256 B
     ) private pure returns (uint256) {
         if (A == 0) {
+            if (B == 0) {
+                revert OrderDisabled();
+            }
             return MathEx.mulDivC(x, ONE * ONE, B * B);
         }
 
@@ -773,9 +779,6 @@ abstract contract Strategies is Initializable {
     function _unpackOrders(
         uint256[3] memory values
     ) private pure returns (Order[2] memory orders, bool ordersInverted) {
-        if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
-            revert StrategyDoesNotExist();
-        }
         orders = [
             Order({
                 y: uint128(values[0] >> 0),

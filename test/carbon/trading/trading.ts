@@ -517,7 +517,7 @@ describe('Trading', () => {
             }
         });
 
-        describe('reverts if tradeActions provided with strategyIds that do not exist', () => {
+        describe('reverts if attempting to trade on a disabled order', () => {
             const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
             for (const { byTargetAmount } of permutations) {
                 it(`byTargetAmount: ${byTargetAmount}`, async () => {
@@ -529,10 +529,14 @@ describe('Trading', () => {
                     });
                     const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
                         testCase;
-                    await createStrategies(strategies);
 
-                    // edit one of the actions to use a strategy that does not exist
-                    tradeActions[2].strategyId = generateStrategyId(2, 1).toString();
+                    // edit one of the target orders and disable it by setting all rates to 0
+                    const index = BigNumber.from(tradeActions[0].strategyId).mask(128).sub(1).toNumber();
+                    const order = strategies[index].orders[1];
+                    order.lowestRate = '0';
+                    order.highestRate = '0';
+                    order.marginalRate = '0';
+                    await createStrategies(strategies);
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
@@ -547,7 +551,43 @@ describe('Trading', () => {
                             targetSymbol,
                             byTargetAmount
                         })
-                    ).to.be.revertedWithError('StrategyDoesNotExist');
+                    ).to.be.revertedWithError('OrderDisabled');
+                });
+            }
+        });
+
+        describe('reverts if attempting to trade on a non-existing strategy', () => {
+            const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+            for (const { byTargetAmount } of permutations) {
+                it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                    // create testCase and strategies to use for assertions
+                    const testCase = testCaseFactory({
+                        byTargetAmount,
+                        sourceSymbol: TokenSymbol.ETH,
+                        targetSymbol: TokenSymbol.TKN0
+                    });
+                    const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
+                        testCase;
+
+                    await createStrategies(strategies);
+
+                    // edit one of the actions to use a strategy that does not exist
+                    tradeActions[2].strategyId = generateStrategyId(1, 1000).toString();
+
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
+
+                    // assert
+                    await expect(
+                        trade({
+                            sourceAmount,
+                            targetAmount,
+                            tradeActions,
+                            sourceSymbol,
+                            targetSymbol,
+                            byTargetAmount
+                        })
+                    ).to.be.revertedWithError('OrderDisabled');
                 });
             }
         });
