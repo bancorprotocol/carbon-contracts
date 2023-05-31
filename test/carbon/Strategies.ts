@@ -1,4 +1,9 @@
-import Contracts, { TestCarbonController, TestERC20Burnable, Voucher } from '../../components/Contracts';
+import Contracts, {
+    TestCarbonController,
+    TestERC20Burnable,
+    TestERC20FeeOnTransfer,
+    Voucher
+} from '../../components/Contracts';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
 import {
     DEFAULT_TRADING_FEE_PPM,
@@ -9,7 +14,14 @@ import {
 import { Roles } from '../../utils/Roles';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../utils/TokenData';
 import { toPPM } from '../../utils/Types';
-import { createBurnableToken, createCarbonController, createProxy, createSystem, Tokens } from '../helpers/Factory';
+import {
+    createBurnableToken,
+    createCarbonController,
+    createFeeOnTransferToken,
+    createProxy,
+    createSystem,
+    Tokens
+} from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { getBalance, transfer } from '../helpers/Utils';
 import { CreateStrategyParams, generateStrategyId, TestOrder, UpdateStrategyParams } from './trading/tradingHelpers';
@@ -36,6 +48,7 @@ describe('Strategy', () => {
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
     let token2: TestERC20Burnable;
+    let feeOnTransferToken: TestERC20FeeOnTransfer;
     let voucher: Voucher;
     let tokens: Tokens = {};
 
@@ -56,6 +69,7 @@ describe('Strategy', () => {
         token0 = tokens[TokenSymbol.TKN0];
         token1 = tokens[TokenSymbol.TKN1];
         token2 = tokens[TokenSymbol.TKN2];
+        feeOnTransferToken = await createFeeOnTransferToken(new TokenData(TokenSymbol.TKN));
     });
 
     /**
@@ -504,6 +518,28 @@ describe('Strategy', () => {
             await expect(
                 carbonController.createStrategy(token0.address, token1.address, [order, order], { value: 1000 })
             ).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
+        });
+
+        it('reverts for fee on transfer tokens', async () => {
+            const order = generateTestOrder();
+            await feeOnTransferToken.approve(carbonController.address, order.y);
+            await token0.approve(carbonController.address, order.y);
+            await token1.approve(carbonController.address, order.y);
+            await expect(
+                carbonController.createStrategy(feeOnTransferToken.address, token1.address, [order, order])
+            ).to.be.revertedWithError('TokenAmountMismatch');
+            await expect(
+                carbonController.createStrategy(token0.address, feeOnTransferToken.address, [order, order])
+            ).to.be.revertedWithError('TokenAmountMismatch');
+            // set fee side
+            await feeOnTransferToken.approve(carbonController.address, order.y * 2);
+            await feeOnTransferToken.setFeeSide(false);
+            await expect(
+                carbonController.createStrategy(feeOnTransferToken.address, token1.address, [order, order])
+            ).to.be.revertedWithError('TokenAmountMismatch');
+            await expect(
+                carbonController.createStrategy(token0.address, feeOnTransferToken.address, [order, order])
+            ).to.be.revertedWithError('TokenAmountMismatch');
         });
 
         it('reverts when paused', async () => {
@@ -1164,6 +1200,33 @@ describe('Strategy', () => {
                 value: 100
             });
             await expect(tx).to.be.revertedWithError('UnnecessaryNativeTokenReceived');
+        });
+
+        it('reverts for fee on transfer tokens', async () => {
+            const order = generateTestOrder();
+            // disable fee to create strategy
+            await feeOnTransferToken.setFeeEnabled(false);
+            // approve
+            await feeOnTransferToken.approve(carbonController.address, order.y);
+            await token0.approve(carbonController.address, order.y);
+            await token1.approve(carbonController.address, order.y);
+            // create strategy
+            await carbonController.createStrategy(feeOnTransferToken.address, token1.address, [order, order]);
+            // enable fee to test strategy update
+            await feeOnTransferToken.setFeeEnabled(true);
+            // increase order y to trigger check
+            const newOrder = generateTestOrder();
+            newOrder.y = newOrder.y.add(1000);
+            // approve
+            await feeOnTransferToken.approve(carbonController.address, newOrder.y);
+            await token0.approve(carbonController.address, order.y);
+            await token1.approve(carbonController.address, order.y);
+            let tx = carbonController.updateStrategy(SID1, [order, order], [newOrder, newOrder]);
+            await expect(tx).to.be.revertedWithError('TokenAmountMismatch');
+            // change fee side
+            await feeOnTransferToken.setFeeSide(false);
+            tx = carbonController.updateStrategy(SID1, [order, order], [newOrder, newOrder]);
+            await expect(tx).to.be.revertedWithError('TokenAmountMismatch');
         });
 
         it('reverts when paused', async () => {

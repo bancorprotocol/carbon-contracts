@@ -29,6 +29,17 @@ export const getBalance = async (token: TokenWithAddress, account: string | Addr
     return await (await Contracts.ERC20.attach(tokenAddress)).balanceOf(accountAddress);
 };
 
+export const getEvent = async (tx: ContractTransaction, eventName: string) => {
+    const events = (await tx.wait()).events;
+
+    const filteredEvents = events?.filter((e) => e.event === eventName);
+    if (filteredEvents === undefined) {
+        return [];
+    } else {
+        return filteredEvents;
+    }
+};
+
 export const getBalances = async (tokens: TokenWithAddress[], account: string | Addressable) => {
     const balances: { [balance: string]: BigNumber } = {};
     for (const token of tokens) {
