@@ -2,6 +2,7 @@ import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/carbon
 import {
     CreateStrategyParams,
     generateStrategyId,
+    generateTestOrder,
     mulDivC,
     mulDivF,
     setConstraint,
@@ -632,18 +633,6 @@ import { ethers, getNamedAccounts } from 'hardhat';
             });
 
             const SID1 = generateStrategyId(1, 1);
-
-            /**
-             * generates a test order
-             */
-            const generateTestOrder = (): TestOrder => {
-                return {
-                    y: BigNumber.from(800000),
-                    z: BigNumber.from(8000000),
-                    A: BigNumber.from(736899889),
-                    B: BigNumber.from(12148001999)
-                };
-            };
 
             /**
              * creates a test strategy, handles funding and approvals

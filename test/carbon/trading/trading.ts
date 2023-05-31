@@ -17,7 +17,7 @@ import { expect } from 'chai';
 import Decimal from 'decimal.js';
 import { BigNumber, BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
-import { SimpleTradeParams, TestOrder, TradeParams, TradeTestReturnValues, generateStrategyId, 
+import { SimpleTradeParams, TradeParams, TradeTestReturnValues, generateStrategyId, 
     mulDivC, mulDivF, setConstraint, toFixed } from './tradingHelpers';
 
 const permutations: FactoryOptions[] = [
@@ -303,18 +303,6 @@ describe('Trading', () => {
             tradingFeeAmount
         );
         await transfer(deployer, tokens[sourceSymbol], trader, expectedSourceAmount);
-    };
-
-    /**
-     * generates a test order
-     */
-    const generateTestOrder = (): TestOrder => {
-        return {
-            y: BigNumber.from(800000),
-            z: BigNumber.from(8000000),
-            A: BigNumber.from(736899889),
-            B: BigNumber.from(12148001999)
-        };
     };
 
     describe('validations', () => {
