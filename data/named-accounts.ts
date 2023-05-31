@@ -23,7 +23,7 @@ const TestNamedAccounts = {
         ...mainnet('0x7f62f9592b823331E012D3c5DdF2A7714CfB9de2')
     },
     bntWhale: {
-        ...mainnet('0xA744a64Dfd51e4feE3360f1EC1509D329047d7db')
+        ...mainnet('0x221A0e3C9AcEa6B3f1CC9DfC7063509c89bE7BC3')
     }
 };
 
