@@ -18,7 +18,7 @@ import Decimal from 'decimal.js';
 import { BigNumber, BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
 import { SimpleTradeParams, TradeParams, TradeTestReturnValues, generateStrategyId, 
-    mulDivC, mulDivF, setConstraint, toFixed } from './tradingHelpers';
+    generateTestOrder, mulDivC, mulDivF, setConstraint, toFixed } from './tradingHelpers';
 
 const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.TKN0, byTargetAmount: true, inverseOrders: true },

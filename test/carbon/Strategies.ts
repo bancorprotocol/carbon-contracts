@@ -24,7 +24,13 @@ import {
 } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
 import { getBalance, transfer } from '../helpers/Utils';
-import { CreateStrategyParams, generateStrategyId, generateTestOrder, TestOrder, UpdateStrategyParams } from './trading/tradingHelpers';
+import {
+    CreateStrategyParams,
+    generateStrategyId,
+    generateTestOrder,
+    TestOrder,
+    UpdateStrategyParams
+} from './trading/tradingHelpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber, ContractTransaction } from 'ethers';
