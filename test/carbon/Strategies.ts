@@ -532,7 +532,7 @@ describe('Strategy', () => {
                 carbonController.createStrategy(token0.address, feeOnTransferToken.address, [order, order])
             ).to.be.revertedWithError('BalanceMismatch');
             // set fee side
-            await feeOnTransferToken.approve(carbonController.address, order.y * 2);
+            await feeOnTransferToken.approve(carbonController.address, order.y.mul(2));
             await feeOnTransferToken.setFeeSide(false);
             await expect(
                 carbonController.createStrategy(feeOnTransferToken.address, token1.address, [order, order])
