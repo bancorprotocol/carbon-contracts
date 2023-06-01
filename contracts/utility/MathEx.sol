@@ -63,6 +63,71 @@ library MathEx {
     }
 
     /**
+    * @dev returns the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
+    */
+    function minFactor(uint256 x, uint256 y) internal pure returns (uint256) {
+        Uint512 memory xy = _mul512(x, y);
+        unchecked {
+            // safe because:
+            // - if `x < 2 ^ 256 - 1` or `y < 2 ^ 256 - 1`
+            //   then `xy.hi < 2 ^ 256 - 2`
+            //   hence neither `xy.hi + 1` nor `xy.hi + 2` overflows
+            // - if `x = 2 ^ 256 - 1` and `y = 2 ^ 256 - 1`
+            //   then `xy.hi = 2 ^ 256 - 2 = ~xy.lo`
+            //   hence `xy.hi + 1`, which does not overflow, is computed
+            return xy.hi > ~xy.lo ? xy.hi + 2 : xy.hi + 1;
+        }
+
+        /* reasoning:
+        |
+        |   general:
+        |   - find the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
+        |   - the value of `x * y` is represented via `2 ^ 256 * xy.hi + xy.lo`
+        |   - the expression `~xy.lo` is equivalent to `2 ^ 256 - 1 - xy.lo`
+        |   
+        |   symbols:
+        |   - let `H` denote `xy.hi`
+        |   - let `L` denote `xy.lo`
+        |   - let `N` denote `2 ^ 256 - 1`
+        |   
+        |   inference:
+        |   `x * y / z <= 2 ^ 256 - 1`     <-->
+        |   `x * y / (2 ^ 256 - 1) <= z`   <-->
+        |   `((N + 1) * H + L) / N <= z`   <-->
+        |   `(N * H + H + L) / N <= z`     <-->
+        |   `H + (H + L) / N <= z`
+        |   
+        |   inference:
+        |   `0 <= H <= N && 0 <= L <= N`   <-->
+        |   `0 <= H + L <= N + N`          <-->
+        |   `0 <= H + L <= N * 2`          <-->
+        |   `0 <= (H + L) / N <= 2`
+        |   
+        |   inference:
+        |   - `0 = (H + L) / N` --> `H + L = 0` --> `x * y = 0` --> `z = 1 = H + 1`
+        |   - `0 < (H + L) / N <= 1` --> `H + (H + L) / N <= H + 1` --> `z = H + 1`
+        |   - `1 < (H + L) / N <= 2` --> `H + (H + L) / N <= H + 2` --> `z = H + 2`
+        |   
+        |   implementation:
+        |   - if `xy.hi > ~xy.lo`:
+        |     `~L < H <= N`                         <-->
+        |     `N - L < H <= N`                      <-->
+        |     `N < H + L <= N + L`                  <-->
+        |     `1 < (H + L) / N <= 2`                <-->
+        |     `H + 1 < H + (H + L) / N <= H + 2`    <-->
+        |     `z = H + 2`
+        |   - if `xy.hi <= ~xy.lo`:
+        |     `H <= ~L`                             <-->
+        |     `H <= N - L`                          <-->
+        |     `H + L <= N`                          <-->
+        |     `(H + L) / N <= 1`                    <-->
+        |     `H + (H + L) / N <= H + 1`            <-->
+        |     `z = H + 1`
+        |
+        */
+    }
+
+    /**
      * @dev returns the value of `x * y`
      */
     function _mul512(uint256 x, uint256 y) private pure returns (Uint512 memory) {
@@ -74,7 +139,10 @@ library MathEx {
                 return Uint512({ hi: p - q, lo: q });
             }
         }
-        return Uint512({ hi: _unsafeSub(p, q) - 1, lo: q });
+        unchecked {
+            // safe because `p < q` hence `_unsafeSub(p, q) > 0`
+            return Uint512({ hi: _unsafeSub(p, q) - 1, lo: q });
+        }
     }
 
     /**
