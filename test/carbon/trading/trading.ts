@@ -9,7 +9,7 @@ import {
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
 import { createBurnableToken, createFeeOnTransferToken, createSystem, Tokens } from '../../helpers/Factory';
 import { latest } from '../../helpers/Time';
-import { getBalance, getEvent, transfer } from '../../helpers/Utils';
+import { getBalance, getEvents, transfer } from '../../helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../utility/carbon-sdk';
 import { FactoryOptions, testCaseFactory, TestStrategy, TestTradeActions } from './testDataFactory';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -760,7 +760,7 @@ describe('Trading', () => {
             await transfer(deployer, token1, marketMaker, order.y);
             // create strategy
             const tx = await carbonController.connect(marketMaker).createStrategy(feeOnTransferToken.address, token1.address, [order, order]);
-            const strategyCreatedEvent = await getEvent(tx, 'StrategyCreated');
+            const strategyCreatedEvent = await getEvents(tx, 'StrategyCreated');
             const id = strategyCreatedEvent[0]?.args?.id;
             // enable fee to test trading
             await feeOnTransferToken.setFeeEnabled(true);
@@ -794,7 +794,7 @@ describe('Trading', () => {
             await transfer(deployer, token1, marketMaker, order.y);
             // create strategy
             const tx = await carbonController.connect(marketMaker).createStrategy(feeOnTransferToken.address, token1.address, [order, order]);
-            const strategyCreatedEvent = await getEvent(tx, 'StrategyCreated');
+            const strategyCreatedEvent = await getEvents(tx, 'StrategyCreated');
             const id = strategyCreatedEvent[0]?.args?.id;
             // enable fee to test trading
             await feeOnTransferToken.setFeeEnabled(true);
