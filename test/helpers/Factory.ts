@@ -5,6 +5,7 @@ import Contracts, {
     TestBNT,
     TestCarbonController,
     TestERC20Burnable,
+    TestERC20FeeOnTransfer,
     TestERC20Token,
     Voucher
 } from '../../components/Contracts';
@@ -126,7 +127,8 @@ export const createSystem = async () => waffle.loadFixture(createSystemFixture);
 export const createToken = async (
     tokenData: TokenData,
     totalSupply: BigNumberish = toWei(1_000_000_000_000),
-    burnable = false
+    burnable = false,
+    feeOnTransfer = false
 ): Promise<TokenWithAddress> => {
     const symbol = tokenData.symbol();
 
@@ -139,11 +141,18 @@ export const createToken = async (
         case TokenSymbol.TKN0:
         case TokenSymbol.TKN1:
         case TokenSymbol.TKN2: {
-            const token = await (burnable ? Contracts.TestERC20Burnable : Contracts.TestERC20Token).deploy(
-                tokenData.name(),
-                tokenData.symbol(),
-                totalSupply
-            );
+            let token;
+            if (burnable) {
+                token = await Contracts.TestERC20Burnable.deploy(tokenData.name(), tokenData.symbol(), totalSupply);
+            } else if (feeOnTransfer) {
+                token = await Contracts.TestERC20FeeOnTransfer.deploy(
+                    tokenData.name(),
+                    tokenData.symbol(),
+                    totalSupply
+                );
+            } else {
+                token = await Contracts.TestERC20Token.deploy(tokenData.name(), tokenData.symbol(), totalSupply);
+            }
 
             if (!tokenData.isDefaultDecimals()) {
                 await token.updateDecimals(tokenData.decimals());
@@ -160,6 +169,11 @@ export const createToken = async (
             throw new Error(`Unsupported type ${symbol}`);
     }
 };
+
+export const createFeeOnTransferToken = async (
+    tokenData: TokenData,
+    totalSupply: BigNumberish = toWei(1_000_000_000)
+) => createToken(new TokenData(TokenSymbol.TKN), totalSupply, false, true) as Promise<TestERC20FeeOnTransfer>;
 
 export const createBurnableToken = async (tokenData: TokenData, totalSupply: BigNumberish = toWei(1_000_000_000)) =>
     createToken(tokenData, totalSupply, true) as Promise<TestERC20Burnable>;

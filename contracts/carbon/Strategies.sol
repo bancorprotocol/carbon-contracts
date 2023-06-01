@@ -130,6 +130,7 @@ abstract contract Strategies is Initializable {
     using SafeCastUpgradeable for uint256;
 
     error NativeAmountMismatch();
+    error BalanceMismatch();
     error GreaterThanMaxInput();
     error LowerThanMinReturn();
     error InsufficientCapacity();
@@ -264,8 +265,8 @@ abstract contract Strategies is Initializable {
         uint256 value
     ) internal returns (uint256) {
         // transfer funds
-        _validateDepositAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value);
-        _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
+        _validateDepositAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value, true);
+        _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value, true);
 
         // store id
         uint128 counter = _strategyCounter + 1;
@@ -333,7 +334,7 @@ abstract contract Strategies is Initializable {
             } else if (newOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - orders[i].y;
-                _validateDepositAndRefundExcessNativeToken(token, owner, delta, value);
+                _validateDepositAndRefundExcessNativeToken(token, owner, delta, value, true);
             }
 
             // refund native token when there's no deposit in the order
@@ -481,7 +482,8 @@ abstract contract Strategies is Initializable {
             params.tokens.source,
             params.trader,
             totals.sourceAmount,
-            params.txValue
+            params.txValue,
+            false
         );
         _withdrawFunds(params.tokens.target, payable(params.trader), totals.targetAmount);
 
@@ -623,7 +625,8 @@ abstract contract Strategies is Initializable {
         Token token,
         address owner,
         uint256 depositAmount,
-        uint256 txValue
+        uint256 txValue,
+        bool validateDepositAmount
     ) private {
         if (token.isNative()) {
             if (txValue < depositAmount) {
@@ -635,7 +638,16 @@ abstract contract Strategies is Initializable {
                 payable(address(owner)).sendValue(txValue - depositAmount);
             }
         } else if (depositAmount > 0) {
-            token.safeTransferFrom(owner, address(this), depositAmount);
+            if (validateDepositAmount) {
+                uint256 prevBalance = token.balanceOf(address(this));
+                token.safeTransferFrom(owner, address(this), depositAmount);
+                uint256 newBalance = token.balanceOf(address(this));
+                if (newBalance - prevBalance != depositAmount) {
+                    revert BalanceMismatch();
+                }
+            } else {
+                token.safeTransferFrom(owner, address(this), depositAmount);
+            }
         }
     }
 
