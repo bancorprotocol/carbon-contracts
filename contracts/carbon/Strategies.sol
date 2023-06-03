@@ -455,7 +455,7 @@ abstract contract Strategies is Initializable {
                 packedOrders[2] = newPackedOrders[2];
             }
 
-            // emit update events if necessary
+            // emit update event
             if (ordersInverted) {
                 emit StrategyUpdated({
                     id: strategyId,
@@ -509,8 +509,6 @@ abstract contract Strategies is Initializable {
             false
         );
         _withdrawFunds(params.tokens.target, payable(params.trader), params.targetAmount);
-
-        // update fee counters
 
         // tokens traded successfully, emit event
         emit TokensTraded({
