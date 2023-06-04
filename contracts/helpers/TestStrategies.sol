@@ -13,4 +13,12 @@ contract TestStrategies is Strategies {
         (uint128 sourceAmount, ) = _singleTradeActionSourceAndTargetAmounts(order, amount, true);
         return sourceAmount;
     }
+
+    function isValidRate(uint256 rate) external pure returns (bool) {
+        return _validRate(rate);
+    }
+
+    function expandedRate(uint256 rate) external pure returns (uint256) {
+        return _expandRate(rate);
+    }
 }

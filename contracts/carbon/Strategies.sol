@@ -838,7 +838,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev expand a given rate
      */
-    function _expandRate(uint256 rate) private pure returns (uint256) {
+    function _expandRate(uint256 rate) internal pure returns (uint256) {
         // safe because no `+` or `-` or `*`
         unchecked {
             return (rate % ONE) << (rate / ONE);
@@ -848,7 +848,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev validates a given rate
      */
-    function _validRate(uint256 rate) private pure returns (bool) {
+    function _validRate(uint256 rate) internal pure returns (bool) {
         // safe because no `+` or `-` or `*`
         unchecked {
             return (ONE >> (rate / ONE)) > 0;
