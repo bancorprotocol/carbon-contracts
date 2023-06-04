@@ -725,11 +725,11 @@ abstract contract Strategies is Initializable {
      *
      */
     function _calculateTradeTargetAmount(
-        uint256 x,
-        uint256 y,
-        uint256 z,
-        uint256 A,
-        uint256 B
+        uint256 x, // < 2 ^ 128
+        uint256 y, // < 2 ^ 128
+        uint256 z, // < 2 ^ 128
+        uint256 A, // < 2 ^ 96
+        uint256 B  // < 2 ^ 96
     ) private pure returns (uint256) {
         if (A == 0) {
             if (B == 0) {
@@ -764,11 +764,11 @@ abstract contract Strategies is Initializable {
      *
      */
     function _calculateTradeSourceAmount(
-        uint256 x,
-        uint256 y,
-        uint256 z,
-        uint256 A,
-        uint256 B
+        uint256 x, // < 2 ^ 128
+        uint256 y, // < 2 ^ 128
+        uint256 z, // < 2 ^ 128
+        uint256 A, // < 2 ^ 96
+        uint256 B  // < 2 ^ 96
     ) private pure returns (uint256) {
         if (A == 0) {
             if (B == 0) {
