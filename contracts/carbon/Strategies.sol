@@ -456,25 +456,14 @@ abstract contract Strategies is Initializable {
             }
 
             // emit update event
-            if (ordersInverted) {
-                emit StrategyUpdated({
-                    id: strategyId,
-                    token0: params.pair.tokens[1],
-                    token1: params.pair.tokens[0],
-                    order0: orders[0],
-                    order1: orders[1],
-                    reason: STRATEGY_UPDATE_REASON_TRADE
-                });
-            } else {
-                emit StrategyUpdated({
-                    id: strategyId,
-                    token0: params.pair.tokens[0],
-                    token1: params.pair.tokens[1],
-                    order0: orders[0],
-                    order1: orders[1],
-                    reason: STRATEGY_UPDATE_REASON_TRADE
-                });
-            }
+            emit StrategyUpdated({
+                id: strategyId,
+                token0: params.pair.tokens[ordersInverted ? 1 : 0],
+                token1: params.pair.tokens[ordersInverted ? 0 : 1],
+                order0: orders[0],
+                order1: orders[1],
+                reason: STRATEGY_UPDATE_REASON_TRADE
+            });
 
             params.sourceAmount += sourceAmount;
             params.targetAmount += targetAmount;
