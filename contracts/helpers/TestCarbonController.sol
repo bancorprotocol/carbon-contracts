@@ -16,5 +16,9 @@ contract TestCarbonController is CarbonController {
         return _accumulatedFees[token];
     }
 
+    function version() public pure virtual override returns (uint16) {
+        return 2;
+    }
+
     receive() external payable {}
 }

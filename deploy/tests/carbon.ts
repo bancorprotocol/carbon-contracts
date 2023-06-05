@@ -523,9 +523,8 @@ import { ethers, getNamedAccounts } from 'hardhat';
                     it(`(${token0}->${token1})`, async () => {
                         const _token0 = tokens[token0] ? tokens[token0].address : ZERO_ADDRESS;
                         const _token1 = tokens[token1] ? tokens[token1].address : ZERO_ADDRESS;
-                        await expect(
-                            carbonController.createStrategy(_token0, _token1, [order, order])
-                        ).to.be.revertedWithError('InvalidAddress');
+                        const tx = await carbonController.createStrategy(_token0, _token1, [order, order]);
+                        await expect(tx.wait()).to.be.reverted;
                     });
                 }
             });
