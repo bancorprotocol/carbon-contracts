@@ -451,7 +451,7 @@ abstract contract Strategies is Initializable {
             }
 
             // the other z value has possibly changed only if the first one hasn't
-            else if (packedOrdersMemory[2] != newPackedOrders[2]) {
+            if (packedOrdersMemory[2] != newPackedOrders[2]) {
                 packedOrders[2] = newPackedOrders[2];
             }
 
