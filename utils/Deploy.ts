@@ -5,7 +5,7 @@ import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
 import { toWei } from './Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, Contract, ContractInterface, utils } from 'ethers';
+import { BigNumber, BigNumberish, Contract, ContractInterface, utils } from 'ethers';
 import fs from 'fs';
 import glob from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
@@ -87,7 +87,7 @@ export const getNamedSigners = async (): Promise<Record<string, SignerWithAddres
     return signers;
 };
 
-export const fundAccount = async (account: string | SignerWithAddress) => {
+export const fundAccount = async (account: string | SignerWithAddress, amount?: BigNumberish) => {
     if (!isMainnetFork()) {
         return;
     }
@@ -95,14 +95,14 @@ export const fundAccount = async (account: string | SignerWithAddress) => {
     const address = typeof account === 'string' ? account : account.address;
 
     const balance = await ethers.provider.getBalance(address);
-    if (balance.gte(TEST_MINIMUM_BALANCE)) {
+    if (!amount && balance.gte(TEST_MINIMUM_BALANCE)) {
         return;
     }
 
     const { ethWhale } = await getNamedSigners();
 
     return ethWhale.sendTransaction({
-        value: TEST_FUNDING,
+        value: amount ?? TEST_FUNDING,
         to: address
     });
 };
@@ -294,18 +294,18 @@ export const deploy = async (options: DeployOptions) => {
         Logger.log(`  initialized proxy implementation`);
     }
 
-    // if (!proxy) {
-    const data = { name, contract: contractName };
+    if (!(isProxy && isLive())) {
+        const data = { name, contract: contractName };
 
-    await saveTypes(data);
+        await saveTypes(data);
 
-    await verifyTenderlyFork({
-        address: res.address,
-        proxy: isProxy,
-        implementation: isProxy ? res.implementation : undefined,
-        ...data
-    });
-    // }
+        await verifyTenderlyFork({
+            address: res.address,
+            proxy: isProxy,
+            implementation: isProxy ? res.implementation : undefined,
+            ...data
+        });
+    }
 
     return res.address;
 };

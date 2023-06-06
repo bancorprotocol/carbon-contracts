@@ -16,23 +16,20 @@ const TestNamedAccounts = {
     daiWhale: {
         ...mainnet('0x1B7BAa734C00298b9429b518D621753Bb0f6efF2')
     },
-    linkWhale: {
-        ...mainnet('0xc6bed363b30DF7F35b601a5547fE56cd31Ec63DA')
-    },
     usdcWhale: {
         ...mainnet('0x55FE002aefF02F77364de339a1292923A15844B8')
     },
     wbtcWhale: {
         ...mainnet('0x7f62f9592b823331E012D3c5DdF2A7714CfB9de2')
+    },
+    bntWhale: {
+        ...mainnet('0x221A0e3C9AcEa6B3f1CC9DfC7063509c89bE7BC3')
     }
 };
 
 const TokenNamedAccounts = {
     dai: {
         ...mainnet('0x6B175474E89094C44Da98b954EedeAC495271d0F')
-    },
-    link: {
-        ...mainnet('0x514910771AF9Ca656af840dff83E8264EcF986CA')
     },
     weth: {
         ...mainnet('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2')

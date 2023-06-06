@@ -1,19 +1,37 @@
-name: CI
+name: Nightly
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - dev
-      - master
-  pull_request:
+  schedule:
+    - cron: '0 0 * * *' # at 12:00:00pm every day
 
 jobs:
-  test:
-    name: Test
+  check-latest-commit-date:
+    name: Check the latest commit
 
     runs-on: ubuntu-latest
-    timeout-minutes: 600
+
+    outputs:
+      should-run: ${{ steps.should-run.outputs.should-run }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check the latest commit
+        id: should-run
+        continue-on-error: true
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          [[ $(git rev-list --after="24 hours" --first-parent HEAD) ]] && echo "should-run=true" >> $GITHUB_OUTPUT
+
+  test:
+    name: Full test
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 1200
+
+    needs: check-latest-commit-date
+    if: needs.check-latest-commit-date.outputs.should-run == 'true'
 
     steps:
       - name: Cancel previous runs
@@ -56,4 +74,4 @@ jobs:
         run: yarn build
 
       - name: Test
-        run: yarn test:ci
+        run: yarn test:nightly

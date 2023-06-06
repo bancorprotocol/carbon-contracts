@@ -15,7 +15,7 @@ describeDeployment(__filename, () => {
 
     it('should deploy and configure the carbon controller contract', async () => {
         expect(await proxyAdmin.getProxyAdmin(carbonController.address)).to.equal(proxyAdmin.address);
-        expect(await carbonController.version()).to.equal(2);
+        expect(await carbonController.version()).to.equal(3);
     });
 
     it('carbon controller implementation should be initialized', async () => {

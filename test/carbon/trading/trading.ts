@@ -1,5 +1,4 @@
-import { CarbonController, TestERC20Burnable } from '../../../components/Contracts';
-import { TradeActionStruct } from '../../../typechain-types/contracts/carbon/CarbonController';
+import { CarbonController, TestERC20Burnable, TestERC20FeeOnTransfer } from '../../../components/Contracts';
 import {
     DEFAULT_TRADING_FEE_PPM,
     MAX_UINT128,
@@ -8,62 +7,18 @@ import {
     ZERO_ADDRESS
 } from '../../../utils/Constants';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
-import { createBurnableToken, createSystem, Tokens } from '../../helpers/Factory';
+import { createBurnableToken, createFeeOnTransferToken, createSystem, Tokens } from '../../helpers/Factory';
 import { latest } from '../../helpers/Time';
-import { getBalance, transfer } from '../../helpers/Utils';
+import { getBalance, getEvents, transfer } from '../../helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../utility/carbon-sdk';
 import { FactoryOptions, testCaseFactory, TestStrategy, TestTradeActions } from './testDataFactory';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import Decimal from 'decimal.js';
-import { BigNumber, BigNumberish, ContractReceipt } from 'ethers';
+import { BigNumber, BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
-
-const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
-
-type TradeTestReturnValues = {
-    tradingFeeAmount: BigNumber;
-    gasUsed: BigNumber;
-    receipt: ContractReceipt;
-    value: BigNumber;
-};
-
-type TradeParams = {
-    tradeActions: TestTradeActions[];
-    sourceSymbol: string;
-    targetSymbol: string;
-    sourceAmount: BigNumberish;
-    targetAmount: BigNumberish;
-    byTargetAmount: boolean;
-    sendWithExcessNativeTokenValue?: boolean;
-    constraint?: BigNumberish;
-};
-
-type SimpleTradeParams = {
-    sourceToken: string;
-    targetToken: string;
-    byTargetAmount: boolean;
-    sourceAmount: BigNumberish;
-    tradeActions?: TradeActionStruct[];
-    deadlineDelta?: number;
-    txValue?: BigNumberish;
-    constraint?: BigNumberish;
-};
-
-const mulDivF = (x: BigNumberish, y: BigNumberish, z: BigNumberish) => BigNumber.from(x).mul(y).div(z);
-const mulDivC = (x: BigNumberish, y: BigNumberish, z: BigNumberish) => BigNumber.from(x).mul(y).add(z).sub(1).div(z);
-const toFixed = (x: Decimal) => new Decimal(x.toFixed(12)).toFixed();
-
-const setConstraint = (
-    constraint: BigNumberish | undefined,
-    byTargetAmount: boolean,
-    expectedResultAmount: BigNumberish
-): BigNumberish => {
-    if (!constraint && constraint !== 0) {
-        return byTargetAmount ? expectedResultAmount : 1;
-    }
-    return constraint;
-};
+import { SimpleTradeParams, TradeParams, TradeTestReturnValues, generateStrategyId, 
+    generateTestOrder, mulDivC, mulDivF, setConstraint, toFixed } from './tradingHelpers';
 
 const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.TKN0, byTargetAmount: true, inverseOrders: true },
@@ -89,6 +44,7 @@ describe('Trading', () => {
     let carbonController: CarbonController;
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
+    let feeOnTransferToken: TestERC20FeeOnTransfer;
     let tokens: Tokens = {};
 
     before(async () => {
@@ -110,6 +66,7 @@ describe('Trading', () => {
         }
         token0 = tokens[TokenSymbol.TKN0];
         token1 = tokens[TokenSymbol.TKN1];
+        feeOnTransferToken = await createFeeOnTransferToken(new TokenData(TokenSymbol.TKN));
     });
 
     /**
@@ -562,7 +519,7 @@ describe('Trading', () => {
             }
         });
 
-        describe('reverts if tradeActions provided with strategyIds that do not exist', () => {
+        describe('reverts if attempting to trade on a disabled order', () => {
             const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
             for (const { byTargetAmount } of permutations) {
                 it(`byTargetAmount: ${byTargetAmount}`, async () => {
@@ -574,10 +531,14 @@ describe('Trading', () => {
                     });
                     const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
                         testCase;
-                    await createStrategies(strategies);
 
-                    // edit one of the actions to use a strategy that does not exist
-                    tradeActions[2].strategyId = generateStrategyId(2, 1).toString();
+                    // edit one of the target orders and disable it by setting all rates to 0
+                    const index = BigNumber.from(tradeActions[0].strategyId).mask(128).sub(1).toNumber();
+                    const order = strategies[index].orders[1];
+                    order.lowestRate = '0';
+                    order.highestRate = '0';
+                    order.marginalRate = '0';
+                    await createStrategies(strategies);
 
                     // fund the user
                     await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
@@ -592,7 +553,43 @@ describe('Trading', () => {
                             targetSymbol,
                             byTargetAmount
                         })
-                    ).to.be.revertedWithError('StrategyDoesNotExist');
+                    ).to.be.revertedWithError('OrderDisabled');
+                });
+            }
+        });
+
+        describe('reverts if attempting to trade on a non-existing strategy', () => {
+            const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+            for (const { byTargetAmount } of permutations) {
+                it(`byTargetAmount: ${byTargetAmount}`, async () => {
+                    // create testCase and strategies to use for assertions
+                    const testCase = testCaseFactory({
+                        byTargetAmount,
+                        sourceSymbol: TokenSymbol.ETH,
+                        targetSymbol: TokenSymbol.TKN0
+                    });
+                    const { strategies, sourceAmount, tradeActions, targetAmount, sourceSymbol, targetSymbol } =
+                        testCase;
+
+                    await createStrategies(strategies);
+
+                    // edit one of the actions to use a strategy that does not exist
+                    tradeActions[2].strategyId = generateStrategyId(1, 1000).toString();
+
+                    // fund the user
+                    await fundTrader(sourceAmount, targetAmount, byTargetAmount, sourceSymbol);
+
+                    // assert
+                    await expect(
+                        trade({
+                            sourceAmount,
+                            targetAmount,
+                            tradeActions,
+                            sourceSymbol,
+                            targetSymbol,
+                            byTargetAmount
+                        })
+                    ).to.be.revertedWithError('OrderDisabled');
                 });
             }
         });
@@ -729,7 +726,7 @@ describe('Trading', () => {
         }
     });
 
-    describe('allows trading with tradingFree set to 0', async () => {
+    describe('allows trading with tradingFee set to 0', async () => {
         const permutations: FactoryOptions[] = [
             { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: false },
             { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: true }
@@ -788,6 +785,77 @@ describe('Trading', () => {
                 expect(event.event).to.eq('TokensTraded');
             });
         }
+    });
+
+    describe('allows trading with fee on transfer tokens', async () => {
+        it('(TKN->TKN1) | byTargetAmount: false', async () => {
+            const order = generateTestOrder();
+            // disable fee to create strategy
+            await feeOnTransferToken.setFeeEnabled(false);
+            // approve
+            await feeOnTransferToken.connect(marketMaker).approve(carbonController.address, order.y);
+            await token1.connect(marketMaker).approve(carbonController.address, order.y);
+            // transfer tokens to marketMaker
+            await transfer(deployer, feeOnTransferToken, marketMaker, order.y);
+            await transfer(deployer, token1, marketMaker, order.y);
+            // create strategy
+            const tx = await carbonController.connect(marketMaker).createStrategy(feeOnTransferToken.address, token1.address, [order, order]);
+            const strategyCreatedEvent = await getEvents(tx, 'StrategyCreated');
+            const id = strategyCreatedEvent[0]?.args?.id;
+            // enable fee to test trading
+            await feeOnTransferToken.setFeeEnabled(true);
+
+            // fund user for a trade
+            const sourceAmount = '800000000';
+            await transfer(deployer, feeOnTransferToken, trader, sourceAmount);
+            await feeOnTransferToken.connect(trader).approve(carbonController.address, sourceAmount);
+
+            // set trading fee to 0
+            await carbonController.setTradingFeePPM(0);
+
+            const tradeActions: TestTradeActions = {strategyId: id, amount: sourceAmount};
+            const deadline = (await latest()) + 1000;
+            const minReturn = 1;
+
+            await expect(carbonController.connect(trader).
+                tradeBySourceAmount(feeOnTransferToken.address, token1.address, [tradeActions], deadline, minReturn)).
+                not.to.be.revertedWithError('BalanceMismatch');
+        });
+        
+        it('(TKN1->TKN) | byTargetAmount: true', async () => {
+            const order = generateTestOrder();
+            // disable fee to create strategy
+            await feeOnTransferToken.setFeeEnabled(false);
+            // approve
+            await feeOnTransferToken.connect(marketMaker).approve(carbonController.address, order.y);
+            await token1.connect(marketMaker).approve(carbonController.address, order.y);
+            // transfer tokens to marketMaker
+            await transfer(deployer, feeOnTransferToken, marketMaker, order.y);
+            await transfer(deployer, token1, marketMaker, order.y);
+            // create strategy
+            const tx = await carbonController.connect(marketMaker).createStrategy(feeOnTransferToken.address, token1.address, [order, order]);
+            const strategyCreatedEvent = await getEvents(tx, 'StrategyCreated');
+            const id = strategyCreatedEvent[0]?.args?.id;
+            // enable fee to test trading
+            await feeOnTransferToken.setFeeEnabled(true);
+
+            // fund user for a trade
+            const sourceAmount = '800000000';
+            const targetAmount = '1';
+            await transfer(deployer, feeOnTransferToken, trader, sourceAmount);
+            await feeOnTransferToken.connect(trader).approve(carbonController.address, sourceAmount);
+
+            // set trading fee to 0
+            await carbonController.setTradingFeePPM(0);
+
+            const tradeActions: TestTradeActions = {strategyId: id, amount: targetAmount};
+            const deadline = (await latest()) + 1000;
+            const maxInput = sourceAmount;
+
+            await expect(carbonController.connect(trader).
+                tradeByTargetAmount(feeOnTransferToken.address, token1.address, [tradeActions], deadline, maxInput)).
+                not.to.be.revertedWithError('BalanceMismatch');
+        });
     });
 
     describe('emits StrategyUpdated event for every trade action', () => {

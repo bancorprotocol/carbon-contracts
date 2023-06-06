@@ -90,8 +90,8 @@ contract CarbonController is
     /**
      * @inheritdoc Upgradeable
      */
-    function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
-        return 2;
+    function version() public pure virtual override(IVersioned, Upgradeable) returns (uint16) {
+        return 3;
     }
 
     /**
@@ -287,10 +287,12 @@ contract CarbonController is
             byTargetAmount: false,
             constraint: minReturn,
             txValue: msg.value,
-            pair: _pair
+            pair: _pair,
+            sourceAmount: 0,
+            targetAmount: 0
         });
-        SourceAndTargetAmounts memory amounts = _trade(tradeActions, params);
-        return amounts.targetAmount;
+        _trade(tradeActions, params);
+        return params.targetAmount;
     }
 
     /**
@@ -319,10 +321,12 @@ contract CarbonController is
             byTargetAmount: true,
             constraint: maxInput,
             txValue: msg.value,
-            pair: _pair
+            pair: _pair,
+            sourceAmount: 0,
+            targetAmount: 0
         });
-        SourceAndTargetAmounts memory amounts = _trade(tradeActions, params);
-        return amounts.sourceAmount;
+        _trade(tradeActions, params);
+        return params.sourceAmount;
     }
 
     /**

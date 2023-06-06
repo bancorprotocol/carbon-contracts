@@ -11,4 +11,8 @@ contract TestMathEx {
     function mulDivC(uint256 x, uint256 y, uint256 z) external pure returns (uint256) {
         return MathEx.mulDivC(x, y, z);
     }
+
+    function minFactor(uint256 x, uint256 y) external pure returns (uint256) {
+        return MathEx.minFactor(x, y);
+    }
 }
