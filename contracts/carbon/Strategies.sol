@@ -718,7 +718,7 @@ abstract contract Strategies is Initializable {
         uint256 y, // < 2 ^ 128
         uint256 z, // < 2 ^ 128
         uint256 A, // < 2 ^ 96
-        uint256 B  // < 2 ^ 96
+        uint256 B /// < 2 ^ 96
     ) private pure returns (uint256) {
         if (A == 0) {
             if (B == 0) {
@@ -757,7 +757,7 @@ abstract contract Strategies is Initializable {
         uint256 y, // < 2 ^ 128
         uint256 z, // < 2 ^ 128
         uint256 A, // < 2 ^ 96
-        uint256 B  // < 2 ^ 96
+        uint256 B /// < 2 ^ 96
     ) private pure returns (uint256) {
         if (A == 0) {
             if (B == 0) {

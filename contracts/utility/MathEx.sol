@@ -58,8 +58,8 @@ library MathEx {
     }
 
     /**
-    * @dev returns the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
-    */
+     * @dev returns the smallest integer `z` such that `x * y / z <= 2 ^ 256 - 1`
+     */
     function minFactor(uint256 x, uint256 y) internal pure returns (uint256) {
         (uint256 hi, uint256 lo) = _mul512(x, y);
         unchecked {

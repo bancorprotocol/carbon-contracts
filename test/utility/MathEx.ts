@@ -31,7 +31,14 @@ describe('MathEx', () => {
             });
         }
 
-        const tuples = [[x, y], [x, z], [y, z], [x, y.add(z)], [x.add(z), y], [x.add(z), y.add(z)]];
+        const tuples = [
+            [x, y],
+            [x, z],
+            [y, z],
+            [x, y.add(z)],
+            [x.add(z), y],
+            [x.add(z), y.add(z)]
+        ];
         const values = tuples.filter((tuple) => tuple.every((value) => value.lte(MAX_UINT256)));
         for (const [x, y] of values) {
             it(`minFactor(${x}, ${y})`, async () => {
