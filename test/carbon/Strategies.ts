@@ -86,7 +86,7 @@ describe('Strategy', () => {
         // prepare variables
         const _params = { ...params };
         const order = _params.order ? _params.order : generateTestOrder();
-        const secondOrder = order ? order : generateTestOrder();
+        const secondOrder = order || generateTestOrder();
         const _owner = _params.owner ? _params.owner : owner;
         const _tokens = [_params.token0 ? _params.token0 : token0, _params.token1 ? _params.token1 : token1];
         const amounts = [order.y, order.y];
@@ -1437,7 +1437,7 @@ describe('Strategy', () => {
             disabledOrder.z = BigNumber.from(0);
             const secondOrder = generateTestOrder();
             // create strategy
-            await createStrategy({ order: disabledOrder, secondOrder: secondOrder });
+            await createStrategy({ order: disabledOrder, secondOrder });
 
             // prepare variables and transaction
             const tx = carbonController.connect(owner).deleteStrategy(SID1);
@@ -1455,7 +1455,7 @@ describe('Strategy', () => {
             disabledOrder.y = BigNumber.from(0);
             disabledOrder.z = BigNumber.from(0);
             // create strategy
-            await createStrategy({ order: order, secondOrder: disabledOrder });
+            await createStrategy({ order, secondOrder: disabledOrder });
 
             // prepare variables and transaction
             const tx = carbonController.connect(owner).deleteStrategy(SID1);
