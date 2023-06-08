@@ -19,6 +19,7 @@ import { BigNumber, BigNumberish } from 'ethers';
 import { ethers } from 'hardhat';
 import { SimpleTradeParams, TradeParams, TradeTestReturnValues, generateStrategyId, 
     generateTestOrder, mulDivC, mulDivF, setConstraint, toFixed } from './tradingHelpers';
+import { Roles } from '../../../utils/Roles';
 
 const permutations: FactoryOptions[] = [
     { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.TKN0, byTargetAmount: true, inverseOrders: true },
@@ -336,6 +337,25 @@ describe('Trading', () => {
                         })
                     ).to.be.revertedWithError('ZeroValue');
                 });
+            }
+        });
+
+        it('reverts when paused', async () => {
+            await carbonController
+                .connect(deployer)
+                .grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, marketMaker.address);
+            await carbonController.connect(marketMaker).pause();
+
+            const permutations = [{ byTargetAmount: false }, { byTargetAmount: true }];
+            for (const { byTargetAmount } of permutations) {
+                await expect(
+                    simpleTrade({
+                        byTargetAmount,
+                        sourceToken: token0.address,
+                        targetToken: token1.address,
+                        sourceAmount: 1
+                    })
+                ).to.be.revertedWithError('Pausable: paused');
             }
         });
 
@@ -978,6 +998,20 @@ describe('Trading', () => {
                 byTargetAmount: true,
                 inverseOrders: false,
                 equalHighestAndMarginalRate: true
+            },
+            {
+                sourceSymbol: TokenSymbol.TKN0,
+                targetSymbol: TokenSymbol.TKN1,
+                byTargetAmount: false,
+                inverseOrders: true,
+                equalHighestAndMarginalRate: true
+            },
+            {
+                sourceSymbol: TokenSymbol.TKN0,
+                targetSymbol: TokenSymbol.TKN1,
+                byTargetAmount: true,
+                inverseOrders: true,
+                equalHighestAndMarginalRate: true
             }
         ];
         for (const {
@@ -1319,6 +1353,55 @@ describe('Trading', () => {
                     sourceSymbol,
                     targetSymbol,
                     byTargetAmount
+                });
+
+                // create strategies
+                await createStrategies(testCase.strategies);
+
+                const { sourceAmount, targetAmount } = testCase;
+                const amountFn = byTargetAmount
+                    ? carbonController.calculateTradeSourceAmount
+                    : carbonController.calculateTradeTargetAmount;
+                const result = await amountFn(
+                    tokens[sourceSymbol].address,
+                    tokens[targetSymbol].address,
+                    testCase.tradeActions
+                );
+
+                // prepare variables for assertions
+                const tradingFeeAmount = getTradingFeeAmount(byTargetAmount, sourceAmount, targetAmount);
+                const { expectedSourceAmount, expectedTargetAmount } = expectedSourceTargetAmounts(
+                    byTargetAmount,
+                    sourceAmount,
+                    targetAmount,
+                    tradingFeeAmount
+                );
+                const expected = byTargetAmount ? expectedSourceAmount : expectedTargetAmount;
+
+                // assert
+                expect(result).to.eq(expected);
+            });
+        }
+    });
+
+    describe('trading amount functions return values for inversed orders', () => {
+        const permutations = [
+            { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.TKN0, byTargetAmount: false },
+            { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.ETH, byTargetAmount: false },
+            { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: false },
+            { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.TKN0, byTargetAmount: true },
+            { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.ETH, byTargetAmount: true },
+            { sourceSymbol: TokenSymbol.TKN0, targetSymbol: TokenSymbol.TKN1, byTargetAmount: true }
+        ];
+
+        for (const { sourceSymbol, targetSymbol, byTargetAmount } of permutations) {
+            it(`(${sourceSymbol}->${targetSymbol}) | byTargetAmount: ${byTargetAmount}`, async () => {
+                // create test case
+                const testCase = testCaseFactory({
+                    sourceSymbol,
+                    targetSymbol,
+                    byTargetAmount,
+                    inverseOrders: true
                 });
 
                 // create strategies

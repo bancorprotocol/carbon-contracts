@@ -68,6 +68,14 @@ describe('MathEx', () => {
                 }
             }
         }
+
+        for (const x of [BigNumber.from(2).pow(255), BigNumber.from(2).pow(256).sub(2)]) {
+            for (const y of [BigNumber.from(2), BigNumber.from(2).pow(256).sub(2)]) {
+                for (const z of [BigNumber.from(3), BigNumber.from(2).pow(256).sub(3)]) {
+                    testMulDivAndMinFactor(x, y, z);
+                }
+            }
+        }
     });
 
     describe('@stress tests', () => {

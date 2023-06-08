@@ -1427,6 +1427,23 @@ describe('Strategy', () => {
                 );
         });
 
+        it('should be able to delete a disabled order', async () => {
+            // edit the test order and disable it by setting all rates to 0
+            const order = generateTestOrder();
+            order.A = BigNumber.from(0);
+            order.B = BigNumber.from(0);
+            order.y = BigNumber.from(0);
+            order.z = BigNumber.from(0);
+            // create strategy
+            await createStrategy({ order });
+
+            // prepare variables and transaction
+            const tx = carbonController.connect(owner).deleteStrategy(SID1);
+
+            // assert
+            await expect(tx).to.emit(carbonController, 'StrategyDeleted');
+        });
+
         it('reverts when provided strategy id is zero', async () => {
             await createStrategy();
 

@@ -1,8 +1,11 @@
 import Contracts, { CarbonController, TestERC20Burnable } from '../../components/Contracts';
 import { ZERO_ADDRESS } from '../../utils/Constants';
+import { Roles } from '../../utils/Roles';
 import { createSystem, createTestToken } from '../helpers/Factory';
 import { shouldHaveGap } from '../helpers/Proxy';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
 const sortTokens = (token0: string, token1: string): string[] => {
     return token0 < token1 ? [token0, token1] : [token1, token0];
@@ -10,9 +13,14 @@ const sortTokens = (token0: string, token1: string): string[] => {
 
 describe('Pairs', () => {
     let carbonController: CarbonController;
+    let emergencyStopper: SignerWithAddress;
     let token0: TestERC20Burnable;
     let token1: TestERC20Burnable;
     let pair: any;
+
+    before(async () => {
+        [, , emergencyStopper] = await ethers.getSigners();
+    });
 
     beforeEach(async () => {
         ({ carbonController } = await createSystem());
@@ -49,6 +57,14 @@ describe('Pairs', () => {
             await carbonController.createPair(pair.token0, pair.token1);
             await expect(carbonController.createPair(pair.token0, pair.token1)).to.be.revertedWithError(
                 'PairAlreadyExists'
+            );
+        });
+
+        it('should revert when contract is paused', async () => {
+            await carbonController.grantRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, emergencyStopper.address);
+            await carbonController.connect(emergencyStopper).pause();
+            await expect(carbonController.createPair(pair.token0, pair.token1)).to.be.revertedWithError(
+                'Pausable: paused'
             );
         });
 
