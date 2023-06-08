@@ -52,6 +52,7 @@ export interface CreateStrategyParams {
     token1Amount?: number;
     skipFunding?: boolean;
     order?: TestOrder;
+    secondOrder?: TestOrder;
     sendWithExcessNativeTokenValue?: boolean;
 }
 
