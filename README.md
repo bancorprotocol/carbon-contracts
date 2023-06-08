@@ -71,6 +71,52 @@ This will automatically be skipped on an already deployed and configured deploym
 
 ### Test Coverage
 
+#### Latest Test Coverage Report (2023-06-08)
+
+-   99.3% Statements 424/427
+-   92.55% Branches 298/322
+-   99.28% Functions 137/138
+-   99.28% Lines 548/552
+
+![Coverage Report](./docs/images/coverage.png)
+
+```sh
+------------------------|----------|----------|----------|----------|----------------|
+File                    |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+------------------------|----------|----------|----------|----------|----------------|
+ carbon/                |    99.61 |    93.43 |    98.51 |     99.7 |                |
+  CarbonController.sol  |    98.67 |    89.77 |    96.55 |    98.84 |             94 |
+  Pairs.sol             |      100 |    85.71 |      100 |      100 |                |
+  Strategies.sol        |      100 |    97.92 |      100 |      100 |                |
+ carbon/interfaces/     |      100 |      100 |      100 |      100 |                |
+  ICarbonController.sol |      100 |      100 |      100 |      100 |                |
+ fees/                  |      100 |     87.5 |      100 |      100 |                |
+  FeeBurner.sol         |      100 |     87.5 |      100 |      100 |                |
+ fees/interfaces/       |      100 |      100 |      100 |      100 |                |
+  IFeeBurner.sol        |      100 |      100 |      100 |      100 |                |
+ token/                 |    94.12 |       90 |      100 |    94.12 |                |
+  ERC20Burnable.sol     |      100 |      100 |      100 |      100 |                |
+  Token.sol             |    93.55 |       90 |      100 |    93.55 |         92,142 |
+ token/interfaces/      |      100 |      100 |      100 |      100 |                |
+  IERC20Burnable.sol    |      100 |      100 |      100 |      100 |                |
+ utility/               |      100 |    93.75 |      100 |      100 |                |
+  Constants.sol         |      100 |      100 |      100 |      100 |                |
+  MathEx.sol            |      100 |      100 |      100 |      100 |                |
+  OnlyProxyDelegate.sol |      100 |      100 |      100 |      100 |                |
+  Upgradeable.sol       |      100 |       75 |      100 |      100 |                |
+  Utils.sol             |      100 |      100 |      100 |      100 |                |
+ utility/interfaces/    |      100 |      100 |      100 |      100 |                |
+  IUpgradeable.sol      |      100 |      100 |      100 |      100 |                |
+  IVersioned.sol        |      100 |      100 |      100 |      100 |                |
+ voucher/               |      100 |     92.5 |      100 |    97.96 |                |
+  Voucher.sol           |      100 |     92.5 |      100 |    97.96 |            249 |
+ voucher/interfaces/    |      100 |      100 |      100 |      100 |                |
+  IVoucher.sol          |      100 |      100 |      100 |      100 |                |
+------------------------|----------|----------|----------|----------|----------------|
+All files               |     99.3 |    92.55 |    99.28 |    99.28 |                |
+------------------------|----------|----------|----------|----------|----------------|
+```
+
 #### Instructions
 
 In order to audit the test coverage of the full test suite, run:
