@@ -86,10 +86,10 @@ describe('Strategy', () => {
         // prepare variables
         const _params = { ...params };
         const order = _params.order ? _params.order : generateTestOrder();
-        const secondOrder = order || generateTestOrder();
+        const secondOrder = _params.secondOrder ? _params.secondOrder : order;
         const _owner = _params.owner ? _params.owner : owner;
         const _tokens = [_params.token0 ? _params.token0 : token0, _params.token1 ? _params.token1 : token1];
-        const amounts = [order.y, order.y];
+        const amounts = [order.y, secondOrder.y];
 
         if (_params.token0Amount != null) {
             amounts[0] = BigNumber.from(_params.token0Amount);
@@ -111,7 +111,7 @@ describe('Strategy', () => {
             } else {
                 // optionally skip funding
                 if (!_params.skipFunding) {
-                    await token.transfer(_owner.address, order.y);
+                    await token.transfer(_owner.address, amounts[i]);
                 }
                 const tx = await token.connect(_owner).approve(carbonController.address, amounts[i]);
                 const receipt = await tx.wait();
