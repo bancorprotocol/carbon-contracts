@@ -23,22 +23,22 @@ interface ICarbonVortex is IUpgradeable {
     );
 
     /**
-     * @dev triggered when the rewards settings are updated
+     * @dev triggered when the rewards ppm are updated
      */
     event RewardsUpdated(
-        uint256 prevRewards,
-        uint256 newRewards
+        uint256 prevRewardsPPM,
+        uint256 newRewardsPPM
     );
 
     /**
      * @dev returns the rewards percentage ppm
      */
-    function rewards() external view returns (uint256);
+    function rewardsPPM() external view returns (uint256);
 
     /**
-     * @dev returns the total amount burnt
+     * @dev returns the total amount burned
      */
-    function totalBurnt() external view returns (uint256);
+    function totalBurned() external view returns (uint256);
 
     /**
      * @dev returns the total available fees for the given token
@@ -59,5 +59,5 @@ interface ICarbonVortex is IUpgradeable {
      *
      * - the caller must be the admin of the contract
      */
-    function setRewards(uint256 newRewardsPercentagePPM) external;
+    function setRewardsPPM(uint256 newRewardsPercentagePPM) external;
 }

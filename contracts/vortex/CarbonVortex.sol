@@ -36,10 +36,10 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     IBancorNetwork private immutable _bancorNetwork;
     Token private immutable _bnt;
 
-    uint256 private _totalBurnt;
+    uint256 private _totalBurned;
 
     // rewards percentage
-    uint256 private _rewardsPercentagePPM;
+    uint256 private _rewardsPPM;
 
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 2] private __gap;
@@ -80,7 +80,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @dev performs contract-specific initialization
      */
     function __CarbonVortex_init_unchained() internal onlyInitializing {
-        setRewards(100_000);
+        setRewardsPPM(100_000);
     }
 
     /**
@@ -98,31 +98,31 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @inheritdoc ICarbonVortex
      */
-    function setRewards(uint256 newRewardsPercentagePPM) public onlyAdmin validFee(uint32(newRewardsPercentagePPM)) {
-        uint256 prevRewardsPercentagePPM = _rewardsPercentagePPM;
+    function setRewardsPPM(uint256 newRewardsPPM) public onlyAdmin validFee(uint32(newRewardsPPM)) {
+        uint256 prevRewardsPPM = _rewardsPPM;
 
         // return if the rewards percentage PPM is the same
-        if (prevRewardsPercentagePPM == newRewardsPercentagePPM) {
+        if (prevRewardsPPM == newRewardsPPM) {
             return;
         }
 
-        _rewardsPercentagePPM = newRewardsPercentagePPM;
+        _rewardsPPM = newRewardsPPM;
 
-        emit RewardsUpdated({ prevRewards: prevRewardsPercentagePPM, newRewards: newRewardsPercentagePPM });
+        emit RewardsUpdated({ prevRewardsPPM: prevRewardsPPM, newRewardsPPM: newRewardsPPM });
     }
 
     /**
      * @inheritdoc ICarbonVortex
      */
-    function rewards() external view returns (uint256) {
-        return _rewardsPercentagePPM;
+    function rewardsPPM() external view returns (uint256) {
+        return _rewardsPPM;
     }
 
     /**
      * @inheritdoc ICarbonVortex
      */
-    function totalBurnt() external view returns (uint256) {
-        return _totalBurnt;
+    function totalBurned() external view returns (uint256) {
+        return _totalBurned;
     }
 
     /**
@@ -142,6 +142,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         uint256[] memory balances = new uint256[](len);
         // allocate array for the reward amounts for caller
         uint256[] memory rewardAmounts = new uint256[](len);
+        // cache rewardsPPM to save gas
+        uint256 rewardsPercentage = _rewardsPPM;
 
         // withdraw fees, load balances and reward amounts
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
@@ -150,18 +152,14 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             // get token balance
             balances[i] = tokens[i].balanceOf(address(this));
             // get reward amount for token
-            rewardAmounts[i] = MathEx.mulDivF(balances[i], _rewardsPercentagePPM, PPM_RESOLUTION);
+            rewardAmounts[i] = MathEx.mulDivF(balances[i], rewardsPercentage, PPM_RESOLUTION);
         }
 
         // convert tokens to BNT
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
-            // skip token if no token balance
-            if (balances[i] == 0) {
-                continue;
-            }
-            // check if token is BNT - we don't need to swap in this case
-            if (token == _bnt) {
+            // skip token if no token balance or token is BNT - no need to swap in this case
+            if (balances[i] == 0 || token == _bnt) {
                 continue;
             }
 
@@ -207,7 +205,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
 
         // add to the total burnt amount
         if (burnAmount > 0) {
-            _totalBurnt += burnAmount;
+            _totalBurned += burnAmount;
         }
 
         // burn the tokens
@@ -247,7 +245,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
             // validate token has no duplicates
-            for (uint256 j = i + 1; j < len; j = uncheckedInc(j)) {
+            for (uint256 j = uncheckedInc(i); j < len; j = uncheckedInc(j)) {
                 if (token == tokens[j]) {
                     revert DuplicateToken();
                 }

@@ -33,7 +33,7 @@ describe('CarbonVortex', () => {
 
     const RewardsPPMChanged = 110_000;
 
-    shouldHaveGap('CarbonVortex', '_totalBurnt');
+    shouldHaveGap('CarbonVortex', '_totalBurned');
 
     before(async () => {
         [deployer, , nonAdmin] = await ethers.getSigners();
@@ -115,33 +115,33 @@ describe('CarbonVortex', () => {
 
     describe('rewards', () => {
         it('should revert when a non-admin attempts to set the arbitrage rewards settings', async () => {
-            await expect(carbonVortex.connect(nonAdmin).setRewards(RewardsPPMDefault)).to.be.revertedWithError(
+            await expect(carbonVortex.connect(nonAdmin).setRewardsPPM(RewardsPPMDefault)).to.be.revertedWithError(
                 'AccessDenied'
             );
         });
 
         it('should revert setting the arbitrage rewards with an invalid fee', async () => {
             const invalidFee = PPM_RESOLUTION + 1;
-            await expect(carbonVortex.setRewards(invalidFee)).to.be.revertedWithError('InvalidFee');
+            await expect(carbonVortex.setRewardsPPM(invalidFee)).to.be.revertedWithError('InvalidFee');
         });
 
         it('should ignore setting to the same arbitrage rewards settings', async () => {
-            await carbonVortex.setRewards(RewardsPPMDefault);
+            await carbonVortex.setRewardsPPM(RewardsPPMDefault);
 
-            const res = await carbonVortex.setRewards(RewardsPPMDefault);
+            const res = await carbonVortex.setRewardsPPM(RewardsPPMDefault);
             await expect(res).not.to.emit(carbonVortex, 'RewardsUpdated');
         });
 
         it('should be able to set and update the arbitrage rewards settings', async () => {
-            await carbonVortex.setRewards(RewardsPPMDefault);
+            await carbonVortex.setRewardsPPM(RewardsPPMDefault);
 
-            const res = await carbonVortex.rewards();
+            const res = await carbonVortex.rewardsPPM();
             expect(res).to.equal(RewardsPPMDefault);
 
-            const resChanged = await carbonVortex.setRewards(RewardsPPMChanged);
+            const resChanged = await carbonVortex.setRewardsPPM(RewardsPPMChanged);
             await expect(resChanged).to.emit(carbonVortex, 'RewardsUpdated');
 
-            const resUpdated = await carbonVortex.rewards();
+            const resUpdated = await carbonVortex.rewardsPPM();
             expect(resUpdated).to.equal(RewardsPPMChanged);
         });
 
@@ -151,7 +151,7 @@ describe('CarbonVortex', () => {
                 const amount = toWei(50);
                 await carbonController.testSetAccumulatedFees(bnt.address, amount);
 
-                const rewards = await carbonVortex.rewards();
+                const rewards = await carbonVortex.rewardsPPM();
 
                 const balanceBefore = await bnt.balanceOf(deployer.address);
                 const supplyBefore = await bnt.totalSupply();
@@ -182,7 +182,7 @@ describe('CarbonVortex', () => {
                 await carbonController.testSetAccumulatedFees(token1.address, tokenAmounts[1]);
                 await carbonController.testSetAccumulatedFees(NATIVE_TOKEN_ADDRESS, tokenAmounts[2]);
 
-                const rewards = await carbonVortex.rewards();
+                const rewards = await carbonVortex.rewardsPPM();
 
                 const balancesBefore = [];
                 balancesBefore[0] = await token0.balanceOf(deployer.address);
@@ -245,7 +245,7 @@ describe('CarbonVortex', () => {
                 await token1.transfer(carbonVortex.address, tokenAmounts[1]);
                 await deployer.sendTransaction({ to: carbonVortex.address, value: tokenAmounts[2] });
 
-                const rewards = await carbonVortex.rewards();
+                const rewards = await carbonVortex.rewardsPPM();
 
                 const balancesBefore = [];
                 balancesBefore[0] = await token0.balanceOf(deployer.address);
@@ -312,7 +312,7 @@ describe('CarbonVortex', () => {
                 await carbonController.testSetAccumulatedFees(token1.address, tokenAmounts[1].div(2));
                 await carbonController.testSetAccumulatedFees(NATIVE_TOKEN_ADDRESS, tokenAmounts[2].div(2));
 
-                const rewards = await carbonVortex.rewards();
+                const rewards = await carbonVortex.rewardsPPM();
 
                 const balancesBefore = [];
                 balancesBefore[0] = await token0.balanceOf(deployer.address);
@@ -401,7 +401,7 @@ describe('CarbonVortex', () => {
                 .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
         });
 
-        it('should correctly increase total burnt amount on burn', async () => {
+        it('should correctly increase total burned amount on burn', async () => {
             // set accumulated fees
             const amount = toWei(50);
             await carbonController.testSetAccumulatedFees(bnt.address, amount);
@@ -411,12 +411,12 @@ describe('CarbonVortex', () => {
 
             const burnAmount = amount.sub(rewardAmount);
 
-            const totalBurntBefore = await carbonVortex.totalBurnt();
+            const totalBurnedBefore = await carbonVortex.totalBurned();
 
             await carbonVortex.execute([bnt.address]);
 
-            const totalBurntAfter = await carbonVortex.totalBurnt();
-            expect(totalBurntBefore.add(burnAmount)).to.be.equal(totalBurntAfter);
+            const totalBurnedAfter = await carbonVortex.totalBurned();
+            expect(totalBurnedBefore.add(burnAmount)).to.be.equal(totalBurnedAfter);
         });
 
         it('should correctly update available fees on burn', async () => {
@@ -449,7 +449,7 @@ describe('CarbonVortex', () => {
             await carbonController.testSetAccumulatedFees(bnt.address, fees[1]);
             await carbonController.testSetAccumulatedFees(token1.address, fees[2]);
 
-            const rewards = await carbonVortex.rewards();
+            const rewards = await carbonVortex.rewardsPPM();
 
             const tokens = [token0.address, bnt.address, token1.address];
             // we don't convert bnt, so we expect to get 10% of 50 BNT
