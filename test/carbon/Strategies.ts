@@ -86,9 +86,10 @@ describe('Strategy', () => {
         // prepare variables
         const _params = { ...params };
         const order = _params.order ? _params.order : generateTestOrder();
+        const secondOrder = _params.secondOrder ? _params.secondOrder : order;
         const _owner = _params.owner ? _params.owner : owner;
         const _tokens = [_params.token0 ? _params.token0 : token0, _params.token1 ? _params.token1 : token1];
-        const amounts = [order.y, order.y];
+        const amounts = [order.y, secondOrder.y];
 
         if (_params.token0Amount != null) {
             amounts[0] = BigNumber.from(_params.token0Amount);
@@ -110,7 +111,7 @@ describe('Strategy', () => {
             } else {
                 // optionally skip funding
                 if (!_params.skipFunding) {
-                    await token.transfer(_owner.address, order.y);
+                    await token.transfer(_owner.address, amounts[i]);
                 }
                 const tx = await token.connect(_owner).approve(carbonController.address, amounts[i]);
                 const receipt = await tx.wait();
@@ -128,7 +129,7 @@ describe('Strategy', () => {
             _tokens[1].address,
             [
                 { ...order, y: amounts[0] },
-                { ...order, y: amounts[1] }
+                { ...secondOrder, y: amounts[1] }
             ],
             { value: txValue }
         );
@@ -1425,6 +1426,60 @@ describe('Strategy', () => {
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)],
                     [BigNumber.from(y), BigNumber.from(z), BigNumber.from(A), BigNumber.from(B)]
                 );
+        });
+
+        it('should be able to delete a strategy when first order is disabled', async () => {
+            // edit the test order and disable it by setting all rates to 0
+            const disabledOrder = generateTestOrder();
+            disabledOrder.A = BigNumber.from(0);
+            disabledOrder.B = BigNumber.from(0);
+            disabledOrder.y = BigNumber.from(0);
+            disabledOrder.z = BigNumber.from(0);
+            const secondOrder = generateTestOrder();
+            // create strategy
+            await createStrategy({ order: disabledOrder, secondOrder });
+
+            // prepare variables and transaction
+            const tx = carbonController.connect(owner).deleteStrategy(SID1);
+
+            // assert
+            await expect(tx).to.emit(carbonController, 'StrategyDeleted');
+        });
+
+        it('should be able to delete a strategy when second order is disabled', async () => {
+            // edit the test order and disable it by setting all rates to 0
+            const order = generateTestOrder();
+            const disabledOrder = generateTestOrder();
+            disabledOrder.A = BigNumber.from(0);
+            disabledOrder.B = BigNumber.from(0);
+            disabledOrder.y = BigNumber.from(0);
+            disabledOrder.z = BigNumber.from(0);
+            // create strategy
+            await createStrategy({ order, secondOrder: disabledOrder });
+
+            // prepare variables and transaction
+            const tx = carbonController.connect(owner).deleteStrategy(SID1);
+
+            // assert
+            await expect(tx).to.emit(carbonController, 'StrategyDeleted');
+        });
+
+        it('should be able to delete a strategy when both orders are disabled', async () => {
+            // edit the test order and disable it by setting all rates to 0
+            const order = generateTestOrder();
+            order.A = BigNumber.from(0);
+            order.B = BigNumber.from(0);
+            order.y = BigNumber.from(0);
+            order.z = BigNumber.from(0);
+            const secondOrder = order;
+            // create strategy
+            await createStrategy({ order, secondOrder });
+
+            // prepare variables and transaction
+            const tx = carbonController.connect(owner).deleteStrategy(SID1);
+
+            // assert
+            await expect(tx).to.emit(carbonController, 'StrategyDeleted');
         });
 
         it('reverts when provided strategy id is zero', async () => {

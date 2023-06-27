@@ -43,6 +43,12 @@ describe('CarbonController', () => {
             expect(await carbonController.controllerType()).to.equal(ControllerType.Standard);
             expect(await carbonController.tradingFeePPM()).to.equal(DEFAULT_TRADING_FEE_PPM);
         });
+
+        it('should revert when attempting to reinitialize', async () => {
+            await expect(carbonController.initialize()).to.be.revertedWithError(
+                'Initializable: contract is already initialized'
+            );
+        });
     });
 
     describe('pausing/unpausing', () => {

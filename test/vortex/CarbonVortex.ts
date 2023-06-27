@@ -120,6 +120,11 @@ describe('CarbonVortex', () => {
             );
         });
 
+        it('should revert setting the arbitrage rewards with an invalid fee', async () => {
+            const invalidFee = PPM_RESOLUTION + 1;
+            await expect(carbonVortex.setRewards(invalidFee)).to.be.revertedWithError('InvalidFee');
+        });
+
         it('should ignore setting to the same arbitrage rewards settings', async () => {
             await carbonVortex.setRewards(RewardsPPMDefault);
 
