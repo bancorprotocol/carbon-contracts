@@ -124,6 +124,23 @@ describe('FeeBurner', () => {
             );
         });
 
+        it('should revert setting the arbitrage rewards with an invalid fee', async () => {
+            const invalidFee = PPM_RESOLUTION + 1;
+            const ArbitrageRewardsInvalid = {
+                percentagePPM: invalidFee,
+                maxAmount: toWei(10)
+            };
+            await expect(feeBurner.setRewards(ArbitrageRewardsInvalid)).to.be.revertedWithError('InvalidFee');
+        });
+
+        it('should revert setting the arbitrage rewards with a maxAmount equal to 0', async () => {
+            const ArbitrageRewardsInvalid = {
+                percentagePPM: 100_000,
+                maxAmount: 0
+            };
+            await expect(feeBurner.setRewards(ArbitrageRewardsInvalid)).to.be.revertedWithError('ZeroValue');
+        });
+
         it('should ignore setting to the same arbitrage rewards settings', async () => {
             await feeBurner.setRewards(ArbitrageRewardsDefaults);
 

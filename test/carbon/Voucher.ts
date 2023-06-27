@@ -32,8 +32,14 @@ describe('Voucher', () => {
         await expectRole(voucher, Roles.Upgradeable.ROLE_ADMIN, Roles.Upgradeable.ROLE_ADMIN, [deployer.address]);
         await expectRole(voucher, Roles.Voucher.ROLE_MINTER, Roles.Upgradeable.ROLE_ADMIN, [carbonController.address]);
 
-        await expect(await voucher.symbol()).to.eq('CARBON-STRAT');
-        await expect(await voucher.name()).to.eq('Carbon Automated Trading Strategy');
+        expect(await voucher.symbol()).to.eq('CARBON-STRAT');
+        expect(await voucher.name()).to.eq('Carbon Automated Trading Strategy');
+    });
+
+    it('should revert when attempting to reinitialize', async () => {
+        await expect(voucher.initialize(true, '', '')).to.be.revertedWithError(
+            'Initializable: contract is already initialized'
+        );
     });
 
     it('reverts when attempting to mint without the minter role', async () => {
@@ -51,6 +57,11 @@ describe('Voucher', () => {
 
     it('reverts when a non admin tries to update the extension URI', async () => {
         const tx = voucher.connect(nonAdmin).setBaseExtension('123');
+        await expect(tx).to.have.been.revertedWithError('AccessDenied');
+    });
+
+    it('reverts when a non admin tries to call useGlobalUri', async () => {
+        const tx = voucher.connect(nonAdmin).useGlobalURI(false);
         await expect(tx).to.have.been.revertedWithError('AccessDenied');
     });
 
@@ -73,6 +84,45 @@ describe('Voucher', () => {
         await voucher.useGlobalURI(true);
         const res = await voucher.useGlobalURI(true);
         await expect(res).to.not.emit(voucher, 'UseGlobalURIUpdated');
+    });
+
+    it('should support erc-721 interface', async () => {
+        const erc721InterfaceId = '0x80ac58cd';
+        expect(await voucher.supportsInterface(erc721InterfaceId)).to.eq(true);
+    });
+
+    it('returns empty string if base uri is empty and not using global uri', async () => {
+        await voucher.useGlobalURI(false);
+        await voucher.setBaseURI('');
+        // mint one token
+        await voucher.testSafeMint(nonAdmin.address, 0);
+        expect(await voucher.tokenURI(0)).to.eq('');
+    });
+
+    it('should be able to transfer voucher token', async () => {
+        // mint one token
+        await voucher.testSafeMint(nonAdmin.address, 0);
+        expect(await voucher.balanceOf(nonAdmin.address)).to.eq(1);
+        await expect(
+            voucher
+                .connect(nonAdmin)
+                ['safeTransferFrom(address,address,uint256)'](nonAdmin.address, nonAdmin2.address, 0)
+        ).not.to.be.reverted;
+        expect(await voucher.balanceOf(nonAdmin.address)).to.eq(0);
+        expect(await voucher.balanceOf(nonAdmin2.address)).to.eq(1);
+    });
+
+    it("transferring voucher token to same address shouldn't change balance", async () => {
+        // mint one token
+        await voucher.testSafeMint(nonAdmin.address, 0);
+        expect(await voucher.balanceOf(nonAdmin.address)).to.eq(1);
+        await expect(
+            voucher
+                .connect(nonAdmin)
+                ['safeTransferFrom(address,address,uint256)'](nonAdmin.address, nonAdmin.address, 0)
+        ).not.to.be.reverted;
+        expect(await voucher.balanceOf(nonAdmin.address)).to.eq(1);
+        expect(await voucher.balanceOf(nonAdmin2.address)).to.eq(0);
     });
 
     describe('tokens by owner', () => {

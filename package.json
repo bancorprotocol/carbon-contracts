@@ -125,6 +125,7 @@
   },
   "resolutions": {
     "@tenderly/hardhat-tenderly/@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@0.3.0-beta.13",
-    "solhint/@solidity-parser/parser": "0.16"
+    "solhint/@solidity-parser/parser": "0.16",
+    "solidity-coverage/@solidity-parser/parser": "0.16"
   }
 }

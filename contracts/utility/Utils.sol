@@ -18,19 +18,6 @@ error InvalidIndices();
 abstract contract Utils {
     using Address for address payable;
 
-    // allows execution by the caller only
-    modifier only(address caller) {
-        _only(caller);
-
-        _;
-    }
-
-    function _only(address caller) internal view {
-        if (msg.sender != caller) {
-            revert AccessDenied();
-        }
-    }
-
     // verifies that a value is greater than zero
     modifier greaterThanZero(uint256 value) {
         _greaterThanZero(value);
