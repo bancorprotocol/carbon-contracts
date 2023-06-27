@@ -19,17 +19,18 @@ describeDeployment(
             // get contracts
             const carbon = (await DeployedContracts.CarbonController.deployed()) as AccessControlEnumerableUpgradeable;
             const voucher = (await DeployedContracts.Voucher.deployed()) as AccessControlEnumerableUpgradeable;
-            const feeBurner = (await DeployedContracts.FeeBurner.deployed()) as AccessControlEnumerableUpgradeable;
+            const carbonVortex =
+                (await DeployedContracts.CarbonVortex.deployed()) as AccessControlEnumerableUpgradeable;
 
             // expect dao multisig to have the admin role for all contracts
             expect(await carbon.hasRole(Roles.Upgradeable.ROLE_ADMIN, daoMultisig)).to.be.true;
             expect(await voucher.hasRole(Roles.Upgradeable.ROLE_ADMIN, daoMultisig)).to.be.true;
-            expect(await feeBurner.hasRole(Roles.Upgradeable.ROLE_ADMIN, daoMultisig)).to.be.true;
+            expect(await carbonVortex.hasRole(Roles.Upgradeable.ROLE_ADMIN, daoMultisig)).to.be.true;
 
             // expect deployer not to have the admin role for any contracts
             expect(await carbon.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
             expect(await voucher.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
-            expect(await feeBurner.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
+            expect(await carbonVortex.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
 
             // expect deployer not to have the emergency stopper role
             expect(await carbon.hasRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, deployer)).to.be.false;
