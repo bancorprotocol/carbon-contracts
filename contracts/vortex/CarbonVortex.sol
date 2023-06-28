@@ -172,9 +172,9 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             }
 
             // get trade amount for token
-            // safe because balances[i] <= rewardAmounts[i]
             uint256 tradeAmount;
             unchecked {
+                // safe because balances[i] >= rewardAmounts[i]
                 tradeAmount = balances[i] - rewardAmounts[i];
             }
 
