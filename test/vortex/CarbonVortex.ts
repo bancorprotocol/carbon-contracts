@@ -158,21 +158,21 @@ describe('CarbonVortex', () => {
 
                 // we don't convert bnt, so we expect to get 10% of 50 BNT
                 const expectedUserRewards = [amount.mul(rewards).div(PPM_RESOLUTION)];
-                const expectedBntBurnt = amount.sub(expectedUserRewards[0]);
+                const expectedBntBurned = amount.sub(expectedUserRewards[0]);
                 const tokens = [bnt.address];
 
                 await expect(carbonVortex.execute(tokens))
-                    .to.emit(carbonVortex, 'FeesBurnt')
-                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurnt);
+                    .to.emit(carbonVortex, 'FeesBurned')
+                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 const balanceAfter = await bnt.balanceOf(deployer.address);
                 const supplyAfter = await bnt.totalSupply();
 
                 const bntGain = balanceAfter.sub(balanceBefore);
-                const supplyBurnt = supplyBefore.sub(supplyAfter);
+                const supplyBurned = supplyBefore.sub(supplyAfter);
 
                 expect(bntGain).to.be.eq(expectedUserRewards[0]);
-                expect(supplyBurnt).to.be.eq(expectedBntBurnt);
+                expect(supplyBurned).to.be.eq(expectedBntBurned);
             });
 
             it('should correctly distribute rewards to user and burn bnt if fees have accumulated', async () => {
@@ -204,7 +204,7 @@ describe('CarbonVortex', () => {
                     expectedSwapAmounts.push(tokenAmounts[i].sub(expectedUserRewards[i]));
                 }
 
-                const expectedBntBurnt = expectedSwapAmounts[0]
+                const expectedBntBurned = expectedSwapAmounts[0]
                     .add(expectedSwapAmounts[1])
                     .add(expectedSwapAmounts[2])
                     .add(swapGain);
@@ -213,8 +213,8 @@ describe('CarbonVortex', () => {
 
                 const tx = await carbonVortex.execute(tokens);
                 await expect(tx)
-                    .to.emit(carbonVortex, 'FeesBurnt')
-                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurnt);
+                    .to.emit(carbonVortex, 'FeesBurned')
+                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 // account for gas used
                 const receipt = await tx.wait();
@@ -230,9 +230,9 @@ describe('CarbonVortex', () => {
                 balanceGains[0] = balancesAfter[0].sub(balancesBefore[0]);
                 balanceGains[1] = balancesAfter[1].sub(balancesBefore[1]);
                 balanceGains[2] = balancesAfter[2].sub(balancesBefore[2]).add(gasUsed);
-                const supplyBurnt = supplyBefore.sub(supplyAfter);
+                const supplyBurned = supplyBefore.sub(supplyAfter);
 
-                expect(supplyBurnt).to.be.eq(expectedBntBurnt);
+                expect(supplyBurned).to.be.eq(expectedBntBurned);
                 expect(balanceGains[0]).to.be.eq(expectedUserRewards[0]);
                 expect(balanceGains[1]).to.be.eq(expectedUserRewards[1]);
                 expect(balanceGains[2]).to.be.eq(expectedUserRewards[2]);
@@ -267,7 +267,7 @@ describe('CarbonVortex', () => {
                     expectedSwapAmounts.push(tokenAmounts[i].sub(expectedUserRewards[i]));
                 }
 
-                const expectedBntBurnt = expectedSwapAmounts[0]
+                const expectedBntBurned = expectedSwapAmounts[0]
                     .add(expectedSwapAmounts[1])
                     .add(expectedSwapAmounts[2])
                     .add(swapGain);
@@ -276,8 +276,8 @@ describe('CarbonVortex', () => {
 
                 const tx = await carbonVortex.execute(tokens);
                 await expect(tx)
-                    .to.emit(carbonVortex, 'FeesBurnt')
-                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurnt);
+                    .to.emit(carbonVortex, 'FeesBurned')
+                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 // account for gas used
                 const receipt = await tx.wait();
@@ -293,9 +293,9 @@ describe('CarbonVortex', () => {
                 balanceGains[0] = balancesAfter[0].sub(balancesBefore[0]);
                 balanceGains[1] = balancesAfter[1].sub(balancesBefore[1]);
                 balanceGains[2] = balancesAfter[2].sub(balancesBefore[2]).add(gasUsed);
-                const supplyBurnt = supplyBefore.sub(supplyAfter);
+                const supplyBurned = supplyBefore.sub(supplyAfter);
 
-                expect(supplyBurnt).to.be.eq(expectedBntBurnt);
+                expect(supplyBurned).to.be.eq(expectedBntBurned);
                 expect(balanceGains[0]).to.be.eq(expectedUserRewards[0]);
                 expect(balanceGains[1]).to.be.eq(expectedUserRewards[1]);
                 expect(balanceGains[2]).to.be.eq(expectedUserRewards[2]);
@@ -334,7 +334,7 @@ describe('CarbonVortex', () => {
                     expectedSwapAmounts.push(tokenAmounts[i].sub(expectedUserRewards[i]));
                 }
 
-                const expectedBntBurnt = expectedSwapAmounts[0]
+                const expectedBntBurned = expectedSwapAmounts[0]
                     .add(expectedSwapAmounts[1])
                     .add(expectedSwapAmounts[2])
                     .add(swapGain);
@@ -343,8 +343,8 @@ describe('CarbonVortex', () => {
 
                 const tx = await carbonVortex.execute(tokens);
                 await expect(tx)
-                    .to.emit(carbonVortex, 'FeesBurnt')
-                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurnt);
+                    .to.emit(carbonVortex, 'FeesBurned')
+                    .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 // account for gas used
                 const receipt = await tx.wait();
@@ -360,9 +360,9 @@ describe('CarbonVortex', () => {
                 balanceGains[0] = balancesAfter[0].sub(balancesBefore[0]);
                 balanceGains[1] = balancesAfter[1].sub(balancesBefore[1]);
                 balanceGains[2] = balancesAfter[2].sub(balancesBefore[2]).add(gasUsed);
-                const supplyBurnt = supplyBefore.sub(supplyAfter);
+                const supplyBurned = supplyBefore.sub(supplyAfter);
 
-                expect(supplyBurnt).to.be.eq(expectedBntBurnt);
+                expect(supplyBurned).to.be.eq(expectedBntBurned);
                 expect(balanceGains[0]).to.be.eq(expectedUserRewards[0]);
                 expect(balanceGains[1]).to.be.eq(expectedUserRewards[1]);
                 expect(balanceGains[2]).to.be.eq(expectedUserRewards[2]);
@@ -397,7 +397,7 @@ describe('CarbonVortex', () => {
             const burnAmount = amount.sub(rewardAmounts[0]);
 
             await expect(carbonVortex.execute([bnt.address]))
-                .to.emit(carbonVortex, 'FeesBurnt')
+                .to.emit(carbonVortex, 'FeesBurned')
                 .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
         });
 
@@ -466,7 +466,7 @@ describe('CarbonVortex', () => {
             // burn token0, bnt and token1
             // token1 has 0 accumulated fees
             await expect(carbonVortex.execute(tokens))
-                .to.emit(carbonVortex, 'FeesBurnt')
+                .to.emit(carbonVortex, 'FeesBurned')
                 .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
         });
 

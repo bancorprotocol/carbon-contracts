@@ -15,7 +15,7 @@ interface ICarbonVortex is IUpgradeable {
     /**
      * @dev triggered after a successful burn is executed
      */
-    event FeesBurnt(
+    event FeesBurned(
         address indexed caller,
         Token[] tokens,
         uint256[] rewardAmounts,

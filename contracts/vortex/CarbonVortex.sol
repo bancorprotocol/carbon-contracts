@@ -203,15 +203,14 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // get the burn amount
         uint256 burnAmount = _bnt.balanceOf(address(this));
 
-        // add to the total burnt amount
         if (burnAmount > 0) {
+            // add to the total burned amount
             _totalBurned += burnAmount;
+            // burn the tokens
+            _bnt.safeTransfer(Token.unwrap(_bnt), burnAmount);
         }
 
-        // burn the tokens
-        _bnt.safeTransfer(Token.unwrap(_bnt), burnAmount);
-
-        emit FeesBurnt(sender, tokens, rewardAmounts, burnAmount);
+        emit FeesBurned(sender, tokens, rewardAmounts, burnAmount);
     }
 
     /**
