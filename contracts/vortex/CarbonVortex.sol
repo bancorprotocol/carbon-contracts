@@ -89,6 +89,14 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     receive() external payable {}
 
     /**
+     * @dev perform various validations for the token array
+     */
+    modifier validateTokens(Token[] calldata tokens) {
+        _validateTokens(tokens);
+        _;
+    }
+
+    /**
      * @inheritdoc Upgradeable
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
@@ -164,7 +172,11 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             }
 
             // get trade amount for token
-            uint256 tradeAmount = balances[i] - rewardAmounts[i];
+            // safe because balances[i] <= rewardAmounts[i]
+            uint256 tradeAmount;
+            unchecked {
+                tradeAmount = balances[i] - rewardAmounts[i];
+            }
 
             // approve tokens for trading on Bancor Network V3
             _setAllowance(token, tradeAmount);
@@ -227,16 +239,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         }
     }
 
-    function uncheckedInc(uint256 i) private pure returns (uint256 j) {
-        unchecked {
-            j = i + 1;
-        }
-    }
-
-    /**
-     * @dev perform various validations for the token array
-     */
-    modifier validateTokens(Token[] calldata tokens) {
+    function _validateTokens(Token[] calldata tokens) private view {
         uint len = tokens.length;
         if (len == 0) {
             revert InvalidTokenLength();
@@ -254,6 +257,11 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
                 revert InvalidToken();
             }
         }
-        _;
+    }
+
+    function uncheckedInc(uint256 i) private pure returns (uint256 j) {
+        unchecked {
+            j = i + 1;
+        }
     }
 }
