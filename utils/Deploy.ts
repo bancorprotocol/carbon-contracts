@@ -7,7 +7,7 @@ import { toWei } from './Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BigNumberish, Contract, ContractInterface, utils } from 'ethers';
 import fs from 'fs';
-import glob from 'glob';
+import { glob } from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
 import {
     Address,

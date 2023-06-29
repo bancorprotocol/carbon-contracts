@@ -80,7 +80,14 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @dev performs contract-specific initialization
      */
     function __CarbonVortex_init_unchained() internal onlyInitializing {
-        setRewardsPPM(100_000);
+        _setRewardsPPM(100_000);
+    }
+
+    /**
+     * @inheritdoc Upgradeable
+     */
+    function _postUpgrade(bytes calldata /* data*/) internal override {
+        _setRewardsPPM(20_000);
     }
 
     /**
@@ -106,17 +113,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @inheritdoc ICarbonVortex
      */
-    function setRewardsPPM(uint256 newRewardsPPM) public onlyAdmin validFee(uint32(newRewardsPPM)) {
-        uint256 prevRewardsPPM = _rewardsPPM;
-
-        // return if the rewards percentage PPM is the same
-        if (prevRewardsPPM == newRewardsPPM) {
-            return;
-        }
-
-        _rewardsPPM = newRewardsPPM;
-
-        emit RewardsUpdated({ prevRewardsPPM: prevRewardsPPM, newRewardsPPM: newRewardsPPM });
+    function setRewardsPPM(uint256 newRewardsPPM) external onlyAdmin validFee(uint32(newRewardsPPM)) {
+        _setRewardsPPM(newRewardsPPM);
     }
 
     /**
@@ -223,6 +221,19 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         }
 
         emit FeesBurned(sender, tokens, rewardAmounts, burnAmount);
+    }
+
+    function _setRewardsPPM(uint256 newRewardsPPM) private {
+        uint256 prevRewardsPPM = _rewardsPPM;
+
+        // return if the rewards percentage PPM is the same
+        if (prevRewardsPPM == newRewardsPPM) {
+            return;
+        }
+
+        _rewardsPPM = newRewardsPPM;
+
+        emit RewardsUpdated({ prevRewardsPPM: prevRewardsPPM, newRewardsPPM: newRewardsPPM });
     }
 
     /**
