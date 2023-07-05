@@ -134,7 +134,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @inheritdoc ICarbonVortex
      */
-    function availableFees(Token token) external view returns (uint256) {
+    function availableTokens(Token token) external view returns (uint256) {
         return _carbonController.accumulatedFees(token) + token.balanceOf(address(this));
     }
 
@@ -220,7 +220,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             _bnt.safeTransfer(Token.unwrap(_bnt), burnAmount);
         }
 
-        emit FeesBurned(sender, tokens, rewardAmounts, burnAmount);
+        emit TokensBurned(sender, tokens, rewardAmounts, burnAmount);
     }
 
     function _setRewardsPPM(uint256 newRewardsPPM) private {

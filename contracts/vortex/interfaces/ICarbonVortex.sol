@@ -15,7 +15,7 @@ interface ICarbonVortex is IUpgradeable {
     /**
      * @dev triggered after a successful burn is executed
      */
-    event FeesBurned(
+    event TokensBurned(
         address indexed caller,
         Token[] tokens,
         uint256[] rewardAmounts,
@@ -43,7 +43,7 @@ interface ICarbonVortex is IUpgradeable {
     /**
      * @dev returns the total available fees for the given token
      */
-    function availableFees(Token token) external view returns (uint256);
+    function availableTokens(Token token) external view returns (uint256);
     
     /**
      * @dev withdraws the fees of the provided tokens from Carbon

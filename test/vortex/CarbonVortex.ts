@@ -162,7 +162,7 @@ describe('CarbonVortex', () => {
                 const tokens = [bnt.address];
 
                 await expect(carbonVortex.execute(tokens))
-                    .to.emit(carbonVortex, 'FeesBurned')
+                    .to.emit(carbonVortex, 'TokensBurned')
                     .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 const balanceAfter = await bnt.balanceOf(deployer.address);
@@ -213,7 +213,7 @@ describe('CarbonVortex', () => {
 
                 const tx = await carbonVortex.execute(tokens);
                 await expect(tx)
-                    .to.emit(carbonVortex, 'FeesBurned')
+                    .to.emit(carbonVortex, 'TokensBurned')
                     .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 // account for gas used
@@ -276,7 +276,7 @@ describe('CarbonVortex', () => {
 
                 const tx = await carbonVortex.execute(tokens);
                 await expect(tx)
-                    .to.emit(carbonVortex, 'FeesBurned')
+                    .to.emit(carbonVortex, 'TokensBurned')
                     .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 // account for gas used
@@ -343,7 +343,7 @@ describe('CarbonVortex', () => {
 
                 const tx = await carbonVortex.execute(tokens);
                 await expect(tx)
-                    .to.emit(carbonVortex, 'FeesBurned')
+                    .to.emit(carbonVortex, 'TokensBurned')
                     .withArgs(deployer.address, tokens, expectedUserRewards, expectedBntBurned);
 
                 // account for gas used
@@ -397,7 +397,7 @@ describe('CarbonVortex', () => {
             const burnAmount = amount.sub(rewardAmounts[0]);
 
             await expect(carbonVortex.execute([bnt.address]))
-                .to.emit(carbonVortex, 'FeesBurned')
+                .to.emit(carbonVortex, 'TokensBurned')
                 .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
         });
 
@@ -421,7 +421,7 @@ describe('CarbonVortex', () => {
 
         it('should correctly update available fees on burn', async () => {
             // expect fee amount to be 0 at the beginning
-            const feeAmountBefore = await carbonVortex.availableFees(bnt.address);
+            const feeAmountBefore = await carbonVortex.availableTokens(bnt.address);
             expect(feeAmountBefore).to.be.eq(0);
 
             // set accumulated fees
@@ -431,14 +431,14 @@ describe('CarbonVortex', () => {
             await bnt.transfer(carbonVortex.address, feeAmounts[1]);
 
             const expectedFeeAmount = feeAmounts[0].add(feeAmounts[1]);
-            const actualFeeAmount = await carbonVortex.availableFees(bnt.address);
+            const actualFeeAmount = await carbonVortex.availableTokens(bnt.address);
 
             expect(expectedFeeAmount).to.be.eq(actualFeeAmount);
 
             await carbonVortex.execute([bnt.address]);
 
             // expect fee amount to be 0 after
-            const feeAmountAfter = await carbonVortex.availableFees(bnt.address);
+            const feeAmountAfter = await carbonVortex.availableTokens(bnt.address);
             expect(feeAmountAfter).to.be.eq(0);
         });
 
@@ -466,7 +466,7 @@ describe('CarbonVortex', () => {
             // burn token0, bnt and token1
             // token1 has 0 accumulated fees
             await expect(carbonVortex.execute(tokens))
-                .to.emit(carbonVortex, 'FeesBurned')
+                .to.emit(carbonVortex, 'TokensBurned')
                 .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
         });
 
