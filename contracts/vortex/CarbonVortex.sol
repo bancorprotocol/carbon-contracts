@@ -84,13 +84,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
-     * @inheritdoc Upgradeable
-     */
-    function _postUpgrade(bytes calldata /* data*/) internal override {
-        _setRewardsPPM(20_000);
-    }
-
-    /**
      * @dev authorize the contract to receive the native token
      */
     receive() external payable {}
