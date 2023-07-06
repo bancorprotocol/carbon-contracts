@@ -218,9 +218,9 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             _totalBurned += burnAmount;
             // burn the tokens
             _bnt.safeTransfer(Token.unwrap(_bnt), burnAmount);
+            // emit event
+            emit TokensBurned(sender, tokens, rewardAmounts, burnAmount);
         }
-
-        emit TokensBurned(sender, tokens, rewardAmounts, burnAmount);
     }
 
     function _setRewardsPPM(uint256 newRewardsPPM) private {
