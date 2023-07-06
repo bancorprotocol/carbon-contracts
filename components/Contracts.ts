@@ -1,7 +1,7 @@
 import {
     CarbonController__factory,
+    CarbonVortex__factory,
     ERC20__factory,
-    FeeBurner__factory,
     MockBancorNetworkV3__factory,
     OptimizedTransparentUpgradeableProxy__factory,
     ProxyAdmin__factory,
@@ -30,7 +30,7 @@ const getContracts = (signer?: Signer) => ({
 
     ERC20: deployOrAttach('ERC20', ERC20__factory, signer),
     CarbonController: deployOrAttach('CarbonController', CarbonController__factory, signer),
-    FeeBurner: deployOrAttach('FeeBurner', FeeBurner__factory, signer),
+    CarbonVortex: deployOrAttach('CarbonVortex', CarbonVortex__factory, signer),
     MockBancorNetworkV3: deployOrAttach('MockBancorNetworkV3', MockBancorNetworkV3__factory, signer),
     ProxyAdmin: deployOrAttach('ProxyAdmin', ProxyAdmin__factory, signer),
     Voucher: deployOrAttach('Voucher', Voucher__factory, signer),

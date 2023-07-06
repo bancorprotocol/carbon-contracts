@@ -17,7 +17,7 @@ import { createBurnableToken, Tokens } from '../../test/helpers/Factory';
 import { latest } from '../../test/helpers/Time';
 import { getBalance, transfer } from '../../test/helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../test/utility/carbon-sdk';
-import { CarbonController, FeeBurner, Voucher } from '../../typechain-types';
+import { CarbonController, CarbonVortex, Voucher } from '../../typechain-types';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
 import {
     DEFAULT_TRADING_FEE_PPM,
@@ -37,7 +37,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
 (isMainnet() ? describe : describe.skip)('network', async () => {
     let carbonController: CarbonController;
     let voucher: Voucher;
-    let feeBurner: FeeBurner;
+    let carbonVortex: CarbonVortex;
 
     let daoMultisig: SignerWithAddress;
 
@@ -50,7 +50,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
 
         carbonController = await DeployedContracts.CarbonController.deployed();
         voucher = await DeployedContracts.Voucher.deployed();
-        feeBurner = await DeployedContracts.FeeBurner.deployed();
+        carbonVortex = await DeployedContracts.CarbonVortex.deployed();
     });
 
     describe('roles', () => {
@@ -58,10 +58,10 @@ import { ethers, getNamedAccounts } from 'hardhat';
             // expect dao multisig to be admin
             await expectRoleMembers(carbonController, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
             await expectRoleMembers(voucher, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
-            await expectRoleMembers(feeBurner, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
+            await expectRoleMembers(carbonVortex, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
 
             // expect fee burner to have fee manager role in Carbon
-            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [feeBurner.address]);
+            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [carbonVortex.address]);
 
             // expect carbonController to have minter role in voucher
             await expectRoleMembers(voucher, Roles.Voucher.ROLE_MINTER, [carbonController.address]);

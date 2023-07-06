@@ -1,5 +1,5 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, FeeBurner, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
+import { CarbonController, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
@@ -7,7 +7,7 @@ import { toWei } from './Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BigNumberish, Contract, ContractInterface, utils } from 'ethers';
 import fs from 'fs';
-import glob from 'glob';
+import { glob } from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
 import {
     Address,
@@ -41,7 +41,7 @@ enum NewInstanceName {
     CarbonController = 'CarbonController',
     ProxyAdmin = 'ProxyAdmin',
     Voucher = 'Voucher',
-    FeeBurner = 'FeeBurner'
+    CarbonVortex = 'CarbonVortex'
 }
 
 export const LegacyInstanceName = {};
@@ -61,7 +61,7 @@ const DeployedNewContracts = {
     CarbonController: deployed<CarbonController>(InstanceName.CarbonController),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
     Voucher: deployed<Voucher>(InstanceName.Voucher),
-    FeeBurner: deployed<FeeBurner>(InstanceName.FeeBurner)
+    CarbonVortex: deployed<CarbonVortex>(InstanceName.CarbonVortex)
 };
 
 export const DeployedContracts = {

@@ -59,8 +59,8 @@ const fundAccounts = async () => {
     Logger.log('Funding test accounts...');
     Logger.log();
 
-    const { dai, link, usdc, wbtc } = await getNamedAccounts();
-    const { ethWhale, daiWhale, linkWhale, usdcWhale, wbtcWhale } = await getNamedSigners();
+    const { dai, usdc, wbtc } = await getNamedAccounts();
+    const { ethWhale, daiWhale, usdcWhale, wbtcWhale } = await getNamedSigners();
 
     const fundingRequests = [
         {
@@ -72,11 +72,6 @@ const fundAccounts = async () => {
             token: dai,
             amount: toWei(500_000),
             whale: daiWhale
-        },
-        {
-            token: link,
-            amount: toWei(10_000),
-            whale: linkWhale
         },
         {
             token: usdc,

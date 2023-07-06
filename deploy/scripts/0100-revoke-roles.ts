@@ -34,16 +34,16 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         from: deployer
     });
 
-    // Grant FeeBurner admin roles to dao multisig
+    // Grant CarbonVortex admin roles to dao multisig
     await grantRole({
-        name: InstanceName.FeeBurner,
+        name: InstanceName.CarbonVortex,
         id: Roles.Upgradeable.ROLE_ADMIN,
         member: daoMultisig,
         from: deployer
     });
 
     await renounceRole({
-        name: InstanceName.FeeBurner,
+        name: InstanceName.CarbonVortex,
         id: Roles.Upgradeable.ROLE_ADMIN,
         from: deployer
     });
