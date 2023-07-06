@@ -401,6 +401,25 @@ describe('CarbonVortex', () => {
                 .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
         });
 
+        it("shouldn't emit event on burn with 0 amount", async () => {
+            // set accumulated fees to 0
+            const amount = toWei(0);
+            await carbonController.testSetAccumulatedFees(bnt.address, amount);
+
+            const tokens = [bnt.address];
+            // we don't convert bnt, so we expect to get 10% of 50 BNT
+            const rewardAmounts = [amount.mul(RewardsPPMDefault).div(PPM_RESOLUTION)];
+
+            const burnAmount = amount.sub(rewardAmounts[0]);
+
+            expect(rewardAmounts[0]).to.be.eq(0);
+            expect(burnAmount).to.be.eq(0);
+
+            await expect(carbonVortex.execute([bnt.address]))
+                .not.to.emit(carbonVortex, 'TokensBurned')
+                .withArgs(deployer.address, tokens, rewardAmounts, burnAmount);
+        });
+
         it('should correctly increase total burned amount on burn', async () => {
             // set accumulated fees
             const amount = toWei(50);
