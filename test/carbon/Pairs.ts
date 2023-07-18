@@ -126,8 +126,8 @@ describe('Pairs', () => {
     describe('_pairById unit tests', () => {
         it('reverts when trying to fetch a pair by an id that does not exist', async () => {
             const testPairs = await Contracts.TestPairs.deploy();
-            await testPairs.testCreatePair(token0.address, token1.address);
-            await expect(testPairs.testPairById(2)).to.be.revertedWithError('PairDoesNotExist');
+            await testPairs.createPairTest(token0.address, token1.address);
+            await expect(testPairs.pairByIdTest(2)).to.be.revertedWithError('PairDoesNotExist');
         });
     });
 });
