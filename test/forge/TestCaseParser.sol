@@ -97,16 +97,14 @@ contract TestCaseParser is Test {
 
         if (inverseOrders) {
             // swap orders for some strategies if true
-            for (uint256 i = 0; i < strategies.length; ++i) {
-                if (i % 2 == 0) {
-                    Order memory tempOrder = strategies[i].orders[0];
-                    Order memory tempOrderExpected = strategies[i].expectedOrders[0];
+            for (uint256 i = 0; i < strategies.length; i += 2) {
+                Order memory tempOrder = strategies[i].orders[0];
+                Order memory tempOrderExpected = strategies[i].expectedOrders[0];
 
-                    strategies[i].orders[0] = strategies[i].orders[1];
-                    strategies[i].expectedOrders[0] = strategies[i].expectedOrders[1];
-                    strategies[i].orders[1] = tempOrder;
-                    strategies[i].expectedOrders[1] = tempOrderExpected;
-                }
+                strategies[i].orders[0] = strategies[i].orders[1];
+                strategies[i].expectedOrders[0] = strategies[i].expectedOrders[1];
+                strategies[i].orders[1] = tempOrder;
+                strategies[i].expectedOrders[1] = tempOrderExpected;
             }
         }
 
@@ -159,16 +157,14 @@ contract TestCaseParser is Test {
         }
         if (inverseOrders) {
             // swap orders for some strategies if true
-            for (uint256 i = 0; i < strategies.length; ++i) {
-                if (i % 2 == 0) {
-                    Order memory tempOrder = strategies[i].orders[0];
-                    Order memory tempOrderExpected = strategies[i].expectedOrders[0];
+            for (uint256 i = 0; i < strategies.length; i += 2) {
+                Order memory tempOrder = strategies[i].orders[0];
+                Order memory tempOrderExpected = strategies[i].expectedOrders[0];
 
-                    strategies[i].orders[0] = strategies[i].orders[1];
-                    strategies[i].expectedOrders[0] = strategies[i].expectedOrders[1];
-                    strategies[i].orders[1] = tempOrder;
-                    strategies[i].expectedOrders[1] = tempOrderExpected;
-                }
+                strategies[i].orders[0] = strategies[i].orders[1];
+                strategies[i].expectedOrders[0] = strategies[i].expectedOrders[1];
+                strategies[i].orders[1] = tempOrder;
+                strategies[i].expectedOrders[1] = tempOrderExpected;
             }
         }
 
@@ -321,21 +317,15 @@ contract TestCaseParser is Test {
     }
 
     /// @dev helper function to convert an uint256 to string
-    function uintToString(uint256 v) private pure returns (string memory) {
-        if (v == 0) return "0";
-
-        uint256 maxlength = 100;
-        bytes memory reversed = new bytes(maxlength);
-        uint256 i = 0;
-        while (v != 0) {
-            uint256 remainder = v % 10;
-            v = v / 10;
-            reversed[i++] = bytes1(uint8(48 + remainder));
+    function uintToString(uint256 x) private pure returns (string memory) {
+        if (x > 0) {
+            string memory str;
+            while (x > 0) {
+                str = string(abi.encodePacked(uint8((x % 10) + 48), str));
+                x /= 10;
+            }
+            return str;
         }
-        bytes memory s = new bytes(i);
-        for (uint256 j = 0; j < i; j++) {
-            s[j] = reversed[i - 1 - j];
-        }
-        return string(s);
+        return "0";
     }
 }

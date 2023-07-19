@@ -499,8 +499,7 @@ contract StrategiesTest is TestFixture {
         Order memory order1 = updateOrderDelta(order, deltas[1]);
 
         // update strategy
-        val = tokens[i0] == NATIVE_TOKEN && deltas[0] >= 0 ? abs(deltas[0]) : 0;
-        val += tokens[i1] == NATIVE_TOKEN && deltas[1] >= 0 ? abs(deltas[1]) : 0;
+        val = getValueToSend(tokens[i0], tokens[i1], deltas[0], deltas[1]);
         carbonController.updateStrategy{ value: val }(strategyId, [order, order], [order0, order1]);
 
         Strategy memory strategy = carbonController.strategy(strategyId);
@@ -606,8 +605,7 @@ contract StrategiesTest is TestFixture {
         Order memory order1 = updateOrderDelta(order, deltas[1]);
 
         // update strategy
-        val = tokens[i0] == NATIVE_TOKEN && deltas[0] >= 0 ? abs(deltas[0]) : 0;
-        val += tokens[i1] == NATIVE_TOKEN && deltas[1] >= 0 ? abs(deltas[1]) : 0;
+        val = getValueToSend(tokens[i0], tokens[i1], deltas[0], deltas[1]);
         carbonController.updateStrategy{ value: val }(strategyId, [order, order], [order0, order1]);
 
         // get balances after
@@ -681,8 +679,7 @@ contract StrategiesTest is TestFixture {
         Order memory order1 = updateOrderDelta(order, deltas[1]);
 
         // update strategy
-        val = tokens[i0] == NATIVE_TOKEN && deltas[0] >= 0 ? abs(deltas[0]) : 0;
-        val += tokens[i1] == NATIVE_TOKEN && deltas[1] >= 0 ? abs(deltas[1]) : 0;
+        val = getValueToSend(tokens[i0], tokens[i1], deltas[0], deltas[1]);
         // add excess native token
         val += 1 ether;
         carbonController.updateStrategy{ value: val }(strategyId, [order, order], [order0, order1]);
@@ -721,24 +718,24 @@ contract StrategiesTest is TestFixture {
 
     /// @dev test that the strategy update reverts if the reference tokens are not equal to the current
     function testStrategyUpdateRevertsIfTheProvidedReferenceTokensAreNotEqualToTheCurrent(
-        uint256 valueToChange
+        Order memory orderDeltas
     ) public {
         vm.startPrank(user1);
-        valueToChange = bound(valueToChange, 0, 3);
+        // bound y, z delta values from 0 to 100 000
+        orderDeltas.y = uint128(bound(orderDeltas.y, 0, 100000));
+        orderDeltas.z = uint128(bound(orderDeltas.z, 0, 100000));
+        // bound A, B delta values from 0 to 100 000
+        orderDeltas.A = uint64(bound(orderDeltas.A, 0, 100000));
+        orderDeltas.B = uint64(bound(orderDeltas.B, 0, 100000));
 
         Order memory order = generateTestOrder();
         // create strategy
         uint256 strategyId = carbonController.createStrategy(token0, token1, [order, order]);
 
-        if (valueToChange == 0) {
-            order.y += 1;
-        } else if (valueToChange == 1) {
-            order.z += 1;
-        } else if (valueToChange == 2) {
-            order.A += 1;
-        } else {
-            order.B += 1;
-        }
+        order.y += orderDeltas.y;
+        order.z += orderDeltas.z;
+        order.A += orderDeltas.A;
+        order.B += orderDeltas.B;
 
         vm.expectRevert(Strategies.OutDated.selector);
         carbonController.updateStrategy(strategyId, [order, order], [order, order]);
@@ -1821,6 +1818,12 @@ contract StrategiesTest is TestFixture {
 
     function generateStrategyId(uint256 pairId, uint256 strategyIndex) private pure returns (uint256) {
         return (pairId << 128) | strategyIndex;
+    }
+
+    /// @dev get value to send with strategy update
+    function getValueToSend(Token token0, Token token1, int64 delta0, int64 delta1) private pure returns (uint256 val) {
+        val = token0 == NATIVE_TOKEN && delta0 >= 0 ? uint64(delta0) : 0;
+        val += token1 == NATIVE_TOKEN && delta1 >= 0 ? uint64(delta1) : 0;
     }
 
     function abs(int64 val) private pure returns (uint64) {
