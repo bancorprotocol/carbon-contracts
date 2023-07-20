@@ -973,7 +973,7 @@ contract TradingTest is TestFixture {
             tokenSymbols[i1],
             byTargetAmount,
             false,
-            false // @TODO: Change to true and fix the inverted orders
+            true
         );
         Token[2] memory tokens = [symbolToToken[testCase.sourceSymbol], symbolToToken[testCase.targetSymbol]];
         uint256 sourceAmount = testCase.sourceAmount;
@@ -990,7 +990,7 @@ contract TradingTest is TestFixture {
         );
 
         // create test case strategies
-        createStrategies(testCase);
+        createStrategies(testCase, true);
 
         // calculate trade amount
         uint128 tradeAmount;
