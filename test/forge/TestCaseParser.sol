@@ -4,6 +4,8 @@ pragma solidity 0.8.19;
 import { Test } from "forge-std/Test.sol";
 import { stdJson } from "forge-std/StdJson.sol";
 
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+
 import { Order, TradeAction } from "../../contracts/carbon/Strategies.sol";
 
 contract TestCaseParser is Test {
@@ -234,7 +236,7 @@ contract TestCaseParser is Test {
 
         for (uint i = 0; i < strategiesLength; ++i) {
             // get the correct strategy index to parse
-            string memory parseString = string.concat(initialParseString, uintToString(i));
+            string memory parseString = string.concat(initialParseString, Strings.toString(i));
 
             // Parse the orders field into a bytes array
             bytes memory order0Bytes = json.parseRaw(string.concat(parseString, "].orders[0]"));
@@ -274,7 +276,7 @@ contract TestCaseParser is Test {
 
         for (uint i = 0; i < tradeActionsLength; ++i) {
             // get the correct trade action index to parse
-            string memory parseString = string.concat(initialParseString, uintToString(i));
+            string memory parseString = string.concat(initialParseString, Strings.toString(i));
 
             // Parse the trade actions field into bytes format
             bytes memory tradeActionBytes = json.parseRaw(string.concat(parseString, "]"));
@@ -317,15 +319,21 @@ contract TestCaseParser is Test {
     }
 
     /// @dev helper function to convert an uint256 to string
-    function uintToString(uint256 x) private pure returns (string memory) {
-        if (x > 0) {
-            string memory str;
-            while (x > 0) {
-                str = string(abi.encodePacked(uint8((x % 10) + 48), str));
-                x /= 10;
-            }
-            return str;
+    function uintToString(uint256 v) private pure returns (string memory) {
+        if (v == 0) return "0";
+
+        uint256 maxlength = 100;
+        bytes memory reversed = new bytes(maxlength);
+        uint256 i = 0;
+        while (v != 0) {
+            uint256 remainder = v % 10;
+            v = v / 10;
+            reversed[i++] = bytes1(uint8(48 + remainder));
         }
-        return "0";
+        bytes memory s = new bytes(i);
+        for (uint256 j = 0; j < i; j++) {
+            s[j] = reversed[i - 1 - j];
+        }
+        return string(s);
     }
 }
