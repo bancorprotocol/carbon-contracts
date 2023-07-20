@@ -317,23 +317,4 @@ contract TestCaseParser is Test {
         }
         return result;
     }
-
-    /// @dev helper function to convert an uint256 to string
-    function uintToString(uint256 v) private pure returns (string memory) {
-        if (v == 0) return "0";
-
-        uint256 maxlength = 100;
-        bytes memory reversed = new bytes(maxlength);
-        uint256 i = 0;
-        while (v != 0) {
-            uint256 remainder = v % 10;
-            v = v / 10;
-            reversed[i++] = bytes1(uint8(48 + remainder));
-        }
-        bytes memory s = new bytes(i);
-        for (uint256 j = 0; j < i; j++) {
-            s[j] = reversed[i - 1 - j];
-        }
-        return string(s);
-    }
 }
