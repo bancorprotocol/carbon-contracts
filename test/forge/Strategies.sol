@@ -44,6 +44,11 @@ contract StrategiesTest is TestFixture {
     event TradingFeePPMUpdated(uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
+     * @dev triggered when the trading fee override for a given pair is updated
+     */
+    event TradingFeePPMOverridesUpdated(uint128 pairId, uint32 prevFeePPM, uint32 newFeePPM);
+
+    /**
      * @dev triggered when a strategy is created
      */
     event StrategyCreated(
@@ -1218,6 +1223,37 @@ contract StrategiesTest is TestFixture {
 
         tradingFee = carbonController.tradingFeePPM();
         assertEq(tradingFee, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertWhenANonAdminAttemptsToSetTheTradingFeeOverrides() public {
+        vm.prank(user2);
+        vm.expectRevert(AccessDenied.selector);
+        carbonController.setTradingFeePPMOverrides(1, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertWhenSettingTheTradingFeeOverridesToAnInvalidValue() public {
+        vm.prank(admin);
+        vm.expectRevert(InvalidFee.selector);
+        carbonController.setTradingFeePPMOverrides(1, PPM_RESOLUTION + 1);
+    }
+
+    function testFailShouldIgnoreUpdatingToTheSameTradingFeeOverrides() public {
+        vm.startPrank(admin);
+        carbonController.setTradingFeePPMOverrides(1, NEW_TRADING_FEE_PPM);
+        vm.expectEmit();
+        emit TradingFeePPMOverridesUpdated(1, NEW_TRADING_FEE_PPM, NEW_TRADING_FEE_PPM);
+        carbonController.setTradingFeePPMOverrides(1, NEW_TRADING_FEE_PPM);
+        vm.stopPrank();
+    }
+
+    function testShouldBeAbleToSetAndUpdateTheTradingFeeOverrides() public {
+        vm.prank(admin);
+        vm.expectEmit();
+        emit TradingFeePPMOverridesUpdated(1, 0, NEW_TRADING_FEE_PPM);
+        carbonController.setTradingFeePPMOverrides(1, NEW_TRADING_FEE_PPM);
+
+        uint32 tradingFeeOverride = carbonController.tradingFeePPMOverrides(1);
+        assertEq(tradingFeeOverride, NEW_TRADING_FEE_PPM);
     }
 
     function testSetsTheDefaultOnInitialization() public {

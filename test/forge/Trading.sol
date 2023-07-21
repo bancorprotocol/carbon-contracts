@@ -17,6 +17,7 @@ import { MathEx } from "../../contracts/utility/MathEx.sol";
 
 import { CarbonController } from "../../contracts/carbon/CarbonController.sol";
 import { Strategies } from "../../contracts/carbon/Strategies.sol";
+import { Pair } from "../../contracts/carbon/Pairs.sol";
 import { TestERC20FeeOnTransfer } from "../../contracts/helpers/TestERC20FeeOnTransfer.sol";
 
 import { Token, toIERC20, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
@@ -417,6 +418,68 @@ contract TradingTest is TestFixture {
         vm.stopPrank();
     }
 
+    /// @dev test that overriden trading fees for pairs collected are stored and returned correctly
+    function testOverridenTradingFeesCollectedAreStoredAndReturnedCorrectly(
+        uint256 i0,
+        uint256 i1,
+        bool byTargetAmount,
+        uint32 customFee
+    ) public {
+        vm.startPrank(user1);
+
+        // use two of the below 3 token symbols for the strategy
+        string[3] memory tokenSymbols = ["TKN0", "TKN1", "ETH"];
+        // pick two random numbers from 0 to 2 for the tokens
+        i0 = bound(i0, 0, 2);
+        i1 = bound(i1, 0, 2);
+        vm.assume(i0 != i1);
+        // bound custom pair fee
+        customFee = uint32(bound(customFee, 1, 100_000));
+
+        // get test case data
+        TestCaseParser.TestCase memory testCase = testCaseParser.getTestCase(
+            tokenSymbols[i0],
+            tokenSymbols[i1],
+            byTargetAmount
+        );
+        Token[2] memory tokens = [symbolToToken[testCase.sourceSymbol], symbolToToken[testCase.targetSymbol]];
+        uint256 sourceAmount = testCase.sourceAmount;
+        uint256 targetAmount = testCase.targetAmount;
+
+        // create test case strategies
+        createStrategies(testCase);
+        // set the trade actions to be from the first test case
+        TradeAction[] memory tradeActions = testCase.tradeActions;
+
+        // get token pair
+        Pair memory pair = carbonController.pair(tokens[0], tokens[1]);
+
+        vm.stopPrank();
+
+        vm.prank(admin);
+        // set custom trading fee for the token pair
+        carbonController.setTradingFeePPMOverrides(pair.id, customFee);
+
+        vm.startPrank(user1);
+
+        // trade
+        trade(tokens[0], tokens[1], byTargetAmount, tradeActions, sourceAmount, -1, false);
+
+        uint256 sourceTokenFees = carbonController.accumulatedFees(tokens[0]);
+        uint256 targetTokenFees = carbonController.accumulatedFees(tokens[1]);
+        uint256 tradingFeeAmount = getTradingFeeAmount(pair.id, byTargetAmount, sourceAmount, targetAmount);
+
+        if (byTargetAmount) {
+            assertEq(sourceTokenFees, tradingFeeAmount);
+            assertEq(targetTokenFees, 0);
+        } else {
+            assertEq(sourceTokenFees, 0);
+            assertEq(targetTokenFees, tradingFeeAmount);
+        }
+
+        vm.stopPrank();
+    }
+
     /// @dev test that trading with fees set to zero is allowed
     function testAllowsTradingWithFeesSetToZero(uint256 i0, uint256 i1, bool byTargetAmount) public {
         // use two of the below 3 token symbols for the strategy
@@ -542,7 +605,12 @@ contract TradingTest is TestFixture {
     }
 
     /// @dev test that trading emits the tokens traded event on a successful trade
-    function testTradingEmitsTokensTradedEvent(uint256 i0, uint256 i1, bool byTargetAmount) public {
+    function testTradingEmitsTokensTradedEvent(
+        uint256 i0,
+        uint256 i1,
+        bool byTargetAmount,
+        bool overrideTradingFee
+    ) public {
         vm.startPrank(user1);
 
         // use two of the below 3 token symbols for the strategy
@@ -559,18 +627,26 @@ contract TradingTest is TestFixture {
             byTargetAmount
         );
         Token[2] memory tokens = [symbolToToken[testCase.sourceSymbol], symbolToToken[testCase.targetSymbol]];
-        uint256 sourceAmount = testCase.sourceAmount;
-        uint256 targetAmount = testCase.targetAmount;
 
         // create test case strategies
         createStrategies(testCase);
+
+        Pair memory pair = carbonController.pair(tokens[0], tokens[1]);
+        if (overrideTradingFee) {
+            vm.stopPrank();
+            vm.prank(admin);
+            carbonController.setTradingFeePPMOverrides(pair.id, NEW_TRADING_FEE_PPM);
+            vm.startPrank(user1);
+        }
         // get trading fee amount
-        uint128 tradingFeeAmount = uint128(getTradingFeeAmount(byTargetAmount, sourceAmount, targetAmount));
+        uint128 tradingFeeAmount = uint128(
+            getTradingFeeAmount(pair.id, byTargetAmount, testCase.sourceAmount, testCase.targetAmount)
+        );
         // get expected source and target amounts
         (uint256 expectedSourceAmount, uint256 expectedTargetAmount) = getExpectedSourceTargetAmounts(
             byTargetAmount,
-            sourceAmount,
-            targetAmount,
+            testCase.sourceAmount,
+            testCase.targetAmount,
             tradingFeeAmount
         );
 
@@ -585,7 +661,7 @@ contract TradingTest is TestFixture {
             tradingFeeAmount,
             byTargetAmount
         );
-        trade(tokens[0], tokens[1], byTargetAmount, testCase.tradeActions, sourceAmount, -1, false);
+        trade(tokens[0], tokens[1], byTargetAmount, testCase.tradeActions, testCase.sourceAmount, -1, false);
 
         vm.stopPrank();
     }
@@ -698,7 +774,8 @@ contract TradingTest is TestFixture {
         uint256 i0,
         uint256 i1,
         bool byTargetAmount,
-        bool inverseOrders
+        bool inverseOrders,
+        bool overrideTradingFee
     ) public {
         vm.startPrank(user1);
 
@@ -722,8 +799,18 @@ contract TradingTest is TestFixture {
 
         // create test case strategies
         createStrategies(testCase, inverseOrders);
+
+        Pair memory pair = carbonController.pair(tokens[0], tokens[1]);
+        if (overrideTradingFee) {
+            vm.stopPrank();
+            vm.prank(admin);
+            carbonController.setTradingFeePPMOverrides(pair.id, NEW_TRADING_FEE_PPM);
+            vm.startPrank(user1);
+        }
         // get trading fee amount
-        uint128 tradingFeeAmount = uint128(getTradingFeeAmount(byTargetAmount, sourceAmount, targetAmount));
+        uint128 tradingFeeAmount = uint128(
+            getTradingFeeAmount(pair.id, byTargetAmount, testCase.sourceAmount, testCase.targetAmount)
+        );
 
         // get balances before
         // 0 -> t0 user1
@@ -1187,8 +1274,9 @@ contract TradingTest is TestFixture {
         bool sendExcessNativeToken
     ) private returns (uint128) {
         uint256 deadline = block.timestamp + 1000;
+        Pair memory pair = carbonController.pair(sourceToken, targetToken);
         if (byTargetAmount) {
-            sourceAmount = _addFee(sourceAmount);
+            sourceAmount = _addFee(sourceAmount, pair.id);
             uint128 maxInput = setConstraint(constraint, byTargetAmount, sourceAmount);
             uint256 txValue = sourceToken == NATIVE_TOKEN ? sourceAmount : 0;
             txValue = sendExcessNativeToken ? txValue * 2 : txValue;
@@ -1236,16 +1324,34 @@ contract TradingTest is TestFixture {
         bool byTargetAmount,
         uint256 sourceAmount,
         uint256 targetAmount
-    ) private pure returns (uint256) {
+    ) private view returns (uint256) {
+        uint32 tradingFeePPM = carbonController.tradingFeePPM();
         if (byTargetAmount) {
-            uint128 fee = uint128(
-                MathEx.mulDivC(sourceAmount, PPM_RESOLUTION, PPM_RESOLUTION - DEFAULT_TRADING_FEE_PPM)
-            );
+            uint128 fee = uint128(MathEx.mulDivC(sourceAmount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));
             return uint256(fee - sourceAmount);
         } else {
-            int256 fee = int256(
-                uint256(MathEx.mulDivF(targetAmount, PPM_RESOLUTION - DEFAULT_TRADING_FEE_PPM, PPM_RESOLUTION))
-            );
+            int256 fee = int256(uint256(MathEx.mulDivF(targetAmount, PPM_RESOLUTION - tradingFeePPM, PPM_RESOLUTION)));
+            int256 targetAmountWithFee = fee - int256(targetAmount);
+            return uint256(targetAmountWithFee * (-1));
+        }
+    }
+
+    /// @dev helper function to return the overriden trading fee amount for a given pair (if not set, returns the trading fee)
+    function getTradingFeeAmount(
+        uint128 pairId,
+        bool byTargetAmount,
+        uint256 sourceAmount,
+        uint256 targetAmount
+    ) private view returns (uint256) {
+        // override protocol-wide trading fee with custom one if it's set for the pair
+        uint32 tradingFeePPM = carbonController.tradingFeePPM();
+        uint32 tradingFeePPMOverrides = carbonController.tradingFeePPMOverrides(pairId);
+        tradingFeePPM = tradingFeePPMOverrides == 0 ? tradingFeePPM : tradingFeePPMOverrides;
+        if (byTargetAmount) {
+            uint128 fee = uint128(MathEx.mulDivC(sourceAmount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));
+            return uint256(fee - sourceAmount);
+        } else {
+            int256 fee = int256(uint256(MathEx.mulDivF(targetAmount, PPM_RESOLUTION - tradingFeePPM, PPM_RESOLUTION)));
             int256 targetAmountWithFee = fee - int256(targetAmount);
             return uint256(targetAmountWithFee * (-1));
         }
@@ -1254,9 +1360,13 @@ contract TradingTest is TestFixture {
     /**
      * @dev calculates the required amount plus fee
      */
-    function _addFee(uint256 amount) private pure returns (uint256) {
+    function _addFee(uint256 amount, uint128 pairId) private view returns (uint256) {
+        // override protocol-wide trading fee with custom one if it's set for the pair
+        uint32 tradingFeePPM = carbonController.tradingFeePPM();
+        uint32 tradingFeePPMOverrides = carbonController.tradingFeePPMOverrides(pairId);
+        tradingFeePPM = tradingFeePPMOverrides == 0 ? tradingFeePPM : tradingFeePPMOverrides;
         // divide the input amount by `1 - fee`
-        return uint256(MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - DEFAULT_TRADING_FEE_PPM));
+        return uint256(MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));
     }
 
     /// @dev helper function to set constraint for trading function (maxInput or minReturn)
