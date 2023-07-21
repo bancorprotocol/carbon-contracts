@@ -178,13 +178,21 @@ abstract contract Strategies is Initializable {
     // accumulated fees per token
     mapping(Token => uint256) internal _accumulatedFees;
 
+    // mapping between a pair id to its custom trading fee (in units of PPM)
+    mapping(uint128 => uint32) internal _tradingFeePPMOverrides;
+
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 4] private __gap;
+    uint256[MAX_GAP - 5] private __gap;
 
     /**
      * @dev triggered when the network fee is updated
      */
     event TradingFeePPMUpdated(uint32 prevFeePPM, uint32 newFeePPM);
+
+    /**
+     * @dev triggered when the trading fee override for a given pair is updated
+     */
+    event TradingFeePPMOverridesUpdated(uint128 pairId, uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
      * @dev triggered when a strategy is created
@@ -472,7 +480,7 @@ abstract contract Strategies is Initializable {
         // apply trading fee
         uint128 tradingFeeAmount;
         if (params.byTargetAmount) {
-            uint128 amountIncludingFee = _addFee(params.sourceAmount);
+            uint128 amountIncludingFee = _addFee(params.sourceAmount, params.pair.id);
             tradingFeeAmount = amountIncludingFee - params.sourceAmount;
             params.sourceAmount = amountIncludingFee;
             if (params.sourceAmount > params.constraint) {
@@ -480,7 +488,7 @@ abstract contract Strategies is Initializable {
             }
             _accumulatedFees[params.tokens.source] += tradingFeeAmount;
         } else {
-            uint128 amountExcludingFee = _subtractFee(params.targetAmount);
+            uint128 amountExcludingFee = _subtractFee(params.targetAmount, params.pair.id);
             tradingFeeAmount = params.targetAmount - amountExcludingFee;
             params.targetAmount = amountExcludingFee;
             if (params.targetAmount < params.constraint) {
@@ -514,17 +522,23 @@ abstract contract Strategies is Initializable {
     /**
      * @dev calculates the required amount plus fee
      */
-    function _addFee(uint128 amount) private view returns (uint128) {
+    function _addFee(uint128 amount, uint128 pairId) private view returns (uint128) {
+        // override protocol-wide trading fee with custom one if it's set for the pair
+        uint32 tradingFeePPMOverrides = _tradingFeePPMOverrides[pairId];
+        uint32 tradingFeePPM = tradingFeePPMOverrides == 0 ? _tradingFeePPM : tradingFeePPMOverrides;
         // divide the input amount by `1 - fee`
-        return MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - _tradingFeePPM).toUint128();
+        return MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM).toUint128();
     }
 
     /**
      * @dev calculates the expected amount minus fee
      */
-    function _subtractFee(uint128 amount) private view returns (uint128) {
+    function _subtractFee(uint128 amount, uint128 pairId) private view returns (uint128) {
+        // override protocol-wide trading fee with custom one if it's set for the pair
+        uint32 tradingFeePPMOverrides = _tradingFeePPMOverrides[pairId];
+        uint32 tradingFeePPM = tradingFeePPMOverrides == 0 ? _tradingFeePPM : tradingFeePPMOverrides;
         // multiply the input amount by `1 - fee`
-        return MathEx.mulDivF(amount, PPM_RESOLUTION - _tradingFeePPM, PPM_RESOLUTION).toUint128();
+        return MathEx.mulDivF(amount, PPM_RESOLUTION - tradingFeePPM, PPM_RESOLUTION).toUint128();
     }
 
     /**
@@ -564,9 +578,9 @@ abstract contract Strategies is Initializable {
 
         // apply trading fee
         if (byTargetAmount) {
-            totals.sourceAmount = _addFee(totals.sourceAmount);
+            totals.sourceAmount = _addFee(totals.sourceAmount, pair.id);
         } else {
-            totals.targetAmount = _subtractFee(totals.targetAmount);
+            totals.targetAmount = _subtractFee(totals.targetAmount, pair.id);
         }
     }
 
@@ -683,6 +697,24 @@ abstract contract Strategies is Initializable {
         _tradingFeePPM = newTradingFeePPM;
 
         emit TradingFeePPMUpdated({ prevFeePPM: prevTradingFeePPM, newFeePPM: newTradingFeePPM });
+    }
+
+    /**
+     * @dev sets trading fee override for a given pair (in units of PPM)
+     */
+    function _setTradingFeePPMOverrides(uint128 pairId, uint32 newTradingFeeOverride) internal {
+        uint32 prevTradingFeeOverride = _tradingFeePPMOverrides[pairId];
+        if (prevTradingFeeOverride == newTradingFeeOverride) {
+            return;
+        }
+
+        _tradingFeePPMOverrides[pairId] = newTradingFeeOverride;
+
+        emit TradingFeePPMOverridesUpdated({
+            pairId: pairId,
+            prevFeePPM: prevTradingFeeOverride,
+            newFeePPM: newTradingFeeOverride
+        });
     }
 
     /**
