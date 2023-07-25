@@ -7,7 +7,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
-import { TestFixture } from "./TestFixture.sol";
+import { TestFixture } from "./TestFixture.t.sol";
 import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
 
 import { Order, TradeAction } from "../../contracts/carbon/Strategies.sol";

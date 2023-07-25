@@ -8,7 +8,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import { TestFixture } from "./TestFixture.sol";
+import { TestFixture } from "./TestFixture.t.sol";
 
 import { Order, Strategy, Strategies } from "../../contracts/carbon/Strategies.sol";
 
