@@ -6,7 +6,7 @@ import { Test } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { TestFixture } from "./TestFixture.sol";
+import { TestFixture } from "./TestFixture.t.sol";
 import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
 
 import { AccessDenied, InvalidAddress, InvalidFee } from "../../contracts/utility/Utils.sol";

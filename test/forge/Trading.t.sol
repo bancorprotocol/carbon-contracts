@@ -6,8 +6,8 @@ import { Test } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { TestFixture } from "./TestFixture.sol";
-import { TestCaseParser } from "./TestCaseParser.sol";
+import { TestFixture } from "./TestFixture.t.sol";
+import { TestCaseParser } from "./TestCaseParser.t.sol";
 
 import { Order, Strategy, TradeAction, Strategies } from "../../contracts/carbon/Strategies.sol";
 

@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { TestFixture } from "./TestFixture.sol";
+import { TestFixture } from "./TestFixture.t.sol";
 
 import { AccessDenied, InvalidAddress, InvalidIndices } from "../../contracts/utility/Utils.sol";
 

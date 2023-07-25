@@ -10,3 +10,4 @@ remappings = [
     'forge-std/=lib/forge-std/src/'
 ]
 fs_permissions = [{ access = "read", path = "./"}]
+optimizer_runs = 2000
