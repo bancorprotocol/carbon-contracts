@@ -418,8 +418,8 @@ contract TradingTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test that overriden trading fees for pairs collected are stored and returned correctly
-    function testOverridenTradingFeesCollectedAreStoredAndReturnedCorrectly(
+    /// @dev test that custom trading fees for pairs collected are stored and returned correctly
+    function testCustomTradingFeesCollectedAreStoredAndReturnedCorrectly(
         uint256 i0,
         uint256 i1,
         bool byTargetAmount,
@@ -458,7 +458,7 @@ contract TradingTest is TestFixture {
 
         vm.prank(admin);
         // set custom trading fee for the token pair
-        carbonController.setTradingFeePPMOverrides(pair.id, customFee);
+        carbonController.setCustomTradingFeePPM(pair.id, customFee);
 
         vm.startPrank(user1);
 
@@ -635,7 +635,7 @@ contract TradingTest is TestFixture {
         if (overrideTradingFee) {
             vm.stopPrank();
             vm.prank(admin);
-            carbonController.setTradingFeePPMOverrides(pair.id, NEW_TRADING_FEE_PPM);
+            carbonController.setCustomTradingFeePPM(pair.id, NEW_TRADING_FEE_PPM);
             vm.startPrank(user1);
         }
         // get trading fee amount
@@ -804,7 +804,7 @@ contract TradingTest is TestFixture {
         if (overrideTradingFee) {
             vm.stopPrank();
             vm.prank(admin);
-            carbonController.setTradingFeePPMOverrides(pair.id, NEW_TRADING_FEE_PPM);
+            carbonController.setCustomTradingFeePPM(pair.id, NEW_TRADING_FEE_PPM);
             vm.startPrank(user1);
         }
         // get trading fee amount
@@ -1336,7 +1336,7 @@ contract TradingTest is TestFixture {
         }
     }
 
-    /// @dev helper function to return the overriden trading fee amount for a given pair (if not set, returns the trading fee)
+    /// @dev helper function to return the custom trading fee amount for a given pair (if not set, returns the trading fee)
     function getTradingFeeAmount(
         uint128 pairId,
         bool byTargetAmount,
@@ -1345,8 +1345,8 @@ contract TradingTest is TestFixture {
     ) private view returns (uint256) {
         // override protocol-wide trading fee with custom one if it's set for the pair
         uint32 tradingFeePPM = carbonController.tradingFeePPM();
-        uint32 tradingFeePPMOverrides = carbonController.tradingFeePPMOverrides(pairId);
-        tradingFeePPM = tradingFeePPMOverrides == 0 ? tradingFeePPM : tradingFeePPMOverrides;
+        uint32 customTradingFeePPM = carbonController.customTradingFeePPM(pairId);
+        tradingFeePPM = customTradingFeePPM == 0 ? tradingFeePPM : customTradingFeePPM;
         if (byTargetAmount) {
             uint128 fee = uint128(MathEx.mulDivC(sourceAmount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));
             return uint256(fee - sourceAmount);
@@ -1363,8 +1363,8 @@ contract TradingTest is TestFixture {
     function _addFee(uint256 amount, uint128 pairId) private view returns (uint256) {
         // override protocol-wide trading fee with custom one if it's set for the pair
         uint32 tradingFeePPM = carbonController.tradingFeePPM();
-        uint32 tradingFeePPMOverrides = carbonController.tradingFeePPMOverrides(pairId);
-        tradingFeePPM = tradingFeePPMOverrides == 0 ? tradingFeePPM : tradingFeePPMOverrides;
+        uint32 customTradingFeePPM = carbonController.customTradingFeePPM(pairId);
+        tradingFeePPM = customTradingFeePPM == 0 ? tradingFeePPM : customTradingFeePPM;
         // divide the input amount by `1 - fee`
         return uint256(MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));
     }

@@ -179,7 +179,7 @@ abstract contract Strategies is Initializable {
     mapping(Token => uint256) internal _accumulatedFees;
 
     // mapping between a pair id to its custom trading fee (in units of PPM)
-    mapping(uint128 => uint32) internal _tradingFeePPMOverrides;
+    mapping(uint128 pairId => uint32 fee) internal _customTradingFeePPM;
 
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 5] private __gap;
@@ -190,9 +190,9 @@ abstract contract Strategies is Initializable {
     event TradingFeePPMUpdated(uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
-     * @dev triggered when the trading fee override for a given pair is updated
+     * @dev triggered when the custom trading fee for a given pair is updated
      */
-    event TradingFeePPMOverridesUpdated(uint128 pairId, uint32 prevFeePPM, uint32 newFeePPM);
+    event CustomTradingFeePPMUpdated(uint128 indexed pairId, uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
      * @dev triggered when a strategy is created
@@ -523,9 +523,7 @@ abstract contract Strategies is Initializable {
      * @dev calculates the required amount plus fee
      */
     function _addFee(uint128 amount, uint128 pairId) private view returns (uint128) {
-        // override protocol-wide trading fee with custom one if it's set for the pair
-        uint32 tradingFeePPMOverrides = _tradingFeePPMOverrides[pairId];
-        uint32 tradingFeePPM = tradingFeePPMOverrides == 0 ? _tradingFeePPM : tradingFeePPMOverrides;
+        uint32 tradingFeePPM = _getTradingFeePPM(pairId);
         // divide the input amount by `1 - fee`
         return MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM).toUint128();
     }
@@ -534,11 +532,17 @@ abstract contract Strategies is Initializable {
      * @dev calculates the expected amount minus fee
      */
     function _subtractFee(uint128 amount, uint128 pairId) private view returns (uint128) {
-        // override protocol-wide trading fee with custom one if it's set for the pair
-        uint32 tradingFeePPMOverrides = _tradingFeePPMOverrides[pairId];
-        uint32 tradingFeePPM = tradingFeePPMOverrides == 0 ? _tradingFeePPM : tradingFeePPMOverrides;
+        uint32 tradingFeePPM = _getTradingFeePPM(pairId);
         // multiply the input amount by `1 - fee`
         return MathEx.mulDivF(amount, PPM_RESOLUTION - tradingFeePPM, PPM_RESOLUTION).toUint128();
+    }
+
+    /**
+     * @dev get the custom trading fee ppm for a given pair (returns default trading fee if not set for pair)
+     */
+    function _getTradingFeePPM(uint128 pairId) private view returns (uint32) {
+        uint32 customTradingFeePPM = _customTradingFeePPM[pairId];
+        return customTradingFeePPM == 0 ? _tradingFeePPM : customTradingFeePPM;
     }
 
     /**
@@ -702,18 +706,18 @@ abstract contract Strategies is Initializable {
     /**
      * @dev sets trading fee override for a given pair (in units of PPM)
      */
-    function _setTradingFeePPMOverrides(uint128 pairId, uint32 newTradingFeeOverride) internal {
-        uint32 prevTradingFeeOverride = _tradingFeePPMOverrides[pairId];
-        if (prevTradingFeeOverride == newTradingFeeOverride) {
+    function _setCustomTradingFeePPM(uint128 pairId, uint32 newCustomTradingFeePPM) internal {
+        uint32 prevTradingFeeOverride = _customTradingFeePPM[pairId];
+        if (prevTradingFeeOverride == newCustomTradingFeePPM) {
             return;
         }
 
-        _tradingFeePPMOverrides[pairId] = newTradingFeeOverride;
+        _customTradingFeePPM[pairId] = newCustomTradingFeePPM;
 
-        emit TradingFeePPMOverridesUpdated({
+        emit CustomTradingFeePPMUpdated({
             pairId: pairId,
             prevFeePPM: prevTradingFeeOverride,
-            newFeePPM: newTradingFeeOverride
+            newFeePPM: newCustomTradingFeePPM
         });
     }
 

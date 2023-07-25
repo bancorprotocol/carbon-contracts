@@ -125,8 +125,8 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function tradingFeePPMOverrides(uint128 pairId) external view returns (uint32) {
-        return _tradingFeePPMOverrides[pairId];
+    function customTradingFeePPM(uint128 pairId) external view returns (uint32) {
+        return _customTradingFeePPM[pairId];
     }
 
     /**
@@ -141,17 +141,17 @@ contract CarbonController is
     }
 
     /**
-     * @dev sets the trading fee override for a given pair (in units of PPM)
+     * @dev sets the custom trading fee for a given pair (in units of PPM)
      *
      * requirements:
      *
      * - the caller must be the admin of the contract
      */
-    function setTradingFeePPMOverrides(
+    function setCustomTradingFeePPM(
         uint128 pairId,
-        uint32 newTradingFeeOverride
-    ) external onlyAdmin validFee(newTradingFeeOverride) {
-        _setTradingFeePPMOverrides(pairId, newTradingFeeOverride);
+        uint32 newCustomTradingFeePPM
+    ) external onlyAdmin validFee(newCustomTradingFeePPM) {
+        _setCustomTradingFeePPM(pairId, newCustomTradingFeePPM);
     }
 
     /**
