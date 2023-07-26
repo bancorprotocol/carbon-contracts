@@ -1,3 +1,4 @@
+import { shouldHaveGap } from '../../test/helpers/Proxy';
 import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/carbon/trading/testDataFactory';
 import {
     CreateStrategyParams,
@@ -40,6 +41,12 @@ import { ethers, getNamedAccounts } from 'hardhat';
     let carbonVortex: CarbonVortex;
 
     let daoMultisig: SignerWithAddress;
+
+    shouldHaveGap('CarbonController');
+    shouldHaveGap('Pairs', '_lastPairId');
+    shouldHaveGap('Strategies', '_strategyCounter');
+    shouldHaveGap('Voucher', '_useGlobalURI');
+    shouldHaveGap('CarbonVortex', '_totalBurned');
 
     before(async () => {
         ({ daoMultisig } = await getNamedSigners());
