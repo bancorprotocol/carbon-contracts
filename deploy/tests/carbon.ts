@@ -1,4 +1,3 @@
-import { shouldHaveGap } from '../../test/helpers/Proxy';
 import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/carbon/trading/testDataFactory';
 import {
     CreateStrategyParams,
@@ -15,6 +14,7 @@ import {
 } from '../../test/carbon/trading/tradingHelpers';
 import { expectRoleMembers, Roles } from '../../test/helpers/AccessControl';
 import { createBurnableToken, Tokens } from '../../test/helpers/Factory';
+import { shouldHaveGap } from '../../test/helpers/Proxy';
 import { latest } from '../../test/helpers/Time';
 import { getBalance, transfer } from '../../test/helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../test/utility/carbon-sdk';

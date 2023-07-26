@@ -72,6 +72,8 @@ contract CarbonControllerTest is TestFixture {
         assertEq(admin, carbonController.getRoleMember(adminRole, 0));
 
         assertEq(1, carbonController.getRoleMemberCount(adminRole));
+        assertEq(1, carbonController.getRoleMemberCount(emergencyStopperRole));
+        assertEq(0, carbonController.getRoleMemberCount(feesManagerRole));
 
         assertEq(CONTROLLER_TYPE, carbonController.controllerType());
         assertEq(TRADING_FEE_PPM, carbonController.tradingFeePPM());
