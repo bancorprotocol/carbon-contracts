@@ -46,7 +46,7 @@ contract StrategiesTest is TestFixture {
     /**
      * @dev triggered when the custom trading fee for a given pair is updated
      */
-    event CustomTradingFeePPMUpdated(uint128 indexed pairId, uint32 prevFeePPM, uint32 newFeePPM);
+    event CustomTradingFeePPMUpdated(Token indexed token0, Token indexed token1, uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
      * @dev triggered when a strategy is created
@@ -413,7 +413,7 @@ contract StrategiesTest is TestFixture {
         carbonController.createStrategy(token0, token1, [order, order]);
     }
 
-    function testSStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
+    function testStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
         vm.startPrank(user1);
 
         Order memory order0 = generateTestOrder();
@@ -1228,32 +1228,55 @@ contract StrategiesTest is TestFixture {
     function testShouldRevertWhenANonAdminAttemptsToSetTheCustomTradingFee() public {
         vm.prank(user2);
         vm.expectRevert(AccessDenied.selector);
-        carbonController.setCustomTradingFeePPM(1, NEW_TRADING_FEE_PPM);
+        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
     }
 
     function testShouldRevertWhenSettingTheCustomTradingFeeToAnInvalidValue() public {
         vm.prank(admin);
         vm.expectRevert(InvalidFee.selector);
-        carbonController.setCustomTradingFeePPM(1, PPM_RESOLUTION + 1);
+        carbonController.setCustomTradingFeePPM(token0, token1, PPM_RESOLUTION + 1);
     }
 
     function testFailShouldIgnoreUpdatingToTheSameCustomTradingFee() public {
+        vm.prank(user1);
+        // create pair to be able to update the custom trading fee
+        carbonController.createPair(token0, token1);
         vm.startPrank(admin);
-        carbonController.setCustomTradingFeePPM(1, NEW_TRADING_FEE_PPM);
+        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
         vm.expectEmit();
-        emit CustomTradingFeePPMUpdated(1, NEW_TRADING_FEE_PPM, NEW_TRADING_FEE_PPM);
-        carbonController.setCustomTradingFeePPM(1, NEW_TRADING_FEE_PPM);
+
+        Token[2] memory sortedTokens = sortTokens(token0, token1);
+
+        emit CustomTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
         vm.stopPrank();
     }
 
     function testShouldBeAbleToSetAndUpdateTheCustomTradingFee() public {
+        vm.prank(user1);
+        // create pair to be able to update the custom trading fee
+        carbonController.createPair(token0, token1);
         vm.prank(admin);
         vm.expectEmit();
-        emit CustomTradingFeePPMUpdated(1, 0, NEW_TRADING_FEE_PPM);
-        carbonController.setCustomTradingFeePPM(1, NEW_TRADING_FEE_PPM);
 
-        uint32 tradingFeeOverride = carbonController.customTradingFeePPM(1);
-        assertEq(tradingFeeOverride, NEW_TRADING_FEE_PPM);
+        Token[2] memory sortedTokens = sortTokens(token0, token1);
+
+        emit CustomTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+
+        uint32 customTradingFee = carbonController.customTradingFeePPM(token0, token1);
+        assertEq(customTradingFee, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertIfPairDoesNotExistWhenUpdatingTheCustomTradingFee() public {
+        vm.prank(admin);
+        vm.expectRevert(Pairs.PairDoesNotExist.selector);
+        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertIfPairDoesNotExistWhenQueryingTheCustomTradingFee() public {
+        vm.expectRevert(Pairs.PairDoesNotExist.selector);
+        carbonController.customTradingFeePPM(token0, token1);
     }
 
     function testSetsTheDefaultOnInitialization() public {
@@ -1860,6 +1883,10 @@ contract StrategiesTest is TestFixture {
     function getValueToSend(Token token0, Token token1, int64 delta0, int64 delta1) private pure returns (uint256 val) {
         val = token0 == NATIVE_TOKEN && delta0 >= 0 ? uint64(delta0) : 0;
         val += token1 == NATIVE_TOKEN && delta1 >= 0 ? uint64(delta1) : 0;
+    }
+
+    function sortTokens(Token token0, Token token1) private pure returns (Token[2] memory) {
+        return Token.unwrap(token0) < Token.unwrap(token1) ? [token0, token1] : [token1, token0];
     }
 
     function abs(int64 val) private pure returns (uint64) {

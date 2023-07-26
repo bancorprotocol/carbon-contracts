@@ -458,7 +458,7 @@ contract TradingTest is TestFixture {
 
         vm.prank(admin);
         // set custom trading fee for the token pair
-        carbonController.setCustomTradingFeePPM(pair.id, customFee);
+        carbonController.setCustomTradingFeePPM(pair.tokens[0], pair.tokens[1], customFee);
 
         vm.startPrank(user1);
 
@@ -467,7 +467,7 @@ contract TradingTest is TestFixture {
 
         uint256 sourceTokenFees = carbonController.accumulatedFees(tokens[0]);
         uint256 targetTokenFees = carbonController.accumulatedFees(tokens[1]);
-        uint256 tradingFeeAmount = getTradingFeeAmount(pair.id, byTargetAmount, sourceAmount, targetAmount);
+        uint256 tradingFeeAmount = getTradingFeeAmount(pair, byTargetAmount, sourceAmount, targetAmount);
 
         if (byTargetAmount) {
             assertEq(sourceTokenFees, tradingFeeAmount);
@@ -635,12 +635,12 @@ contract TradingTest is TestFixture {
         if (overrideTradingFee) {
             vm.stopPrank();
             vm.prank(admin);
-            carbonController.setCustomTradingFeePPM(pair.id, NEW_TRADING_FEE_PPM);
+            carbonController.setCustomTradingFeePPM(pair.tokens[0], pair.tokens[1], NEW_TRADING_FEE_PPM);
             vm.startPrank(user1);
         }
         // get trading fee amount
         uint128 tradingFeeAmount = uint128(
-            getTradingFeeAmount(pair.id, byTargetAmount, testCase.sourceAmount, testCase.targetAmount)
+            getTradingFeeAmount(pair, byTargetAmount, testCase.sourceAmount, testCase.targetAmount)
         );
         // get expected source and target amounts
         (uint256 expectedSourceAmount, uint256 expectedTargetAmount) = getExpectedSourceTargetAmounts(
@@ -804,12 +804,12 @@ contract TradingTest is TestFixture {
         if (overrideTradingFee) {
             vm.stopPrank();
             vm.prank(admin);
-            carbonController.setCustomTradingFeePPM(pair.id, NEW_TRADING_FEE_PPM);
+            carbonController.setCustomTradingFeePPM(pair.tokens[0], pair.tokens[1], NEW_TRADING_FEE_PPM);
             vm.startPrank(user1);
         }
         // get trading fee amount
         uint128 tradingFeeAmount = uint128(
-            getTradingFeeAmount(pair.id, byTargetAmount, testCase.sourceAmount, testCase.targetAmount)
+            getTradingFeeAmount(pair, byTargetAmount, testCase.sourceAmount, testCase.targetAmount)
         );
 
         // get balances before
@@ -1276,7 +1276,7 @@ contract TradingTest is TestFixture {
         uint256 deadline = block.timestamp + 1000;
         Pair memory pair = carbonController.pair(sourceToken, targetToken);
         if (byTargetAmount) {
-            sourceAmount = _addFee(sourceAmount, pair.id);
+            sourceAmount = _addFee(sourceAmount, pair);
             uint128 maxInput = setConstraint(constraint, byTargetAmount, sourceAmount);
             uint256 txValue = sourceToken == NATIVE_TOKEN ? sourceAmount : 0;
             txValue = sendExcessNativeToken ? txValue * 2 : txValue;
@@ -1338,14 +1338,14 @@ contract TradingTest is TestFixture {
 
     /// @dev helper function to return the custom trading fee amount for a given pair (if not set, returns the trading fee)
     function getTradingFeeAmount(
-        uint128 pairId,
+        Pair memory pair,
         bool byTargetAmount,
         uint256 sourceAmount,
         uint256 targetAmount
     ) private view returns (uint256) {
         // override protocol-wide trading fee with custom one if it's set for the pair
         uint32 tradingFeePPM = carbonController.tradingFeePPM();
-        uint32 customTradingFeePPM = carbonController.customTradingFeePPM(pairId);
+        uint32 customTradingFeePPM = carbonController.customTradingFeePPM(pair.tokens[0], pair.tokens[1]);
         tradingFeePPM = customTradingFeePPM == 0 ? tradingFeePPM : customTradingFeePPM;
         if (byTargetAmount) {
             uint128 fee = uint128(MathEx.mulDivC(sourceAmount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));
@@ -1360,10 +1360,10 @@ contract TradingTest is TestFixture {
     /**
      * @dev calculates the required amount plus fee
      */
-    function _addFee(uint256 amount, uint128 pairId) private view returns (uint256) {
+    function _addFee(uint256 amount, Pair memory pair) private view returns (uint256) {
         // override protocol-wide trading fee with custom one if it's set for the pair
         uint32 tradingFeePPM = carbonController.tradingFeePPM();
-        uint32 customTradingFeePPM = carbonController.customTradingFeePPM(pairId);
+        uint32 customTradingFeePPM = carbonController.customTradingFeePPM(pair.tokens[0], pair.tokens[1]);
         tradingFeePPM = customTradingFeePPM == 0 ? tradingFeePPM : customTradingFeePPM;
         // divide the input amount by `1 - fee`
         return uint256(MathEx.mulDivC(amount, PPM_RESOLUTION, PPM_RESOLUTION - tradingFeePPM));

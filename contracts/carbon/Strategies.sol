@@ -192,7 +192,7 @@ abstract contract Strategies is Initializable {
     /**
      * @dev triggered when the custom trading fee for a given pair is updated
      */
-    event CustomTradingFeePPMUpdated(uint128 indexed pairId, uint32 prevFeePPM, uint32 newFeePPM);
+    event CustomTradingFeePPMUpdated(Token indexed token0, Token indexed token1, uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
      * @dev triggered when a strategy is created
@@ -706,16 +706,17 @@ abstract contract Strategies is Initializable {
     /**
      * @dev sets trading fee override for a given pair (in units of PPM)
      */
-    function _setCustomTradingFeePPM(uint128 pairId, uint32 newCustomTradingFeePPM) internal {
-        uint32 prevTradingFeeOverride = _customTradingFeePPM[pairId];
+    function _setCustomTradingFeePPM(Pair memory pair, uint32 newCustomTradingFeePPM) internal {
+        uint32 prevTradingFeeOverride = _customTradingFeePPM[pair.id];
         if (prevTradingFeeOverride == newCustomTradingFeePPM) {
             return;
         }
 
-        _customTradingFeePPM[pairId] = newCustomTradingFeePPM;
+        _customTradingFeePPM[pair.id] = newCustomTradingFeePPM;
 
         emit CustomTradingFeePPMUpdated({
-            pairId: pairId,
+            token0: pair.tokens[0],
+            token1: pair.tokens[1],
             prevFeePPM: prevTradingFeeOverride,
             newFeePPM: newCustomTradingFeePPM
         });

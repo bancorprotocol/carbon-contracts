@@ -23,7 +23,7 @@ interface ICarbonController is IUpgradeable {
     /**
      * @dev returns the custom trading fee for a given pair (in units of PPM)
      */
-    function customTradingFeePPM(uint128 pairId) external view returns (uint32);
+    function customTradingFeePPM(Token token0, Token token1) external view returns (uint32);
 
     /**
      * @dev creates a new pair of provided token0 and token1
