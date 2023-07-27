@@ -196,7 +196,7 @@ contract TestCaseParser is Test {
             uint256 targetAmount
         )
     {
-        string memory json = vm.readFile("./test/carbon/trading/testDataFormatted.json");
+        string memory json = vm.readFile("./test/helpers/data/tradeTestDataForge.json");
 
         strategies = parseStrategies(json, templateName);
         tradeActions = parseTradeActions(json, templateName);
