@@ -71,6 +71,10 @@ contract CarbonControllerTest is TestFixture {
 
         assertEq(admin, carbonController.getRoleMember(adminRole, 0));
 
+        assertEq(1, carbonController.getRoleMemberCount(adminRole));
+        assertEq(1, carbonController.getRoleMemberCount(emergencyStopperRole));
+        assertEq(0, carbonController.getRoleMemberCount(feesManagerRole));
+
         assertEq(CONTROLLER_TYPE, carbonController.controllerType());
         assertEq(TRADING_FEE_PPM, carbonController.tradingFeePPM());
     }
@@ -90,6 +94,8 @@ contract CarbonControllerTest is TestFixture {
         vm.expectEmit();
         emit Paused(emergencyStopper);
         carbonController.pause();
+        bool paused = carbonController.paused();
+        assertTrue(paused);
     }
 
     /// @dev test emergency stopper should be able to unpause
@@ -100,6 +106,8 @@ contract CarbonControllerTest is TestFixture {
         vm.expectEmit();
         emit Unpaused(emergencyStopper);
         carbonController.unpause();
+        bool paused = carbonController.paused();
+        assertFalse(paused);
         vm.stopPrank();
     }
 

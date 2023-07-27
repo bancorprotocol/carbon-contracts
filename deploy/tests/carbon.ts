@@ -1,4 +1,7 @@
-import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/carbon/trading/testDataFactory';
+import { expectRoleMembers, Roles } from '../../test/helpers/AccessControl';
+import { createBurnableToken, Tokens } from '../../test/helpers/Factory';
+import { shouldHaveGap } from '../../test/helpers/Proxy';
+import { latest } from '../../test/helpers/Time';
 import {
     CreateStrategyParams,
     generateStrategyId,
@@ -11,12 +14,10 @@ import {
     TradeParams,
     TradeTestReturnValues,
     UpdateStrategyParams
-} from '../../test/carbon/trading/tradingHelpers';
-import { expectRoleMembers, Roles } from '../../test/helpers/AccessControl';
-import { createBurnableToken, Tokens } from '../../test/helpers/Factory';
-import { latest } from '../../test/helpers/Time';
+} from '../../test/helpers/Trading';
 import { getBalance, transfer } from '../../test/helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../test/utility/carbon-sdk';
+import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/utility/testDataFactory';
 import { CarbonController, CarbonVortex, Voucher } from '../../typechain-types';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
 import {
@@ -40,6 +41,12 @@ import { ethers, getNamedAccounts } from 'hardhat';
     let carbonVortex: CarbonVortex;
 
     let daoMultisig: SignerWithAddress;
+
+    shouldHaveGap('CarbonController');
+    shouldHaveGap('Pairs', '_lastPairId');
+    shouldHaveGap('Strategies', '_strategyCounter');
+    shouldHaveGap('Voucher', '_useGlobalURI');
+    shouldHaveGap('CarbonVortex', '_totalBurned');
 
     before(async () => {
         ({ daoMultisig } = await getNamedSigners());
@@ -306,7 +313,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
             for (let i = 0; i < strategies.length; ++i) {
                 const strategy = strategies[i];
                 // encode orders to values expected by the contract
-                const orders = strategy.orders.map((order) =>
+                const orders = strategy.orders.map((order: any) =>
                     encodeOrder({
                         liquidity: new Decimal(order.liquidity),
                         lowestRate: new Decimal(order.lowestRate),

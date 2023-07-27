@@ -1,6 +1,6 @@
 import { NamedAccounts } from './data/named-accounts';
-import './test/Setup';
 import { DeploymentNetwork } from './utils/Constants';
+import './test/Setup';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-solhint';
@@ -45,24 +45,9 @@ const {
 
 const mochaOptions = (): MochaOptions => {
     let timeout = 600000;
-    let grep;
+    let grep = '';
     let reporter;
     let invert = false;
-
-    if (isProfiling) {
-        // if we're profiling, make sure to only run @profile tests without any timeout restriction, and silence most
-        // of test output
-        timeout = 0;
-        grep = '@profile';
-        reporter = 'mocha-silent-reporter';
-    } else if (isNightly) {
-        // if we're running the nightly CI test, run all the tests
-        grep = '';
-    } else {
-        // if we're running in dev, filter out stress and profile tests
-        grep = '@profile|@stress';
-        invert = true;
-    }
 
     return {
         timeout,

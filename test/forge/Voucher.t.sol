@@ -70,6 +70,9 @@ contract VoucherTest is TestFixture {
         assertEq(admin, voucher.getRoleMember(adminRole, 0));
         assertEq(address(carbonController), voucher.getRoleMember(minterRole, 0));
 
+        assertEq(1, voucher.getRoleMemberCount(adminRole));
+        assertEq(1, voucher.getRoleMemberCount(minterRole));
+
         assertEq(VOUCHER_SYMBOL, voucher.symbol());
         assertEq(VOUCHER_NAME, voucher.name());
     }

@@ -3,7 +3,7 @@ import {
     testCaseTemplateBySourceAmountEqualHighestAndMarginalRate,
     testCaseTemplateByTargetAmount,
     testCaseTemplateByTargetAmountEqualHighestAndMarginalRate
-} from './testData.json';
+} from '../helpers/data/tradeTestDataHardhat.json';
 
 export interface ExpectedOrder {
     liquidity: string;
