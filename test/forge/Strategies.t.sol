@@ -46,7 +46,7 @@ contract StrategiesTest is TestFixture {
     /**
      * @dev triggered when the custom trading fee for a given pair is updated
      */
-    event CustomTradingFeePPMUpdated(Token indexed token0, Token indexed token1, uint32 prevFeePPM, uint32 newFeePPM);
+    event PairTradingFeePPMUpdated(Token indexed token0, Token indexed token1, uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
      * @dev triggered when a strategy is created
@@ -1225,34 +1225,34 @@ contract StrategiesTest is TestFixture {
         assertEq(tradingFee, NEW_TRADING_FEE_PPM);
     }
 
-    function testShouldRevertWhenANonAdminAttemptsToSetTheCustomTradingFee() public {
+    function testShouldRevertWhenANonAdminAttemptsToSetThePairTradingFee() public {
         vm.prank(user2);
         vm.expectRevert(AccessDenied.selector);
-        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
     }
 
-    function testShouldRevertWhenSettingTheCustomTradingFeeToAnInvalidValue() public {
+    function testShouldRevertWhenSettingThePairTradingFeeToAnInvalidValue() public {
         vm.prank(admin);
         vm.expectRevert(InvalidFee.selector);
-        carbonController.setCustomTradingFeePPM(token0, token1, PPM_RESOLUTION + 1);
+        carbonController.setPairTradingFeePPM(token0, token1, PPM_RESOLUTION + 1);
     }
 
-    function testFailShouldIgnoreUpdatingToTheSameCustomTradingFee() public {
+    function testFailShouldIgnoreUpdatingToTheSamePairTradingFee() public {
         vm.prank(user1);
         // create pair to be able to update the custom trading fee
         carbonController.createPair(token0, token1);
         vm.startPrank(admin);
-        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
         vm.expectEmit();
 
         Token[2] memory sortedTokens = sortTokens(token0, token1);
 
-        emit CustomTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
-        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        emit PairTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
         vm.stopPrank();
     }
 
-    function testShouldBeAbleToSetAndUpdateTheCustomTradingFee() public {
+    function testShouldBeAbleToSetAndUpdateThePairTradingFee() public {
         vm.prank(user1);
         // create pair to be able to update the custom trading fee
         carbonController.createPair(token0, token1);
@@ -1261,22 +1261,22 @@ contract StrategiesTest is TestFixture {
 
         Token[2] memory sortedTokens = sortTokens(token0, token1);
 
-        emit CustomTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
-        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        emit PairTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
 
-        uint32 customTradingFee = carbonController.customTradingFeePPM(token0, token1);
+        uint32 customTradingFee = carbonController.pairTradingFeePPM(token0, token1);
         assertEq(customTradingFee, NEW_TRADING_FEE_PPM);
     }
 
-    function testShouldRevertIfPairDoesNotExistWhenUpdatingTheCustomTradingFee() public {
+    function testShouldRevertIfPairDoesNotExistWhenUpdatingThePairTradingFee() public {
         vm.prank(admin);
         vm.expectRevert(Pairs.PairDoesNotExist.selector);
-        carbonController.setCustomTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
     }
 
-    function testShouldRevertIfPairDoesNotExistWhenQueryingTheCustomTradingFee() public {
+    function testShouldRevertIfPairDoesNotExistWhenQueryingThePairTradingFee() public {
         vm.expectRevert(Pairs.PairDoesNotExist.selector);
-        carbonController.customTradingFeePPM(token0, token1);
+        carbonController.pairTradingFeePPM(token0, token1);
     }
 
     function testSetsTheDefaultOnInitialization() public {

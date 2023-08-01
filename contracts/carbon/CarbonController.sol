@@ -125,9 +125,9 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function customTradingFeePPM(Token token0, Token token1) external view returns (uint32) {
+    function pairTradingFeePPM(Token token0, Token token1) external view returns (uint32) {
         Pair memory _pair = _pair(token0, token1);
-        return _customTradingFeePPM[_pair.id];
+        return _getPairTradingFeePPM(_pair.id);
     }
 
     /**
@@ -148,13 +148,13 @@ contract CarbonController is
      *
      * - the caller must be the admin of the contract
      */
-    function setCustomTradingFeePPM(
+    function setPairTradingFeePPM(
         Token token0,
         Token token1,
-        uint32 newCustomTradingFeePPM
-    ) external onlyAdmin validFee(newCustomTradingFeePPM) {
+        uint32 newPairTradingFeePPM
+    ) external onlyAdmin validFee(newPairTradingFeePPM) {
         Pair memory _pair = _pair(token0, token1);
-        _setCustomTradingFeePPM(_pair, newCustomTradingFeePPM);
+        _setPairTradingFeePPM(_pair, newPairTradingFeePPM);
     }
 
     /**
