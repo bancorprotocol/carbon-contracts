@@ -1,12 +1,12 @@
-import { BigNumber, BigNumberish, ContractReceipt } from "ethers";
-import { TestTradeActions } from "./testDataFactory";
-import { TradeActionStruct } from "../../../typechain-types/contracts/carbon/CarbonController";
-import Decimal from "decimal.js";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { TestERC20Burnable } from "../../../typechain-types";
+import { TestERC20Burnable } from '../../typechain-types';
+import { TradeActionStruct } from '../../typechain-types/contracts/carbon/CarbonController';
+import { TestTradeActions } from '../utility/testDataFactory';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import Decimal from 'decimal.js';
+import { BigNumber, BigNumberish, ContractReceipt } from 'ethers';
 
-
-export const generateStrategyId = (pairId: number, strategyIndex: number) => BigNumber.from(pairId).shl(128).or(strategyIndex);
+export const generateStrategyId = (pairId: number, strategyIndex: number) =>
+    BigNumber.from(pairId).shl(128).or(strategyIndex);
 
 export type TradeTestReturnValues = {
     tradingFeeAmount: BigNumber;
@@ -68,7 +68,8 @@ export interface UpdateStrategyParams {
 }
 
 export const mulDivF = (x: BigNumberish, y: BigNumberish, z: BigNumberish) => BigNumber.from(x).mul(y).div(z);
-export const mulDivC = (x: BigNumberish, y: BigNumberish, z: BigNumberish) => BigNumber.from(x).mul(y).add(z).sub(1).div(z);
+export const mulDivC = (x: BigNumberish, y: BigNumberish, z: BigNumberish) =>
+    BigNumber.from(x).mul(y).add(z).sub(1).div(z);
 export const toFixed = (x: Decimal) => new Decimal(x.toFixed(12)).toFixed();
 
 export const setConstraint = (
