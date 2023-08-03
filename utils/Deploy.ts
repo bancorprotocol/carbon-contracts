@@ -162,8 +162,6 @@ const saveTypes = async (options: SaveTypeOptions) => {
 interface ProxyOptions {
     skipInitialization?: boolean;
     args?: any[];
-    initImpl?: boolean;
-    initImplArgs?: any[];
 }
 
 interface BaseDeployOptions {
@@ -281,19 +279,6 @@ export const deploy = async (options: DeployOptions) => {
         log: true
     });
 
-    if (isProxy && proxy.initImpl) {
-        if (!res.implementation) {
-            throw new Error(`Implementation address for ${contractName} missing`);
-        }
-        await initializeImplementation({
-            name,
-            address: res.implementation,
-            args: proxy.initImplArgs,
-            from
-        });
-        Logger.log(`  initialized proxy implementation`);
-    }
-
     if (!(isProxy && isLive())) {
         const data = { name, contract: contractName };
 
@@ -334,12 +319,10 @@ export const deployProxy = async (options: DeployOptions, proxy: ProxyOptions = 
 // ]
 interface UpgradeProxyOptions extends DeployOptions {
     postUpgradeArgs?: TypedParam[];
-    initImpl?: boolean;
-    initImplArgs?: any[];
 }
 
 export const upgradeProxy = async (options: UpgradeProxyOptions) => {
-    const { name, contract, from, value, args, postUpgradeArgs, initImpl, initImplArgs, contractArtifactData } =
+    const { name, contract, from, value, args, postUpgradeArgs, contractArtifactData } =
         options;
     const contractName = contract ?? name;
 
@@ -385,19 +368,6 @@ export const upgradeProxy = async (options: UpgradeProxyOptions) => {
         waitConfirmations: WAIT_CONFIRMATIONS,
         log: true
     });
-
-    if (initImpl) {
-        if (!res.implementation) {
-            throw new Error(`Implementation address for ${contractName} missing`);
-        }
-        await initializeImplementation({
-            name,
-            address: res.implementation,
-            args: initImplArgs,
-            from
-        });
-        Logger.log(`  initialized proxy implementation`);
-    }
 
     const newVersion = await (deployed as IVersioned).version();
 
@@ -469,28 +439,6 @@ export const initializeProxy = async (options: InitializeProxyOptions) => {
     });
 
     return address;
-};
-
-interface InitializeImplementationOptions {
-    name: InstanceName;
-    address: string;
-    args?: any[];
-    from: string;
-}
-
-export const initializeImplementation = async (options: InitializeImplementationOptions) => {
-    const { name, args, address, from } = options;
-
-    const instanceName: InstanceName = getInstanceNameByAddress(address);
-
-    Logger.log(`  initializing implementation of ${name}`);
-
-    await execute({
-        name: instanceName,
-        methodName: INITIALIZE,
-        args: args ?? [],
-        from
-    });
 };
 
 interface RolesOptions {

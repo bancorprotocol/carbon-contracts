@@ -10,8 +10,7 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     await upgradeProxy({
         name: InstanceName.CarbonVortex,
         from: deployer,
-        args: [bnt, carbonController.address, bancorNetworkV3],
-        initImpl: true
+        args: [bnt, carbonController.address, bancorNetworkV3]
     });
 
     return true;
