@@ -45,7 +45,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     uint256[MAX_GAP - 2] private __gap;
 
     /**
-     * @dev a "virtual" constructor that is only used to set immutable state variables
+     * @dev used to set immutable state variables and initialize the implementation
      */
     constructor(
         Token bnt,
@@ -55,12 +55,13 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         _carbonController = carbonController;
         _bancorNetwork = bancorNetwork;
         _bnt = bnt;
+        initialize();
     }
 
     /**
      * @dev fully initializes the contract and its parents
      */
-    function initialize() external initializer {
+    function initialize() public initializer {
         __CarbonVortex_init();
     }
 
