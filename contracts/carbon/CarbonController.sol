@@ -46,18 +46,19 @@ contract CarbonController is
     error DeadlineExpired();
 
     /**
-     * @dev a "virtual" constructor that is only used to set immutable state variables
+     * @dev used to set immutable state variables and initialize the implementation
      */
     constructor(IVoucher initVoucher, address proxy) OnlyProxyDelegate(proxy) {
         _validAddress(address(initVoucher));
 
         _voucher = initVoucher;
+        initialize();
     }
 
     /**
      * @dev fully initializes the contract and its parents
      */
-    function initialize() external initializer {
+    function initialize() public initializer {
         __CarbonController_init();
     }
 

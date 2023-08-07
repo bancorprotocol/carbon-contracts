@@ -54,13 +54,20 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
     event BaseExtensionUpdated(string newBaseExtension);
 
     /**
+     * @dev used to initialize the implementation
+     */
+    constructor() {
+        initialize(true, "ipfs://QmUyDUzQtwAhMB1hrYaQAqmRTbgt9sUnwq11GeqyzzSuqn", "");
+    }
+
+    /**
      * @dev fully initializes the contract and its parents
      */
     function initialize(
         bool newUseGlobalURI,
         string memory newBaseURI,
         string memory newBaseExtension
-    ) external initializer {
+    ) public initializer {
         __Voucher_init(newUseGlobalURI, newBaseURI, newBaseExtension);
     }
 
