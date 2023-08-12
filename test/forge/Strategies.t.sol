@@ -408,18 +408,20 @@ contract StrategiesTest is TestFixture {
         carbonController.createStrategy(token0, token1, [order, order]);
     }
 
-    function testSStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
+    function testStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient, bool order0Constant) public {
         vm.startPrank(user1);
 
         Order memory order0 = generateTestOrder();
         Order memory order1 = generateTestOrder();
-        if (order0Insufficient) {
-            order0.z = order0.y - 1;
+        Order memory orderPtr = order0Insufficient ? order0 : order1;
+        orderPtr.z = orderPtr.y - 1;
+
+        if (order0Constant) {
+            orderPtr.A = 0;
         } else {
-            order1.z = order1.y - 1;
+            vm.expectRevert(Strategies.InsufficientCapacity.selector);
         }
 
-        vm.expectRevert(Strategies.InsufficientCapacity.selector);
         carbonController.createStrategy(token0, token1, [order0, order1]);
 
         vm.stopPrank();
@@ -904,7 +906,7 @@ contract StrategiesTest is TestFixture {
         carbonController.updateStrategy(strategyId, [order, order], [newOrder, newOrder]);
     }
 
-    function testStrategyUpdateRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
+    function testStrategyUpdateRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient, bool order0Constant) public {
         vm.startPrank(user1);
 
         Order memory order = generateTestOrder();
@@ -912,13 +914,15 @@ contract StrategiesTest is TestFixture {
 
         Order memory order0 = generateTestOrder();
         Order memory order1 = generateTestOrder();
-        if (order0Insufficient) {
-            order0.z = order0.y - 1;
+        Order memory orderPtr = order0Insufficient ? order0 : order1;
+        orderPtr.z = orderPtr.y - 1;
+
+        if (order0Constant) {
+            orderPtr.A = 0;
         } else {
-            order1.z = order1.y - 1;
+            vm.expectRevert(Strategies.InsufficientCapacity.selector);
         }
 
-        vm.expectRevert(Strategies.InsufficientCapacity.selector);
         carbonController.updateStrategy(strategyId, [order, order], [order0, order1]);
 
         vm.stopPrank();

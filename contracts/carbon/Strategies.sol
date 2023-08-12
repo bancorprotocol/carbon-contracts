@@ -435,7 +435,7 @@ abstract contract Strategies is Initializable {
             }
 
             sourceOrder.y += sourceAmount;
-            if (sourceOrder.z < sourceOrder.y) {
+            if (sourceOrder.z < sourceOrder.y && sourceOrder.A != 0) {
                 sourceOrder.z = sourceOrder.y;
             }
 
@@ -870,7 +870,7 @@ abstract contract Strategies is Initializable {
      */
     function _validateOrders(Order[2] calldata orders) internal pure {
         for (uint256 i = 0; i < 2; i = uncheckedInc(i)) {
-            if (orders[i].z < orders[i].y) {
+            if (orders[i].z < orders[i].y && orders[i].A != 0) {
                 revert InsufficientCapacity();
             }
             if (!_validRate(orders[i].A)) {
