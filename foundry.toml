@@ -1,0 +1,14 @@
+[profile.default]
+src = 'contracts'
+out = 'out'
+test = 'test'
+libs = ["node_modules", "lib"]
+cache_path  = 'cache_forge'
+remappings = [
+    '@bancor/=node_modules/@bancor/',
+    '@openzeppelin/=node_modules/@openzeppelin/',
+    'forge-std/=lib/forge-std/src/'
+]
+fs_permissions = [{ access = "read", path = "./"}]
+optimizer = true
+optimizer_runs = 2000

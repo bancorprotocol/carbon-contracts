@@ -2,6 +2,9 @@ import { DeployedContracts, InstanceName, setDeploymentMetadata, upgradeProxy } 
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
+/**
+ * @dev custom trading fees upgrade
+ */
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
     const { deployer } = await getNamedAccounts();
     const voucher = await DeployedContracts.Voucher.deployed();

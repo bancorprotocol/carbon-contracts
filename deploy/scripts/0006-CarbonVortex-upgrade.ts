@@ -3,14 +3,14 @@ import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
-    const { deployer } = await getNamedAccounts();
-    const voucher = await DeployedContracts.Voucher.deployed();
+    const { deployer, bnt, bancorNetworkV3 } = await getNamedAccounts();
 
     const carbonController = await DeployedContracts.CarbonController.deployed();
+
     await upgradeProxy({
-        name: InstanceName.CarbonController,
+        name: InstanceName.CarbonVortex,
         from: deployer,
-        args: [voucher.address, carbonController.address]
+        args: [bnt, carbonController.address, bancorNetworkV3]
     });
 
     return true;

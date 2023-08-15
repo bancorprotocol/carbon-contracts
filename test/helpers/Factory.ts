@@ -96,15 +96,15 @@ export const createCarbonController = async (voucher: string | Voucher) => {
     return upgradedCarbonController;
 };
 
-export const createFeeBurner = async (
+export const createCarbonVortex = async (
     bnt: string | TestBNT,
     carbonController: string | TestCarbonController,
     bancorNetworkV3: string | MockBancorNetworkV3
 ) => {
-    const feeBurner = await createProxy(Contracts.FeeBurner, {
+    const carbonVortex = await createProxy(Contracts.CarbonVortex, {
         ctorArgs: [toAddress(bnt), toAddress(carbonController), toAddress(bancorNetworkV3)]
     });
-    return feeBurner;
+    return carbonVortex;
 };
 
 const createSystemFixture = async () => {

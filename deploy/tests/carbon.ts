@@ -1,4 +1,7 @@
-import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/carbon/trading/testDataFactory';
+import { expectRoleMembers, Roles } from '../../test/helpers/AccessControl';
+import { createBurnableToken, Tokens } from '../../test/helpers/Factory';
+import { shouldHaveGap } from '../../test/helpers/Proxy';
+import { latest } from '../../test/helpers/Time';
 import {
     CreateStrategyParams,
     generateStrategyId,
@@ -11,13 +14,11 @@ import {
     TradeParams,
     TradeTestReturnValues,
     UpdateStrategyParams
-} from '../../test/carbon/trading/tradingHelpers';
-import { expectRoleMembers, Roles } from '../../test/helpers/AccessControl';
-import { createBurnableToken, Tokens } from '../../test/helpers/Factory';
-import { latest } from '../../test/helpers/Time';
+} from '../../test/helpers/Trading';
 import { getBalance, transfer } from '../../test/helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../test/utility/carbon-sdk';
-import { CarbonController, FeeBurner, Voucher } from '../../typechain-types';
+import { FactoryOptions, testCaseFactory, TestStrategy } from '../../test/utility/testDataFactory';
+import { CarbonController, CarbonVortex, Voucher } from '../../typechain-types';
 import { StrategyStruct } from '../../typechain-types/contracts/carbon/CarbonController';
 import {
     DEFAULT_TRADING_FEE_PPM,
@@ -37,9 +38,15 @@ import { ethers, getNamedAccounts } from 'hardhat';
 (isMainnet() ? describe : describe.skip)('network', async () => {
     let carbonController: CarbonController;
     let voucher: Voucher;
-    let feeBurner: FeeBurner;
+    let carbonVortex: CarbonVortex;
 
     let daoMultisig: SignerWithAddress;
+
+    shouldHaveGap('CarbonController');
+    shouldHaveGap('Pairs', '_lastPairId');
+    shouldHaveGap('Strategies', '_strategyCounter');
+    shouldHaveGap('Voucher', '_useGlobalURI');
+    shouldHaveGap('CarbonVortex', '_totalBurned');
 
     before(async () => {
         ({ daoMultisig } = await getNamedSigners());
@@ -50,7 +57,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
 
         carbonController = await DeployedContracts.CarbonController.deployed();
         voucher = await DeployedContracts.Voucher.deployed();
-        feeBurner = await DeployedContracts.FeeBurner.deployed();
+        carbonVortex = await DeployedContracts.CarbonVortex.deployed();
     });
 
     describe('roles', () => {
@@ -58,10 +65,10 @@ import { ethers, getNamedAccounts } from 'hardhat';
             // expect dao multisig to be admin
             await expectRoleMembers(carbonController, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
             await expectRoleMembers(voucher, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
-            await expectRoleMembers(feeBurner, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
+            await expectRoleMembers(carbonVortex, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
 
             // expect fee burner to have fee manager role in Carbon
-            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [feeBurner.address]);
+            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [carbonVortex.address]);
 
             // expect carbonController to have minter role in voucher
             await expectRoleMembers(voucher, Roles.Voucher.ROLE_MINTER, [carbonController.address]);
@@ -306,7 +313,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
             for (let i = 0; i < strategies.length; ++i) {
                 const strategy = strategies[i];
                 // encode orders to values expected by the contract
-                const orders = strategy.orders.map((order) =>
+                const orders = strategy.orders.map((order: any) =>
                     encodeOrder({
                         liquidity: new Decimal(order.liquidity),
                         lowestRate: new Decimal(order.lowestRate),

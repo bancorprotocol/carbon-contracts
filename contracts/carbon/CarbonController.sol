@@ -46,18 +46,19 @@ contract CarbonController is
     error DeadlineExpired();
 
     /**
-     * @dev a "virtual" constructor that is only used to set immutable state variables
+     * @dev used to set immutable state variables and initialize the implementation
      */
     constructor(IVoucher initVoucher, address proxy) OnlyProxyDelegate(proxy) {
         _validAddress(address(initVoucher));
 
         _voucher = initVoucher;
+        initialize();
     }
 
     /**
      * @dev fully initializes the contract and its parents
      */
-    function initialize() external initializer {
+    function initialize() public initializer {
         __CarbonController_init();
     }
 
@@ -91,7 +92,7 @@ contract CarbonController is
      * @inheritdoc Upgradeable
      */
     function version() public pure virtual override(IVersioned, Upgradeable) returns (uint16) {
-        return 3;
+        return 4;
     }
 
     /**
@@ -123,6 +124,14 @@ contract CarbonController is
     }
 
     /**
+     * @inheritdoc ICarbonController
+     */
+    function pairTradingFeePPM(Token token0, Token token1) external view returns (uint32) {
+        Pair memory _pair = _pair(token0, token1);
+        return _getPairTradingFeePPM(_pair.id);
+    }
+
+    /**
      * @dev sets the trading fee (in units of PPM)
      *
      * requirements:
@@ -131,6 +140,22 @@ contract CarbonController is
      */
     function setTradingFeePPM(uint32 newTradingFeePPM) external onlyAdmin validFee(newTradingFeePPM) {
         _setTradingFeePPM(newTradingFeePPM);
+    }
+
+    /**
+     * @dev sets the custom trading fee for a given pair (in units of PPM)
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
+     */
+    function setPairTradingFeePPM(
+        Token token0,
+        Token token1,
+        uint32 newPairTradingFeePPM
+    ) external onlyAdmin validFee(newPairTradingFeePPM) {
+        Pair memory _pair = _pair(token0, token1);
+        _setPairTradingFeePPM(_pair, newPairTradingFeePPM);
     }
 
     /**

@@ -7,23 +7,18 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     const { deployer, bnt, bancorNetworkV3 } = await getNamedAccounts();
     const carbonController = await DeployedContracts.CarbonController.deployed();
 
-    await deployProxy(
-        {
-            name: InstanceName.FeeBurner,
-            from: deployer,
-            args: [bnt, carbonController.address, bancorNetworkV3]
-        },
-        {
-            initImpl: true
-        }
-    );
+    await deployProxy({
+        name: InstanceName.CarbonVortex,
+        from: deployer,
+        args: [bnt, carbonController.address, bancorNetworkV3]
+    });
 
-    const feeBurner = await DeployedContracts.FeeBurner.deployed();
+    const carbonVortex = await DeployedContracts.CarbonVortex.deployed();
 
     await grantRole({
         name: InstanceName.CarbonController,
         id: Roles.CarbonController.ROLE_FEES_MANAGER,
-        member: feeBurner.address,
+        member: carbonVortex.address,
         from: deployer
     });
 
