@@ -44,6 +44,11 @@ contract StrategiesTest is TestFixture {
     event TradingFeePPMUpdated(uint32 prevFeePPM, uint32 newFeePPM);
 
     /**
+     * @dev triggered when the custom trading fee for a given pair is updated
+     */
+    event PairTradingFeePPMUpdated(Token indexed token0, Token indexed token1, uint32 prevFeePPM, uint32 newFeePPM);
+
+    /**
      * @dev triggered when a strategy is created
      */
     event StrategyCreated(
@@ -408,7 +413,7 @@ contract StrategiesTest is TestFixture {
         carbonController.createStrategy(token0, token1, [order, order]);
     }
 
-    function testSStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
+    function testStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
         vm.startPrank(user1);
 
         Order memory order0 = generateTestOrder();
@@ -1220,6 +1225,60 @@ contract StrategiesTest is TestFixture {
         assertEq(tradingFee, NEW_TRADING_FEE_PPM);
     }
 
+    function testShouldRevertWhenANonAdminAttemptsToSetThePairTradingFee() public {
+        vm.prank(user2);
+        vm.expectRevert(AccessDenied.selector);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertWhenSettingThePairTradingFeeToAnInvalidValue() public {
+        vm.prank(admin);
+        vm.expectRevert(InvalidFee.selector);
+        carbonController.setPairTradingFeePPM(token0, token1, PPM_RESOLUTION + 1);
+    }
+
+    function testFailShouldIgnoreUpdatingToTheSamePairTradingFee() public {
+        vm.prank(user1);
+        // create pair to be able to update the custom trading fee
+        carbonController.createPair(token0, token1);
+        vm.startPrank(admin);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        vm.expectEmit();
+
+        Token[2] memory sortedTokens = sortTokens(token0, token1);
+
+        emit PairTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        vm.stopPrank();
+    }
+
+    function testShouldBeAbleToSetAndUpdateThePairTradingFee() public {
+        vm.prank(user1);
+        // create pair to be able to update the custom trading fee
+        carbonController.createPair(token0, token1);
+        vm.prank(admin);
+        vm.expectEmit();
+
+        Token[2] memory sortedTokens = sortTokens(token0, token1);
+
+        emit PairTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+
+        uint32 customTradingFee = carbonController.pairTradingFeePPM(token0, token1);
+        assertEq(customTradingFee, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertIfPairDoesNotExistWhenUpdatingThePairTradingFee() public {
+        vm.prank(admin);
+        vm.expectRevert(Pairs.PairDoesNotExist.selector);
+        carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+    }
+
+    function testShouldRevertIfPairDoesNotExistWhenQueryingThePairTradingFee() public {
+        vm.expectRevert(Pairs.PairDoesNotExist.selector);
+        carbonController.pairTradingFeePPM(token0, token1);
+    }
+
     function testSetsTheDefaultOnInitialization() public {
         uint32 tradingFee = carbonController.tradingFeePPM();
         assertEq(tradingFee, DEFAULT_TRADING_FEE_PPM);
@@ -1824,6 +1883,10 @@ contract StrategiesTest is TestFixture {
     function getValueToSend(Token token0, Token token1, int64 delta0, int64 delta1) private pure returns (uint256 val) {
         val = token0 == NATIVE_TOKEN && delta0 >= 0 ? uint64(delta0) : 0;
         val += token1 == NATIVE_TOKEN && delta1 >= 0 ? uint64(delta1) : 0;
+    }
+
+    function sortTokens(Token token0, Token token1) private pure returns (Token[2] memory) {
+        return Token.unwrap(token0) < Token.unwrap(token1) ? [token0, token1] : [token1, token0];
     }
 
     function abs(int64 val) private pure returns (uint64) {
