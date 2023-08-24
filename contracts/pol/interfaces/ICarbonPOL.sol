@@ -79,31 +79,4 @@ interface ICarbonPOL is IUpgradeable {
      * @dev rewards the user with *rewardsPPM* of each token
      */
     function tradeTokens(Token[] calldata tokens, uint24[] calldata poolFees) external;
-
-    /**
-     * @dev sets the rewards ppm
-     *
-     * requirements:
-     *
-     * - the caller must be the admin of the contract
-     */
-    function setRewardsPPM(uint32 newRewardsPPM) external;
-
-    /**
-     * @dev sets the max slippage ppm
-     *
-     * requirements:
-     *
-     * - the caller must be the admin of the contract
-     */
-    function setMaxSlippagePPM(uint32 newMaxSlippagePPM) external;
-
-    /**
-     * @dev sets the max tradeable ppb
-     *
-     * requirements:
-     *
-     * - the caller must be the admin of the contract
-     */
-    function setMaxTradeablePPB(uint32 newMaxTradeablePPB) external;
 }

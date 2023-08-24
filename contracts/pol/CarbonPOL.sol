@@ -137,24 +137,36 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     }
 
     /**
-     * @inheritdoc ICarbonPOL
+     * @dev sets the rewards ppm
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
      */
     function setRewardsPPM(uint32 newRewardsPPM) external onlyAdmin validFee(newRewardsPPM) {
         _setRewardsPPM(newRewardsPPM);
     }
 
     /**
-     * @inheritdoc ICarbonPOL
+     * @dev sets the max slippage ppm
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
      */
     function setMaxSlippagePPM(uint32 newMaxSlippagePPM) external onlyAdmin validFee(newMaxSlippagePPM) {
         _setMaxSlippagePPM(newMaxSlippagePPM);
     }
 
     /**
-     * @inheritdoc ICarbonPOL
+     * @dev sets the max tradeable ppb
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
      */
-    function setMaxTradeablePPB(uint32 newmaxTradeablePPB) external onlyAdmin validValue(newmaxTradeablePPB) {
-        _setMaxTradeablePPB(newmaxTradeablePPB);
+    function setMaxTradeablePPB(uint32 newMaxTradeablePPB) external onlyAdmin validPPBValue(newMaxTradeablePPB) {
+        _setMaxTradeablePPB(newMaxTradeablePPB);
     }
 
     /**
@@ -205,8 +217,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // cache rewardsPPM to save gas
         uint32 rewardsPercentage = _rewardsPPM;
         // initialize trade and reward amount arrays
-        uint256[] memory tradeAmounts = new uint256[](tokens.length);
-        uint256[] memory rewardAmounts = new uint256[](tokens.length);
+        uint256[] memory tradeAmounts = new uint256[](len);
+        uint256[] memory rewardAmounts = new uint256[](len);
         uint256 totalWethAmountOut;
 
         // trade tokens for wETH using Uniswap V3

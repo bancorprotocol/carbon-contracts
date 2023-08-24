@@ -16,7 +16,7 @@ import { MockUniswapV3Router } from "../../contracts/helpers/MockUniswapV3Router
 import { MockUniswapV3Factory } from "../../contracts/helpers/MockUniswapV3Factory.sol";
 import { MockUniswapV3Oracle } from "../../contracts/helpers/MockUniswapV3Oracle.sol";
 
-import { AccessDenied, InvalidAddress, InvalidFee, InvalidValue, InvalidPeriod } from "../../contracts/utility/Utils.sol";
+import { AccessDenied, InvalidAddress, InvalidFee, InvalidPPBValue, InvalidPeriod } from "../../contracts/utility/Utils.sol";
 import { PPM_RESOLUTION, PPB_RESOLUTION } from "../../contracts/utility/Constants.sol";
 
 import { ICarbonPOL } from "../../contracts/pol/interfaces/ICarbonPOL.sol";
@@ -260,7 +260,7 @@ contract CarbonPOLTest is TestFixture {
     /// @dev test that setMaxTradeablePPB should revert when a setting to an invalid value
     function testShouldRevertSettingTheMaxTradeablePPBWithAnInvalidValue() public {
         vm.prank(admin);
-        vm.expectRevert(InvalidValue.selector);
+        vm.expectRevert(InvalidPPBValue.selector);
         carbonPOL.setMaxTradeablePPB(PPB_RESOLUTION + 1);
     }
 

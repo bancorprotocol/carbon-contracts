@@ -11,7 +11,7 @@ error InvalidAddress();
 error InvalidFee();
 error ZeroValue();
 error InvalidIndices();
-error InvalidValue();
+error InvalidPPBValue();
 error InvalidPeriod();
 
 /**
@@ -62,17 +62,17 @@ abstract contract Utils {
         }
     }
 
-    // ensures that the value is valid
-    modifier validValue(uint32 value) {
-        _validValue(value);
+    // ensures that the ppb value is valid
+    modifier validPPBValue(uint32 value) {
+        _validPPBValue(value);
 
         _;
     }
 
     // error message binary size optimization
-    function _validValue(uint32 value) internal pure {
+    function _validPPBValue(uint32 value) internal pure {
         if (value > PPB_RESOLUTION) {
-            revert InvalidValue();
+            revert InvalidPPBValue();
         }
     }
 
