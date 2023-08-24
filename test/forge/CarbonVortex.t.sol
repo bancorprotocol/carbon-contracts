@@ -114,7 +114,7 @@ contract CarbonVortexTest is TestFixture {
         carbonVortex.setRewardsPPM(PPM_RESOLUTION + 1);
     }
 
-    /// @dev test that setRewardsPPM with the same rewards pom should be ignored
+    /// @dev test that setRewardsPPM with the same rewards ppm should be ignored
     function testFailShouldIgnoreSettingTheSameRewardsPPM() public {
         vm.prank(admin);
         vm.expectEmit(false, false, false, false);

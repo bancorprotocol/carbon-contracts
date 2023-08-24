@@ -7,16 +7,27 @@ import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
+import { ISwapRouter } from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import { IUniswapV3Factory } from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
+
+import { IStaticOracle } from "@mean-finance/uniswap-v3-oracle/solidity/interfaces/IStaticOracle.sol";
+
 import { Utilities } from "./Utilities.t.sol";
 
 import { TestBNT } from "../../contracts/helpers/TestBNT.sol";
+import { TestWETH } from "../../contracts/helpers/TestWETH.sol";
 import { TestERC20Burnable } from "../../contracts/helpers/TestERC20Burnable.sol";
 import { TestERC20FeeOnTransfer } from "../../contracts/helpers/TestERC20FeeOnTransfer.sol";
 import { MockBancorNetworkV3 } from "../../contracts/helpers/MockBancorNetworkV3.sol";
 
+import { MockUniswapV3Router } from "../../contracts/helpers/MockUniswapV3Router.sol";
+import { MockUniswapV3Factory } from "../../contracts/helpers/MockUniswapV3Factory.sol";
+import { MockUniswapV3Oracle } from "../../contracts/helpers/MockUniswapV3Oracle.sol";
+
 import { TestVoucher } from "../../contracts/helpers/TestVoucher.sol";
 import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
 import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
+import { IWETH, CarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
 
 import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
 import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonController.sol";
@@ -24,12 +35,14 @@ import { IBancorNetwork } from "../../contracts/vortex/CarbonVortex.sol";
 
 import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
 
+// solhint-disable max-states-count
 /**
  * @dev Deploys tokens and system contracts
  */
 contract TestFixture is Test {
     Utilities private utils;
     Token internal bnt;
+    Token internal weth;
     Token internal token0;
     Token internal token1;
     Token internal token2;
@@ -39,6 +52,7 @@ contract TestFixture is Test {
     TestVoucher internal voucher;
     CarbonVortex internal carbonVortex;
     TestCarbonController internal carbonController;
+    CarbonPOL internal carbonPOL;
 
     ProxyAdmin internal proxyAdmin;
 
@@ -67,6 +81,8 @@ contract TestFixture is Test {
 
         // deploy BNT
         bnt = Token.wrap(address(new TestBNT("Bancor Network Token", "BNT", 1_000_000_000 ether)));
+        // deploy WETH
+        weth = Token.wrap(address(new TestWETH()));
         // deploy test tokens
         token0 = Token.wrap(address(new TestERC20Burnable("TKN", "TKN", 1_000_000_000 ether)));
         token1 = Token.wrap(address(new TestERC20Burnable("TKN1", "TKN1", 1_000_000_000 ether)));
@@ -180,6 +196,93 @@ contract TestFixture is Test {
         vm.stopPrank();
     }
 
+    /**
+     * @dev deploys carbon pol
+     */
+    function deployCarbonPOL(
+        address _uniV3Router,
+        address _uniV3Factory,
+        address _uniV3Oracle,
+        uint32 twapPeriod
+    ) internal {
+        // deploy contracts from admin
+        vm.startPrank(admin);
+
+        // Deploy Carbon POL
+        carbonPOL = new CarbonPOL(
+            ISwapRouter(_uniV3Router),
+            IUniswapV3Factory(_uniV3Factory),
+            IStaticOracle(_uniV3Oracle),
+            weth,
+            twapPeriod
+        );
+
+        bytes memory polInitData = abi.encodeWithSelector(carbonPOL.initialize.selector);
+        // Deploy Carbon POL proxy
+        address carbonPOLProxy = address(
+            new OptimizedTransparentUpgradeableProxy(address(carbonPOL), payable(address(proxyAdmin)), polInitData)
+        );
+
+        // Set Carbon POL address
+        carbonPOL = CarbonPOL(payable(carbonPOLProxy));
+
+        vm.stopPrank();
+    }
+
+    function deployUniswapV3Factory() internal returns (MockUniswapV3Factory uniswapV3Factory) {
+        // deploy contracts from admin
+        vm.startPrank(admin);
+        // deploy uniswap v3 factory mock
+        uniswapV3Factory = new MockUniswapV3Factory();
+
+        // create some test pools
+        uniswapV3Factory.createPool(Token.unwrap(bnt), Token.unwrap(weth), 3000);
+        uniswapV3Factory.createPool(Token.unwrap(token1), Token.unwrap(weth), 500);
+        uniswapV3Factory.createPool(Token.unwrap(token1), Token.unwrap(weth), 3000);
+        uniswapV3Factory.createPool(Token.unwrap(token2), Token.unwrap(weth), 3000);
+        uniswapV3Factory.createPool(Token.unwrap(token1), Token.unwrap(NATIVE_TOKEN), 3000);
+
+        vm.stopPrank();
+
+        return uniswapV3Factory;
+    }
+
+    function deployUniswapV3Router(address _uniswapV3Factory) internal returns (MockUniswapV3Router uniswapV3Router) {
+        // deploy contracts from admin
+        vm.startPrank(admin);
+        // deploy uniswap v3 router mock
+        uniswapV3Router = new MockUniswapV3Router(300 ether, true, IUniswapV3Factory(_uniswapV3Factory));
+
+        // send some tokens to uni v3 router
+        nonTradeableToken.safeTransfer(address(uniswapV3Router), MAX_SOURCE_AMOUNT);
+        token1.safeTransfer(address(uniswapV3Router), MAX_SOURCE_AMOUNT);
+        token2.safeTransfer(address(uniswapV3Router), MAX_SOURCE_AMOUNT);
+        bnt.safeTransfer(address(uniswapV3Router), MAX_SOURCE_AMOUNT * 5);
+        // send eth to uni v3 router
+        vm.deal(address(uniswapV3Router), MAX_SOURCE_AMOUNT);
+
+        // mint weth to admin
+        vm.deal(admin, MAX_SOURCE_AMOUNT * 5);
+        IWETH(Token.unwrap(weth)).deposit{ value: MAX_SOURCE_AMOUNT * 5 }();
+        // send weth to router
+        weth.safeTransfer(address(uniswapV3Router), MAX_SOURCE_AMOUNT);
+
+        vm.stopPrank();
+
+        return uniswapV3Router;
+    }
+
+    function deployUniswapV3Oracle(address _uniswapV3Factory) internal returns (MockUniswapV3Oracle uniswapV3Oracle) {
+        // deploy contracts from admin
+        vm.startPrank(admin);
+        // deploy uniswap v3 oracle mock
+        uniswapV3Oracle = new MockUniswapV3Oracle(1e18, IUniswapV3Factory(_uniswapV3Factory));
+
+        vm.stopPrank();
+
+        return uniswapV3Oracle;
+    }
+
     function deployBancorNetworkV3Mock() internal returns (MockBancorNetworkV3 bancorNetworkV3) {
         // deploy contracts from admin
         vm.startPrank(admin);
@@ -214,6 +317,16 @@ contract TestFixture is Test {
         bnt.safeTransfer(address(carbonController), MAX_SOURCE_AMOUNT * 5);
         // transfer eth
         vm.deal(address(carbonController), MAX_SOURCE_AMOUNT);
+        vm.stopPrank();
+    }
+
+    function transferTokensToCarbonPOL() internal {
+        vm.startPrank(admin);
+        // transfer tokens
+        nonTradeableToken.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
+        token1.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
+        token2.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
+        bnt.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 5);
         vm.stopPrank();
     }
 }
