@@ -1,5 +1,6 @@
 import {
     CarbonController__factory,
+    CarbonPOL__factory,
     CarbonVortex__factory,
     ERC20__factory,
     MockBancorNetworkV3__factory,
@@ -31,6 +32,7 @@ const getContracts = (signer?: Signer) => ({
     ERC20: deployOrAttach('ERC20', ERC20__factory, signer),
     CarbonController: deployOrAttach('CarbonController', CarbonController__factory, signer),
     CarbonVortex: deployOrAttach('CarbonVortex', CarbonVortex__factory, signer),
+    CarbonPOL: deployOrAttach('CarbonPOL', CarbonPOL__factory, signer),
     MockBancorNetworkV3: deployOrAttach('MockBancorNetworkV3', MockBancorNetworkV3__factory, signer),
     ProxyAdmin: deployOrAttach('ProxyAdmin', ProxyAdmin__factory, signer),
     Voucher: deployOrAttach('Voucher', Voucher__factory, signer),

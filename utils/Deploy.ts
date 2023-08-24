@@ -1,5 +1,5 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
+import { CarbonController, CarbonPOL, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
@@ -41,7 +41,8 @@ enum NewInstanceName {
     CarbonController = 'CarbonController',
     ProxyAdmin = 'ProxyAdmin',
     Voucher = 'Voucher',
-    CarbonVortex = 'CarbonVortex'
+    CarbonVortex = 'CarbonVortex',
+    CarbonPOL = 'CarbonPOL'
 }
 
 export const LegacyInstanceName = {};
@@ -61,7 +62,8 @@ const DeployedNewContracts = {
     CarbonController: deployed<CarbonController>(InstanceName.CarbonController),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
     Voucher: deployed<Voucher>(InstanceName.Voucher),
-    CarbonVortex: deployed<CarbonVortex>(InstanceName.CarbonVortex)
+    CarbonVortex: deployed<CarbonVortex>(InstanceName.CarbonVortex),
+    CarbonPOL: deployed<CarbonPOL>(InstanceName.CarbonPOL)
 };
 
 export const DeployedContracts = {

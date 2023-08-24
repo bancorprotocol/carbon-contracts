@@ -58,6 +58,7 @@
     "clean": "rm -rf artifacts cache coverage typechain-types"
   },
   "dependencies": {
+    "@mean-finance/uniswap-v3-oracle": "^1.0.3",
     "hardhat": "2.15.0"
   },
   "devDependencies": {

@@ -49,6 +49,12 @@ const BancorNamedAccounts = {
     bancorNetworkV3: { ...mainnet('0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB') }
 };
 
+const UniswapNamedAccounts = {
+    uniswapV3Router: { ...mainnet('0xE592427A0AEce92De3Edee1F18E0157C05861564') },
+    uniswapV3Factory: { ...mainnet('0x1F98431c8aD98523631AE4a59f267346ea31F984') },
+    uniswapV3Oracle: { ...mainnet('0xB210CE856631EeEB767eFa666EC7C1C57738d438') }
+};
+
 export const NamedAccounts = {
     deployer: {
         ...mainnet('ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
@@ -62,5 +68,6 @@ export const NamedAccounts = {
 
     ...TokenNamedAccounts,
     ...TestNamedAccounts,
-    ...BancorNamedAccounts
+    ...BancorNamedAccounts,
+    ...UniswapNamedAccounts
 };
