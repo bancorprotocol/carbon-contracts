@@ -26,7 +26,7 @@ interface IWETH {
 }
 
 /**
- * @dev CarbonPOL contract
+ * @notice CarbonPOL contract
  */
 contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;
@@ -137,7 +137,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     }
 
     /**
-     * @dev sets the rewards ppm
+     * @notice sets the rewards ppm
      *
      * requirements:
      *
@@ -148,7 +148,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     }
 
     /**
-     * @dev sets the max slippage ppm
+     * @notice sets the max slippage ppm
      *
      * requirements:
      *
@@ -159,7 +159,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     }
 
     /**
-     * @dev sets the max tradeable ppb
+     * @notice sets the max tradeable ppb
      *
      * requirements:
      *
@@ -242,6 +242,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         emit TokensTraded(msg.sender, tokens, poolFees, tradeAmounts, rewardAmounts, totalWethAmountOut);
     }
 
+    /**
+     * @dev trades token for wETH on Uniswap V3, and transfers token reward to user
+     */
     function _convertTokenAndAllocateRewards(
         Token token,
         uint24 poolFee,
@@ -273,6 +276,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         token.safeTransfer(msg.sender, rewardAmount);
     }
 
+    /**
+     * @dev trades *tradeAmount* of a token for wETH in a Uni V3 pool with *poolFee* fee 
+     */
     function _convertTokenToETH(Token token, uint24 poolFee, uint256 tradeAmount) private returns (uint256 amountOut) {
         // set the last trade block to the current one
         _updateLastTradedBlock(token);

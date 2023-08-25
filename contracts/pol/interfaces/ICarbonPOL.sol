@@ -5,7 +5,7 @@ import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 import { Token } from "../../token/Token.sol";
 
 /**
- * @dev CarbonPOL interface
+ * @notice CarbonPOL interface
  */
 interface ICarbonPOL is IUpgradeable {
     error DuplicateToken();
@@ -14,7 +14,7 @@ interface ICarbonPOL is IUpgradeable {
     error TokenPoolFeesLengthMismatch();
 
     /**
-     * @dev triggered after a successful trade is executed
+     * @notice triggered after a successful trade is executed
      */
     event TokensTraded(
         address indexed caller,
@@ -26,7 +26,7 @@ interface ICarbonPOL is IUpgradeable {
     );
 
     /**
-     * @dev triggered when the rewards ppm are updated
+     * @notice triggered when the rewards ppm are updated
      */
     event RewardsUpdated(
         uint32 prevRewardsPPM,
@@ -34,7 +34,7 @@ interface ICarbonPOL is IUpgradeable {
     );
 
     /**
-     * @dev triggered when the max slippage ppm is updated
+     * @notice triggered when the max slippage ppm is updated
      */
     event MaxSlippageUpdated(
         uint32 prevMaxSlippagePPM,
@@ -42,7 +42,7 @@ interface ICarbonPOL is IUpgradeable {
     );
 
     /**
-     * @dev triggered when the max tradeable ppm per block is updated
+     * @notice triggered when the max tradeable ppm per block is updated
      */
     event MaxTradeableUpdated(
         uint32 prevMaxTradeablePPB,
@@ -50,33 +50,33 @@ interface ICarbonPOL is IUpgradeable {
     );
 
     /**
-     * @dev returns the rewards ppm
+     * @notice returns the rewards ppm
      */
     function rewardsPPM() external view returns (uint32);
 
     /**
-     * @dev returns the max slippage ppm
+     * @notice returns the max slippage ppm
      */
     function maxSlippagePPM() external view returns (uint32);
 
     /**
-     * @dev returns the max tradeable ppb per block
+     * @notice returns the max tradeable ppb per block
      */
     function maxTradeablePPB() external view returns (uint32);
 
     /**
-     * @dev returns the last block a token was traded in
+     * @notice returns the last block a token was traded in
      */
     function lastTradedBlock(Token token) external view returns (uint256);
 
     /**
-     * @dev returns the current max tradeable amount for a token
+     * @notice returns the current max tradeable amount for a token
      */
     function maxTradeableAmount(Token token) external view returns (uint256);
     
     /**
-     * @dev converts the given tokens using Uni V3 to ETH in the pools with selected fees
-     * @dev rewards the user with *rewardsPPM* of each token
+     * @notice converts the given tokens using Uni V3 to ETH in the pools with selected fees
+     * @notice rewards the user with *rewardsPPM* of each token
      */
     function tradeTokens(Token[] calldata tokens, uint24[] calldata poolFees) external;
 }
