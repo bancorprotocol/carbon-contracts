@@ -16,8 +16,8 @@ interface ICarbonPOL is IUpgradeable {
     error InsufficientTokenBalance();
 
     struct Price {
-        uint128 tokenAmount;
         uint128 ethAmount;
+        uint128 tokenAmount;
     }
 
     /**

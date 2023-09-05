@@ -222,7 +222,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     ) external payable nonReentrant validToken(token) greaterThanZero(amount) {
         uint128 ethRequired = expectedTradeInput(token, amount);
         // revert if trade requires 0 eth
-        if(ethRequired == 0) {
+        if (ethRequired == 0) {
             revert InvalidTrade();
         }
         // check enough eth has been sent for the trade
@@ -273,13 +273,13 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
             revert InvalidToken();
         }
         // validate trading is enabled for token
-        if(!_tradingEnabled(token)) {
+        if (!_tradingEnabled(token)) {
             revert TradingDisabled();
         }
     }
 
     function _validPrice(Price memory price) private pure {
-        if(price.tokenAmount == 0 || price.ethAmount == 0) {
+        if (price.tokenAmount == 0 || price.ethAmount == 0) {
             revert InvalidPrice();
         }
     }
