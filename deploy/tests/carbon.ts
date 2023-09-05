@@ -47,6 +47,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
     shouldHaveGap('Strategies', '_strategyCounter');
     shouldHaveGap('Voucher', '_useGlobalURI');
     shouldHaveGap('CarbonVortex', '_totalBurned');
+    shouldHaveGap('CarbonPOL', '_marketPriceMultiply');
 
     before(async () => {
         ({ daoMultisig } = await getNamedSigners());
