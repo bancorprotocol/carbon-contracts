@@ -11,6 +11,7 @@ import { CarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
 import { AccessDenied, InvalidAddress, InvalidFee, ZeroValue } from "../../contracts/utility/Utils.sol";
 import { PPM_RESOLUTION } from "../../contracts/utility/Constants.sol";
 import { MathEx } from "../../contracts/utility/MathEx.sol";
+import { ExpDecayMath } from "../../contracts/utility/ExpDecayMath.sol";
 import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
 
 import { ICarbonPOL } from "../../contracts/pol/interfaces/ICarbonPOL.sol";
@@ -227,31 +228,233 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.enableTrading(tokens[i], ICarbonPOL.Price({ ethAmount: 0, tokenAmount: 0 }));
     }
 
-    /// @dev test should properly return price for enabled token
-    function testShouldProperlyReturnPriceForEnabledTokens() public {
-        // enable trading and set price for token1
+    /// @dev test should properly return price for enabled tokens as time passes
+    function testShouldProperlyReturnPriceAsTimePasses(uint128 ethAmount, uint128 tokenAmount, uint256 i) public {
+        // pick one of these tokens to test
+        Token[3] memory tokens = [token1, token2, bnt];
+        // pick a random number from 0 to 2 for the tokens
+        i = bound(i, 0, 2);
+        // enable trading and set price for token
         vm.prank(admin);
-        Token token = token1;
+        Token token = tokens[i];
 
-        uint128 ethAmount = 1000000;
-        uint128 tokenAmount = 100000000000;
+        ethAmount = uint128(bound(ethAmount, 10, 1e30));
+        tokenAmount = uint128(bound(tokenAmount, 10, 1e30));
 
         ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({ ethAmount: ethAmount, tokenAmount: tokenAmount });
         carbonPOL.enableTrading(token, initialPrice);
 
-        uint32 halfLifeDecay = carbonPOL.priceDecayHalfLife();
-        // set timestamp to half-life duration
-        vm.warp(halfLifeDecay);
+        // set timestamp to 1
+        vm.warp(1);
 
         ICarbonPOL.Price memory price = carbonPOL.tokenPrice(token);
+        uint128 expectedETHAmount = getExpectedETHAmount(ethAmount);
 
-        ICarbonPOL.Price memory expectedPrice = ICarbonPOL.Price({
-            ethAmount: ethAmount - 1,
-            tokenAmount: tokenAmount
-        });
+        assertEq(price.ethAmount, expectedETHAmount);
+        assertEq(price.tokenAmount, tokenAmount);
 
-        assertEq(price.ethAmount, expectedPrice.ethAmount);
-        assertEq(price.tokenAmount, expectedPrice.tokenAmount);
+        // price should be exactly 2x the market price at start
+        assertEq(price.ethAmount, ethAmount * MARKET_PRICE_MULTIPLY_DEFAULT);
+
+        // set timestamp to 1 day
+        vm.warp(1 days);
+
+        price = carbonPOL.tokenPrice(token);
+
+        expectedETHAmount = getExpectedETHAmount(ethAmount);
+
+        assertEq(price.ethAmount, expectedETHAmount);
+        assertEq(price.tokenAmount, tokenAmount);
+
+        // set timestamp to 5 days
+        vm.warp(5 days);
+
+        price = carbonPOL.tokenPrice(token);
+        expectedETHAmount = getExpectedETHAmount(ethAmount);
+
+        assertEq(price.ethAmount, expectedETHAmount);
+        assertEq(price.tokenAmount, tokenAmount);
+
+        // set timestamp to 10 days (half-life time)
+        vm.warp(10 days);
+
+        price = carbonPOL.tokenPrice(token);
+        expectedETHAmount = getExpectedETHAmount(ethAmount);
+
+        assertEq(price.ethAmount, expectedETHAmount);
+        assertEq(price.tokenAmount, tokenAmount);
+
+        // price should be equal market price +- 0.01% at half-life
+        assertApproxEqRel(price.ethAmount, ethAmount, 1e14);
+
+        // set timestamp to 15 days
+        vm.warp(15 days);
+
+        price = carbonPOL.tokenPrice(token);
+        expectedETHAmount = getExpectedETHAmount(ethAmount);
+
+        assertEq(price.ethAmount, expectedETHAmount);
+        assertEq(price.tokenAmount, tokenAmount);
+
+        // set timestamp to 20 days
+        vm.warp(20 days);
+
+        price = carbonPOL.tokenPrice(token);
+        expectedETHAmount = getExpectedETHAmount(ethAmount);
+
+        assertEq(price.ethAmount, expectedETHAmount);
+        assertEq(price.tokenAmount, tokenAmount);
+
+        // price should be equal to half the market price +- 0.01% at 2x half-life
+        assertApproxEqRel(price.ethAmount, ethAmount / 2, 1e14);
+    }
+
+    /// @dev test should properly return input amount for enabled tokens as time passes
+    function testShouldProperlyReturnExpectedTradeInputAmountAsTimePasses(
+        uint128 ethAmount,
+        uint128 tokenAmount,
+        uint256 i
+    ) public {
+        // pick one of these tokens to test
+        Token[3] memory tokens = [token1, token2, bnt];
+        // pick a random number from 0 to 2 for the tokens
+        i = bound(i, 0, 2);
+        // enable trading and set price for token
+        Token token = tokens[i];
+
+        uint256 tokenBalance = token.balanceOf(address(carbonPOL));
+
+        ethAmount = uint128(bound(ethAmount, 10, 1e30));
+        tokenAmount = uint128(bound(tokenAmount, 10, tokenBalance));
+
+        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({ ethAmount: ethAmount, tokenAmount: tokenAmount });
+        vm.prank(admin);
+        carbonPOL.enableTrading(token, initialPrice);
+
+        // set timestamp to 1
+        vm.warp(1);
+
+        // trade 1/2 of the tokens
+        uint128 tradeAmount = tokenAmount / 2;
+
+        uint128 ethForTrade = carbonPOL.expectedTradeInput(token, tradeAmount);
+        uint128 expectedETHAmount = getExpectedETHToSend(token, tradeAmount);
+        assertEq(ethForTrade, expectedETHAmount);
+
+        // set timestamp to 1 day
+        vm.warp(1 days);
+
+        ethForTrade = carbonPOL.expectedTradeInput(token, tradeAmount);
+        expectedETHAmount = getExpectedETHToSend(token, tradeAmount);
+        assertEq(ethForTrade, expectedETHAmount);
+
+        // set timestamp to 5 days
+        vm.warp(5 days);
+
+        ethForTrade = carbonPOL.expectedTradeInput(token, tradeAmount);
+        expectedETHAmount = getExpectedETHToSend(token, tradeAmount);
+        assertEq(ethForTrade, expectedETHAmount);
+
+        // set timestamp to 10 days (half-life time)
+        vm.warp(10 days);
+
+        ethForTrade = carbonPOL.expectedTradeInput(token, tradeAmount);
+        expectedETHAmount = getExpectedETHToSend(token, tradeAmount);
+        assertEq(ethForTrade, expectedETHAmount);
+
+        // set timestamp to 15 days
+        vm.warp(15 days);
+
+        ethForTrade = carbonPOL.expectedTradeInput(token, tradeAmount);
+        expectedETHAmount = getExpectedETHToSend(token, tradeAmount);
+        assertEq(ethForTrade, expectedETHAmount);
+
+        // set timestamp to 20 days
+        vm.warp(20 days);
+
+        ethForTrade = carbonPOL.expectedTradeInput(token, tradeAmount);
+        expectedETHAmount = getExpectedETHToSend(token, tradeAmount);
+        assertEq(ethForTrade, expectedETHAmount);
+    }
+
+    /// @dev test should properly return trade output amount for enabled tokens as time passes
+    function testShouldProperlyReturnExpectedTradeReturnAmountAsTimePasses(
+        uint128 ethAmount,
+        uint128 tokenAmount,
+        uint256 i
+    ) public {
+        // pick one of these tokens to test
+        Token[3] memory tokens = [token1, token2, bnt];
+        // pick a random number from 0 to 2 for the tokens
+        i = bound(i, 0, 2);
+        // enable trading and set price for token
+        Token token = tokens[i];
+
+        uint256 tokenBalance = token.balanceOf(address(carbonPOL));
+
+        ethAmount = uint128(bound(ethAmount, 10, 1e30));
+        tokenAmount = uint128(bound(tokenAmount, 10, tokenBalance));
+
+        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({ ethAmount: ethAmount, tokenAmount: tokenAmount });
+        vm.prank(admin);
+        carbonPOL.enableTrading(token, initialPrice);
+
+        // set timestamp to 1
+        vm.warp(1);
+
+        // trade eth for 1/2 of the tokens
+        uint128 ethTradeAmount = ethAmount / 2;
+
+        uint128 tokensReceived = carbonPOL.expectedTradeReturn(token, ethTradeAmount);
+
+        uint128 expectedTokensReceived = getExpectedTokensReceived(token, ethTradeAmount);
+
+        assertEq(tokensReceived, expectedTokensReceived);
+
+        // set timestamp to 1 day
+        vm.warp(1 days);
+
+        tokensReceived = carbonPOL.expectedTradeReturn(token, ethTradeAmount);
+
+        expectedTokensReceived = getExpectedTokensReceived(token, ethTradeAmount);
+
+        assertEq(tokensReceived, expectedTokensReceived);
+
+        // set timestamp to 5 days
+        vm.warp(5 days);
+
+        tokensReceived = carbonPOL.expectedTradeReturn(token, ethTradeAmount);
+
+        expectedTokensReceived = getExpectedTokensReceived(token, ethTradeAmount);
+
+        assertEq(tokensReceived, expectedTokensReceived);
+
+        // set timestamp to 10 days (half-life time)
+        vm.warp(10 days);
+
+        tokensReceived = carbonPOL.expectedTradeReturn(token, ethTradeAmount);
+
+        expectedTokensReceived = getExpectedTokensReceived(token, ethTradeAmount);
+
+        assertEq(tokensReceived, expectedTokensReceived);
+
+        // set timestamp to 15 days
+        vm.warp(15 days);
+
+        tokensReceived = carbonPOL.expectedTradeReturn(token, ethTradeAmount);
+
+        expectedTokensReceived = getExpectedTokensReceived(token, ethTradeAmount);
+
+        assertEq(tokensReceived, expectedTokensReceived);
+
+        // set timestamp to 20 days
+        vm.warp(20 days);
+
+        tokensReceived = carbonPOL.expectedTradeReturn(token, ethTradeAmount);
+
+        expectedTokensReceived = getExpectedTokensReceived(token, ethTradeAmount);
+
+        assertEq(tokensReceived, expectedTokensReceived);
     }
 
     /// @dev test trading should emit an event
@@ -395,6 +598,17 @@ contract CarbonPOLTest is TestFixture {
         assertEq(0, expectedReturn);
     }
 
+    /// @dev test should return invalid price for expected return for tokens if eth amount in price goes to zero
+    function testShouldReturnInvalidPriceForExpectedTradeReturnIfEthAmountGoesToZero(uint128 amount) public {
+        vm.prank(admin);
+        // enable token to test
+        carbonPOL.enableTrading(token1, ICarbonPOL.Price({ ethAmount: 1, tokenAmount: 1 }));
+        vm.warp(20 days);
+        // expect for a revert with invalid price
+        vm.expectRevert(ICarbonPOL.InvalidPrice.selector);
+        carbonPOL.expectedTradeReturn(token1, amount);
+    }
+
     /// @dev test should revert expected input if not enough token balance
     function testShouldRevertExpectedTradeInputIfNotEnoughTokenBalanceForTrade() public {
         vm.prank(admin);
@@ -480,24 +694,6 @@ contract CarbonPOLTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test should revert on attempt to trade in the same block in which trading is enabled
-    function testShouldRevertTradingInSameBlockAsTradingIsEnabled() public {
-        Token token = token1;
-        // trade 1000000000 tokens
-        uint128 amount = 1000000000;
-        vm.prank(admin);
-        // enable token to test
-        carbonPOL.enableTrading(token, ICarbonPOL.Price({ ethAmount: 1000000000, tokenAmount: 1000000000000 }));
-        vm.startPrank(user1);
-        // expect eth required to be 0 - since no time has passed since enabling the trade
-        // the get price function returns ethAmount as 0 and eth required is also 0
-        assertEq(carbonPOL.expectedTradeInput(token, amount), 0);
-        // expect trade to revert
-        vm.expectRevert(ICarbonPOL.InvalidTrade.selector);
-        carbonPOL.trade(token, amount);
-        vm.stopPrank();
-    }
-
     /// @dev test should revert trading if not enough eth has been sent
     function testShouldRevertTradingIfNotEnoughETHSent() public {
         Token token = token1;
@@ -517,5 +713,32 @@ contract CarbonPOLTest is TestFixture {
         // send one wei less than required
         carbonPOL.trade{ value: ethRequired - 1 }(token, amount);
         vm.stopPrank();
+    }
+
+    /// @dev helper function to get expected eth amount in price for a token at the current time
+    function getExpectedETHAmount(uint128 ethAmount) private view returns (uint128) {
+        // calculate the actual price by multiplying the eth amount by the factor
+        ethAmount *= carbonPOL.marketPriceMultiply();
+        uint32 tradingStartTime = 1;
+        // get time elapsed since trading was enabled
+        uint32 timeElapsed = uint32(block.timestamp) - tradingStartTime;
+        uint32 priceDecayHalfLife = carbonPOL.priceDecayHalfLife();
+        // get the current eth amount by adjusting the eth amount with the exp decay formula
+        ethAmount = uint128(ExpDecayMath.calcExpDecay(ethAmount, timeElapsed, priceDecayHalfLife));
+        return ethAmount;
+    }
+
+    /// @dev helper function to get expected eth amount to send given a token amount
+    function getExpectedETHToSend(Token token, uint128 tokenAmount) private view returns (uint128 ethAmount) {
+        ICarbonPOL.Price memory price = carbonPOL.tokenPrice(token);
+        // multiply the token amount by the eth amount / total eth amount ratio to get the actual tokens received
+        return uint128(MathEx.mulDivF(price.ethAmount, tokenAmount, price.tokenAmount));
+    }
+
+    /// @dev helper function to get expected token amount to send given an eth amount
+    function getExpectedTokensReceived(Token token, uint128 ethAmount) private view returns (uint128 tokenAmount) {
+        ICarbonPOL.Price memory price = carbonPOL.tokenPrice(token);
+        // multiply the token amount by the eth amount / total eth amount ratio to get the actual tokens received
+        return uint128(MathEx.mulDivF(price.tokenAmount, ethAmount, price.ethAmount));
     }
 }
