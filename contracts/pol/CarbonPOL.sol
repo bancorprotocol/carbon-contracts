@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { ICarbonPOL } from "./interfaces/ICarbonPOL.sol";
@@ -18,6 +19,7 @@ import { MAX_GAP, PPM_RESOLUTION } from "../utility/Constants.sol";
  */
 contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;
+    using SafeCast for uint256;
 
     // initial starting price multiplier for the dutch auction
     uint32 private _marketPriceMultiply;
@@ -171,9 +173,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // revert if price is not valid
         _validPrice(currentPrice);
         // multiply the token amount by the eth amount / total eth amount ratio to get the actual tokens received
-        tokenAmount = uint128(MathEx.mulDivF(currentPrice.tokenAmount, ethAmount, currentPrice.ethAmount));
+        tokenAmount = MathEx.mulDivF(currentPrice.tokenAmount, ethAmount, currentPrice.ethAmount).toUint128();
         // revert if not enough token balance
-        if (tokenAmount > uint128(token.balanceOf(address(this)))) {
+        if (tokenAmount > token.balanceOf(address(this))) {
             revert InsufficientTokenBalance();
         }
     }
@@ -192,7 +194,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         }
         Price memory currentPrice = tokenPrice(token);
         // multiply the eth amount by the token amount / total token amount ratio to get the actual eth to send
-        return uint128(MathEx.mulDivF(currentPrice.ethAmount, tokenAmount, currentPrice.tokenAmount));
+        return MathEx.mulDivF(currentPrice.ethAmount, tokenAmount, currentPrice.tokenAmount).toUint128();
     }
 
     /**
@@ -212,7 +214,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // get time elapsed since trading was enabled
         uint32 timeElapsed = uint32(block.timestamp) - tradingStartTime;
         // get the current price by adjusting the eth amount with the exp decay formula
-        price.ethAmount = uint128(ExpDecayMath.calcExpDecay(price.ethAmount, timeElapsed, _priceDecayHalfLife));
+        price.ethAmount = ExpDecayMath.calcExpDecay(price.ethAmount, timeElapsed, _priceDecayHalfLife).toUint128();
         // return the price
         return price;
     }
