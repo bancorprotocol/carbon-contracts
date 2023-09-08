@@ -82,7 +82,7 @@ interface ICarbonPOL is IUpgradeable {
     function tokenPrice(Token token) external view returns (Price memory price);
     
     /**
-     * @notice trades *amount* of token for ETH based on the current token price (trade by source amount)
+     * @notice trades ETH for *amount* of token based on the current token price (trade by source amount)
      */
     function trade(Token token, uint128 amount) external payable;
 }

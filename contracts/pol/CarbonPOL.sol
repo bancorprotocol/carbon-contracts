@@ -168,10 +168,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
             return 0;
         }
         Price memory currentPrice = tokenPrice(token);
-        // revert if ethAmount in price is equal to 0
-        if (currentPrice.ethAmount == 0) {
-            revert InvalidPrice();
-        }
+        // revert if price is not valid
+        _validPrice(currentPrice);
         // multiply the token amount by the eth amount / total eth amount ratio to get the actual tokens received
         tokenAmount = uint128(MathEx.mulDivF(currentPrice.tokenAmount, ethAmount, currentPrice.ethAmount));
         // revert if not enough token balance
@@ -200,17 +198,19 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function tokenPrice(Token token) public view returns (Price memory price) {
+    function tokenPrice(Token token) public view returns (Price memory) {
+        // cache trading start time to save gas
+        uint32 tradingStartTime = _tradingStartTimes[token];
         // return 0 if trading hasn't been enabled for a token
-        if (!_tradingEnabled(token)) {
+        if (tradingStartTime == 0) {
             return Price({ tokenAmount: 0, ethAmount: 0 });
         }
         // get initial price as set by enableTrading
-        price = _initialPrice[token];
+        Price memory price = _initialPrice[token];
         // calculate the actual price by multiplying the eth amount by the factor
         price.ethAmount *= _marketPriceMultiply;
         // get time elapsed since trading was enabled
-        uint32 timeElapsed = uint32(block.timestamp) - _tradingStartTimes[token];
+        uint32 timeElapsed = uint32(block.timestamp) - tradingStartTime;
         // get the current price by adjusting the eth amount with the exp decay formula
         price.ethAmount = uint128(ExpDecayMath.calcExpDecay(price.ethAmount, timeElapsed, _priceDecayHalfLife));
         // return the price
@@ -245,6 +245,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         emit TokenTraded(msg.sender, token, amount, ethRequired);
     }
 
+    /**
+     * @dev set market price multiply helper
+     */
     function _setMarketPriceMultiply(uint32 newMarketPriceMultiply) private {
         uint32 prevMarketPriceMultiply = _marketPriceMultiply;
 
@@ -258,6 +261,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         emit MarketPriceMultiplyUpdated(prevMarketPriceMultiply, newMarketPriceMultiply);
     }
 
+    /**
+     * @dev set price decay half-life helper
+     */
     function _setPriceDecayHalfLife(uint32 newPriceDecayHalfLife) private {
         uint32 prevPriceDecayHalfLife = _priceDecayHalfLife;
 
@@ -271,6 +277,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         emit PriceDecayHalfLifeUpdated(prevPriceDecayHalfLife, newPriceDecayHalfLife);
     }
 
+    /**
+     * @dev validate token helper
+     */
     function _validToken(Token token) private view {
         // validate token is not the native token
         if (token.isNative()) {
@@ -282,6 +291,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         }
     }
 
+    /**
+     * @dev validate token helper
+     */
     function _validPrice(Price memory price) private pure {
         if (price.tokenAmount == 0 || price.ethAmount == 0) {
             revert InvalidPrice();
@@ -293,11 +305,5 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
      */
     function _tradingEnabled(Token token) private view returns (bool) {
         return _tradingStartTimes[token] != 0;
-    }
-
-    function uncheckedInc(uint256 i) private pure returns (uint256 j) {
-        unchecked {
-            j = i + 1;
-        }
     }
 }
