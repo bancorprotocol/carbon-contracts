@@ -164,7 +164,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128 tokenAmount) {
+    function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128) {
         // return 0 if trading is not enabled for token
         if (!_tradingEnabled(token)) {
             return 0;
@@ -183,7 +183,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function expectedTradeInput(Token token, uint128 tokenAmount) public view returns (uint128 ethAmount) {
+    function expectedTradeInput(Token token, uint128 tokenAmount) public view returns (uint128) {
         // return 0 if trading is not enabled for token
         if (!_tradingEnabled(token)) {
             return 0;
