@@ -173,11 +173,12 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // revert if price is not valid
         _validPrice(currentPrice);
         // multiply the token amount by the eth amount / total eth amount ratio to get the actual tokens received
-        tokenAmount = MathEx.mulDivF(currentPrice.tokenAmount, ethAmount, currentPrice.ethAmount).toUint128();
+        uint128 tokenAmount = MathEx.mulDivF(currentPrice.tokenAmount, ethAmount, currentPrice.ethAmount).toUint128();
         // revert if not enough token balance
         if (tokenAmount > token.balanceOf(address(this))) {
             revert InsufficientTokenBalance();
         }
+        return tokenAmount;
     }
 
     /**
