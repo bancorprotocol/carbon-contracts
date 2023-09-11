@@ -573,29 +573,29 @@ contract CarbonPOLTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test should return 0 price for tokens for which trading is disabled
-    function testShouldReturnZeroPriceIfTradingIsDisabled() public {
-        ICarbonPOL.Price memory price = carbonPOL.tokenPrice(token1);
-        assertEq(0, price.tokenAmount);
-        assertEq(0, price.ethAmount);
+    /// @dev test should revert getting price for tokens for which trading is disabled
+    function testShouldRevertTokenPriceIfTradingIsDisabled() public {
+        // expect for a revert with trading disabled
+        vm.expectRevert(ICarbonPOL.TradingDisabled.selector);
+        carbonPOL.tokenPrice(token1);
     }
 
-    /// @dev test should return 0 expected input for tokens for which trading is disabled
-    function testShouldReturnZeroExpectedTradeInputIfTradingIsDisabled(uint128 amount) public {
+    /// @dev test should revert expected input for tokens for which trading is disabled
+    function testShouldRevertExpectedTradeInputIfTradingIsDisabled(uint128 amount) public {
         // assert trading is disabled for token
         assertFalse(carbonPOL.tradingEnabled(token1));
-        // get expected trade input
-        uint128 expectedInput = carbonPOL.expectedTradeInput(token1, amount);
-        assertEq(0, expectedInput);
+        // expect for a revert with trading disabled
+        vm.expectRevert(ICarbonPOL.TradingDisabled.selector);
+        carbonPOL.expectedTradeInput(token1, amount);
     }
 
-    /// @dev test should return 0 expected return for tokens for which trading is disabled
-    function testShouldReturnZeroExpectedTradeReturnIfTradingIsDisabled(uint128 amount) public {
+    /// @dev test should revert expected return for tokens for which trading is disabled
+    function testShouldRevertExpectedTradeReturnIfTradingIsDisabled(uint128 amount) public {
         // assert trading is disabled for token
         assertFalse(carbonPOL.tradingEnabled(token1));
-        // get expected trade return
-        uint128 expectedReturn = carbonPOL.expectedTradeReturn(token1, amount);
-        assertEq(0, expectedReturn);
+        // expect for a revert with trading disabled
+        vm.expectRevert(ICarbonPOL.TradingDisabled.selector);
+        carbonPOL.expectedTradeReturn(token1, amount);
     }
 
     /// @dev test should return invalid price for expected return for tokens if eth amount in price goes to zero

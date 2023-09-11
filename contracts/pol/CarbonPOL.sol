@@ -164,11 +164,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128) {
-        // return 0 if trading is not enabled for token
-        if (!_tradingEnabled(token)) {
-            return 0;
-        }
+    function expectedTradeReturn(Token token, uint128 ethAmount) external view validToken(token) returns (uint128) {
         Price memory currentPrice = tokenPrice(token);
         // revert if price is not valid
         _validPrice(currentPrice);
@@ -184,16 +180,14 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function expectedTradeInput(Token token, uint128 tokenAmount) public view returns (uint128) {
-        // return 0 if trading is not enabled for token
-        if (!_tradingEnabled(token)) {
-            return 0;
-        }
+    function expectedTradeInput(Token token, uint128 tokenAmount) public view validToken(token) returns (uint128) {
         // revert if not enough token balance for trade
         if (tokenAmount > token.balanceOf(address(this))) {
             revert InsufficientTokenBalance();
         }
         Price memory currentPrice = tokenPrice(token);
+        // revert if current price is not valid
+        _validPrice(currentPrice);
         // multiply the eth amount by the token amount / total token amount ratio to get the actual eth to send
         return MathEx.mulDivF(currentPrice.ethAmount, tokenAmount, currentPrice.tokenAmount).toUint128();
     }
@@ -204,9 +198,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     function tokenPrice(Token token) public view returns (Price memory) {
         // cache trading start time to save gas
         uint32 tradingStartTime = _tradingStartTimes[token];
-        // return 0 if trading hasn't been enabled for a token
+        // revert if trading hasn't been enabled for a token
         if (tradingStartTime == 0) {
-            return Price({ tokenAmount: 0, ethAmount: 0 });
+            revert TradingDisabled();
         }
         // get initial price as set by enableTrading
         Price memory price = _initialPrice[token];
