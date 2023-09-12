@@ -34,7 +34,6 @@ const main = async () => {
 
     // Remove single quotes and whitespace, then split by commas
     const allTokens = tokenAddressesEnv.replace(/'/g, '').split(',').map(address => address.trim());
-    console.log('all tokens:', allTokens);
 
     const client = new CoinGeckoClient({
         timeout: 10000,
@@ -51,16 +50,12 @@ const main = async () => {
     };
     /* eslint-enable camelcase */
 
-    console.log('token prices:', tokenPrices)
-
     const ethPriceRes = await client.simplePrice({
         ids: 'ethereum',
         vs_currencies: 'USD',
     });
 
     const ethPrice = new Decimal(ethPriceRes.ethereum.usd);
-
-    console.log('eth price:', ethPrice);
 
     Logger.log();
     Logger.log('Looking for disabled tokens...');
