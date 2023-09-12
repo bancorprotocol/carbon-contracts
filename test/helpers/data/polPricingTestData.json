@@ -1,0 +1,5604 @@
+{
+  "testCase": [
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "0",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "200000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "186606748013251963208869",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "174110252339759673075068",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "141421469693158657253364",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "100000080225400300921096",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "50000040112700150460548",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "25000020056350075230274",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "12500010028175037615137",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "6250005014087518807568",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "195312656690234962736",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "100000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "1000000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "933033740066259816044347",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "870551261698798365375344",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "707107348465793286266820",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "31250025070437594037842",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "976563283451174813682",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "500000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "2000000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "1866067480132519632088694",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "1741102523397596730750688",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "1414214696931586572533640",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "1000000802254003009210963",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "500000401127001504605481",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "250000200563500752302740",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "125000100281750376151370",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "62500050140875188075685",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "1953126566902349627365",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "1000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "10000000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "9330337400662598160443472",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "8705512616987983653753443",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "7071073484657932862668202",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "312500250704375940378426",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "9765632834511748136825",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "5000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "100"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "100"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "100"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "1000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "1000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "10000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "10000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "1000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "1000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "10000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "10000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "100000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "100000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "100000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "500000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "500000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "500000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "1000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "1000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "1000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "5000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "5000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "5000000000000000000000000"
+    },
+    {
+      "tokenPriceAtTimestamps": [
+        {
+          "timestamp": "1",
+          "ethAmount": "20000000000000000000000000",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "86400",
+          "ethAmount": "18660674801325196320886945",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "172800",
+          "ethAmount": "17411025233975967307506887",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "432000",
+          "ethAmount": "14142146969315865725336404",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "864000",
+          "ethAmount": "10000008022540030092109633",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "1728000",
+          "ethAmount": "5000004011270015046054816",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "2592000",
+          "ethAmount": "2500002005635007523027408",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "3456000",
+          "ethAmount": "1250001002817503761513704",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "4320000",
+          "ethAmount": "625000501408751880756852",
+          "tokenAmount": "10000000000000000000000000"
+        },
+        {
+          "timestamp": "8640000",
+          "ethAmount": "19531265669023496273651",
+          "tokenAmount": "10000000000000000000000000"
+        }
+      ],
+      "initialPriceEthAmount": "10000000000000000000000000",
+      "initialPriceTokenAmount": "10000000000000000000000000"
+    }
+  ]
+}
