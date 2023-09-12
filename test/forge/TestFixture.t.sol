@@ -16,6 +16,7 @@ import { MockBancorNetworkV3 } from "../../contracts/helpers/MockBancorNetworkV3
 
 import { TestVoucher } from "../../contracts/helpers/TestVoucher.sol";
 import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
+import { CarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
 import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
 
 import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
@@ -23,6 +24,8 @@ import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonCont
 import { IBancorNetwork } from "../../contracts/vortex/CarbonVortex.sol";
 
 import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
+
+// solhint-disable max-states-count
 
 /**
  * @dev Deploys tokens and system contracts
@@ -37,6 +40,7 @@ contract TestFixture is Test {
     Token internal feeOnTransferToken;
 
     TestVoucher internal voucher;
+    CarbonPOL internal carbonPOL;
     CarbonVortex internal carbonVortex;
     TestCarbonController internal carbonController;
 
@@ -180,6 +184,28 @@ contract TestFixture is Test {
         vm.stopPrank();
     }
 
+    /**
+     * @dev deploys carbon pol
+     */
+    function deployCarbonPOL() internal {
+        // deploy contracts from admin
+        vm.startPrank(admin);
+
+        // Deploy Carbon POL
+        carbonPOL = new CarbonPOL();
+
+        bytes memory polInitData = abi.encodeWithSelector(carbonPOL.initialize.selector);
+        // Deploy Carbon POL proxy
+        address carbonPOLProxy = address(
+            new OptimizedTransparentUpgradeableProxy(address(carbonPOL), payable(address(proxyAdmin)), polInitData)
+        );
+
+        // Set Carbon POL address
+        carbonPOL = CarbonPOL(payable(carbonPOLProxy));
+
+        vm.stopPrank();
+    }
+
     function deployBancorNetworkV3Mock() internal returns (MockBancorNetworkV3 bancorNetworkV3) {
         // deploy contracts from admin
         vm.startPrank(admin);
@@ -214,6 +240,16 @@ contract TestFixture is Test {
         bnt.safeTransfer(address(carbonController), MAX_SOURCE_AMOUNT * 5);
         // transfer eth
         vm.deal(address(carbonController), MAX_SOURCE_AMOUNT);
+        vm.stopPrank();
+    }
+
+    function transferTokensToCarbonPOL() internal {
+        vm.startPrank(admin);
+        // transfer tokens
+        nonTradeableToken.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
+        token1.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
+        token2.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
+        bnt.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 5);
         vm.stopPrank();
     }
 }
