@@ -1,11 +1,10 @@
-
+import Contracts from '../components/Contracts';
+import { DeployedContracts, execute, getNamedSigners, InstanceName } from '../utils/Deploy';
+import Logger from '../utils/Logger';
+import { DEFAULT_DECIMALS, TokenSymbol } from '../utils/TokenData';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
 import { CoinGeckoClient } from 'coingecko-api-v3';
-import { DeployedContracts, execute, getNamedSigners, InstanceName } from '../utils/Deploy';
-import { DEFAULT_DECIMALS, TokenSymbol } from '../utils/TokenData';
-import Contracts from '../components/Contracts';
-import Logger from '../utils/Logger';
 import Decimal from 'decimal.js';
 
 interface EnvOptions {
@@ -27,13 +26,16 @@ const main = async () => {
     const carbonPOL = await DeployedContracts.CarbonPOL.deployed();
 
     const tokenAddressesEnv = process.env.TOKEN_ADDRESSES;
-    if(!tokenAddressesEnv) {
-        console.error(`no tokens passed in - pass in token addresses like so: TOKEN_ADDRESSES='0x...','0x...'`)
+    if (!tokenAddressesEnv) {
+        console.error(`no tokens passed in - pass in token addresses like so: TOKEN_ADDRESSES='0x...','0x...'`);
         return;
     }
 
     // Remove single quotes and whitespace, then split by commas
-    const allTokens = tokenAddressesEnv.replace(/'/g, '').split(',').map(address => address.trim());
+    const allTokens = tokenAddressesEnv
+        .replace(/'/g, '')
+        .split(',')
+        .map((address) => address.trim());
 
     const client = new CoinGeckoClient({
         timeout: 10000,
@@ -52,7 +54,7 @@ const main = async () => {
 
     const ethPriceRes = await client.simplePrice({
         ids: 'ethereum',
-        vs_currencies: 'USD',
+        vs_currencies: 'USD'
     });
 
     const ethPrice = new Decimal(ethPriceRes.ethereum.usd);
