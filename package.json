@@ -11,7 +11,7 @@
     "url": "https://github.com/bancorprotocol/carbon-contracts/issues"
   },
   "author": "Bancor",
-  "license": "BUSL-1.1",
+  "license": "SEE LICENSE IN LICENSE",
   "main": "dist/typechain-types/index.js",
   "types": "dist/typechain-types/index.d.ts",
   "files": [

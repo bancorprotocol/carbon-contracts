@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.0;
 
 import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
@@ -28,28 +28,17 @@ interface ICarbonPOL is IUpgradeable {
     /**
      * @notice triggered after a successful trade is executed
      */
-    event TokenTraded(
-        address indexed caller,
-        Token indexed token,
-        uint128 amount,
-        uint128 ethReceived
-    );
+    event TokenTraded(address indexed caller, Token indexed token, uint128 amount, uint128 ethReceived);
 
     /**
      * @notice triggered when the market price multiplier is updated
      */
-    event MarketPriceMultiplyUpdated(
-        uint32 prevMarketPriceMultiply,
-        uint32 newMarketPriceMultiply
-    );
+    event MarketPriceMultiplyUpdated(uint32 prevMarketPriceMultiply, uint32 newMarketPriceMultiply);
 
     /**
      * @notice triggered when the price decay halflife is updated
      */
-    event PriceDecayHalfLifeUpdated(
-        uint32 prevPriceDecayHalfLife,
-        uint32 newPriceDecayHalfLife
-    );
+    event PriceDecayHalfLifeUpdated(uint32 prevPriceDecayHalfLife, uint32 newPriceDecayHalfLife);
 
     /**
      * @notice returns the market price multiplier
@@ -80,7 +69,7 @@ interface ICarbonPOL is IUpgradeable {
      * @notice returns the current token price (ETH / TKN)
      */
     function tokenPrice(Token token) external view returns (Price memory price);
-    
+
     /**
      * @notice trades ETH for *amount* of token based on the current token price (trade by target amount)
      */
