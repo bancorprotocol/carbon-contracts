@@ -1,15 +1,33 @@
 import Contracts from '../components/Contracts';
 import { DeployedContracts, execute, getNamedSigners, InstanceName } from '../utils/Deploy';
 import Logger from '../utils/Logger';
-import { DEFAULT_DECIMALS, TokenSymbol } from '../utils/TokenData';
+import { DEFAULT_DECIMALS, NATIVE_TOKEN_ADDRESS, TokenSymbol } from '../utils/TokenData';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
 import { CoinGeckoClient } from 'coingecko-api-v3';
 import Decimal from 'decimal.js';
+import fs from 'fs';
 
 interface EnvOptions {
     ENABLE_TRADING?: boolean;
 }
+
+interface TokenOverride {
+    address: string;
+    symbol?: string;
+    decimals?: number;
+}
+
+const TOKEN_OVERRIDES: TokenOverride[] = [
+    {
+        address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+        symbol: 'MKR'
+    },
+    {
+        address: '0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9',
+        symbol: 'FTT'
+    }
+];
 
 const { ENABLE_TRADING: enableTrading }: EnvOptions = process.env as any as EnvOptions;
 
@@ -20,22 +38,11 @@ interface TokenData {
 }
 
 const MAX_PRECISION = 16;
+const TOKEN_ADDRESSES: string[] = ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'];
 
 const main = async () => {
     const { deployer } = await getNamedSigners();
     const carbonPOL = await DeployedContracts.CarbonPOL.deployed();
-
-    const tokenAddressesEnv = process.env.TOKEN_ADDRESSES;
-    if (!tokenAddressesEnv) {
-        console.error(`no tokens passed in - pass in token addresses like so: TOKEN_ADDRESSES='0x...','0x...'`);
-        return;
-    }
-
-    // Remove single quotes and whitespace, then split by commas
-    const allTokens = tokenAddressesEnv
-        .replace(/'/g, '')
-        .split(',')
-        .map((address) => address.trim());
 
     const client = new CoinGeckoClient({
         timeout: 10000,
@@ -46,7 +53,7 @@ const main = async () => {
     const tokenPrices = {
         ...(await client.simpleTokenPrice({
             id: 'ethereum',
-            contract_addresses: [...allTokens].join(','),
+            contract_addresses: [...TOKEN_ADDRESSES].join(','),
             vs_currencies: 'USD'
         }))
     };
@@ -71,9 +78,15 @@ const main = async () => {
     for (let i = 0; i < allTokens.length; i++) {
         const token = allTokens[i];
 
-        const tokenContract = await Contracts.ERC20.attach(token, deployer);
-        symbol = await tokenContract.symbol();
-        decimals = await tokenContract.decimals();
+        if (token === NATIVE_TOKEN_ADDRESS) {
+            symbol = TokenSymbol.ETH;
+            decimals = DEFAULT_DECIMALS;
+        } else {
+            const tokenOverride = TOKEN_OVERRIDES.find((t) => t.address.toLowerCase() === token.toLowerCase());
+            const tokenContract = await Contracts.ERC20.attach(token, deployer);
+            symbol = tokenOverride?.symbol ?? (await tokenContract.symbol());
+            decimals = tokenOverride?.decimals ?? (await tokenContract.decimals());
+        }
 
         Logger.log();
         Logger.log(`Checking ${symbol} status [${token}]...`);
