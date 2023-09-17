@@ -12,6 +12,17 @@ interface EnvOptions {
     ENABLE_TRADING?: boolean;
 }
 
+const { ENABLE_TRADING: enableTrading }: EnvOptions = process.env as any as EnvOptions;
+
+interface TokenData {
+    address: string;
+    ethVirtualBalance: Decimal;
+    tokenVirtualBalance: Decimal;
+}
+
+const MAX_PRECISION = 16;
+const TOKEN_ADDRESSES: string[] = ['0x6B175474E89094C44Da98b954EedeAC495271d0F'];
+
 interface TokenOverride {
     address: string;
     symbol?: string;
@@ -28,17 +39,6 @@ const TOKEN_OVERRIDES: TokenOverride[] = [
         symbol: 'FTT'
     }
 ];
-
-const { ENABLE_TRADING: enableTrading }: EnvOptions = process.env as any as EnvOptions;
-
-interface TokenData {
-    address: string;
-    ethVirtualBalance: Decimal;
-    tokenVirtualBalance: Decimal;
-}
-
-const MAX_PRECISION = 16;
-const TOKEN_ADDRESSES: string[] = ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'];
 
 const main = async () => {
     const { deployer } = await getNamedSigners();
@@ -75,8 +75,8 @@ const main = async () => {
 
     let symbol: string;
     let decimals: number;
-    for (let i = 0; i < allTokens.length; i++) {
-        const token = allTokens[i];
+    for (let i = 0; i < TOKEN_ADDRESSES.length; i++) {
+        const token = TOKEN_ADDRESSES[i];
 
         if (token === NATIVE_TOKEN_ADDRESS) {
             symbol = TokenSymbol.ETH;
