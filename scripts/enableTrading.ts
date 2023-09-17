@@ -21,7 +21,7 @@ interface TokenData {
 }
 
 const MAX_PRECISION = 16;
-const TOKEN_ADDRESSES: string[] = ['0x6B175474E89094C44Da98b954EedeAC495271d0F'];
+const TOKEN_ADDRESSES: string[] = [];
 
 interface TokenOverride {
     address: string;
