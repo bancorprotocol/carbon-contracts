@@ -130,7 +130,7 @@ const main = async () => {
 
         const maxDecimals = Math.max(normalizedETHPrice.decimalPlaces(), normalizedTokenPrice.decimalPlaces());
         const maxDecimalsFactor = new Decimal(10).pow(maxDecimals);
-        const buffer = new Decimal(10).pow(6);
+        const buffer = new Decimal(10).pow(6); // buffer for increasing precision
         const ethVirtualBalance = normalizedETHPrice.mul(maxDecimalsFactor).mul(buffer);
         const tokenVirtualBalance = normalizedTokenPrice.mul(maxDecimalsFactor).mul(buffer);
 
