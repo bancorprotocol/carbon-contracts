@@ -141,7 +141,13 @@ const main = async () => {
             await execute({
                 name: InstanceName.CarbonPOL,
                 methodName: 'enableTrading',
-                args: [token, { ethAmount: ethVirtualBalance.toString(), tokenAmount: tokenVirtualBalance.toString() }],
+                args: [
+                    token,
+                    {
+                        ethAmount: ethVirtualBalance.toFixed().toString(),
+                        tokenAmount: tokenVirtualBalance.toFixed().toString()
+                    }
+                ],
                 from: deployer.address
             });
         }
