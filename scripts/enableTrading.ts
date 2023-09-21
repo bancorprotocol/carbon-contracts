@@ -21,7 +21,7 @@ interface TokenData {
 }
 
 const MAX_PRECISION = 16;
-const TOKEN_ADDRESSES: string[] = [];
+const TOKEN_ADDRESSES: string[] = ['0x6B175474E89094C44Da98b954EedeAC495271d0F'];
 
 interface TokenOverride {
     address: string;
@@ -91,10 +91,10 @@ const main = async () => {
         Logger.log();
         Logger.log(`Checking ${symbol} status [${token}]...`);
 
-        if (await carbonPOL.tradingEnabled(token)) {
-            Logger.error('  Skipping already enabled token...');
-            continue;
-        }
+        //if (await carbonPOL.tradingEnabled(token)) {
+        //    Logger.error('  Skipping already enabled token...');
+        //   continue;
+        //}
 
         const tokenPriceData = tokenPrices[token.toLowerCase()];
         if (!tokenPriceData) {
@@ -131,8 +131,8 @@ const main = async () => {
         const maxDecimals = Math.max(normalizedETHPrice.decimalPlaces(), normalizedTokenPrice.decimalPlaces());
         const maxDecimalsFactor = new Decimal(10).pow(maxDecimals);
         const buffer = new Decimal(10).pow(6); // buffer for increasing precision
-        const ethVirtualBalance = normalizedETHPrice.mul(maxDecimalsFactor).mul(buffer);
-        const tokenVirtualBalance = normalizedTokenPrice.mul(maxDecimalsFactor).mul(buffer);
+        const ethVirtualBalance = normalizedTokenPrice.mul(maxDecimalsFactor).mul(buffer);
+        const tokenVirtualBalance = normalizedETHPrice.mul(maxDecimalsFactor).mul(buffer);
 
         Logger.log(`  Suggested ${TokenSymbol.ETH} virtual balance: ${ethVirtualBalance.toFixed()}`);
         Logger.log(`  Suggested ${symbol} virtual balance: ${tokenVirtualBalance.toFixed()}`);
