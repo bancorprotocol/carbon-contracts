@@ -234,7 +234,7 @@ contract TestCaseParser is Test {
         // initialize strategies array
         strategies = new TestStrategy[](strategiesLength);
 
-        for (uint i = 0; i < strategiesLength; ++i) {
+        for (uint256 i = 0; i < strategiesLength; ++i) {
             // get the correct strategy index to parse
             string memory parseString = string.concat(initialParseString, Strings.toString(i));
 
@@ -274,7 +274,7 @@ contract TestCaseParser is Test {
         // initialize trade actions array
         tradeActions = new TradeAction[](tradeActionsLength);
 
-        for (uint i = 0; i < tradeActionsLength; ++i) {
+        for (uint256 i = 0; i < tradeActionsLength; ++i) {
             // get the correct trade action index to parse
             string memory parseString = string.concat(initialParseString, Strings.toString(i));
 
@@ -294,7 +294,7 @@ contract TestCaseParser is Test {
         return tradeActions;
     }
 
-    /// @dev convert an order struct to uint
+    /// @dev convert an order struct to uint256
     function convertOrderStructToUint(OrderString memory orderString) private pure returns (Order memory order) {
         return
             Order({

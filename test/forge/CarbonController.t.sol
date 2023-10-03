@@ -1,29 +1,18 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { Test } from "forge-std/Test.sol";
-
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
-import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
 
 import { Order, TradeAction } from "../../contracts/carbon/Strategies.sol";
 
-import { AccessDenied, ZeroValue, InvalidAddress, InvalidFee } from "../../contracts/utility/Utils.sol";
+import { AccessDenied, InvalidAddress } from "../../contracts/utility/Utils.sol";
 import { OnlyProxyDelegate } from "../../contracts/utility/OnlyProxyDelegate.sol";
-import { PPM_RESOLUTION } from "../../contracts/utility/Constants.sol";
 
 import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
 
-import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
-import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonController.sol";
-import { ICarbonVortex } from "../../contracts/vortex/interfaces/ICarbonVortex.sol";
-import { IBancorNetwork } from "../../contracts/vortex/CarbonVortex.sol";
-
-import { Token, toIERC20, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
+import { Token } from "../../contracts/token/Token.sol";
 
 contract CarbonControllerTest is TestFixture {
     using Address for address payable;

@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { Test } from "forge-std/Test.sol";
-
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
@@ -20,7 +17,7 @@ import { Strategies } from "../../contracts/carbon/Strategies.sol";
 import { Pair } from "../../contracts/carbon/Pairs.sol";
 import { TestERC20FeeOnTransfer } from "../../contracts/helpers/TestERC20FeeOnTransfer.sol";
 
-import { Token, toIERC20, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
+import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
 
 contract TradingTest is TestFixture {
     using Address for address payable;

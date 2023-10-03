@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { Test } from "forge-std/Test.sol";
-
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
-import { CarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
 import { POLTestCaseParser } from "./POLTestCaseParser.t.sol";
 
-import { AccessDenied, InvalidAddress, InvalidFee, ZeroValue } from "../../contracts/utility/Utils.sol";
-import { PPM_RESOLUTION } from "../../contracts/utility/Constants.sol";
-import { MathEx } from "../../contracts/utility/MathEx.sol";
+import { AccessDenied, ZeroValue } from "../../contracts/utility/Utils.sol";
 import { ExpDecayMath } from "../../contracts/utility/ExpDecayMath.sol";
 import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
 
@@ -319,8 +314,8 @@ contract CarbonPOLTest is TestFixture {
         POLTestCaseParser.TestCase[] memory testCases = testCaseParser.getTestCases();
 
         // go through each of the eth amounts, token amounts and timestamps to verify token price output matches test data
-        for (uint i = 0; i < ethAmounts.length; ++i) {
-            for (uint j = 0; j < tokenAmounts.length; ++j) {
+        for (uint256 i = 0; i < ethAmounts.length; ++i) {
+            for (uint256 j = 0; j < tokenAmounts.length; ++j) {
                 vm.warp(1);
                 uint128 ethAmount = uint128(ethAmounts[i]);
                 uint128 tokenAmount = uint128(tokenAmounts[j]);
@@ -328,7 +323,7 @@ contract CarbonPOLTest is TestFixture {
                 carbonPOL.enableTrading(token1, price);
                 // get the correct test case for this price
                 POLTestCaseParser.TestCase memory currentCase;
-                for (uint t = 0; t < testCases.length; ++t) {
+                for (uint256 t = 0; t < testCases.length; ++t) {
                     if (
                         testCases[t].initialPrice.ethAmount == ethAmount &&
                         testCases[t].initialPrice.tokenAmount == tokenAmount
@@ -336,7 +331,7 @@ contract CarbonPOLTest is TestFixture {
                         currentCase = testCases[t];
                     }
                 }
-                for (uint k = 0; k < timestamps.length; ++k) {
+                for (uint256 k = 0; k < timestamps.length; ++k) {
                     // set timestamp
                     vm.warp(timestamps[k]);
                     // get token price at this timestamp

@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { Test } from "forge-std/Test.sol";
-
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
@@ -12,7 +9,6 @@ import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
 import { AccessDenied, InvalidAddress, InvalidFee } from "../../contracts/utility/Utils.sol";
 import { PPM_RESOLUTION } from "../../contracts/utility/Constants.sol";
 
-import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
 import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonController.sol";
 import { ICarbonVortex } from "../../contracts/vortex/interfaces/ICarbonVortex.sol";
 import { IBancorNetwork } from "../../contracts/vortex/CarbonVortex.sol";

@@ -10,7 +10,7 @@ contract MockBancorNetworkV3 {
     address private immutable _bnt;
 
     // what amount is added or subtracted to/from the input amount on swap
-    uint private immutable _outputAmount;
+    uint256 private immutable _outputAmount;
 
     // true if the gain amount is added to the swap input, false if subtracted
     bool private immutable _profit;
@@ -22,7 +22,7 @@ contract MockBancorNetworkV3 {
     error NotWhitelisted();
     error ZeroValue();
 
-    constructor(address bnt, uint outputAmount, bool profit) {
+    constructor(address bnt, uint256 outputAmount, bool profit) {
         _bnt = bnt;
         _outputAmount = outputAmount;
         _profit = profit;
@@ -66,16 +66,17 @@ contract MockBancorNetworkV3 {
         Token targetToken,
         uint256 amount,
         address trader,
-        uint deadline,
-        uint minTargetAmount
+        uint256 deadline,
+        uint256 minTargetAmount
     ) private returns (uint256) {
+        /* solhint-disable custom-errors */
         require(deadline >= block.timestamp, "Swap timeout");
         // withdraw source amount
         sourceToken.safeTransferFrom(trader, address(this), amount);
 
         // transfer target amount
         // receive _outputAmount tokens per swap
-        uint targetAmount;
+        uint256 targetAmount;
         if (_profit) {
             targetAmount = amount + _outputAmount;
         } else {
@@ -84,5 +85,6 @@ contract MockBancorNetworkV3 {
         require(targetAmount >= minTargetAmount, "InsufficientTargetAmount");
         targetToken.safeTransfer(trader, targetAmount);
         return targetAmount;
+        /* solhint-enable custom-errors */
     }
 }
