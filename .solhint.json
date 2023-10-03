@@ -7,6 +7,8 @@
     "not-rely-on-time": "off",
     "no-empty-blocks": "off",
     "mark-callable-contracts": "off",
+    "immutable-vars-naming": "off",
+    "one-contract-per-file": "off",
     "func-visibility": ["error", { "ignoreConstructors": true }],
     "compiler-version": ["error", "0.8.19"]
   }
