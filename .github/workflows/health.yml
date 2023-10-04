@@ -14,36 +14,33 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with: 
+          version: 8
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
+          cache: 'pnpm'
 
       - name: Tune GitHub-hosted runner network
         uses: smorimoto/tune-github-hosted-runner-network@v1
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        id: yarn-cache
+      
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
         with:
-          path: |
-            **/node_modules
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          version: nightly
 
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       - name: Setup tenderly 
         run: |
@@ -54,7 +51,7 @@ jobs:
           TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
 
       - name: Test deployment and network health
-        run: yarn test:health
+        run: pnpm test:health
         env:
           TENDERLY_PROJECT: carbon-temp-forks
           TENDERLY_TEST_PROJECT: carbon-temp-forks

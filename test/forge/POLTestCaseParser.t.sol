@@ -77,7 +77,7 @@ contract POLTestCaseParser is Test {
         // initialize test cases array
         testCases = new TestCase[](testCaseLength);
 
-        for (uint i = 0; i < testCaseLength; ++i) {
+        for (uint256 i = 0; i < testCaseLength; ++i) {
             // get the correct testCase index to parse
             string memory parseString = string.concat(initialParseString, Strings.toString(i));
 
@@ -97,7 +97,7 @@ contract POLTestCaseParser is Test {
             PriceAtTimestamp[] memory pricesAtTimestamp = new PriceAtTimestamp[](tokenPriceLen);
 
             // fill in the token price at timestamp
-            for (uint j = 0; j < tokenPriceLen; ++j) {
+            for (uint256 j = 0; j < tokenPriceLen; ++j) {
                 // Parse the token price field into a bytes array
                 string memory fullParseString = string.concat(parseString, "].tokenPriceAtTimestamps[");
                 fullParseString = string.concat(fullParseString, Strings.toString(j));
@@ -113,7 +113,7 @@ contract POLTestCaseParser is Test {
         return testCases;
     }
 
-    /// @dev convert a price at timestamp struct to uint
+    /// @dev convert a price at timestamp struct to uint256
     function convertPriceAtTimestampToUint(
         PriceAtTimestampString memory priceAtTimestampString
     ) private pure returns (PriceAtTimestamp memory priceAtTimestamp) {

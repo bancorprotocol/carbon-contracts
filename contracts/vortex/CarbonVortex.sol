@@ -245,7 +245,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     function _validateTokens(Token[] calldata tokens) private view {
-        uint len = tokens.length;
+        uint256 len = tokens.length;
         if (len == 0) {
             revert InvalidTokenLength();
         }

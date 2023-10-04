@@ -12,7 +12,7 @@ import { Token } from "../token/Token.sol";
 import { Utils } from "../utility/Utils.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { ExpDecayMath } from "../utility/ExpDecayMath.sol";
-import { MAX_GAP, PPM_RESOLUTION } from "../utility/Constants.sol";
+import { MAX_GAP } from "../utility/Constants.sol";
 
 /**
  * @notice CarbonPOL contract

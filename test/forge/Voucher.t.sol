@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { Test } from "forge-std/Test.sol";
-
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
 
 import { AccessDenied, InvalidAddress, InvalidIndices } from "../../contracts/utility/Utils.sol";
-
-import { Token } from "../../contracts/token/Token.sol";
 
 contract VoucherTest is TestFixture {
     using Address for address payable;
