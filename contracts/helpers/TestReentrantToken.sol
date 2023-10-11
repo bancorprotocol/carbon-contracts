@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -42,6 +42,7 @@ contract TestReentrantToken is ERC20 {
     function transferFrom(address from, address to, uint256 amount) public override(ERC20) returns (bool) {
         bool success = super.transferFrom(from, to, amount);
 
+        // choose which carbonController function to reenter based on _reenterFunctionIndex
         if (_reenterFunctionIndex == uint8(ReenterFunctions.CREATE_PAIR)) {
             _reenterCreatePair();
         } else if (_reenterFunctionIndex == uint8(ReenterFunctions.CREATE_STRATEGY)) {
