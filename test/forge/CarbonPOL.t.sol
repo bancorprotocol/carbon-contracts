@@ -9,6 +9,7 @@ import { POLTestCaseParser } from "./POLTestCaseParser.t.sol";
 import { AccessDenied, ZeroValue } from "../../contracts/utility/Utils.sol";
 import { ExpDecayMath } from "../../contracts/utility/ExpDecayMath.sol";
 import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
+import { TestReenterCarbonPOL } from "../../contracts/helpers/TestReenterCarbonPOL.sol";
 
 import { ICarbonPOL } from "../../contracts/pol/interfaces/ICarbonPOL.sol";
 
@@ -602,6 +603,31 @@ contract CarbonPOLTest is TestFixture {
         vm.expectRevert(ICarbonPOL.InsufficientNativeTokenSent.selector);
         // send one wei less than required
         carbonPOL.trade{ value: ethRequired - 1 }(token, amount);
+        vm.stopPrank();
+    }
+
+    /// @dev test should revert trading if reentrancy is attempted
+    function testShouldRevertTradingIfReentrancyIsAttempted() public {
+        Token token = token1;
+        // trade 1e18 tokens
+        uint128 amount = 1e18;
+        vm.prank(admin);
+        // enable token to test
+        carbonPOL.enableTrading(token, ICarbonPOL.Price({ ethAmount: 1e18, tokenAmount: 1e22 }));
+        vm.startPrank(user1);
+        // deploy carbonPOL reentrancy contract
+        TestReenterCarbonPOL testReentrancy = new TestReenterCarbonPOL(carbonPOL, token);
+
+        // set timestamp to 1000 to ensure some time passes between calls
+        vm.warp(1000);
+        // expect eth required to be greater than 0
+        uint128 ethRequired = carbonPOL.expectedTradeInput(token, amount);
+        assertGt(ethRequired, 0);
+        // expect trade to revert
+        // reverts in "sendValue" in trade in carbonPOL
+        vm.expectRevert("Address: unable to send value, recipient may have reverted");
+        // send a bit more eth in order to refund the contract, so "receive" is called
+        testReentrancy.tryReenterCarbonPOL{ value: ethRequired + 1 }(amount);
         vm.stopPrank();
     }
 
