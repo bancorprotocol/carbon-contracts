@@ -406,13 +406,14 @@ contract StrategiesTest is TestFixture {
         // each of the values correspond to a nonReentrant carbonController function which is called in "transferFrom"
         reenterFunctionIndex = uint8(bound(reenterFunctionIndex, 0, 6));
         Order memory order = generateTestOrder();
+        TestReentrantToken.ReenterFunctions reenterFunction = TestReentrantToken.ReenterFunctions(reenterFunctionIndex);
         // deploy malicious token
         TestReentrantToken reentrantToken = new TestReentrantToken(
             "TKN1",
             "TKN1",
             1_000_000_000 ether,
             carbonController,
-            reenterFunctionIndex
+            reenterFunction
         );
         // approve funds to carbon controller
         reentrantToken.approve(address(carbonController), MAX_SOURCE_AMOUNT);

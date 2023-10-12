@@ -24,17 +24,17 @@ contract TestReentrantToken is ERC20 {
     }
 
     // which function to reenter using transferFrom
-    uint8 private _reenterFunctionIndex;
+    ReenterFunctions private _reenterFunction;
 
     constructor(
         string memory name,
         string memory symbol,
         uint256 totalSupply,
         ICarbonController carbonControllerInit,
-        uint8 reenterFunctionIndexInit
+        ReenterFunctions reenterFunctionInit
     ) ERC20(name, symbol) {
         _carbonController = carbonControllerInit;
-        _reenterFunctionIndex = reenterFunctionIndexInit;
+        _reenterFunction = reenterFunctionInit;
         _mint(msg.sender, totalSupply);
     }
 
@@ -42,20 +42,20 @@ contract TestReentrantToken is ERC20 {
     function transferFrom(address from, address to, uint256 amount) public override(ERC20) returns (bool) {
         bool success = super.transferFrom(from, to, amount);
 
-        // choose which carbonController function to reenter based on _reenterFunctionIndex
-        if (_reenterFunctionIndex == uint8(ReenterFunctions.CREATE_PAIR)) {
+        // choose which carbonController function to reenter based on _reenterFunction
+        if (_reenterFunction == ReenterFunctions.CREATE_PAIR) {
             _reenterCreatePair();
-        } else if (_reenterFunctionIndex == uint8(ReenterFunctions.CREATE_STRATEGY)) {
+        } else if (_reenterFunction == ReenterFunctions.CREATE_STRATEGY) {
             _reenterCreateStrategy();
-        } else if (_reenterFunctionIndex == uint8(ReenterFunctions.UPDATE_STRATEGY)) {
+        } else if (_reenterFunction == ReenterFunctions.UPDATE_STRATEGY) {
             _reenterUpdateStrategy();
-        } else if (_reenterFunctionIndex == uint8(ReenterFunctions.DELETE_STRATEGY)) {
+        } else if (_reenterFunction == ReenterFunctions.DELETE_STRATEGY) {
             _reenterDeleteStrategy();
-        } else if (_reenterFunctionIndex == uint8(ReenterFunctions.TRADE_BY_SOURCE_AMOUNT)) {
+        } else if (_reenterFunction == ReenterFunctions.TRADE_BY_SOURCE_AMOUNT) {
             _reenterTradeBySourceAmount();
-        } else if (_reenterFunctionIndex == uint8(ReenterFunctions.TRADE_BY_TARGET_AMOUNT)) {
+        } else if (_reenterFunction == ReenterFunctions.TRADE_BY_TARGET_AMOUNT) {
             _reenterTradeByTargetAmount();
-        } else if (_reenterFunctionIndex == uint8(ReenterFunctions.WITHDRAW_FEES)) {
+        } else if (_reenterFunction == ReenterFunctions.WITHDRAW_FEES) {
             _reenterWithdrawFees();
         }
 
