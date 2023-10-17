@@ -18,6 +18,7 @@ import { Pairs } from "../../contracts/carbon/Pairs.sol";
 import { TestVoucher } from "../../contracts/helpers/TestVoucher.sol";
 import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
 import { TestERC20FeeOnTransfer } from "../../contracts/helpers/TestERC20FeeOnTransfer.sol";
+import { TestReentrantToken } from "../../contracts/helpers/TestReentrantToken.sol";
 
 import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
 
@@ -394,6 +395,42 @@ contract StrategiesTest is TestFixture {
         carbonController.createStrategy(feeOnTransferToken, token1, [order, order]);
         vm.expectRevert(Strategies.BalanceMismatch.selector);
         carbonController.createStrategy(token0, feeOnTransferToken, [order, order]);
+
+        vm.stopPrank();
+    }
+
+    /// @dev test that strategy creation reverts if reentrancy is attempted via a malicious token
+    function testStrategyCreationRevertsIfReentrancyIsAttempted(uint8 reenterFunctionIndex) public {
+        vm.startPrank(user1);
+        // bound reentrant function index to valid values 0 - 6
+        // each of the values correspond to a nonReentrant carbonController function which is called in "transferFrom"
+        reenterFunctionIndex = uint8(bound(reenterFunctionIndex, 0, 6));
+        Order memory order = generateTestOrder();
+        TestReentrantToken.ReenterFunctions reenterFunction = TestReentrantToken.ReenterFunctions(reenterFunctionIndex);
+        // deploy malicious token
+        TestReentrantToken reentrantToken = new TestReentrantToken(
+            "TKN1",
+            "TKN1",
+            1_000_000_000 ether,
+            carbonController,
+            reenterFunction
+        );
+        // approve funds to carbon controller
+        reentrantToken.approve(address(carbonController), MAX_SOURCE_AMOUNT);
+        // when attempting to reenter withdrawFees function
+        if (reenterFunctionIndex == 6) {
+            vm.stopPrank();
+            // Grant fees manager role to reentrant token
+            vm.startPrank(admin);
+            carbonController.grantRole(carbonController.roleFeesManager(), address(reentrantToken));
+            vm.stopPrank();
+            vm.startPrank(user1);
+        }
+
+        // test revert for reentrancy token
+        // reverts in the "safeTransferFrom" call in _validateDepositAndRefundExcessNativeToken
+        vm.expectRevert("ReentrancyGuard: reentrant call");
+        carbonController.createStrategy(Token.wrap(address(reentrantToken)), token1, [order, order]);
 
         vm.stopPrank();
     }
