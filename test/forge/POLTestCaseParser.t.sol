@@ -31,8 +31,11 @@ contract POLTestCaseParser is Test {
     /**
      * @dev helper function to get test cases by parsing test data json
      */
-    function getTestCases() public returns (TestCase[] memory testCases) {
-        string memory json = vm.readFile("./test/helpers/data/polPricingTestData.json");
+    function getTestCases(bool forNativeToken) public returns (TestCase[] memory testCases) {
+        string memory path = "./test/helpers/data/";
+        string memory filename = forNativeToken ? "polPricingTestDataETH.json" : "polPricingTestData.json";
+        path = string.concat(path, filename);
+        string memory json = vm.readFile(path);
         testCases = parseTestCases(json, "testCase");
 
         return testCases;
