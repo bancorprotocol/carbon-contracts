@@ -14,10 +14,16 @@ interface ICarbonPOL is IUpgradeable {
     error TradingDisabled();
     error InsufficientNativeTokenSent();
     error InsufficientTokenBalance();
+    error InsufficientEthForSale();
 
     struct Price {
         uint128 ethAmount;
         uint128 tokenAmount;
+    }
+
+    struct EthSaleAmount {
+        uint128 initial;
+        uint128 current;
     }
 
     /**
@@ -26,9 +32,14 @@ interface ICarbonPOL is IUpgradeable {
     event TradingEnabled(Token indexed token, Price price);
 
     /**
-     * @notice triggered after a successful trade is executed
+     * @notice triggered after a successful trade TKN->ETH or ETH->BNT is executed
      */
     event TokenTraded(address indexed caller, Token indexed token, uint128 amount, uint128 ethReceived);
+
+    /**
+     * @notice triggered after an eth sale leaves less than 10% of the initial eth sale amount
+     */
+    event PriceUpdated(Token indexed token, Price price);
 
     /**
      * @notice triggered when the market price multiplier is updated
@@ -41,6 +52,11 @@ interface ICarbonPOL is IUpgradeable {
     event PriceDecayHalfLifeUpdated(uint32 prevPriceDecayHalfLife, uint32 newPriceDecayHalfLife);
 
     /**
+     * @notice triggered when the eth sale amount is updated
+     */
+    event EthSaleAmountUpdated(uint128 prevEthSaleAmount, uint128 newEthSaleAmount);
+
+    /**
      * @notice returns the market price multiplier
      */
     function marketPriceMultiply() external view returns (uint32);
@@ -51,27 +67,41 @@ interface ICarbonPOL is IUpgradeable {
     function priceDecayHalfLife() external view returns (uint32);
 
     /**
+     * @notice returns the initial eth sale amount
+     */
+    function ethSaleAmount() external view returns (uint128);
+
+    /**
+     * @notice returns the current eth sale amount
+     */
+    function currentEthSaleAmount() external view returns (uint128);
+
+    /**
      * @notice returns true if trading is enabled for token
      */
     function tradingEnabled(Token token) external view returns (bool);
 
     /**
      * @notice returns the expected trade output (tokens received) given an eth amount sent for a token
+     * @notice if token == ETH, return how much bnt will be sent given an eth amount received
      */
     function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128 tokenAmount);
 
     /**
-     * @notice returns the expected trade input (how much eth to send) given an token amount received
+     * @notice returns the expected trade input (how much eth to send) given a token amount received
+     * @notice if token == ETH, return how much eth will be received given a bnt amount sent
      */
     function expectedTradeInput(Token token, uint128 tokenAmount) external view returns (uint128 ethAmount);
 
     /**
      * @notice returns the current token price (ETH / TKN)
+     * @notice if token == ETH, returns ETH / BNT price
      */
     function tokenPrice(Token token) external view returns (Price memory price);
 
     /**
      * @notice trades ETH for *amount* of token based on the current token price (trade by target amount)
+     * @notice if token == ETH, trades *amount* of ETH for BNT based on the current token price (trade by source amount)
      */
     function trade(Token token, uint128 amount) external payable;
 }
