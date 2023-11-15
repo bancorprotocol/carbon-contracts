@@ -101,7 +101,7 @@ interface ICarbonPOL is IUpgradeable {
 
     /**
      * @notice trades ETH for *amount* of token based on the current token price (trade by target amount)
-     * @notice if token == ETH, trades *amount* of ETH for BNT based on the current token price (trade by source amount)
+     * @notice if token == ETH, trades *amount* of BNT for ETH based on the current token price (trade by target amount)
      */
     function trade(Token token, uint128 amount) external payable;
 }
