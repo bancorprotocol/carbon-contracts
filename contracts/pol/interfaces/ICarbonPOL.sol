@@ -17,8 +17,8 @@ interface ICarbonPOL is IUpgradeable {
     error InsufficientEthForSale();
 
     struct Price {
-        uint128 ethAmount;
-        uint128 tokenAmount;
+        uint128 sourceAmount;
+        uint128 targetAmount;
     }
 
     struct EthSaleAmount {
@@ -34,7 +34,7 @@ interface ICarbonPOL is IUpgradeable {
     /**
      * @notice triggered after a successful trade TKN->ETH or ETH->BNT is executed
      */
-    event TokenTraded(address indexed caller, Token indexed token, uint128 amount, uint128 ethReceived);
+    event TokenTraded(address indexed caller, Token indexed token, uint128 inputAmount, uint128 outputAmount);
 
     /**
      * @notice triggered after an eth sale leaves less than 10% of the initial eth sale amount
@@ -82,14 +82,12 @@ interface ICarbonPOL is IUpgradeable {
     function tradingEnabled(Token token) external view returns (bool);
 
     /**
-     * @notice returns the expected trade output (tokens received) given an ETH amount sent for a token
-     * @notice if token == ETH, return how much BNT will be sent given an ETH amount received
+     * @notice returns the expected trade output (tokens received) given an token amount sent
      */
     function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128 tokenAmount);
 
     /**
-     * @notice returns the expected trade input (how much eth to send) given a token amount received
-     * @notice if token == ETH, return how much ETH will be received given a BNT amount sent
+     * @notice returns the expected trade input (how many tokens to send) given a token amount received
      */
     function expectedTradeInput(Token token, uint128 tokenAmount) external view returns (uint128 ethAmount);
 
@@ -101,7 +99,7 @@ interface ICarbonPOL is IUpgradeable {
 
     /**
      * @notice trades ETH for *amount* of token based on the current token price (trade by target amount)
-     * @notice if token == ETH, trades *amount* of BNT for ETH based on the current token price (trade by target amount)
+     * @notice if token == ETH, trades BNT for amount of ETH
      */
     function trade(Token token, uint128 amount) external payable;
 }

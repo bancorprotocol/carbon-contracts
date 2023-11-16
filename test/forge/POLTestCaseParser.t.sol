@@ -57,8 +57,8 @@ contract POLTestCaseParser is Test {
             string.concat(initialParseString, "].initialPriceTokenAmount")
         );
         price = ICarbonPOL.Price({
-            ethAmount: uint128(initialPriceEthAmount),
-            tokenAmount: uint128(initialPriceTokenAmount)
+            sourceAmount: uint128(initialPriceEthAmount),
+            targetAmount: uint128(initialPriceTokenAmount)
         });
     }
 
