@@ -82,14 +82,14 @@ interface ICarbonPOL is IUpgradeable {
     function tradingEnabled(Token token) external view returns (bool);
 
     /**
-     * @notice returns the expected trade output (tokens received) given an eth amount sent for a token
-     * @notice if token == ETH, return how much bnt will be sent given an eth amount received
+     * @notice returns the expected trade output (tokens received) given an ETH amount sent for a token
+     * @notice if token == ETH, return how much BNT will be sent given an ETH amount received
      */
     function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128 tokenAmount);
 
     /**
      * @notice returns the expected trade input (how much eth to send) given a token amount received
-     * @notice if token == ETH, return how much eth will be received given a bnt amount sent
+     * @notice if token == ETH, return how much ETH will be received given a BNT amount sent
      */
     function expectedTradeInput(Token token, uint128 tokenAmount) external view returns (uint128 ethAmount);
 

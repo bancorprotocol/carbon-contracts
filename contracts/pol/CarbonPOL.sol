@@ -45,8 +45,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @dev used to initialize the implementation
      */
-    constructor(Token bntInit) {
-        _bnt = bntInit;
+    constructor(Token initBnt) {
+        _validAddress(Token.unwrap(initBnt));
+        _bnt = initBnt;
         // initialize implementation
         initialize();
     }

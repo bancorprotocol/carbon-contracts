@@ -6,11 +6,12 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { TestFixture } from "./TestFixture.t.sol";
 import { POLTestCaseParser } from "./POLTestCaseParser.t.sol";
 
-import { AccessDenied, ZeroValue } from "../../contracts/utility/Utils.sol";
+import { AccessDenied, ZeroValue, InvalidAddress } from "../../contracts/utility/Utils.sol";
 import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
 import { TestReenterCarbonPOL } from "../../contracts/helpers/TestReenterCarbonPOL.sol";
 
 import { ICarbonPOL } from "../../contracts/pol/interfaces/ICarbonPOL.sol";
+import { CarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
 
 contract CarbonPOLTest is TestFixture {
     using Address for address payable;
@@ -87,6 +88,14 @@ contract CarbonPOLTest is TestFixture {
     function testShouldntBeAbleToReinitialize() public {
         vm.expectRevert("Initializable: contract is already initialized");
         carbonPOL.initialize();
+    }
+
+    /**
+     * @dev test should revert when deploying CarbonPOL with an invalid bnt address
+     */
+    function testShouldRevertWhenDeployingWithInvalidBNTAddress() public {
+        vm.expectRevert(InvalidAddress.selector);
+        new CarbonPOL(Token.wrap(address(0)));
     }
 
     /**
