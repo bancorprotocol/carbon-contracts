@@ -328,8 +328,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         if (ethAmountRequired == 0) {
             revert InvalidTrade();
         }
-        // transfer the tokens from the user
-        _bnt.safeTransferFrom(msg.sender, address(this), amount);
+        // transfer the tokens from the user to the bnt address (burn them directly)
+        _bnt.safeTransferFrom(msg.sender, Token.unwrap(_bnt), amount);
 
         // transfer the eth to the user
         payable(msg.sender).sendValue(ethAmountRequired);

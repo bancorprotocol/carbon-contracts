@@ -7,7 +7,7 @@ import { TestFixture } from "./TestFixture.t.sol";
 import { POLTestCaseParser } from "./POLTestCaseParser.t.sol";
 
 import { AccessDenied, ZeroValue, InvalidAddress } from "../../contracts/utility/Utils.sol";
-import { Token, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
+import { Token, toERC20, NATIVE_TOKEN } from "../../contracts/token/Token.sol";
 import { TestReenterCarbonPOL } from "../../contracts/helpers/TestReenterCarbonPOL.sol";
 
 import { ICarbonPOL } from "../../contracts/pol/interfaces/ICarbonPOL.sol";
@@ -811,8 +811,8 @@ contract CarbonPOLTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test trading should increase the contract's bnt balance
-    function testTradingETHShouldIncreaseContractBNTBalance() public {
+    /// @dev test trading eth should burn bnt
+    function testTradingETHShouldBurnBNT() public {
         // enable trading and set price for the native token
         vm.prank(admin);
         Token token = NATIVE_TOKEN;
@@ -830,7 +830,8 @@ contract CarbonPOLTest is TestFixture {
         uint128 tradeAmount = 1000 * 1e18;
         uint128 expectedTradeInput = carbonPOL.expectedTradeInput(token, tradeAmount);
 
-        uint256 bntBalanceBefore = bnt.balanceOf(address(carbonPOL));
+        uint256 bntBalanceBefore = bnt.balanceOf(user1);
+        uint256 bntSupplyBefore = toERC20(bnt).totalSupply();
 
         // approve bnt for eth -> bnt trades
         bnt.safeApprove(address(carbonPOL), tradeAmount);
@@ -838,9 +839,11 @@ contract CarbonPOLTest is TestFixture {
         // trade
         carbonPOL.trade{ value: expectedTradeInput }(token, tradeAmount);
 
-        uint256 bntBalanceAfter = bnt.balanceOf(address(carbonPOL));
+        uint256 bntBalanceAfter = bnt.balanceOf(user1);
+        uint256 bntSupplyAfter = toERC20(bnt).totalSupply();
 
-        assertEq(bntBalanceAfter - bntBalanceBefore, tradeAmount);
+        assertEq(bntBalanceBefore - bntBalanceAfter, tradeAmount);
+        assertEq(bntSupplyBefore - bntSupplyAfter, tradeAmount);
 
         vm.stopPrank();
     }
