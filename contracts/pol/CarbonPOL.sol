@@ -196,15 +196,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function ethSaleAmount() external view returns (uint128) {
-        return _ethSaleAmount.initial;
-    }
-
-    /**
-     * @inheritdoc ICarbonPOL
-     */
-    function currentEthSaleAmount() external view returns (uint128) {
-        return _ethSaleAmount.current;
+    function ethSaleAmount() external view returns (EthSaleAmount memory) {
+        return _ethSaleAmount;
     }
 
     /**

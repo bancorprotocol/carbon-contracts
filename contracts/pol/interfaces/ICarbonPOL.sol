@@ -32,12 +32,12 @@ interface ICarbonPOL is IUpgradeable {
     event TradingEnabled(Token indexed token, Price price);
 
     /**
-     * @notice triggered after a successful trade TKN->ETH or ETH->BNT is executed
+     * @notice triggered after a successful trade is executed
      */
     event TokenTraded(address indexed caller, Token indexed token, uint128 inputAmount, uint128 outputAmount);
 
     /**
-     * @notice triggered after an eth sale leaves less than 10% of the initial eth sale amount
+     * @notice triggered after an eth trade leaves less than 10% of the initial eth sale amount
      */
     event PriceUpdated(Token indexed token, Price price);
 
@@ -67,14 +67,9 @@ interface ICarbonPOL is IUpgradeable {
     function priceDecayHalfLife() external view returns (uint32);
 
     /**
-     * @notice returns the initial eth sale amount
+     * @notice returns the initial and current eth sale amount
      */
-    function ethSaleAmount() external view returns (uint128);
-
-    /**
-     * @notice returns the current eth sale amount
-     */
-    function currentEthSaleAmount() external view returns (uint128);
+    function ethSaleAmount() external view returns (EthSaleAmount memory);
 
     /**
      * @notice returns true if trading is enabled for token
@@ -93,7 +88,7 @@ interface ICarbonPOL is IUpgradeable {
 
     /**
      * @notice returns the current token price (ETH / TKN)
-     * @notice if token == ETH, returns ETH / BNT price
+     * @notice if token == ETH, returns BNT / ETH price
      */
     function tokenPrice(Token token) external view returns (Price memory price);
 

@@ -209,14 +209,14 @@ contract CarbonPOLTest is TestFixture {
     /// @dev test that admin should be able to update the eth sale amount
     function testShouldBeAbleToSetAndUpdateTheEthSaleAmount() public {
         vm.startPrank(admin);
-        uint128 ethSaleAmount = carbonPOL.ethSaleAmount();
+        uint128 ethSaleAmount = carbonPOL.ethSaleAmount().initial;
         assertEq(ethSaleAmount, ETH_SALE_AMOUNT_DEFAULT);
 
         vm.expectEmit();
         emit EthSaleAmountUpdated(ETH_SALE_AMOUNT_DEFAULT, ETH_SALE_AMOUNT_UPDATED);
         carbonPOL.setEthSaleAmount(ETH_SALE_AMOUNT_UPDATED);
 
-        ethSaleAmount = carbonPOL.ethSaleAmount();
+        ethSaleAmount = carbonPOL.ethSaleAmount().initial;
         assertEq(ethSaleAmount, ETH_SALE_AMOUNT_UPDATED);
         vm.stopPrank();
     }
@@ -224,7 +224,7 @@ contract CarbonPOLTest is TestFixture {
     /// @dev test that setting the eth sale amount to an amount below the current eth sale amount reset the current amount
     function testCurrentEthSaleAmountIsUpdatedWhenAboveTheNewEthSaleAmount() public {
         vm.startPrank(admin);
-        uint128 ethSaleAmount = carbonPOL.ethSaleAmount();
+        uint128 ethSaleAmount = carbonPOL.ethSaleAmount().initial;
         assertEq(ethSaleAmount, ETH_SALE_AMOUNT_DEFAULT);
 
         // enable trading to set the current eth sale amount
@@ -232,7 +232,7 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.enableTradingETH(price);
 
         // assert current and max amounts are equal
-        uint128 currentEthSaleAmount = carbonPOL.currentEthSaleAmount();
+        uint128 currentEthSaleAmount = carbonPOL.ethSaleAmount().current;
         assertEq(currentEthSaleAmount, ethSaleAmount);
 
         // set the new amount to amount / 2
@@ -240,8 +240,8 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.setEthSaleAmount(newSaleAmount);
 
         // assert both amounts are updated
-        ethSaleAmount = carbonPOL.ethSaleAmount();
-        currentEthSaleAmount = carbonPOL.currentEthSaleAmount();
+        ethSaleAmount = carbonPOL.ethSaleAmount().initial;
+        currentEthSaleAmount = carbonPOL.ethSaleAmount().current;
         assertEq(ethSaleAmount, currentEthSaleAmount);
         vm.stopPrank();
     }
@@ -301,7 +301,7 @@ contract CarbonPOLTest is TestFixture {
         // assert trading is enabled
         assertTrue(carbonPOL.tradingEnabled(NATIVE_TOKEN));
         // check current eth sale amount is set to the initial eth sale amount
-        assertEq(carbonPOL.ethSaleAmount(), carbonPOL.currentEthSaleAmount());
+        assertEq(carbonPOL.ethSaleAmount().current, carbonPOL.ethSaleAmount().initial);
     }
 
     /// @dev test enabling trading for a token should emit an event
@@ -338,7 +338,7 @@ contract CarbonPOLTest is TestFixture {
         i = bound(i, 0, 2);
         // enable trading
         vm.startPrank(admin);
-        // setting any of ethAmount or tokenAmount to 0 results in invalid price error
+        // setting any of sourceAmount or targetAmount to 0 results in invalid price error
         vm.expectRevert(ICarbonPOL.InvalidPrice.selector);
         carbonPOL.enableTrading(tokens[i], ICarbonPOL.Price({ sourceAmount: 0, targetAmount: 10000 }));
         vm.expectRevert(ICarbonPOL.InvalidPrice.selector);
@@ -351,7 +351,7 @@ contract CarbonPOLTest is TestFixture {
     function testShouldRevertWhenSettingInvalidPriceForNativeToken() public {
         // enable trading
         vm.startPrank(admin);
-        // setting any of ethAmount or tokenAmount to 0 results in invalid price error
+        // setting any of sourceAmount or targetAmount to 0 results in invalid price error
         vm.expectRevert(ICarbonPOL.InvalidPrice.selector);
         carbonPOL.enableTradingETH(ICarbonPOL.Price({ sourceAmount: 0, targetAmount: 10000 }));
         vm.expectRevert(ICarbonPOL.InvalidPrice.selector);
@@ -370,7 +370,7 @@ contract CarbonPOLTest is TestFixture {
     }
 
     /// @dev test should properly return price for enabled tokens as time passes
-    function testShouldProperlyReturnPriceAsTimePasses(uint128 ethAmount, uint128 tokenAmount, uint256 i) public {
+    function testShouldProperlyReturnPriceAsTimePasses(uint128 sourceAmount, uint128 targetAmount, uint256 i) public {
         // pick one of these tokens to test
         Token[4] memory tokens = [token1, token2, bnt, NATIVE_TOKEN];
         // pick a random number from 0 to 2 for the tokens
@@ -379,10 +379,13 @@ contract CarbonPOLTest is TestFixture {
         vm.prank(admin);
         Token token = tokens[i];
 
-        ethAmount = uint128(bound(ethAmount, 10, 1e30));
-        tokenAmount = uint128(bound(tokenAmount, 10, 1e30));
+        sourceAmount = uint128(bound(sourceAmount, 10, 1e30));
+        targetAmount = uint128(bound(targetAmount, 10, 1e30));
 
-        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({ sourceAmount: ethAmount, targetAmount: tokenAmount });
+        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({
+            sourceAmount: sourceAmount,
+            targetAmount: targetAmount
+        });
         token == NATIVE_TOKEN ? carbonPOL.enableTradingETH(initialPrice) : carbonPOL.enableTrading(token, initialPrice);
 
         // set timestamp to 1
@@ -390,33 +393,36 @@ contract CarbonPOLTest is TestFixture {
 
         ICarbonPOL.Price memory price = carbonPOL.tokenPrice(token);
         // price should be exactly 2x the market price at start
-        assertEq(price.sourceAmount, ethAmount * MARKET_PRICE_MULTIPLY_DEFAULT);
+        assertEq(price.sourceAmount, sourceAmount * MARKET_PRICE_MULTIPLY_DEFAULT);
 
         // set timestamp to 10 days (half-life time)
         vm.warp(10 days + 1);
 
         // price should be equal market price at half-life
         price = carbonPOL.tokenPrice(token);
-        assertEq(price.sourceAmount, ethAmount);
+        assertEq(price.sourceAmount, sourceAmount);
 
         // // set timestamp to 20 days
         vm.warp(20 days + 1);
 
         // price should be equal to half the market price at 2x half-life
         price = carbonPOL.tokenPrice(token);
-        assertEq(price.sourceAmount, ethAmount / 2);
+        assertEq(price.sourceAmount, sourceAmount / 2);
     }
 
     /// @dev test should properly return price for native token as time passes
-    function testShouldProperlyReturnNativeTokenPriceAfterBigSale(uint128 ethAmount, uint128 tokenAmount) public {
+    function testShouldProperlyReturnNativeTokenPriceAfterBigSale(uint128 sourceAmount, uint128 targetAmount) public {
         // enable trading and set price for token
         vm.prank(admin);
         Token token = NATIVE_TOKEN;
 
-        ethAmount = uint128(bound(ethAmount, 1e17, 1 * 1e18));
-        tokenAmount = uint128(bound(tokenAmount, 1000 * 1e18, 4000 * 1e18));
+        sourceAmount = uint128(bound(sourceAmount, 1e17, 1 * 1e18));
+        targetAmount = uint128(bound(targetAmount, 1000 * 1e18, 4000 * 1e18));
 
-        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({ sourceAmount: ethAmount, targetAmount: tokenAmount });
+        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({
+            sourceAmount: sourceAmount,
+            targetAmount: targetAmount
+        });
         carbonPOL.enableTradingETH(initialPrice);
 
         vm.startPrank(user1);
@@ -431,7 +437,7 @@ contract CarbonPOLTest is TestFixture {
         bnt.safeApprove(address(carbonPOL), type(uint256).max);
 
         // trade 95% of the eth sale amount
-        uint128 currentEthSaleAmount = uint128(carbonPOL.currentEthSaleAmount());
+        uint128 currentEthSaleAmount = uint128(carbonPOL.ethSaleAmount().initial);
         uint128 tradeAmount = (currentEthSaleAmount * 95) / 100;
         carbonPOL.trade(token, tradeAmount);
 
@@ -451,7 +457,7 @@ contract CarbonPOLTest is TestFixture {
 
     /// @dev test correct prices retrieved by tokenPrice with different initial prices and different timestamps
     function testPricesAtTimestamps() public {
-        // test the following timestamps, ethAmounts and tokenAmounts
+        // test the following timestamps, sourceAmounts and targetAmounts
         uint24[10] memory timestamps = [
             1,
             1 days,
@@ -464,7 +470,7 @@ contract CarbonPOLTest is TestFixture {
             50 days,
             100 days
         ];
-        uint88[10] memory ethAmounts = [
+        uint88[10] memory sourceAmounts = [
             100,
             1e18,
             10e18,
@@ -476,7 +482,7 @@ contract CarbonPOLTest is TestFixture {
             5000000e18,
             10000000e18
         ];
-        uint88[10] memory tokenAmounts = [
+        uint88[10] memory targetAmounts = [
             100,
             1e18,
             10e18,
@@ -493,25 +499,25 @@ contract CarbonPOLTest is TestFixture {
         Token token = token1;
 
         // get test cases from the pol test case parser
-        POLTestCaseParser.TestCase[] memory testCases = testCaseParser.getTestCases(false);
+        POLTestCaseParser.TestCase[] memory testCases = testCaseParser.getTestCases();
 
-        // go through each of the eth amounts, token amounts and timestamps to verify token price output matches test data
-        for (uint256 i = 0; i < ethAmounts.length; ++i) {
-            for (uint256 j = 0; j < tokenAmounts.length; ++j) {
+        // go through each of the source amounts, target amounts and timestamps to verify token price output matches test data
+        for (uint256 i = 0; i < sourceAmounts.length; ++i) {
+            for (uint256 j = 0; j < targetAmounts.length; ++j) {
                 vm.warp(1);
-                uint128 ethAmount = uint128(ethAmounts[i]);
-                uint128 tokenAmount = uint128(tokenAmounts[j]);
+                uint128 sourceAmount = uint128(sourceAmounts[i]);
+                uint128 targetAmount = uint128(targetAmounts[j]);
                 ICarbonPOL.Price memory price = ICarbonPOL.Price({
-                    sourceAmount: ethAmount,
-                    targetAmount: tokenAmount
+                    sourceAmount: sourceAmount,
+                    targetAmount: targetAmount
                 });
                 carbonPOL.enableTrading(token1, price);
                 // get the correct test case for this price
                 POLTestCaseParser.TestCase memory currentCase;
                 for (uint256 t = 0; t < testCases.length; ++t) {
                     if (
-                        testCases[t].initialPrice.sourceAmount == ethAmount &&
-                        testCases[t].initialPrice.targetAmount == tokenAmount
+                        testCases[t].initialPrice.sourceAmount == sourceAmount &&
+                        testCases[t].initialPrice.targetAmount == targetAmount
                     ) {
                         currentCase = testCases[t];
                     }
@@ -525,8 +531,8 @@ contract CarbonPOLTest is TestFixture {
                     POLTestCaseParser.PriceAtTimestamp memory priceAtTimestamp = currentCase.pricesAtTimestamp[k];
                     // assert test data matches the actual token price data
                     assertEq(priceAtTimestamp.timestamp, timestamps[k]);
-                    assertEq(priceAtTimestamp.ethAmount, price.sourceAmount);
-                    assertEq(priceAtTimestamp.tokenAmount, price.targetAmount);
+                    assertEq(priceAtTimestamp.sourceAmount, price.sourceAmount);
+                    assertEq(priceAtTimestamp.targetAmount, price.targetAmount);
                 }
             }
         }
@@ -767,7 +773,7 @@ contract CarbonPOLTest is TestFixture {
         uint128 tradeAmount = 4000 * 1e18;
         uint128 expectedEthReceived = carbonPOL.expectedTradeReturn(token, tradeAmount);
 
-        uint128 saleAmountBefore = carbonPOL.currentEthSaleAmount();
+        uint128 saleAmountBefore = carbonPOL.ethSaleAmount().current;
 
         // approve bnt for eth -> bnt trades
         bnt.safeApprove(address(carbonPOL), tradeAmount);
@@ -775,7 +781,7 @@ contract CarbonPOLTest is TestFixture {
         // trade
         carbonPOL.trade(token, expectedEthReceived);
 
-        uint128 saleAmountAfter = carbonPOL.currentEthSaleAmount();
+        uint128 saleAmountAfter = carbonPOL.ethSaleAmount().current;
 
         assertEq(saleAmountBefore - saleAmountAfter, expectedEthReceived);
 
@@ -797,8 +803,8 @@ contract CarbonPOLTest is TestFixture {
         // set timestamp to 10 days
         vm.warp(10 days);
 
-        uint128 initialSaleAmount = carbonPOL.ethSaleAmount();
-        uint128 currentSaleAmount = carbonPOL.currentEthSaleAmount();
+        uint128 initialSaleAmount = carbonPOL.ethSaleAmount().initial;
+        uint128 currentSaleAmount = carbonPOL.ethSaleAmount().current;
 
         // assert current and initial eth sale amount are equal
         assertEq(initialSaleAmount, currentSaleAmount);
@@ -813,7 +819,7 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.trade(token, amountToSell);
 
         // assert we have 15% available eth for sale
-        currentSaleAmount = carbonPOL.currentEthSaleAmount();
+        currentSaleAmount = carbonPOL.ethSaleAmount().current;
         assertEq(currentSaleAmount, initialSaleAmount - amountToSell);
 
         // get the price before the threshold trade
@@ -824,10 +830,10 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.trade(token, amountToSell);
 
         // assert initial sale amount is the same
-        assertEq(initialSaleAmount, carbonPOL.ethSaleAmount());
+        assertEq(initialSaleAmount, carbonPOL.ethSaleAmount().initial);
 
         // assert new current eth sale amount is equal to the initial (we have topped up the amount)
-        currentSaleAmount = carbonPOL.currentEthSaleAmount();
+        currentSaleAmount = carbonPOL.ethSaleAmount().current;
         assertEq(currentSaleAmount, initialSaleAmount);
 
         vm.warp(block.timestamp + 1);
@@ -856,8 +862,8 @@ contract CarbonPOLTest is TestFixture {
         // set timestamp to 10 days
         vm.warp(10 days);
 
-        uint128 initialSaleAmount = carbonPOL.ethSaleAmount();
-        uint128 currentSaleAmount = carbonPOL.currentEthSaleAmount();
+        uint128 initialSaleAmount = carbonPOL.ethSaleAmount().initial;
+        uint128 currentSaleAmount = carbonPOL.ethSaleAmount().current;
 
         // assert current and initial eth sale amount are equal
         assertEq(initialSaleAmount, currentSaleAmount);
@@ -1061,10 +1067,10 @@ contract CarbonPOLTest is TestFixture {
         Token token = NATIVE_TOKEN;
         vm.prank(admin);
         // enable token to test
-        carbonPOL.enableTradingETH(ICarbonPOL.Price({ sourceAmount: 1e18, targetAmount: 2000 * 1e18 }));
+        carbonPOL.enableTradingETH(ICarbonPOL.Price({ sourceAmount: 2000 * 1e18, targetAmount: 1e18 }));
 
         // assert that available eth amount is exactly 100 ether
-        assertEq(carbonPOL.currentEthSaleAmount(), 100 ether);
+        assertEq(carbonPOL.ethSaleAmount().initial, 100 ether);
 
         vm.startPrank(user1);
 
@@ -1076,10 +1082,10 @@ contract CarbonPOLTest is TestFixture {
         // set block.timestamp to 1000
         vm.warp(1000);
         // trade a bit over 100 eth
-        uint128 ethAmount = 100 ether + 1;
+        uint128 sourceAmount = 100 ether + 1;
         // expect trade to revert
         vm.expectRevert(ICarbonPOL.InsufficientEthForSale.selector);
-        carbonPOL.trade(token, ethAmount);
+        carbonPOL.trade(token, sourceAmount);
         vm.stopPrank();
     }
 
