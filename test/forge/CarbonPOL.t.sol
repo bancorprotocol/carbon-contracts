@@ -953,21 +953,21 @@ contract CarbonPOLTest is TestFixture {
         uint256 tokenBalance = token1.balanceOf(address(carbonPOL));
         uint128 amount = uint128(tokenBalance) + 1;
         // get expected trade input
-        vm.expectRevert(ICarbonPOL.InsufficientTokenBalance.selector);
+        vm.expectRevert(ICarbonPOL.InsufficientAmountForTrading.selector);
         carbonPOL.expectedTradeInput(token1, amount);
     }
 
-    /// @dev test should revert expected input for native token if not enough token balance
-    function testShouldRevertExpectedTradeInputIfNotEnoughNativeTokenBalanceForTrade() public {
+    /// @dev test should revert expected input for native token if not enough current sale amount for trade
+    function testShouldRevertExpectedTradeInputIfNotEnoughNativeTokenSaleAmountForTrade() public {
         vm.prank(admin);
         // enable native token to test
         carbonPOL.enableTradingETH(ICarbonPOL.Price({ sourceAmount: 10000, targetAmount: 100000000 }));
         // set timestamp to 5 days
         vm.warp(5 days);
-        uint256 ethBalance = NATIVE_TOKEN.balanceOf(address(carbonPOL));
+        uint128 saleAmount = carbonPOL.ethSaleAmount().current;
         // get expected trade input
-        vm.expectRevert(ICarbonPOL.InsufficientTokenBalance.selector);
-        carbonPOL.expectedTradeInput(NATIVE_TOKEN, uint128(ethBalance) + 1e18);
+        vm.expectRevert(ICarbonPOL.InsufficientAmountForTrading.selector);
+        carbonPOL.expectedTradeInput(NATIVE_TOKEN, saleAmount + 1e18);
     }
 
     /// @dev test should revert expected return if not enough token balance
@@ -983,24 +983,24 @@ contract CarbonPOLTest is TestFixture {
         uint128 expectedInput = carbonPOL.expectedTradeInput(token1, uint128(tokenBalance));
         uint128 amount = expectedInput + 1;
         // expect revert
-        vm.expectRevert(ICarbonPOL.InsufficientTokenBalance.selector);
+        vm.expectRevert(ICarbonPOL.InsufficientAmountForTrading.selector);
         carbonPOL.expectedTradeReturn(token1, amount);
     }
 
-    /// @dev test should revert expected return if not enough token balance
-    function testShouldRevertExpectedReturnIfNotEnoughNativeTokenBalanceForTrade() public {
+    /// @dev test should revert expected return for native token if not enough current sale amount for the trade
+    function testShouldRevertExpectedReturnIfNotEnoughNativeTokenSaleAmountForTrade() public {
         vm.startPrank(admin);
         // enable token to test
         carbonPOL.enableTradingETH(ICarbonPOL.Price({ sourceAmount: 10000, targetAmount: 100000000 }));
         vm.stopPrank();
         // set timestamp to 5 days
         vm.warp(5 days);
-        uint256 ethBalance = address(carbonPOL).balance;
+        uint128 saleAmount = carbonPOL.ethSaleAmount().current;
         // get expected trade input
-        uint128 expectedInput = carbonPOL.expectedTradeInput(NATIVE_TOKEN, uint128(ethBalance));
-        uint128 amount = uint128(expectedInput) + 1e18;
+        uint128 expectedInput = carbonPOL.expectedTradeInput(NATIVE_TOKEN, saleAmount);
+        uint128 amount = expectedInput + 1;
         // expect revert
-        vm.expectRevert(ICarbonPOL.InsufficientTokenBalance.selector);
+        vm.expectRevert(ICarbonPOL.InsufficientAmountForTrading.selector);
         carbonPOL.expectedTradeReturn(NATIVE_TOKEN, amount);
     }
 
@@ -1084,7 +1084,7 @@ contract CarbonPOLTest is TestFixture {
         // trade a bit over 100 eth
         uint128 sourceAmount = 100 ether + 1;
         // expect trade to revert
-        vm.expectRevert(ICarbonPOL.InsufficientEthForSale.selector);
+        vm.expectRevert(ICarbonPOL.InsufficientAmountForTrading.selector);
         carbonPOL.trade(token, sourceAmount);
         vm.stopPrank();
     }

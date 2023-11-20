@@ -210,6 +210,13 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
+    function amountAvailableForTrading(Token token) external view returns (uint128) {
+        return _amountAvailableForTrading(token);
+    }
+
+    /**
+     * @inheritdoc ICarbonPOL
+     */
     function expectedTradeReturn(Token token, uint128 tradeInput) external view validToken(token) returns (uint128) {
         Price memory currentPrice = tokenPrice(token);
         // revert if price is not valid
@@ -218,9 +225,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         uint128 tradeReturn = MathEx
             .mulDivF(currentPrice.targetAmount, tradeInput, currentPrice.sourceAmount)
             .toUint128();
-        // revert if not enough token balance
-        if (tradeReturn > token.balanceOf(address(this))) {
-            revert InsufficientTokenBalance();
+        // revert if not enough amount available for trade
+        if (tradeReturn > _amountAvailableForTrading(token)) {
+            revert InsufficientAmountForTrading();
         }
         return tradeReturn;
     }
@@ -229,9 +236,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
      * @inheritdoc ICarbonPOL
      */
     function expectedTradeInput(Token token, uint128 tokenAmount) public view validToken(token) returns (uint128) {
-        // revert if not enough token balance for trade
-        if (tokenAmount > token.balanceOf(address(this))) {
-            revert InsufficientTokenBalance();
+        // revert if not enough amount available for trade
+        if (tokenAmount > _amountAvailableForTrading(token)) {
+            revert InsufficientAmountForTrading();
         }
         Price memory currentPrice = tokenPrice(token);
         // revert if current price is not valid
@@ -302,9 +309,6 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     }
 
     function _sellETHForBNT(uint128 amount) private returns (uint128) {
-        if (_ethSaleAmount.current < amount) {
-            revert InsufficientEthForSale();
-        }
         uint128 bntRequired = expectedTradeInput(NATIVE_TOKEN, amount);
         // revert if trade requires 0 bnt
         if (bntRequired == 0) {
@@ -385,6 +389,17 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         }
 
         emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
+    }
+
+    /**
+     * @dev returns the token amount available for trading
+     */
+    function _amountAvailableForTrading(Token token) private view returns (uint128) {
+        if (token == NATIVE_TOKEN) {
+            return _ethSaleAmount.current;
+        } else {
+            return uint128(token.balanceOf(address(this)));
+        }
     }
 
     /**

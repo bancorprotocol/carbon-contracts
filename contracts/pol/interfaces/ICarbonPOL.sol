@@ -13,8 +13,7 @@ interface ICarbonPOL is IUpgradeable {
     error InvalidTrade();
     error TradingDisabled();
     error InsufficientNativeTokenSent();
-    error InsufficientTokenBalance();
-    error InsufficientEthForSale();
+    error InsufficientAmountForTrading();
 
     struct Price {
         uint128 sourceAmount;
@@ -75,6 +74,11 @@ interface ICarbonPOL is IUpgradeable {
      * @notice returns true if trading is enabled for token
      */
     function tradingEnabled(Token token) external view returns (bool);
+
+    /**
+     * @notice returns the amount available for trading for the token
+     */
+    function amountAvailableForTrading(Token token) external view returns (uint128);
 
     /**
      * @notice returns the expected trade output (tokens received) given an token amount sent
