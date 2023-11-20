@@ -29,6 +29,18 @@ contract TestBNT is TestERC20Token {
         return true;
     }
 
+    function transferFrom(address _from, address _to, uint256 _value) public override(ERC20) returns (bool success) {
+        assert(super.transferFrom(_from, _to, _value));
+
+        // transferring to the contract address destroys tokens
+        if (_to == address(this)) {
+            _burn(address(this), _value);
+            emit Destruction(_value);
+        }
+
+        return true;
+    }
+
     function issue(address recipient, uint256 amount) external {
         _mint(recipient, amount);
     }

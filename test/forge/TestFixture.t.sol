@@ -192,7 +192,7 @@ contract TestFixture is Test {
         vm.startPrank(admin);
 
         // Deploy Carbon POL
-        carbonPOL = new CarbonPOL();
+        carbonPOL = new CarbonPOL(bnt);
 
         bytes memory polInitData = abi.encodeWithSelector(carbonPOL.initialize.selector);
         // Deploy Carbon POL proxy
@@ -250,6 +250,8 @@ contract TestFixture is Test {
         token1.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
         token2.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 2);
         bnt.safeTransfer(address(carbonPOL), MAX_SOURCE_AMOUNT * 5);
+        // transfer eth
+        vm.deal(address(carbonPOL), MAX_SOURCE_AMOUNT);
         vm.stopPrank();
     }
 }

@@ -12,15 +12,15 @@ contract POLTestCaseParser is Test {
     using stdJson for string;
 
     struct PriceAtTimestamp {
+        uint128 sourceAmount;
+        uint128 targetAmount;
         uint32 timestamp;
-        uint128 ethAmount;
-        uint128 tokenAmount;
     }
 
     struct PriceAtTimestampString {
-        string ethAmount;
+        string sourceAmount;
+        string targetAmount;
         string timestamp;
-        string tokenAmount;
     }
 
     struct TestCase {
@@ -32,7 +32,8 @@ contract POLTestCaseParser is Test {
      * @dev helper function to get test cases by parsing test data json
      */
     function getTestCases() public returns (TestCase[] memory testCases) {
-        string memory json = vm.readFile("./test/helpers/data/polPricingTestData.json");
+        string memory path = "./test/helpers/data/polPricingTestData.json";
+        string memory json = vm.readFile(path);
         testCases = parseTestCases(json, "testCase");
 
         return testCases;
@@ -45,17 +46,17 @@ contract POLTestCaseParser is Test {
         string memory json,
         string memory initialParseString
     ) private returns (ICarbonPOL.Price memory price) {
-        uint256 initialPriceEthAmount = vm.parseJsonUint(
+        uint256 initialPriceSourceAmount = vm.parseJsonUint(
             json,
-            string.concat(initialParseString, "].initialPriceEthAmount")
+            string.concat(initialParseString, "].initialPriceSourceAmount")
         );
-        uint256 initialPriceTokenAmount = vm.parseJsonUint(
+        uint256 initialPriceTargetAmount = vm.parseJsonUint(
             json,
-            string.concat(initialParseString, "].initialPriceTokenAmount")
+            string.concat(initialParseString, "].initialPriceTargetAmount")
         );
         price = ICarbonPOL.Price({
-            ethAmount: uint128(initialPriceEthAmount),
-            tokenAmount: uint128(initialPriceTokenAmount)
+            sourceAmount: uint128(initialPriceSourceAmount),
+            targetAmount: uint128(initialPriceTargetAmount)
         });
     }
 
@@ -120,8 +121,8 @@ contract POLTestCaseParser is Test {
         return
             PriceAtTimestamp({
                 timestamp: uint32(stringToUint(priceAtTimestampString.timestamp)),
-                ethAmount: uint128(stringToUint(priceAtTimestampString.ethAmount)),
-                tokenAmount: uint128(stringToUint(priceAtTimestampString.tokenAmount))
+                sourceAmount: uint128(stringToUint(priceAtTimestampString.sourceAmount)),
+                targetAmount: uint128(stringToUint(priceAtTimestampString.targetAmount))
             });
     }
 
