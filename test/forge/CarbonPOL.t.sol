@@ -788,7 +788,7 @@ contract CarbonPOLTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test trading eth below the 10% * sale amount threshold should reset the price and current eth amount
+    /// @dev test trading eth below the 10 ether sale amount threshold should reset the price and current eth amount
     function testTradingETHBelowTheSaleThreshholdShouldResetThePriceAndCurrentEthAmount() public {
         // enable trading and set price for the native token
         vm.prank(admin);
@@ -825,7 +825,7 @@ contract CarbonPOLTest is TestFixture {
         // get the price before the threshold trade
         ICarbonPOL.Price memory prevPrice = carbonPOL.tokenPrice(NATIVE_TOKEN);
 
-        // trade 10% more (so that we go below 10% of the max sale amount)
+        // trade 10% more (so that we go below 10 ether current eth sale amount)
         amountToSell = uint128((initialSaleAmount * 10) / 100);
         carbonPOL.trade(token, amountToSell);
 
@@ -847,7 +847,7 @@ contract CarbonPOLTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test trading eth below the 10% * sale amount threshold should emit price updated event
+    /// @dev test trading eth below the 10 ether sale amount threshold should emit price updated event
     function testTradingETHBelowTheSaleThreshholdShouldEmitEvent() public {
         // enable trading and set price for the native token
         vm.prank(admin);
@@ -868,7 +868,7 @@ contract CarbonPOLTest is TestFixture {
         // assert current and initial eth sale amount are equal
         assertEq(initialSaleAmount, currentSaleAmount);
 
-        // trade 95% of the sale amount
+        // trade 95% of the sale amount (leaving 5 eth as current amount)
         uint128 amountToSell = uint128((initialSaleAmount * 95) / 100);
 
         // approve bnt for eth -> bnt trades
@@ -887,6 +887,52 @@ contract CarbonPOLTest is TestFixture {
         vm.expectEmit();
         emit PriceUpdated(token, newExpectedPrice);
         carbonPOL.trade(token, amountToSell);
+
+        vm.stopPrank();
+    }
+
+    /// @dev test trading eth below the 10 ether sale amount threshold should reset the current sale amount
+    /// @dev to contract balance or the initial amount, depending on which is less
+    function testTradingETHBelowTheSaleThreshholdShouldResetSaleAmountToContractBalanceIfItsLessThanInitialAmount()
+        public
+    {
+        // enable trading and set price for the native token
+        vm.startPrank(admin);
+        Token token = NATIVE_TOKEN;
+
+        // set 1 eth = 2000 bnt as initial price
+        ICarbonPOL.Price memory initialPrice = ICarbonPOL.Price({ sourceAmount: 2000 * 1e18, targetAmount: 1e18 });
+        carbonPOL.enableTradingETH(initialPrice);
+
+        // set up current eth sale amount
+        carbonPOL.setEthSaleAmount(uint128(address(carbonPOL).balance * 2));
+
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+
+        // set timestamp to 10 days
+        vm.warp(10 days);
+
+        uint128 initialSaleAmount = carbonPOL.ethSaleAmount().initial;
+        uint128 currentSaleAmount = carbonPOL.ethSaleAmount().current;
+
+        // check the initial sale amount is greater than the contract balance
+        assertGt(initialSaleAmount, address(carbonPOL).balance);
+
+        // trade 95% of the sale amount (leaving 5 eth as current amount)
+        uint128 amountToSell = uint128((currentSaleAmount * 95) / 100);
+
+        // approve bnt for eth -> bnt trades
+        bnt.safeApprove(address(carbonPOL), MAX_SOURCE_AMOUNT);
+
+        // trade
+        carbonPOL.trade(token, amountToSell);
+
+        uint128 currentSaleAmountPostTrade = carbonPOL.ethSaleAmount().current;
+
+        // check that the current sale amount has been reset to the contract's balance
+        assertEq(currentSaleAmountPostTrade, address(carbonPOL).balance);
 
         vm.stopPrank();
     }

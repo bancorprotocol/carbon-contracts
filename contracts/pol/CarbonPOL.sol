@@ -323,10 +323,12 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // update the available eth sale amount
         _ethSaleAmount.current -= amount;
 
-        // check if below 10% of the initial eth sale amount
-        if (_ethSaleAmount.current < _ethSaleAmount.initial / 10) {
+        // check if remaining eth sale amount is below 10 ether
+        if (_ethSaleAmount.current < 10 ether) {
             // top up the eth sale amount
-            _ethSaleAmount.current = _ethSaleAmount.initial;
+            _ethSaleAmount.current = address(this).balance > _ethSaleAmount.initial
+                ? _ethSaleAmount.initial
+                : uint128(address(this).balance);
             // reset the price to double the current one
             Price memory price = tokenPrice(NATIVE_TOKEN);
             price.sourceAmount *= _marketPriceMultiply;
