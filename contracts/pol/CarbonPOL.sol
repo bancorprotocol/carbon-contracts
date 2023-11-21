@@ -39,8 +39,11 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     // initial and current eth sale amount - for ETH->BNT trades
     EthSaleAmount private _ethSaleAmount;
 
+    // min eth sale amount - resets the current eth sale amount if below this amount after a trade
+    uint128 private _minEthSaleAmount;
+
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 4] private __gap;
+    uint256[MAX_GAP - 5] private __gap;
 
     /**
      * @dev used to initialize the implementation
@@ -81,6 +84,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         _setPriceDecayHalfLife(10 days);
         // set initial eth sale amount to 100 eth
         _setEthSaleAmount(100 ether);
+        // set min eth sale amount to 10 eth
+        _setMinEthSaleAmount(10 ether);
     }
 
     /**
@@ -149,6 +154,17 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     }
 
     /**
+     * @notice sets the min eth sale amount
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
+     */
+    function setMinEthSaleAmount(uint128 newMinEthSaleAmount) external onlyAdmin greaterThanZero(newMinEthSaleAmount) {
+        _setMinEthSaleAmount(newMinEthSaleAmount);
+    }
+
+    /**
      * @notice enable trading for TKN->ETH and set the initial price
      *
      * requirements:
@@ -198,6 +214,13 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
      */
     function ethSaleAmount() external view returns (EthSaleAmount memory) {
         return _ethSaleAmount;
+    }
+
+    /**
+     * @inheritdoc ICarbonPOL
+     */
+    function minEthSaleAmount() external view returns (uint128) {
+        return _minEthSaleAmount;
     }
 
     /**
@@ -391,6 +414,22 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         }
 
         emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
+    }
+
+    /**
+     * @dev set min eth sale amount helper
+     */
+    function _setMinEthSaleAmount(uint128 newMinEthSaleAmount) private {
+        uint128 prevMinEthSaleAmount = _minEthSaleAmount;
+
+        // return if the min eth sale amount is the same
+        if (prevMinEthSaleAmount == newMinEthSaleAmount) {
+            return;
+        }
+
+        _minEthSaleAmount = newMinEthSaleAmount;
+
+        emit MinEthSaleAmountUpdated(prevMinEthSaleAmount, newMinEthSaleAmount);
     }
 
     /**

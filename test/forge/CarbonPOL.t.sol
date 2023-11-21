@@ -28,6 +28,9 @@ contract CarbonPOLTest is TestFixture {
     uint128 private constant ETH_SALE_AMOUNT_DEFAULT = 100 ether;
     uint128 private constant ETH_SALE_AMOUNT_UPDATED = 150 ether;
 
+    uint128 private constant MIN_ETH_SALE_AMOUNT_DEFAULT = 10 ether;
+    uint128 private constant MIN_ETH_SALE_AMOUNT_UPDATED = 15 ether;
+
     // Events
 
     /**
@@ -59,6 +62,11 @@ contract CarbonPOLTest is TestFixture {
      * @notice triggered when the eth sale amount is updated
      */
     event EthSaleAmountUpdated(uint128 prevEthSaleAmount, uint128 newEthSaleAmount);
+
+    /**
+     * @notice triggered when the min eth sale amount is updated
+     */
+    event MinEthSaleAmountUpdated(uint128 prevMinEthSaleAmount, uint128 newMinEthSaleAmount);
 
     /**
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
@@ -218,6 +226,47 @@ contract CarbonPOLTest is TestFixture {
 
         ethSaleAmount = carbonPOL.ethSaleAmount().initial;
         assertEq(ethSaleAmount, ETH_SALE_AMOUNT_UPDATED);
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev min eth sale amount tests
+     */
+
+    /// @dev test that setMinEthSaleAmount should revert when a non-admin calls it
+    function testShouldRevertWhenNonAdminAttemptsToSetTheMinEthSaleAmount() public {
+        vm.prank(user1);
+        vm.expectRevert(AccessDenied.selector);
+        carbonPOL.setMinEthSaleAmount(MIN_ETH_SALE_AMOUNT_UPDATED);
+    }
+
+    /// @dev test that setMinEthSaleAmount should revert when setting to an invalid value
+    function testShouldRevertSettingTheMinEthSaleAmountWithAnInvalidValue() public {
+        vm.prank(admin);
+        vm.expectRevert(ZeroValue.selector);
+        carbonPOL.setMinEthSaleAmount(0);
+    }
+
+    /// @dev test that setMinEthSaleAmount with the same value should be ignored
+    function testFailShouldIgnoreSettingTheSameMinEthSaleAmount() public {
+        vm.prank(admin);
+        vm.expectEmit(false, false, false, false);
+        emit MinEthSaleAmountUpdated(MIN_ETH_SALE_AMOUNT_DEFAULT, MIN_ETH_SALE_AMOUNT_DEFAULT);
+        carbonPOL.setMinEthSaleAmount(MIN_ETH_SALE_AMOUNT_DEFAULT);
+    }
+
+    /// @dev test that admin should be able to update the min eth sale amount
+    function testShouldBeAbleToSetAndUpdateTheMinEthSaleAmount() public {
+        vm.startPrank(admin);
+        uint128 minEthSaleAmount = carbonPOL.minEthSaleAmount();
+        assertEq(minEthSaleAmount, MIN_ETH_SALE_AMOUNT_DEFAULT);
+
+        vm.expectEmit();
+        emit MinEthSaleAmountUpdated(MIN_ETH_SALE_AMOUNT_DEFAULT, MIN_ETH_SALE_AMOUNT_UPDATED);
+        carbonPOL.setMinEthSaleAmount(MIN_ETH_SALE_AMOUNT_UPDATED);
+
+        minEthSaleAmount = carbonPOL.minEthSaleAmount();
+        assertEq(minEthSaleAmount, MIN_ETH_SALE_AMOUNT_UPDATED);
         vm.stopPrank();
     }
 

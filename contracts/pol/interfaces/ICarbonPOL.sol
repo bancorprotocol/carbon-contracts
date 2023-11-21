@@ -56,6 +56,11 @@ interface ICarbonPOL is IUpgradeable {
     event EthSaleAmountUpdated(uint128 prevEthSaleAmount, uint128 newEthSaleAmount);
 
     /**
+     * @notice triggered when the min eth sale amount is updated
+     */
+    event MinEthSaleAmountUpdated(uint128 prevMinEthSaleAmount, uint128 newMinEthSaleAmount);
+
+    /**
      * @notice returns the market price multiplier
      */
     function marketPriceMultiply() external view returns (uint32);
@@ -69,6 +74,11 @@ interface ICarbonPOL is IUpgradeable {
      * @notice returns the initial and current eth sale amount
      */
     function ethSaleAmount() external view returns (EthSaleAmount memory);
+
+    /**
+     * @notice returns the min eth sale amount - resets the current eth sale amount if below this amount after a trade
+     */
+    function minEthSaleAmount() external view returns (uint128);
 
     /**
      * @notice returns true if trading is enabled for token
