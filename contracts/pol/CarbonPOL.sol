@@ -346,8 +346,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // update the available eth sale amount
         _ethSaleAmount.current -= amount;
 
-        // check if remaining eth sale amount is below 10 ether
-        if (_ethSaleAmount.current < 10 ether) {
+        // check if remaining eth sale amount is below the min eth sale amount
+        if (_ethSaleAmount.current < _minEthSaleAmount) {
             // top up the eth sale amount
             _ethSaleAmount.current = address(this).balance > _ethSaleAmount.initial
                 ? _ethSaleAmount.initial
