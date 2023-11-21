@@ -154,7 +154,7 @@ devDependencies:
     specifier: ^1.1.3
     version: 1.1.3(hardhat@2.15.0)
   hardhat-deploy:
-    specifier: ^0.11.34
+    specifier: 0.11.34
     version: 0.11.34
   hardhat-deploy-tenderly:
     specifier: ^0.2.0
