@@ -1,3 +1,4 @@
+import { toWei } from '../../utils/Types';
 import { CarbonPOL, ProxyAdmin } from '../../components/Contracts';
 import { DeployedContracts } from '../../utils/Deploy';
 import { describeDeployment } from '../../utils/helpers/Deploy';
@@ -21,6 +22,10 @@ describeDeployment(__filename, () => {
         expect(await carbonPOL.marketPriceMultiply()).to.equal(2);
         // check price decay half-life is configured correctly
         expect(await carbonPOL.priceDecayHalfLife()).to.equal(864000);
+        // check eth sale amount is configured correctly
+        expect((await carbonPOL.ethSaleAmount()).initial).to.equal(toWei(100));
+        // check min eth sale amount is configured correctly
+        expect((await carbonPOL.minEthSaleAmount())).to.equal(toWei(10));
     });
 
     it('carbon pol implementation should be initialized', async () => {
