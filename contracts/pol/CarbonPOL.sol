@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { ICarbonPOL } from "./interfaces/ICarbonPOL.sol";
@@ -191,7 +192,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     function enableTradingETH(Price memory price) external onlyAdmin validPrice(price) {
         _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
         _initialPrice[NATIVE_TOKEN] = price;
-        _ethSaleAmount.current = MathEx.min(address(this).balance, _ethSaleAmount.initial);
+        _ethSaleAmount.current = uint128(Math.min(address(this).balance, _ethSaleAmount.initial));
         emit TradingEnabled(NATIVE_TOKEN, price);
     }
 
@@ -349,7 +350,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // check if remaining eth sale amount is below the min eth sale amount
         if (_ethSaleAmount.current < _minEthSaleAmount) {
             // top up the eth sale amount
-            _ethSaleAmount.current = MathEx.min(address(this).balance, _ethSaleAmount.initial);
+            _ethSaleAmount.current = uint128(Math.min(address(this).balance, _ethSaleAmount.initial));
             // reset the price to double the current one
             Price memory price = tokenPrice(NATIVE_TOKEN);
             _initialPrice[NATIVE_TOKEN] = price;
@@ -408,7 +409,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         // check if the new sale amount is below the current available eth sale amount
         if (newEthSaleAmount < _ethSaleAmount.current) {
-            _ethSaleAmount.current = MathEx.min(address(this).balance, _ethSaleAmount.initial);
+            _ethSaleAmount.current = uint128(Math.min(address(this).balance, _ethSaleAmount.initial));
         }
 
         emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
