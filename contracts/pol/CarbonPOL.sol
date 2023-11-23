@@ -192,7 +192,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     function enableTradingETH(Price memory price) external onlyAdmin validPrice(price) {
         _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
         _initialPrice[NATIVE_TOKEN] = price;
-        _ethSaleAmount.current = uint128(Math.min(address(this).balance, _ethSaleAmount.initial));
+        _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
         emit TradingEnabled(NATIVE_TOKEN, price);
     }
 
@@ -350,7 +350,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // check if remaining eth sale amount is below the min eth sale amount
         if (_ethSaleAmount.current < _minEthSaleAmount) {
             // top up the eth sale amount
-            _ethSaleAmount.current = uint128(Math.min(address(this).balance, _ethSaleAmount.initial));
+            _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
             // reset the price to double the current one
             Price memory price = tokenPrice(NATIVE_TOKEN);
             _initialPrice[NATIVE_TOKEN] = price;
@@ -409,7 +409,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         // check if the new sale amount is below the current available eth sale amount
         if (newEthSaleAmount < _ethSaleAmount.current) {
-            _ethSaleAmount.current = uint128(Math.min(address(this).balance, _ethSaleAmount.initial));
+            _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
         }
 
         emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
