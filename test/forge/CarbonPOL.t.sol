@@ -379,6 +379,18 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.enableTradingETH(price);
     }
 
+    /// @dev test enabling trading for eth should set the current sale amount properly
+    function testEnablingTradingForETHShouldSetTheCurrentSaleAmountProperly() public {
+        vm.startPrank(admin);
+        // set the initial sale amount to a value higher than the pol balance
+        carbonPOL.setEthSaleAmount(uint128(address(carbonPOL).balance * 2));
+        // enable trading for eth
+        carbonPOL.enableTradingETH(ICarbonPOL.Price({ sourceAmount: 100, targetAmount: 10000 }));
+        // check current eth sale amount is set to the contract balance
+        assertEq(carbonPOL.ethSaleAmount().current, address(carbonPOL).balance);
+        vm.stopPrank();
+    }
+
     /// @dev test should revert when setting invalid price for a token
     function testShouldRevertWhenSettingInvalidPriceForToken(uint256 i) public {
         // pick one of these tokens to test

@@ -191,7 +191,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     function enableTradingETH(Price memory price) external onlyAdmin validPrice(price) {
         _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
         _initialPrice[NATIVE_TOKEN] = price;
-        _ethSaleAmount.current = _ethSaleAmount.initial;
+        _ethSaleAmount.current = address(this).balance > _ethSaleAmount.initial
+            ? _ethSaleAmount.initial
+            : uint128(address(this).balance);
         emit TradingEnabled(NATIVE_TOKEN, price);
     }
 
@@ -410,7 +412,9 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         // check if the new sale amount is below the current available eth sale amount
         if (newEthSaleAmount < _ethSaleAmount.current) {
-            _ethSaleAmount.current = newEthSaleAmount;
+            _ethSaleAmount.current = address(this).balance > newEthSaleAmount
+                ? newEthSaleAmount
+                : uint128(address(this).balance);
         }
 
         emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
