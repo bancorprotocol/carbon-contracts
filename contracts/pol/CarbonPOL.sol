@@ -354,8 +354,8 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
                 : uint128(address(this).balance);
             // reset the price to double the current one
             Price memory price = tokenPrice(NATIVE_TOKEN);
-            price.sourceAmount *= _marketPriceMultiply;
             _initialPrice[NATIVE_TOKEN] = price;
+            _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
             // emit price updated event
             emit PriceUpdated(NATIVE_TOKEN, price);
         }

@@ -25,7 +25,7 @@ describeDeployment(__filename, () => {
         // check eth sale amount is configured correctly
         expect((await carbonPOL.ethSaleAmount()).initial).to.equal(toWei(100));
         // check min eth sale amount is configured correctly
-        expect((await carbonPOL.minEthSaleAmount())).to.equal(toWei(10));
+        expect(await carbonPOL.minEthSaleAmount()).to.equal(toWei(10));
     });
 
     it('carbon pol implementation should be initialized', async () => {

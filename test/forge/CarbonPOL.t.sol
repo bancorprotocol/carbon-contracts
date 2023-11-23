@@ -838,7 +838,9 @@ contract CarbonPOLTest is TestFixture {
     }
 
     /// @dev test trading eth below the 10 ether sale amount threshold should reset the price and current eth amount
-    function testTradingETHBelowTheSaleThreshholdShouldResetThePriceAndCurrentEthAmount() public {
+    function testTradingETHBelowTheSaleThreshholdShouldResetThePriceAndCurrentEthAmount(uint256 timestamp) public {
+        // test with different timestamps
+        timestamp = bound(timestamp, 1, 100 days);
         // enable trading and set price for the native token
         vm.prank(admin);
         Token token = NATIVE_TOKEN;
@@ -849,8 +851,8 @@ contract CarbonPOLTest is TestFixture {
 
         vm.startPrank(user1);
 
-        // set timestamp to 10 days
-        vm.warp(10 days);
+        // set timestamp
+        vm.warp(timestamp);
 
         uint128 initialSaleAmount = carbonPOL.ethSaleAmount().initial;
         uint128 currentSaleAmount = carbonPOL.ethSaleAmount().current;
@@ -885,7 +887,6 @@ contract CarbonPOLTest is TestFixture {
         currentSaleAmount = carbonPOL.ethSaleAmount().current;
         assertEq(currentSaleAmount, initialSaleAmount);
 
-        vm.warp(block.timestamp + 1);
         // get the price after the threshold trade
         ICarbonPOL.Price memory newPrice = carbonPOL.tokenPrice(NATIVE_TOKEN);
 
@@ -897,7 +898,9 @@ contract CarbonPOLTest is TestFixture {
     }
 
     /// @dev test trading eth below the 10 ether sale amount threshold should emit price updated event
-    function testTradingETHBelowTheSaleThreshholdShouldEmitEvent() public {
+    function testTradingETHBelowTheSaleThreshholdShouldEmitEvent(uint256 timestamp) public {
+        // test with different timestamps
+        timestamp = bound(timestamp, 1, 100 days);
         // enable trading and set price for the native token
         vm.prank(admin);
         Token token = NATIVE_TOKEN;
@@ -908,8 +911,8 @@ contract CarbonPOLTest is TestFixture {
 
         vm.startPrank(user1);
 
-        // set timestamp to 10 days
-        vm.warp(10 days);
+        // set timestamp
+        vm.warp(timestamp);
 
         uint128 initialSaleAmount = carbonPOL.ethSaleAmount().initial;
         uint128 currentSaleAmount = carbonPOL.ethSaleAmount().current;
@@ -926,15 +929,14 @@ contract CarbonPOLTest is TestFixture {
         // get the price before the threshold trade
         ICarbonPOL.Price memory prevPrice = carbonPOL.tokenPrice(NATIVE_TOKEN);
 
-        uint128 newExpectedSourceAmount = prevPrice.sourceAmount * carbonPOL.marketPriceMultiply();
-        ICarbonPOL.Price memory newExpectedPrice = ICarbonPOL.Price({
-            sourceAmount: newExpectedSourceAmount,
+        ICarbonPOL.Price memory expectedPrice = ICarbonPOL.Price({
+            sourceAmount: prevPrice.sourceAmount,
             targetAmount: prevPrice.targetAmount
         });
 
         // trade
         vm.expectEmit();
-        emit PriceUpdated(token, newExpectedPrice);
+        emit PriceUpdated(token, expectedPrice);
         carbonPOL.trade(token, amountToSell);
 
         vm.stopPrank();
