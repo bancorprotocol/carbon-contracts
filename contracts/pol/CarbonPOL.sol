@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { ICarbonPOL } from "./interfaces/ICarbonPOL.sol";
@@ -191,7 +192,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     function enableTradingETH(Price memory price) external onlyAdmin validPrice(price) {
         _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
         _initialPrice[NATIVE_TOKEN] = price;
-        _ethSaleAmount.current = _ethSaleAmount.initial;
+        _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
         emit TradingEnabled(NATIVE_TOKEN, price);
     }
 
@@ -349,13 +350,11 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         // check if remaining eth sale amount is below the min eth sale amount
         if (_ethSaleAmount.current < _minEthSaleAmount) {
             // top up the eth sale amount
-            _ethSaleAmount.current = address(this).balance > _ethSaleAmount.initial
-                ? _ethSaleAmount.initial
-                : uint128(address(this).balance);
+            _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
             // reset the price to double the current one
             Price memory price = tokenPrice(NATIVE_TOKEN);
-            price.sourceAmount *= _marketPriceMultiply;
             _initialPrice[NATIVE_TOKEN] = price;
+            _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
             // emit price updated event
             emit PriceUpdated(NATIVE_TOKEN, price);
         }
@@ -410,7 +409,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         // check if the new sale amount is below the current available eth sale amount
         if (newEthSaleAmount < _ethSaleAmount.current) {
-            _ethSaleAmount.current = newEthSaleAmount;
+            _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
         }
 
         emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
