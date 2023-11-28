@@ -2,7 +2,8 @@ import { DeploymentNetwork } from '../utils/Constants';
 
 const mainnet = (address: string) => ({
     [DeploymentNetwork.Mainnet]: address,
-    [DeploymentNetwork.Tenderly]: address
+    [DeploymentNetwork.Tenderly]: address,
+    [DeploymentNetwork.TenderlyTestnet]: address
 });
 
 const rinkeby = (address: string) => ({
@@ -20,11 +21,14 @@ const TestNamedAccounts = {
         ...mainnet('0x55FE002aefF02F77364de339a1292923A15844B8')
     },
     wbtcWhale: {
-        ...mainnet('0x7f62f9592b823331E012D3c5DdF2A7714CfB9de2')
+        ...mainnet('0x77134cbC06cB00b66F4c7e623D5fdBF6777635EC')
     },
     bntWhale: {
         ...mainnet('0x221A0e3C9AcEa6B3f1CC9DfC7063509c89bE7BC3')
-    }
+    },
+    linkWhale: {
+        ...mainnet('0xc6bed363b30DF7F35b601a5547fE56cd31Ec63DA')
+    },
 };
 
 const TokenNamedAccounts = {
@@ -42,7 +46,10 @@ const TokenNamedAccounts = {
     },
     bnt: {
         ...mainnet('0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
-    }
+    },
+    link: {
+        ...mainnet('0x514910771AF9Ca656af840dff83E8264EcF986CA')
+    },
 };
 
 const BancorNamedAccounts = {

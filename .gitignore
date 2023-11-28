@@ -17,8 +17,10 @@ contracts/hardhat-dependency-compiler
 deployments/mainnet/solcInputs/*
 deployments/hardhat/*
 deployments/tenderly/*
+deployments/tenderly-testnet/*
 
 fork-*.zip
+testnet-*.zip
 
 .coverage_artifacts
 .coverage_contracts
