@@ -308,7 +308,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         } else {
             inputAmount = _sellTokenForETH(token, amount);
         }
-        emit TokenTraded(msg.sender, token, amount, inputAmount);
+        emit TokenTraded(msg.sender, token, inputAmount, amount);
     }
 
     function _sellTokenForETH(Token token, uint128 amount) private returns (uint128) {
