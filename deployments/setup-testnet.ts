@@ -154,7 +154,7 @@ const main = async () => {
 
     Logger.log();
 
-    // await runDeployments();
+    await runDeployments();
 
     await fundAccounts();
 
