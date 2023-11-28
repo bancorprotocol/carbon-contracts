@@ -619,7 +619,7 @@ contract CarbonPOLTest is TestFixture {
 
         // trade
         vm.expectEmit();
-        emit TokenTraded(user1, token, tradeAmount, expectedTradeInput);
+        emit TokenTraded(user1, token, expectedTradeInput, tradeAmount);
         carbonPOL.trade{ value: expectedTradeInput }(token, tradeAmount);
 
         vm.stopPrank();
@@ -648,7 +648,7 @@ contract CarbonPOLTest is TestFixture {
 
         // trade
         vm.expectEmit();
-        emit TokenTraded(user1, token, tradeAmount, expectedTradeInput);
+        emit TokenTraded(user1, token, expectedTradeInput, tradeAmount);
         carbonPOL.trade(token, tradeAmount);
 
         vm.stopPrank();
