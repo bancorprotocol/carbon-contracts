@@ -179,7 +179,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         }
         _tradingStartTimes[token] = uint32(block.timestamp);
         _initialPrice[token] = price;
-        emit TradingEnabled(token, price);
+        emit TradingEnabled({ token: token, price: price });
     }
 
     /**
@@ -193,7 +193,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
         _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
         _initialPrice[NATIVE_TOKEN] = price;
         _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
-        emit TradingEnabled(NATIVE_TOKEN, price);
+        emit TradingEnabled({ token: NATIVE_TOKEN, price: price });
     }
 
     /**
@@ -356,7 +356,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
             _initialPrice[NATIVE_TOKEN] = price;
             _tradingStartTimes[NATIVE_TOKEN] = uint32(block.timestamp);
             // emit price updated event
-            emit PriceUpdated(NATIVE_TOKEN, price);
+            emit PriceUpdated({ token: NATIVE_TOKEN, price: price });
         }
 
         return bntRequired;
@@ -375,7 +375,10 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         _marketPriceMultiply = newMarketPriceMultiply;
 
-        emit MarketPriceMultiplyUpdated(prevMarketPriceMultiply, newMarketPriceMultiply);
+        emit MarketPriceMultiplyUpdated({
+            prevMarketPriceMultiply: prevMarketPriceMultiply,
+            newMarketPriceMultiply: newMarketPriceMultiply
+        });
     }
 
     /**
@@ -391,7 +394,10 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         _priceDecayHalfLife = newPriceDecayHalfLife;
 
-        emit PriceDecayHalfLifeUpdated(prevPriceDecayHalfLife, newPriceDecayHalfLife);
+        emit PriceDecayHalfLifeUpdated({
+            prevPriceDecayHalfLife: prevPriceDecayHalfLife,
+            newPriceDecayHalfLife: newPriceDecayHalfLife
+        });
     }
 
     /**
@@ -412,7 +418,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
             _ethSaleAmount.current = Math.min(address(this).balance, _ethSaleAmount.initial).toUint128();
         }
 
-        emit EthSaleAmountUpdated(prevEthSaleAmount, newEthSaleAmount);
+        emit EthSaleAmountUpdated({ prevEthSaleAmount: prevEthSaleAmount, newEthSaleAmount: newEthSaleAmount });
     }
 
     /**
@@ -428,7 +434,10 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
 
         _minEthSaleAmount = newMinEthSaleAmount;
 
-        emit MinEthSaleAmountUpdated(prevMinEthSaleAmount, newMinEthSaleAmount);
+        emit MinEthSaleAmountUpdated({
+            prevMinEthSaleAmount: prevMinEthSaleAmount,
+            newMinEthSaleAmount: newMinEthSaleAmount
+        });
     }
 
     /**
