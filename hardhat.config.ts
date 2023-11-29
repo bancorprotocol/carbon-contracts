@@ -20,6 +20,7 @@ import 'solidity-coverage';
 interface EnvOptions {
     ETHEREUM_PROVIDER_URL?: string;
     ETHEREUM_RINKEBY_PROVIDER_URL?: string;
+    TENDERLY_TESTNET_PROVIDER_URL?: string;
     ETHERSCAN_API_KEY?: string;
     GAS_PRICE?: number | 'auto';
     NIGHTLY?: boolean;
@@ -33,6 +34,7 @@ interface EnvOptions {
 const {
     ETHEREUM_PROVIDER_URL = '',
     ETHEREUM_RINKEBY_PROVIDER_URL = '',
+    TENDERLY_TESTNET_PROVIDER_URL = '',
     ETHERSCAN_API_KEY,
     GAS_PRICE: gasPrice = 'auto',
     NIGHTLY: isNightly,
@@ -90,6 +92,13 @@ const config: HardhatUserConfig = {
             saveDeployments: true,
             live: true,
             gas: 6000000
+        },
+        [DeploymentNetwork.TenderlyTestnet]: {
+            chainId: 1,
+            url: TENDERLY_TESTNET_PROVIDER_URL,
+            autoImpersonate: true,
+            saveDeployments: true,
+            live: true
         }
     },
 
@@ -137,7 +146,8 @@ const config: HardhatUserConfig = {
     external: {
         deployments: {
             [DeploymentNetwork.Mainnet]: [`deployments/${DeploymentNetwork.Mainnet}`],
-            [DeploymentNetwork.Tenderly]: [`deployments/${DeploymentNetwork.Tenderly}`]
+            [DeploymentNetwork.Tenderly]: [`deployments/${DeploymentNetwork.Tenderly}`],
+            [DeploymentNetwork.TenderlyTestnet]: [`deployments/${DeploymentNetwork.TenderlyTestnet}`]
         }
     },
 

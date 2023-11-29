@@ -71,10 +71,11 @@ export const DeployedContracts = {
 };
 
 export const isTenderlyFork = () => getNetworkName() === DeploymentNetwork.Tenderly;
-export const isMainnetFork = () => isTenderlyFork();
-export const isMainnet = () => getNetworkName() === DeploymentNetwork.Mainnet || isMainnetFork();
+export const isTenderlyTestnet = () => getNetworkName() === DeploymentNetwork.TenderlyTestnet;
+export const isMainnet = () => getNetworkName() === DeploymentNetwork.Mainnet || isTenderly();
 export const isRinkeby = () => getNetworkName() === DeploymentNetwork.Rinkeby;
-export const isLive = () => (isMainnet() && !isMainnetFork()) || isRinkeby();
+export const isLive = () => (isMainnet() && !isTenderly()) || isRinkeby();
+export const isTenderly = () => isTenderlyFork() || isTenderlyTestnet();
 
 const TEST_MINIMUM_BALANCE = toWei(10);
 const TEST_FUNDING = toWei(10);
@@ -90,7 +91,7 @@ export const getNamedSigners = async (): Promise<Record<string, SignerWithAddres
 };
 
 export const fundAccount = async (account: string | SignerWithAddress, amount?: BigNumberish) => {
-    if (!isMainnetFork()) {
+    if (!isTenderly()) {
         return;
     }
 
