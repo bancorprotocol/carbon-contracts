@@ -241,34 +241,34 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
     /**
      * @inheritdoc ICarbonPOL
      */
-    function expectedTradeReturn(Token token, uint128 tradeInput) external view validToken(token) returns (uint128) {
+    function expectedTradeReturn(Token token, uint128 sourceAmount) external view validToken(token) returns (uint128) {
         Price memory currentPrice = tokenPrice(token);
         // revert if price is not valid
         _validPrice(currentPrice);
-        // calculate the trade return based on the current price and token
-        uint128 tradeReturn = MathEx
-            .mulDivF(currentPrice.targetAmount, tradeInput, currentPrice.sourceAmount)
+        // calculate the target amount based on the current price and token
+        uint128 targetAmount = MathEx
+            .mulDivF(currentPrice.targetAmount, sourceAmount, currentPrice.sourceAmount)
             .toUint128();
         // revert if not enough amount available for trade
-        if (tradeReturn > _amountAvailableForTrading(token)) {
+        if (targetAmount > _amountAvailableForTrading(token)) {
             revert InsufficientAmountForTrading();
         }
-        return tradeReturn;
+        return targetAmount;
     }
 
     /**
      * @inheritdoc ICarbonPOL
      */
-    function expectedTradeInput(Token token, uint128 tokenAmount) public view validToken(token) returns (uint128) {
+    function expectedTradeInput(Token token, uint128 targetAmount) public view validToken(token) returns (uint128) {
         // revert if not enough amount available for trade
-        if (tokenAmount > _amountAvailableForTrading(token)) {
+        if (targetAmount > _amountAvailableForTrading(token)) {
             revert InsufficientAmountForTrading();
         }
         Price memory currentPrice = tokenPrice(token);
         // revert if current price is not valid
         _validPrice(currentPrice);
         // calculate the trade input based on the current price
-        return MathEx.mulDivF(currentPrice.sourceAmount, tokenAmount, currentPrice.targetAmount).toUint128();
+        return MathEx.mulDivF(currentPrice.sourceAmount, targetAmount, currentPrice.targetAmount).toUint128();
     }
 
     /**
@@ -300,52 +300,52 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
      */
     function trade(
         Token token,
-        uint128 amount
-    ) external payable nonReentrant validToken(token) greaterThanZero(amount) {
-        uint128 inputAmount;
+        uint128 targetAmount
+    ) external payable nonReentrant validToken(token) greaterThanZero(targetAmount) {
+        uint128 sourceAmount;
         if (token == NATIVE_TOKEN) {
-            inputAmount = _sellETHForBNT(amount);
+            sourceAmount = _sellETHForBNT(targetAmount);
         } else {
-            inputAmount = _sellTokenForETH(token, amount);
+            sourceAmount = _sellTokenForETH(token, targetAmount);
         }
-        emit TokenTraded({ caller: msg.sender, token: token, inputAmount: inputAmount, outputAmount: amount });
+        emit TokenTraded({ caller: msg.sender, token: token, sourceAmount: sourceAmount, targetAmount: targetAmount });
     }
 
-    function _sellTokenForETH(Token token, uint128 amount) private returns (uint128) {
-        uint128 ethRequired = expectedTradeInput(token, amount);
+    function _sellTokenForETH(Token token, uint128 targetAmount) private returns (uint128) {
+        uint128 sourceAmount = expectedTradeInput(token, targetAmount);
         // revert if trade requires 0 eth
-        if (ethRequired == 0) {
+        if (sourceAmount == 0) {
             revert InvalidTrade();
         }
         // check enough eth has been sent for the trade
-        if (msg.value < ethRequired) {
+        if (msg.value < sourceAmount) {
             revert InsufficientNativeTokenSent();
         }
         // transfer the tokens to caller
-        token.safeTransfer(msg.sender, amount);
+        token.safeTransfer(msg.sender, targetAmount);
 
         // refund any excess eth to caller
-        if (msg.value > ethRequired) {
-            payable(msg.sender).sendValue(msg.value - ethRequired);
+        if (msg.value > sourceAmount) {
+            payable(msg.sender).sendValue(msg.value - sourceAmount);
         }
 
-        return ethRequired;
+        return sourceAmount;
     }
 
-    function _sellETHForBNT(uint128 amount) private returns (uint128) {
-        uint128 bntRequired = expectedTradeInput(NATIVE_TOKEN, amount);
+    function _sellETHForBNT(uint128 targetAmount) private returns (uint128) {
+        uint128 sourceAmount = expectedTradeInput(NATIVE_TOKEN, targetAmount);
         // revert if trade requires 0 bnt
-        if (bntRequired == 0) {
+        if (sourceAmount == 0) {
             revert InvalidTrade();
         }
         // transfer the tokens from the user to the bnt address (burn them directly)
-        _bnt.safeTransferFrom(msg.sender, Token.unwrap(_bnt), bntRequired);
+        _bnt.safeTransferFrom(msg.sender, Token.unwrap(_bnt), sourceAmount);
 
         // transfer the eth to the user
-        payable(msg.sender).sendValue(amount);
+        payable(msg.sender).sendValue(targetAmount);
 
         // update the available eth sale amount
-        _ethSaleAmount.current -= amount;
+        _ethSaleAmount.current -= targetAmount;
 
         // check if remaining eth sale amount is below the min eth sale amount
         if (_ethSaleAmount.current < _minEthSaleAmount) {
@@ -359,7 +359,7 @@ contract CarbonPOL is ICarbonPOL, Upgradeable, ReentrancyGuardUpgradeable, Utils
             emit PriceUpdated({ token: NATIVE_TOKEN, price: price });
         }
 
-        return bntRequired;
+        return sourceAmount;
     }
 
     /**
