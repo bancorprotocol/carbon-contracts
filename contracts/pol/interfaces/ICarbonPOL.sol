@@ -33,7 +33,7 @@ interface ICarbonPOL is IUpgradeable {
     /**
      * @notice triggered after a successful trade is executed
      */
-    event TokenTraded(address indexed caller, Token indexed token, uint128 inputAmount, uint128 outputAmount);
+    event TokenTraded(address indexed caller, Token indexed token, uint128 sourceAmount, uint128 targetAmount);
 
     /**
      * @notice triggered after an eth trade leaves less than 10% of the initial eth sale amount
@@ -91,14 +91,14 @@ interface ICarbonPOL is IUpgradeable {
     function amountAvailableForTrading(Token token) external view returns (uint128);
 
     /**
-     * @notice returns the expected trade output (tokens received) given an token amount sent
+     * @notice returns the target amount expected given a source amount
      */
-    function expectedTradeReturn(Token token, uint128 ethAmount) external view returns (uint128 tokenAmount);
+    function expectedTradeReturn(Token token, uint128 sourceAmount) external view returns (uint128 targetAmount);
 
     /**
-     * @notice returns the expected trade input (how many tokens to send) given a token amount received
+     * @notice returns the source amount required given a target amount
      */
-    function expectedTradeInput(Token token, uint128 tokenAmount) external view returns (uint128 ethAmount);
+    function expectedTradeInput(Token token, uint128 targetAmount) external view returns (uint128 sourceAmount);
 
     /**
      * @notice returns the current token price (ETH / TKN)
@@ -107,8 +107,8 @@ interface ICarbonPOL is IUpgradeable {
     function tokenPrice(Token token) external view returns (Price memory price);
 
     /**
-     * @notice trades ETH for *amount* of token based on the current token price (trade by target amount)
+     * @notice trades ETH for *targetAmount* of token based on the current token price (trade by target amount)
      * @notice if token == ETH, trades BNT for amount of ETH
      */
-    function trade(Token token, uint128 amount) external payable;
+    function trade(Token token, uint128 targetAmount) external payable;
 }
