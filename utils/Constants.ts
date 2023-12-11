@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { toPPM } from './Types';
 import { ethers } from 'ethers';
 
@@ -9,9 +10,11 @@ export enum DeploymentNetwork {
     Mainnet = 'mainnet',
     Rinkeby = 'rinkeby',
     Hardhat = 'hardhat',
-    Tenderly = 'tenderly'
+    Tenderly = 'tenderly',
+    TenderlyTestnet = 'tenderly-testnet'
 }
 
+export const EXP2_INPUT_TOO_HIGH = new Decimal(16).div(new Decimal(2).ln());
 export const MAX_UINT256 = MaxUint256;
 export const MAX_UINT128 = '340282366920938463463374607431768211455';
 export const ZERO_BYTES = '0x';

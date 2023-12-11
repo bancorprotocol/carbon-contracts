@@ -1,18 +1,15 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { Test } from "forge-std/Test.sol";
-
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
 import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
+import { TestReenterCarbonVortex } from "../../contracts/helpers/TestReenterCarbonVortex.sol";
 
 import { AccessDenied, InvalidAddress, InvalidFee } from "../../contracts/utility/Utils.sol";
 import { PPM_RESOLUTION } from "../../contracts/utility/Constants.sol";
 
-import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
 import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonController.sol";
 import { ICarbonVortex } from "../../contracts/vortex/interfaces/ICarbonVortex.sol";
 import { IBancorNetwork } from "../../contracts/vortex/CarbonVortex.sol";
@@ -640,5 +637,31 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokens = new Token[](0);
         vm.expectRevert(ICarbonVortex.InvalidTokenLength.selector);
         carbonVortex.execute(tokens);
+    }
+
+    /// @dev test should revert if reentrancy is attempted
+    function testShouldRevertIfReentrancyIsAttempted() public {
+        vm.startPrank(user1);
+        uint256[] memory tokenAmounts = new uint256[](3);
+        tokenAmounts[0] = 100 ether;
+        tokenAmounts[1] = 60 ether;
+        tokenAmounts[2] = 20 ether;
+        Token[] memory tokens = new Token[](3);
+        tokens[0] = token1;
+        tokens[1] = token2;
+        tokens[2] = NATIVE_TOKEN;
+
+        // set the accumulated fees
+        for (uint256 i = 0; i < 3; ++i) {
+            carbonController.testSetAccumulatedFees(tokens[i], tokenAmounts[i]);
+        }
+
+        // deploy carbonVortex reentrancy contract
+        TestReenterCarbonVortex testReentrancy = new TestReenterCarbonVortex(carbonVortex);
+        // expect execute to revert
+        // reverts in "sendValue" in _allocateRewards in carbonVortex
+        vm.expectRevert("Address: unable to send value, recipient may have reverted");
+        testReentrancy.tryReenterCarbonVortex(tokens);
+        vm.stopPrank();
     }
 }

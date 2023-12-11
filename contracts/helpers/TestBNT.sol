@@ -1,7 +1,6 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import { TestERC20Token } from "./TestERC20Token.sol";
@@ -20,6 +19,18 @@ contract TestBNT is TestERC20Token {
 
     function transfer(address _to, uint256 _value) public override(ERC20) returns (bool success) {
         assert(super.transfer(_to, _value));
+
+        // transferring to the contract address destroys tokens
+        if (_to == address(this)) {
+            _burn(address(this), _value);
+            emit Destruction(_value);
+        }
+
+        return true;
+    }
+
+    function transferFrom(address _from, address _to, uint256 _value) public override(ERC20) returns (bool success) {
+        assert(super.transferFrom(_from, _to, _value));
 
         // transferring to the contract address destroys tokens
         if (_to == address(this)) {

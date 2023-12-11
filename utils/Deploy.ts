@@ -1,5 +1,5 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
+import { CarbonController, CarbonPOL, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { RoleIds } from './Roles';
@@ -41,7 +41,8 @@ enum NewInstanceName {
     CarbonController = 'CarbonController',
     ProxyAdmin = 'ProxyAdmin',
     Voucher = 'Voucher',
-    CarbonVortex = 'CarbonVortex'
+    CarbonVortex = 'CarbonVortex',
+    CarbonPOL = 'CarbonPOL'
 }
 
 export const LegacyInstanceName = {};
@@ -61,7 +62,8 @@ const DeployedNewContracts = {
     CarbonController: deployed<CarbonController>(InstanceName.CarbonController),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
     Voucher: deployed<Voucher>(InstanceName.Voucher),
-    CarbonVortex: deployed<CarbonVortex>(InstanceName.CarbonVortex)
+    CarbonVortex: deployed<CarbonVortex>(InstanceName.CarbonVortex),
+    CarbonPOL: deployed<CarbonPOL>(InstanceName.CarbonPOL)
 };
 
 export const DeployedContracts = {
@@ -69,10 +71,11 @@ export const DeployedContracts = {
 };
 
 export const isTenderlyFork = () => getNetworkName() === DeploymentNetwork.Tenderly;
-export const isMainnetFork = () => isTenderlyFork();
-export const isMainnet = () => getNetworkName() === DeploymentNetwork.Mainnet || isMainnetFork();
+export const isTenderlyTestnet = () => getNetworkName() === DeploymentNetwork.TenderlyTestnet;
+export const isMainnet = () => getNetworkName() === DeploymentNetwork.Mainnet || isTenderly();
 export const isRinkeby = () => getNetworkName() === DeploymentNetwork.Rinkeby;
-export const isLive = () => (isMainnet() && !isMainnetFork()) || isRinkeby();
+export const isLive = () => (isMainnet() && !isTenderly()) || isRinkeby();
+export const isTenderly = () => isTenderlyFork() || isTenderlyTestnet();
 
 const TEST_MINIMUM_BALANCE = toWei(10);
 const TEST_FUNDING = toWei(10);
@@ -88,7 +91,7 @@ export const getNamedSigners = async (): Promise<Record<string, SignerWithAddres
 };
 
 export const fundAccount = async (account: string | SignerWithAddress, amount?: BigNumberish) => {
-    if (!isMainnetFork()) {
+    if (!isTenderly()) {
         return;
     }
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.0;
 
 import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
@@ -15,20 +15,12 @@ interface ICarbonVortex is IUpgradeable {
     /**
      * @dev triggered after a successful burn is executed
      */
-    event TokensBurned(
-        address indexed caller,
-        Token[] tokens,
-        uint256[] rewardAmounts,
-        uint256 burnAmount
-    );
+    event TokensBurned(address indexed caller, Token[] tokens, uint256[] rewardAmounts, uint256 burnAmount);
 
     /**
      * @dev triggered when the rewards ppm are updated
      */
-    event RewardsUpdated(
-        uint256 prevRewardsPPM,
-        uint256 newRewardsPPM
-    );
+    event RewardsUpdated(uint256 prevRewardsPPM, uint256 newRewardsPPM);
 
     /**
      * @dev returns the rewards percentage ppm
@@ -44,7 +36,7 @@ interface ICarbonVortex is IUpgradeable {
      * @dev returns the total available fees for the given token
      */
     function availableTokens(Token token) external view returns (uint256);
-    
+
     /**
      * @dev withdraws the fees of the provided tokens from Carbon
      * @dev converts them along with the available contract token balance to BNT,
