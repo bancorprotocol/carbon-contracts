@@ -76,7 +76,7 @@ interface ICarbonPOL is IUpgradeable {
     function ethSaleAmount() external view returns (EthSaleAmount memory);
 
     /**
-     * @notice returns the min eth sale amount - resets the current eth sale amount if below this amount after a trade
+     * @notice returns the min eth sale amount
      */
     function minEthSaleAmount() external view returns (uint128);
 
@@ -108,7 +108,8 @@ interface ICarbonPOL is IUpgradeable {
 
     /**
      * @notice trades ETH for *targetAmount* of token based on the current token price (trade by target amount)
-     * @notice if token == ETH, trades BNT for amount of ETH
+     * @notice if token == ETH, trades BNT for amount of ETH and also
+     * @notice resets the current eth sale amount if it's below the min amount after a trade
      */
     function trade(Token token, uint128 targetAmount) external payable;
 }
