@@ -157,6 +157,16 @@ abstract contract Strategies is Initializable {
         uint128 targetAmount;
     }
 
+    struct SingleTradeActionValues {
+        uint256[3] packedOrdersMemory;
+        Order[2] orders;
+        bool ordersInverted;
+        Order targetOrder;
+        Order sourceOrder;
+        uint128 sourceAmount;
+        uint128 targetAmount;
+    }
+
     uint256 private constant ONE = 1 << 48;
 
     uint256 private constant ORDERS_INVERTED_FLAG = 1 << 255;
@@ -271,14 +281,14 @@ abstract contract Strategies is Initializable {
     function _createStrategy(
         IVoucher voucher,
         Token[2] memory tokens,
-        Order[2] calldata orders,
+        Order[2] memory orders,
         Pair memory pair,
         address owner,
         uint256 value
     ) internal returns (uint256) {
         // transfer funds
-        _validateDepositAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value, true);
-        _validateDepositAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value, true);
+        orders[0].y = _validateAmountAndRefundExcessNativeToken(tokens[0], owner, orders[0].y, value);
+        orders[1].y = _validateAmountAndRefundExcessNativeToken(tokens[1], owner, orders[1].y, value);
 
         // store id
         uint128 counter = _strategyCounter + 1;
@@ -312,7 +322,7 @@ abstract contract Strategies is Initializable {
     function _updateStrategy(
         uint256 strategyId,
         Order[2] calldata currentOrders,
-        Order[2] calldata newOrders,
+        Order[2] memory newOrders,
         Pair memory pair,
         address owner,
         uint256 value
@@ -327,18 +337,6 @@ abstract contract Strategies is Initializable {
             revert OutDated();
         }
 
-        // store new values if necessary
-        uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
-        if (packedOrdersMemory[0] != newPackedOrders[0]) {
-            packedOrders[0] = newPackedOrders[0];
-        }
-        if (packedOrdersMemory[1] != newPackedOrders[1]) {
-            packedOrders[1] = newPackedOrders[1];
-        }
-        if (packedOrdersMemory[2] != newPackedOrders[2]) {
-            packedOrders[2] = newPackedOrders[2];
-        }
-
         // deposit and withdraw
         Token[2] memory sortedTokens = _sortStrategyTokens(pair, ordersInverted);
         for (uint256 i = 0; i < 2; i = uncheckedInc(i)) {
@@ -350,7 +348,11 @@ abstract contract Strategies is Initializable {
             } else if (newOrders[i].y > orders[i].y) {
                 // liquidity increased - deposit the difference
                 uint128 delta = newOrders[i].y - orders[i].y;
-                _validateDepositAndRefundExcessNativeToken(token, owner, delta, value, true);
+                uint128 actualDelta = _validateAmountAndRefundExcessNativeToken(token, owner, delta, value);
+                uint128 depositDifference = delta - actualDelta;
+                if (depositDifference > 0) {
+                    newOrders[i].y -= depositDifference;
+                }
             }
 
             // refund native token when there's no deposit in the order
@@ -358,6 +360,18 @@ abstract contract Strategies is Initializable {
             if (value > 0 && token.isNative() && newOrders[i].y <= orders[i].y) {
                 payable(address(owner)).sendValue(value);
             }
+        }
+
+        // store new values if necessary
+        uint256[3] memory newPackedOrders = _packOrders(newOrders, ordersInverted);
+        if (packedOrdersMemory[0] != newPackedOrders[0]) {
+            packedOrders[0] = newPackedOrders[0];
+        }
+        if (packedOrdersMemory[1] != newPackedOrders[1]) {
+            packedOrders[1] = newPackedOrders[1];
+        }
+        if (packedOrdersMemory[2] != newPackedOrders[2]) {
+            packedOrders[2] = newPackedOrders[2];
         }
 
         // emit event
@@ -407,78 +421,137 @@ abstract contract Strategies is Initializable {
      * - the caller must have approved the source token
      */
     function _trade(TradeAction[] calldata tradeActions, TradeParams memory params) internal {
-        bool isTargetToken0 = params.tokens.target == params.pair.tokens[0];
+        SingleTradeActionValues[] memory tradeActionsValues = new SingleTradeActionValues[](tradeActions.length);
+
+        (uint128 totalSourceAmountExpected, uint128 tradingFeeAmount) = _tradeExpectedTotalSourceAndTradingFeeAmount(
+            tradeActions,
+            params,
+            tradeActionsValues
+        );
+
+        uint256 actualDepositExpectedRatio = MathEx.mulDivF(params.sourceAmount, 1e18, totalSourceAmountExpected);
 
         // process trade actions
         for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
-            // prepare variables
-            uint128 amount = tradeActions[i].amount;
-            uint256 strategyId = tradeActions[i].strategyId;
-            uint256[3] storage packedOrders = _packedOrdersByStrategyId[strategyId];
-            uint256[3] memory packedOrdersMemory = packedOrders;
-            (Order[2] memory orders, bool ordersInverted) = _unpackOrders(packedOrdersMemory);
+            TradeAction memory tradeAction = tradeActions[i];
+            uint256[3] storage packedOrders = _packedOrdersByStrategyId[tradeAction.strategyId];
+            SingleTradeActionValues memory values = tradeActionsValues[i];
 
-            _validateTradeParams(params.pair.id, strategyId, amount);
-
-            (Order memory targetOrder, Order memory sourceOrder) = isTargetToken0 == ordersInverted
-                ? (orders[1], orders[0])
-                : (orders[0], orders[1]);
-
-            // calculate the orders new values
-            (uint128 sourceAmount, uint128 targetAmount) = _singleTradeActionSourceAndTargetAmounts(
-                targetOrder,
-                amount,
-                params.byTargetAmount
-            );
+            // update source amount by the actual amount deposited
+            if (params.sourceAmount != totalSourceAmountExpected) {
+                values.sourceAmount = MathEx.mulDivF(values.sourceAmount, actualDepositExpectedRatio, 1e18).toUint128();
+            }
 
             // handled specifically for a custom error message
-            if (targetOrder.y < targetAmount) {
+            if (values.targetOrder.y < values.targetAmount) {
                 revert InsufficientLiquidity();
             }
 
             // update the orders with the new values
             // safe since it's checked above
             unchecked {
-                targetOrder.y -= targetAmount;
+                values.targetOrder.y -= values.targetAmount;
             }
 
-            sourceOrder.y += sourceAmount;
-            if (sourceOrder.z < sourceOrder.y) {
-                sourceOrder.z = sourceOrder.y;
+            values.sourceOrder.y += values.sourceAmount;
+            if (values.sourceOrder.z < values.sourceOrder.y) {
+                values.sourceOrder.z = values.sourceOrder.y;
             }
 
             // store new values if necessary
-            uint256[3] memory newPackedOrders = _packOrders(orders, ordersInverted);
+            uint256[3] memory newPackedOrders = _packOrders(values.orders, values.ordersInverted);
 
             // both y values are in slot 0, so it has definitely changed
             packedOrders[0] = newPackedOrders[0];
 
             // one of the z values is in slot 1, so it has possibly changed
-            if (packedOrdersMemory[1] != newPackedOrders[1]) {
+            if (values.packedOrdersMemory[1] != newPackedOrders[1]) {
                 packedOrders[1] = newPackedOrders[1];
             }
 
             // the other z value has possibly changed only if the first one hasn't
-            if (packedOrdersMemory[2] != newPackedOrders[2]) {
+            if (values.packedOrdersMemory[2] != newPackedOrders[2]) {
                 packedOrders[2] = newPackedOrders[2];
             }
 
             // emit update event
             emit StrategyUpdated({
-                id: strategyId,
-                token0: params.pair.tokens[ordersInverted ? 1 : 0],
-                token1: params.pair.tokens[ordersInverted ? 0 : 1],
-                order0: orders[0],
-                order1: orders[1],
+                id: tradeAction.strategyId,
+                token0: params.pair.tokens[values.ordersInverted ? 1 : 0],
+                token1: params.pair.tokens[values.ordersInverted ? 0 : 1],
+                order0: values.orders[0],
+                order1: values.orders[1],
                 reason: STRATEGY_UPDATE_REASON_TRADE
             });
-
-            params.sourceAmount += sourceAmount;
-            params.targetAmount += targetAmount;
         }
 
-        // apply trading fee
+        // tokens traded successfully, emit event
+        emit TokensTraded({
+            trader: params.trader,
+            sourceToken: params.tokens.source,
+            targetToken: params.tokens.target,
+            sourceAmount: params.sourceAmount,
+            targetAmount: params.targetAmount,
+            tradingFeeAmount: tradingFeeAmount,
+            byTargetAmount: params.byTargetAmount
+        });
+    }
+
+    /**
+     * @dev returns expected total source amount and the trading fee amount for the trade actions
+     * @dev updates params sourceAmount and targetAmount
+     */
+    function _tradeExpectedTotalSourceAndTradingFeeAmount(
+        TradeAction[] calldata tradeActions,
+        TradeParams memory params,
+        SingleTradeActionValues[] memory singleTradeActionsValues
+    ) private returns (uint128, uint128) {
+        bool isTargetToken0 = params.tokens.target == params.pair.tokens[0];
+
+        uint128 totalSourceAmountExpected;
+        uint128 totalTargetAmountExpected;
         uint128 tradingFeeAmount;
+
+        for (uint256 i = 0; i < tradeActions.length; i = uncheckedInc(i)) {
+            TradeAction memory tradeAction = tradeActions[i];
+            // prepare variables
+            uint128 amount = tradeAction.amount;
+            SingleTradeActionValues memory values = SingleTradeActionValues({
+                packedOrdersMemory: [uint256(0), uint256(0), uint256(0)],
+                orders: [Order({ y: 0, z: 0, A: 0, B: 0 }), Order({ y: 0, z: 0, A: 0, B: 0 })],
+                ordersInverted: false,
+                targetOrder: Order({ y: 0, z: 0, A: 0, B: 0 }),
+                sourceOrder: Order({ y: 0, z: 0, A: 0, B: 0 }),
+                sourceAmount: 0,
+                targetAmount: 0
+            });
+            values.packedOrdersMemory = _packedOrdersByStrategyId[tradeAction.strategyId];
+            (values.orders, values.ordersInverted) = _unpackOrders(values.packedOrdersMemory);
+
+            _validateTradeParams(params.pair.id, tradeAction.strategyId, amount);
+
+            (values.targetOrder, values.sourceOrder) = isTargetToken0 == values.ordersInverted
+                ? (values.orders[1], values.orders[0])
+                : (values.orders[0], values.orders[1]);
+
+            // calculate the orders new values
+            (values.sourceAmount, values.targetAmount) = _singleTradeActionSourceAndTargetAmounts(
+                values.targetOrder,
+                amount,
+                params.byTargetAmount
+            );
+
+            totalSourceAmountExpected += values.sourceAmount;
+            totalTargetAmountExpected += values.targetAmount;
+
+            singleTradeActionsValues[i] = values;
+        }
+
+        // update the source and target amounts
+        params.sourceAmount += totalSourceAmountExpected;
+        params.targetAmount += totalTargetAmountExpected;
+
+        // apply trading fee
         if (params.byTargetAmount) {
             uint128 amountIncludingFee = _addFee(params.sourceAmount, params.pair.id);
             tradingFeeAmount = amountIncludingFee - params.sourceAmount;
@@ -497,26 +570,16 @@ abstract contract Strategies is Initializable {
             _accumulatedFees[params.tokens.target] += tradingFeeAmount;
         }
 
-        // transfer funds
-        _validateDepositAndRefundExcessNativeToken(
+        // transfer funds and update the source amount
+        params.sourceAmount = _validateAmountAndRefundExcessNativeToken(
             params.tokens.source,
             params.trader,
             params.sourceAmount,
-            params.txValue,
-            false
+            params.txValue
         );
         _withdrawFunds(params.tokens.target, payable(params.trader), params.targetAmount);
 
-        // tokens traded successfully, emit event
-        emit TokensTraded({
-            trader: params.trader,
-            sourceToken: params.tokens.source,
-            targetToken: params.tokens.target,
-            sourceAmount: params.sourceAmount,
-            targetAmount: params.targetAmount,
-            tradingFeeAmount: tradingFeeAmount,
-            byTargetAmount: params.byTargetAmount
-        });
+        return (totalSourceAmountExpected, tradingFeeAmount);
     }
 
     /**
@@ -646,35 +709,30 @@ abstract contract Strategies is Initializable {
 
     /**
      * @dev validates deposit amounts, refunds excess native tokens sent
+     * @dev returns actual amount transferred to the contract (if tax token)
      */
-    function _validateDepositAndRefundExcessNativeToken(
+    function _validateAmountAndRefundExcessNativeToken(
         Token token,
         address owner,
-        uint256 depositAmount,
-        uint256 txValue,
-        bool validateDepositAmount
-    ) private {
+        uint256 amount,
+        uint256 txValue
+    ) private returns (uint128) {
         if (token.isNative()) {
-            if (txValue < depositAmount) {
+            if (txValue < amount) {
                 revert NativeAmountMismatch();
             }
 
             // refund the owner for the remaining native token amount
-            if (txValue > depositAmount) {
-                payable(address(owner)).sendValue(txValue - depositAmount);
+            if (txValue > amount) {
+                payable(address(owner)).sendValue(txValue - amount);
             }
-        } else if (depositAmount > 0) {
-            if (validateDepositAmount) {
-                uint256 prevBalance = token.balanceOf(address(this));
-                token.safeTransferFrom(owner, address(this), depositAmount);
-                uint256 newBalance = token.balanceOf(address(this));
-                if (newBalance - prevBalance != depositAmount) {
-                    revert BalanceMismatch();
-                }
-            } else {
-                token.safeTransferFrom(owner, address(this), depositAmount);
-            }
+        } else if (amount > 0) {
+            uint256 prevBalance = token.balanceOf(address(this));
+            token.safeTransferFrom(owner, address(this), amount);
+            uint256 newBalance = token.balanceOf(address(this));
+            return uint128(newBalance - prevBalance);
         }
+        return uint128(amount);
     }
 
     function _validateTradeParams(uint128 pairId, uint256 strategyId, uint128 tradeAmount) private pure {

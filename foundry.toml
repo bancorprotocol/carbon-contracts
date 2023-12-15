@@ -11,4 +11,4 @@ remappings = [
 ]
 fs_permissions = [{ access = "read", path = "./"}]
 optimizer = true
-optimizer_runs = 2000
+optimizer_runs = 1000
