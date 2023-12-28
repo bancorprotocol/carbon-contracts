@@ -13,7 +13,6 @@ interface EnvOptions {
 }
 
 const { ENABLE_TRADING: enableTrading }: EnvOptions = process.env as any as EnvOptions;
-
 interface TokenData {
     address: string;
     ethVirtualBalance: Decimal;
@@ -144,8 +143,8 @@ const main = async () => {
                 args: [
                     token,
                     {
-                        ethAmount: ethVirtualBalance.toFixed().toString(),
-                        tokenAmount: tokenVirtualBalance.toFixed().toString()
+                        sourceAmount: ethVirtualBalance.toFixed().toString(),
+                        targetAmount: tokenVirtualBalance.toFixed().toString()
                     }
                 ],
                 from: deployer.address
