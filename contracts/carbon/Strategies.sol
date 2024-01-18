@@ -778,7 +778,12 @@ abstract contract Strategies is Initializable {
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
         uint256 temp5 = MathEx.mulDivC(temp3, A, factor);
-        return MathEx.mulDivF(temp2, temp3 / factor, temp4 + temp5);
+
+        (bool safe, uint256 sum) = tryAdd(temp4, temp5);
+        if (safe) {
+            return MathEx.mulDivF(temp2, temp3 / factor, sum);
+        }
+        return temp2 / (A + MathEx.mulDivC(temp1, temp1, temp3));
     }
 
     /**
@@ -969,6 +974,13 @@ abstract contract Strategies is Initializable {
             target.sendValue(amount);
         } else {
             token.safeTransfer(target, amount);
+        }
+    }
+
+    function tryAdd(uint256 x, uint256 y) private pure returns (bool safe, uint256 sum) {
+        unchecked {
+            sum = x + y;
+            safe = sum >= x;
         }
     }
 
