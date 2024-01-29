@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { EnumerableSetUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import { MathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
+import { SafeMathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
@@ -127,6 +128,7 @@ abstract contract Strategies is Initializable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using Address for address payable;
     using MathUpgradeable for uint256;
+    using SafeMathUpgradeable for uint256;
     using SafeCastUpgradeable for uint256;
 
     error NativeAmountMismatch();
@@ -779,7 +781,7 @@ abstract contract Strategies is Initializable {
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
         uint256 temp5 = MathEx.mulDivC(temp3, A, factor);
 
-        (bool safe, uint256 sum) = tryAdd(temp4, temp5);
+        (bool safe, uint256 sum) = SafeMathUpgradeable.tryAdd(temp4, temp5);
         if (safe) {
             return MathEx.mulDivF(temp2, temp3 / factor, sum);
         }
@@ -974,13 +976,6 @@ abstract contract Strategies is Initializable {
             target.sendValue(amount);
         } else {
             token.safeTransfer(target, amount);
-        }
-    }
-
-    function tryAdd(uint256 x, uint256 y) private pure returns (bool safe, uint256 sum) {
-        unchecked {
-            sum = x + y;
-            safe = sum >= x;
         }
     }
 
