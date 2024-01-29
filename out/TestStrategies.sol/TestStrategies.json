@@ -1,0 +1,2439 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "BalanceMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "GreaterThanMaxInput",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientCapacity",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InsufficientLiquidity",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidRate",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTradeActionAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTradeActionStrategyId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "LowerThanMinReturn",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NativeAmountMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OrderDisabled",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OutDated",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Overflow",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "FeesWithdrawn",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token1",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "prevFeePPM",
+          "type": "uint32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "newFeePPM",
+          "type": "uint32"
+        }
+      ],
+      "name": "PairTradingFeePPMUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token1",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Order",
+          "name": "order0",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Order",
+          "name": "order1",
+          "type": "tuple"
+        }
+      ],
+      "name": "StrategyCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token1",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Order",
+          "name": "order0",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Order",
+          "name": "order1",
+          "type": "tuple"
+        }
+      ],
+      "name": "StrategyDeleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token1",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Order",
+          "name": "order0",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Order",
+          "name": "order1",
+          "type": "tuple"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "reason",
+          "type": "uint8"
+        }
+      ],
+      "name": "StrategyUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "trader",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "sourceToken",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "targetToken",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "sourceAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "targetAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint128",
+          "name": "tradingFeeAmount",
+          "type": "uint128"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "byTargetAmount",
+          "type": "bool"
+        }
+      ],
+      "name": "TokensTraded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "prevFeePPM",
+          "type": "uint32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "newFeePPM",
+          "type": "uint32"
+        }
+      ],
+      "name": "TradingFeePPMUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "expandedRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "isValidRate",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct Order",
+          "name": "order",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amount",
+          "type": "uint128"
+        }
+      ],
+      "name": "tradeBySourceAmount",
+      "outputs": [
+        {
+          "internalType": "uint128",
+          "name": "",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "y",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "z",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "A",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "B",
+              "type": "uint64"
+            }
+          ],
+          "internalType": "struct Order",
+          "name": "order",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint128",
+          "name": "amount",
+          "type": "uint128"
+        }
+      ],
+      "name": "tradeByTargetAmount",
+      "outputs": [
+        {
+          "internalType": "uint128",
+          "name": "",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b506109b8806100206000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806361c8b5571461005157806392fd04ca14610077578063ab770e74146100ab578063b28087b6146100be575b600080fd5b61006461005f3660046107f5565b6100e1565b6040519081526020015b60405180910390f35b61008a61008536600461084b565b6100fe565b6040516fffffffffffffffffffffffffffffffff909116815260200161006e565b61008a6100b936600461084b565b610116565b6100d16100cc3660046107f5565b61012e565b604051901515815260200161006e565b600065ffffffffffff8216660100000000000083041b5b92915050565b60008061010d84846000610143565b95945050505050565b60008061012584846001610143565b50949350505050565b600066010000000000008083041c15156100f8565b600080600085600001516fffffffffffffffffffffffffffffffff169050600086602001516fffffffffffffffffffffffffffffffff16905060006101a8886040015167ffffffffffffffff1665ffffffffffff811666010000000000009091041b90565b905060006101d6896060015167ffffffffffffffff1665ffffffffffff811666010000000000009091041b90565b9050861561020f57610205610200896fffffffffffffffffffffffffffffffff1686868686610243565b610340565b9550879450610237565b879550610234610200896fffffffffffffffffffffffffffffffff16868686866103ea565b94505b50505050935093915050565b6000826000036102b25781600003610287576040517f4e305c4b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6102ab8661029c660100000000000080610923565b6102a68580610923565b610529565b905061010d565b660100000000000084028584028386020160006102cf868a610923565b6102d9908361093a565b905060006102e7848561059b565b905060006102f5848461059b565b9050600061030383836105ca565b90506000610312878884610529565b905060006103218787856105e0565b905061032e8e8383610529565b9e9d5050505050505050505050505050565b60006fffffffffffffffffffffffffffffffff8211156103e6576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602760248201527f53616665436173743a2076616c756520646f65736e27742066697420696e203160448201527f3238206269747300000000000000000000000000000000000000000000000000606482015260840160405180910390fd5b5090565b600082600003610452578160000361042e576040517f4e305c4b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6102ab8661043c8480610923565b61044d660100000000000080610923565b6105e0565b6601000000000000840285840283860201600061046f8983610923565b9050600061047d848561059b565b9050600061048b838961059b565b9050600061049983836105ca565b905060006104a8878884610529565b905060006104b7868c85610529565b90506000806104c684846106d4565b9150915081156104f5576104e4896104de878b61094d565b836105e0565b9a505050505050505050505061010d565b6105008a8b8a610529565b61050a908e61096f565b610514908a61094d565b9a505050505050505050505095945050505050565b6000806105378585856105e0565b905060006105468686866106fd565b1115610591576000198110610587576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6001019050610594565b90505b9392505050565b60008060006105aa8585610718565b91509150801982116105bf578160010161010d565b506002019392505050565b60008183116105d95781610594565b5090919050565b60008060006105ef8686610718565b91509150816000036106145783818161060a5761060a6108f7565b0492505050610594565b83821061064d576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600061065a8787876106fd565b905060008061066a858585610751565b915091508160000361069257868181610685576106856108f7565b0495505050505050610594565b60008781038816906106a5848484610781565b905060006106c1838b816106bb576106bb6108f7565b046107be565b919091029b9a5050505050505050505050565b600080838301848110156106ef5760008092509250506106f6565b6001925090505b9250929050565b6000818061070d5761070d6108f7565b838509949350505050565b600080600061072785856107e6565b90508484028082106107405790819003925090506106f6565b600181830303969095509350505050565b6000808284106107675750839050818303610779565b61077260018661093a565b9150508183035b935093915050565b60008061079f8380830381610798576107986108f7565b0460010190565b90508284816107b0576107b06108f7565b048186021795945050505050565b60006001815b60088110156107df57838202600203820291506001016107c4565b5092915050565b60006000198284099392505050565b60006020828403121561080757600080fd5b5035919050565b80356fffffffffffffffffffffffffffffffff8116811461082e57600080fd5b919050565b803567ffffffffffffffff8116811461082e57600080fd5b60008082840360a081121561085f57600080fd5b608081121561086d57600080fd5b506040516080810181811067ffffffffffffffff8211171561089f57634e487b7160e01b600052604160045260246000fd5b6040526108ab8461080e565b81526108b96020850161080e565b60208201526108ca60408501610833565b60408201526108db60608501610833565b606082015291506108ee6080840161080e565b90509250929050565b634e487b7160e01b600052601260045260246000fd5b634e487b7160e01b600052601160045260246000fd5b80820281158282048414176100f8576100f861090d565b818103818111156100f8576100f861090d565b60008261096a57634e487b7160e01b600052601260045260246000fd5b500490565b808201808211156100f8576100f861090d56fea26469706673582212201434f57a04b784a604bcc3d819150003613bc67357e346b3233ec3286377386f64736f6c63430008130033",
+    "sourceMap": "139:740:18:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806361c8b5571461005157806392fd04ca14610077578063ab770e74146100ab578063b28087b6146100be575b600080fd5b61006461005f3660046107f5565b6100e1565b6040519081526020015b60405180910390f35b61008a61008536600461084b565b6100fe565b6040516fffffffffffffffffffffffffffffffff909116815260200161006e565b61008a6100b936600461084b565b610116565b6100d16100cc3660046107f5565b61012e565b604051901515815260200161006e565b600065ffffffffffff8216660100000000000083041b5b92915050565b60008061010d84846000610143565b95945050505050565b60008061012584846001610143565b50949350505050565b600066010000000000008083041c15156100f8565b600080600085600001516fffffffffffffffffffffffffffffffff169050600086602001516fffffffffffffffffffffffffffffffff16905060006101a8886040015167ffffffffffffffff1665ffffffffffff811666010000000000009091041b90565b905060006101d6896060015167ffffffffffffffff1665ffffffffffff811666010000000000009091041b90565b9050861561020f57610205610200896fffffffffffffffffffffffffffffffff1686868686610243565b610340565b9550879450610237565b879550610234610200896fffffffffffffffffffffffffffffffff16868686866103ea565b94505b50505050935093915050565b6000826000036102b25781600003610287576040517f4e305c4b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6102ab8661029c660100000000000080610923565b6102a68580610923565b610529565b905061010d565b660100000000000084028584028386020160006102cf868a610923565b6102d9908361093a565b905060006102e7848561059b565b905060006102f5848461059b565b9050600061030383836105ca565b90506000610312878884610529565b905060006103218787856105e0565b905061032e8e8383610529565b9e9d5050505050505050505050505050565b60006fffffffffffffffffffffffffffffffff8211156103e6576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602760248201527f53616665436173743a2076616c756520646f65736e27742066697420696e203160448201527f3238206269747300000000000000000000000000000000000000000000000000606482015260840160405180910390fd5b5090565b600082600003610452578160000361042e576040517f4e305c4b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6102ab8661043c8480610923565b61044d660100000000000080610923565b6105e0565b6601000000000000840285840283860201600061046f8983610923565b9050600061047d848561059b565b9050600061048b838961059b565b9050600061049983836105ca565b905060006104a8878884610529565b905060006104b7868c85610529565b90506000806104c684846106d4565b9150915081156104f5576104e4896104de878b61094d565b836105e0565b9a505050505050505050505061010d565b6105008a8b8a610529565b61050a908e61096f565b610514908a61094d565b9a505050505050505050505095945050505050565b6000806105378585856105e0565b905060006105468686866106fd565b1115610591576000198110610587576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6001019050610594565b90505b9392505050565b60008060006105aa8585610718565b91509150801982116105bf578160010161010d565b506002019392505050565b60008183116105d95781610594565b5090919050565b60008060006105ef8686610718565b91509150816000036106145783818161060a5761060a6108f7565b0492505050610594565b83821061064d576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600061065a8787876106fd565b905060008061066a858585610751565b915091508160000361069257868181610685576106856108f7565b0495505050505050610594565b60008781038816906106a5848484610781565b905060006106c1838b816106bb576106bb6108f7565b046107be565b919091029b9a5050505050505050505050565b600080838301848110156106ef5760008092509250506106f6565b6001925090505b9250929050565b6000818061070d5761070d6108f7565b838509949350505050565b600080600061072785856107e6565b90508484028082106107405790819003925090506106f6565b600181830303969095509350505050565b6000808284106107675750839050818303610779565b61077260018661093a565b9150508183035b935093915050565b60008061079f8380830381610798576107986108f7565b0460010190565b90508284816107b0576107b06108f7565b048186021795945050505050565b60006001815b60088110156107df57838202600203820291506001016107c4565b5092915050565b60006000198284099392505050565b60006020828403121561080757600080fd5b5035919050565b80356fffffffffffffffffffffffffffffffff8116811461082e57600080fd5b919050565b803567ffffffffffffffff8116811461082e57600080fd5b60008082840360a081121561085f57600080fd5b608081121561086d57600080fd5b506040516080810181811067ffffffffffffffff8211171561089f57634e487b7160e01b600052604160045260246000fd5b6040526108ab8461080e565b81526108b96020850161080e565b60208201526108ca60408501610833565b60408201526108db60608501610833565b606082015291506108ee6080840161080e565b90509250929050565b634e487b7160e01b600052601260045260246000fd5b634e487b7160e01b600052601160045260246000fd5b80820281158282048414176100f8576100f861090d565b818103818111156100f8576100f861090d565b60008261096a57634e487b7160e01b600052601260045260246000fd5b500490565b808201808211156100f8576100f861090d56fea26469706673582212201434f57a04b784a604bcc3d819150003613bc67357e346b3233ec3286377386f64736f6c63430008130033",
+    "sourceMap": "139:740:18:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;768:109;;;;;;:::i;:::-;;:::i;:::-;;;345:25:127;;;333:2;318:18;768:109:18;;;;;;;;183:232;;;;;;:::i;:::-;;:::i;:::-;;;1883:34:127;1871:47;;;1853:66;;1841:2;1826:18;183:232:18;1707:218:127;421:231:18;;;;;;:::i;:::-;;:::i;658:104::-;;;;;;:::i;:::-;;:::i;:::-;;;2095:14:127;;2088:22;2070:41;;2058:2;2043:18;658:104:18;1930:187:127;768:109:18;827:7;31133:10:2;;;6538:7;31149:10;;31132:28;853:17:18;846:24;768:109;-1:-1:-1;;768:109:18:o;183:232::-;271:7;293:20;317:62;358:5;365:6;373:5;317:40;:62::i;:::-;290:89;183:232;-1:-1:-1;;;;;183:232:18:o;421:231::-;509:7;529:20;555:61;596:5;603:6;611:4;555:40;:61::i;:::-;-1:-1:-1;528:88:18;421:231;-1:-1:-1;;;;421:231:18:o;658:104::-;716:4;6538:7:2;31392:10;;;31384:19;31383:25;;739:16:18;31234:191:2;31522:692;31682:20;31704;31736:9;31756:5;:7;;;31748:16;;31736:28;;31774:9;31794:5;:7;;;31786:16;;31774:28;;31812:9;31824:29;31844:5;:7;;;31836:16;;31133:10;;;6538:7;31149:10;;;31132:28;;30979:198;31824:29;31812:41;;31863:9;31875:29;31895:5;:7;;;31887:16;;31133:10;;;6538:7;31149:10;;;31132:28;;30979:198;31875:29;31863:41;;31918:14;31914:294;;;31963:59;:47;31991:6;31963:47;;31999:1;32002;32005;32008;31963:27;:47::i;:::-;:57;:59::i;:::-;31948:74;;32051:6;32036:21;;31914:294;;;32103:6;32088:21;;32138:59;:47;32166:6;32138:47;;32174:1;32177;32180;32183;32138:27;:47::i;:59::-;32123:74;;31914:294;31726:488;;;;31522:692;;;;;;:::o;28498:957::-;28722:7;28745:1;28750;28745:6;28741:159;;28771:1;28776;28771:6;28767:67;;28804:15;;;;;;;;;;;;;;28767:67;28854:35;28869:1;28872:9;6538:7;;28872:9;:::i;:::-;28883:5;28887:1;;28883:5;:::i;:::-;28854:14;:35::i;:::-;28847:42;;;;28741:159;6538:7;28988;;29030:5;;;29038;;;29030:13;28910;29100:5;29034:1;29100;:5;:::i;:::-;29092:13;;:5;:13;:::i;:::-;29076:29;;29116:15;29134:30;29151:5;29158;29134:16;:30::i;:::-;29116:48;;29174:15;29192:30;29209:5;29216;29192:16;:30::i;:::-;29174:48;;29232:14;29249:26;29258:7;29267;29249:8;:26::i;:::-;29232:43;;29286:13;29302:36;29317:5;29324;29331:6;29302:14;:36::i;:::-;29286:52;;29348:13;29364:36;29379:5;29386;29393:6;29364:14;:36::i;:::-;29348:52;;29417:31;29432:1;29435:5;29442;29417:14;:31::i;:::-;29410:38;28498:957;-1:-1:-1;;;;;;;;;;;;;;28498:957:2:o;9088:192:104:-;9145:7;9181:17;9172:26;;;9164:78;;;;;;;3008:2:127;9164:78:104;;;2990:21:127;3047:2;3027:18;;;3020:30;3086:34;3066:18;;;3059:62;3157:9;3137:18;;;3130:37;3184:19;;9164:78:104;;;;;;;;-1:-1:-1;9267:5:104;9088:192::o;27183:1123:2:-;27407:7;27430:1;27435;27430:6;27426:159;;27456:1;27461;27456:6;27452:67;;27489:15;;;;;;;;;;;;;;27452:67;27539:35;27554:1;27557:5;27561:1;;27557:5;:::i;:::-;27564:9;6538:7;;27564:9;:::i;:::-;27539:14;:35::i;27426:159::-;6538:7;27673;;27715:5;;;27723;;;27715:13;27595;27777:9;27785:1;27715:13;27777:9;:::i;:::-;27761:25;;27797:15;27815:30;27832:5;27839;27815:16;:30::i;:::-;27797:48;;27855:15;27873:26;27890:5;27897:1;27873:16;:26::i;:::-;27855:44;;27909:14;27926:26;27935:7;27944;27926:8;:26::i;:::-;27909:43;;27963:13;27979:36;27994:5;28001;28008:6;27979:14;:36::i;:::-;27963:52;;28025:13;28041:32;28056:5;28063:1;28066:6;28041:14;:32::i;:::-;28025:48;;28085:9;28096:11;28111:29;28127:5;28134;28111:15;:29::i;:::-;28084:56;;;;28154:4;28150:84;;;28181:42;28196:5;28203:14;28211:6;28203:5;:14;:::i;:::-;28219:3;28181:14;:42::i;:::-;28174:49;;;;;;;;;;;;;;28150:84;28263:35;28278:5;28285;28292;28263:14;:35::i;:::-;28259:39;;:1;:39;:::i;:::-;28250:49;;:5;:49;:::i;:::-;28243:56;;;;;;;;;;;;27183:1123;;;;;;;:::o;1712:406:30:-;1785:7;1804:9;1816:16;1824:1;1827;1830;1816:7;:16::i;:::-;1804:28;;1865:1;1846:16;1854:1;1857;1860;1846:7;:16::i;:::-;:20;1842:252;;;-1:-1:-1;;1886:1:30;:22;1882:78;;1935:10;;;;;;;;;;;;;;1882:78;2068:1;2064:5;;-1:-1:-1;2057:12:30;;1842:252;2110:1;-1:-1:-1;1712:406:30;;;;;;:::o;2222:2511::-;2286:7;2306:10;2318;2332:13;2340:1;2343;2332:7;:13::i;:::-;2305:40;;;;2761:2;2760:3;2755:2;:8;:26;;2775:2;2780:1;2775:6;2755:26;;;-1:-1:-1;2771:1:30;2766:6;;2748:33;-1:-1:-1;;;2222:2511:30:o;413:104:103:-;471:7;501:1;497;:5;:13;;509:1;497:13;;;-1:-1:-1;505:1:103;;490:20;-1:-1:-1;413:104:103:o;447:1166:30:-;520:7;609:12;623;639:13;647:1;650;639:7;:13::i;:::-;608:44;;;;707:4;715:1;707:9;703:63;;750:1;743:4;:8;;;;;:::i;:::-;;736:15;;;;;;703:63;836:1;828:4;:9;824:65;;864:10;;;;;;;;;;;;;;824:65;903:9;915:16;923:1;926;929;915:7;:16::i;:::-;903:28;;965:11;978;993:22;1001:4;1007;1013:1;993:7;:22::i;:::-;964:51;;;;1118:3;1125:1;1118:8;1114:61;;1159:1;1153:3;:7;;;;;:::i;:::-;;1146:14;;;;;;;;;1114:61;1189:9;11117:5;;;1201:20;;;1306;1314:3;1319;1201:20;1306:7;:20::i;:::-;1294:32;;1427:9;1439:14;1451:1;1447;:5;;;;;:::i;:::-;;1439:7;:14::i;:::-;11315:5;;;;;1527:23;-1:-1:-1;;;;;;;;;;;447:1166:30:o;641:216:105:-;702:4;;763:5;;;786;;;782:28;;;801:5;808:1;793:17;;;;;;;782:28;832:4;;-1:-1:-1;838:1:105;-1:-1:-1;641:216:105;;;;;;:::o;11585:120:30:-;11657:7;11696:1;11683:15;;;;;:::i;:::-;11693:1;11690;11683:15;11676:22;11585:120;-1:-1:-1;;;;11585:120:30:o;8894:449::-;8955:7;8964;8983:9;8995:16;9006:1;9009;8995:10;:16::i;:::-;8983:28;-1:-1:-1;11315:5:30;;;9063:6;;;9059:137;;9162:5;;;;;-1:-1:-1;9166:1:30;-1:-1:-1;9154:17:30;;9059:137;9321:1;11117:5;;;9302:20;;9324:1;;-1:-1:-1;8894:449:30;-1:-1:-1;;;;8894:449:30:o;9406:301::-;9482:7;9491;9521:1;9514:3;:8;9510:145;;-1:-1:-1;9617:3:30;;-1:-1:-1;9622:7:30;;;9609:21;;9510:145;9672:7;9678:1;9672:3;:7;:::i;:::-;9664:36;-1:-1:-1;;11117:5:30;;;9406:301;;;;;;;:::o;9814:366::-;9894:7;;10001:43;10035:5;11117;;;10012:28;;;;;:::i;:::-;;10042:1;10919:5;;10805:136;10001:43;9982:62;;10120:5;10114:3;:11;;;;;:::i;:::-;;11315:5;;;10085:41;;9814:366;-1:-1:-1;;;;;9814:366:30:o;10305:438::-;10355:7;10486:1;10355:7;10557:152;10581:1;10577;:5;10557:152;;;11315:5;;;10636:1;11117:5;11315;;10607:50;-1:-1:-1;10584:3:30;;10557:152;;;-1:-1:-1;10735:1:30;10305:438;-1:-1:-1;;10305:438:30:o;11403:128::-;11467:7;-1:-1:-1;;11503:1:30;11500;11493:31;11486:38;11403:128;-1:-1:-1;;;11403:128:30:o;14:180:127:-;73:6;126:2;114:9;105:7;101:23;97:32;94:52;;;142:1;139;132:12;94:52;-1:-1:-1;165:23:127;;14:180;-1:-1:-1;14:180:127:o;381:188::-;449:20;;509:34;498:46;;488:57;;478:85;;559:1;556;549:12;478:85;381:188;;;:::o;574:171::-;641:20;;701:18;690:30;;680:41;;670:69;;735:1;732;725:12;750:952;841:6;849;893:9;884:7;880:23;923:3;919:2;915:12;912:32;;;940:1;937;930:12;912:32;964:4;960:2;956:13;953:33;;;982:1;979;972:12;953:33;;1015:2;1009:9;1057:4;1049:6;1045:17;1128:6;1116:10;1113:22;1092:18;1080:10;1077:34;1074:62;1071:242;;;-1:-1:-1;;;1166:1:127;1159:88;1270:4;1267:1;1260:15;1298:4;1295:1;1288:15;1071:242;1329:2;1322:22;1368:29;1387:9;1368:29;:::i;:::-;1360:6;1353:45;1431:38;1465:2;1454:9;1450:18;1431:38;:::i;:::-;1426:2;1418:6;1414:15;1407:63;1503:37;1536:2;1525:9;1521:18;1503:37;:::i;:::-;1498:2;1490:6;1486:15;1479:62;1574:37;1607:2;1596:9;1592:18;1574:37;:::i;:::-;1569:2;1557:15;;1550:62;1561:6;-1:-1:-1;1656:40:127;1690:4;1675:20;;1656:40;:::i;:::-;1646:50;;750:952;;;;;:::o;2122:184::-;-1:-1:-1;;;2171:1:127;2164:88;2271:4;2268:1;2261:15;2295:4;2292:1;2285:15;2311:184;-1:-1:-1;;;2360:1:127;2353:88;2460:4;2457:1;2450:15;2484:4;2481:1;2474:15;2500:168;2573:9;;;2604;;2621:15;;;2615:22;;2601:37;2591:71;;2642:18;;:::i;2673:128::-;2740:9;;;2761:11;;;2758:37;;;2775:18;;:::i;3214:274::-;3254:1;3280;3270:189;;-1:-1:-1;;;3312:1:127;3305:88;3416:4;3413:1;3406:15;3444:4;3441:1;3434:15;3270:189;-1:-1:-1;3473:9:127;;3214:274::o;3493:125::-;3558:9;;;3579:10;;;3576:36;;;3592:18;;:::i",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "expandedRate(uint256)": "61c8b557",
+    "isValidRate(uint256)": "b28087b6",
+    "tradeBySourceAmount((uint128,uint128,uint64,uint64),uint128)": "92fd04ca",
+    "tradeByTargetAmount((uint128,uint128,uint64,uint64),uint128)": "ab770e74"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"BalanceMismatch\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"GreaterThanMaxInput\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InsufficientCapacity\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InsufficientLiquidity\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidRate\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidTradeActionAmount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidTradeActionStrategyId\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"LowerThanMinReturn\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NativeAmountMismatch\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"OrderDisabled\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"OutDated\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Overflow\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"FeesWithdrawn\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token0\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token1\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint32\",\"name\":\"prevFeePPM\",\"type\":\"uint32\"},{\"indexed\":false,\"internalType\":\"uint32\",\"name\":\"newFeePPM\",\"type\":\"uint32\"}],\"name\":\"PairTradingFeePPMUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token0\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token1\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"struct Order\",\"name\":\"order0\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"struct Order\",\"name\":\"order1\",\"type\":\"tuple\"}],\"name\":\"StrategyCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token0\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token1\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"struct Order\",\"name\":\"order0\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"struct Order\",\"name\":\"order1\",\"type\":\"tuple\"}],\"name\":\"StrategyDeleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token0\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token1\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"struct Order\",\"name\":\"order0\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"indexed\":false,\"internalType\":\"struct Order\",\"name\":\"order1\",\"type\":\"tuple\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"reason\",\"type\":\"uint8\"}],\"name\":\"StrategyUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"trader\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"sourceToken\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"targetToken\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"sourceAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"targetAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"tradingFeeAmount\",\"type\":\"uint128\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"byTargetAmount\",\"type\":\"bool\"}],\"name\":\"TokensTraded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint32\",\"name\":\"prevFeePPM\",\"type\":\"uint32\"},{\"indexed\":false,\"internalType\":\"uint32\",\"name\":\"newFeePPM\",\"type\":\"uint32\"}],\"name\":\"TradingFeePPMUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"}],\"name\":\"expandedRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"}],\"name\":\"isValidRate\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"internalType\":\"struct Order\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"}],\"name\":\"tradeBySourceAmount\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint128\",\"name\":\"y\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"z\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"A\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"B\",\"type\":\"uint64\"}],\"internalType\":\"struct Order\",\"name\":\"order\",\"type\":\"tuple\"},{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"}],\"name\":\"tradeByTargetAmount\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"FeesWithdrawn(address,address,uint256,address)\":{\"details\":\"triggered when fees are withdrawn\"},\"Initialized(uint8)\":{\"details\":\"Triggered when the contract has been initialized or reinitialized.\"},\"PairTradingFeePPMUpdated(address,address,uint32,uint32)\":{\"details\":\"triggered when the custom trading fee for a given pair is updated\"},\"StrategyCreated(uint256,address,address,address,(uint128,uint128,uint64,uint64),(uint128,uint128,uint64,uint64))\":{\"details\":\"triggered when a strategy is created\"},\"StrategyDeleted(uint256,address,address,address,(uint128,uint128,uint64,uint64),(uint128,uint128,uint64,uint64))\":{\"details\":\"triggered when a strategy is deleted\"},\"StrategyUpdated(uint256,address,address,(uint128,uint128,uint64,uint64),(uint128,uint128,uint64,uint64),uint8)\":{\"details\":\"triggered when a strategy is updated\"},\"TokensTraded(address,address,address,uint256,uint256,uint128,bool)\":{\"details\":\"triggered when tokens are traded\"},\"TradingFeePPMUpdated(uint32,uint32)\":{\"details\":\"triggered when the network fee is updated\"}},\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/helpers/TestStrategies.sol\":\"TestStrategies\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/carbon/Pairs.sol\":{\"keccak256\":\"0xf93c805727414083085098262481ac9def2bdeafcb71934234b0b92cc6320551\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://9e20dd667bc2da286024e68e30924dacf9e5eef9d750bd3af879c46065afda63\",\"dweb:/ipfs/QmW6DpK4egvQAXUH3z1iuUBNjEMRksegFcEKQ2HQPgUqv7\"]},\"contracts/carbon/Strategies.sol\":{\"keccak256\":\"0xba59c67b8d76573fd75a71fa1ef572044d6fcd936fa925c0933227f958bfe6c7\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://37313cc5b1b04ab8d7fee913972b65e1e614d922039b7c7a89b52456ac185d1d\",\"dweb:/ipfs/QmRKGWAcaNtFbbvQ8j4oVkdWaeNEc7awohDJ2akCn8NaNg\"]},\"contracts/helpers/TestStrategies.sol\":{\"keccak256\":\"0xa84e69350a855afd41f4771ddc904faee152cc14cedf118d7262749c53fb7cc1\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://23c1c08e45accbad56ba11c891879f1d889378add409eecff781482b8eea5ca6\",\"dweb:/ipfs/Qmc5p6UvQj7wqyUaAXcJyC35pui1tzBeLMRzA1mea3MXDc\"]},\"contracts/token/Token.sol\":{\"keccak256\":\"0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521\",\"dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi\"]},\"contracts/utility/Constants.sol\":{\"keccak256\":\"0x6cbf2c0e48b5377fe5fea47278256856368612efd7e29b17c716f1611b64d0f3\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://3ad5afc72e4194aa21ac7c02801e6031076bfcd1689f444071b18a123b14884a\",\"dweb:/ipfs/QmdQ4EJgQs6h3oKqh38fbqHnzoEb3Mt26BKiHuesYkTb2f\"]},\"contracts/utility/Fraction.sol\":{\"keccak256\":\"0x84c801ef901e7fd30e99637377b29dfa28c6c1fa140adb5c872fddd8b82fd358\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f7aa812bdb61aa1fff9dc357d67309fb104e08b1bfcf13d2e12cb7adea036c19\",\"dweb:/ipfs/QmYNvFA6HbG5mwfZjHUPLNqRFUfHhqQH346PiHY6cEpxAD\"]},\"contracts/utility/MathEx.sol\":{\"keccak256\":\"0x2ff481334338c5d5b13f918a3a58dfebb9ec3329848117acd7ac7e63382664c5\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://a411ed9456feb5fcf7414a6eae0adf8c63be63c73cf7abdc6218b3bd3b03ff74\",\"dweb:/ipfs/Qme7bfmJra8Wyv1DWT4v5keQsxSigSSMmWQW21GdBqJ4E4\"]},\"contracts/utility/Utils.sol\":{\"keccak256\":\"0xf6f3ad1ec3ee378729ebe1ffc0ac72e95a6353a9ec5b85fdf3e4c3b0f54a5f1e\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://fe8ad2c267dd51f7347c2939ede51a74e603cce0ac4fbad256d6d723bdc66675\",\"dweb:/ipfs/QmQDzduCwAnZca5QHRrqJjPYbggA8jKTCwswoch7dzL744\"]},\"contracts/utility/interfaces/IUpgradeable.sol\":{\"keccak256\":\"0xcc42138a568e5b5e6e1b96402d351ea04627e03bf24c0b62439910d3fda2773c\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://1e565b58ac5be1d3f9016d06ef75acfbec80d53e533d711c8a7e219b21bcc978\",\"dweb:/ipfs/QmVgRbwXZHN9CT6fCBE2a7eDvCBKQz2RHuy58FgSPMHmVU\"]},\"contracts/utility/interfaces/IVersioned.sol\":{\"keccak256\":\"0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51\",\"dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif\"]},\"contracts/voucher/interfaces/IVoucher.sol\":{\"keccak256\":\"0x989f053712ccd26f2d5dfde61f149882a73cb07892f0f2f2ade13e0fd8ded054\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://082409c5265f905ca7f0a46f5ba67dd7d806538a83a272ddad8b5dec0288764a\",\"dweb:/ipfs/QmRh4tkxALT6sJJrzm6aokWqPCEdkGHvBrV2VkkMWDRNUW\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol\":{\"keccak256\":\"0x7acbc538aad6eb4614e26612a8c5c0149bb8808db95e2638d245a8365f63e572\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ea07bdbf13b16d19ccf8a8f1a361c80bbfb6073e8b1d079b72f7a5f09dc642cd\",\"dweb:/ipfs/QmQh5YhCySYR5RSAEFTt3NaDhq6MCxvSTdFh56874JPxbY\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol\":{\"keccak256\":\"0xb8f5302f12138c5561362e88a78d061573e6298b7a1a5afe84a1e2c8d4d5aeaa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://740cf4dc535e3082560cf5a031473029f322690fc8037fe9d5e3a8bef42e757c\",\"dweb:/ipfs/QmTQxFdfxcaueQa23VX34wAPqzruZbkzyeN58tZK2yav2b\"]},\"node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol\":{\"keccak256\":\"0x89be10e757d242e9b18d5a32c9fbe2019f6d63052bbe46397a430a1d60d7f794\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f103ee2e4aecd37aac6ceefe670709cdd7613dee25fa2d4d9feaf7fc0aaa155e\",\"dweb:/ipfs/QmRiNZLoJk5k3HPMYGPGjZFd2ke1ZxjhJZkM45Ec9GH9hv\"]},\"node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol\":{\"keccak256\":\"0xbe63437e37e32162d5d11ea8f11a44378c092b4bcbb05b51a813fe4bf33297d4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://68a514febde6ffd8afe3cb5b40815d10c0a926063237d5d167cbaa90239f75ae\",\"dweb:/ipfs/QmVBvYeR6oGBw7K7vu5FMotr8josejtaGwugM68VTZacww\"]},\"node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol\":{\"keccak256\":\"0x9c80f545915582e63fe206c6ce27cbe85a86fc10b9cd2a0e8c9488fb7c2ee422\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://310136ad60820af4177a11a61d77a3686faf5fca4942b600e08fc940db38396b\",\"dweb:/ipfs/QmbCzMNSTL7Zi7M4UCSqBrkHtp4jjxUnGbkneCZKdR1qeq\"]},\"node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol\":{\"keccak256\":\"0xc6cef87559d0aeffdf0a99803de655938a7779ec0a3cd5d4383483ad85565a09\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://92ad7e572cf44e6b4b37631b44b62f9eb9fb1cf14d9ce51c1504d5dc7ccaf758\",\"dweb:/ipfs/QmcnbqX85tsWnUXPmtuPLE4SczME2sJaTfmqEFkuAJvWhy\"]},\"node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol\":{\"keccak256\":\"0x1c65595a26548a1b2263315b08a56334a2d7087319814437559c3c96025e939f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://876afb75e0d5615b07f70a0bc69ae7f098df8ef058251b5934b9d05c9c7e0d1f\",\"dweb:/ipfs/Qmay4sdoBJQtP2cC1EDyQ8GzNPJZzo3v5soRRy8rDNLfBJ\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15\",\"dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5\",\"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol\":{\"keccak256\":\"0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a\",\"dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4\",\"dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx\"]},\"node_modules/@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931\",\"dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm\"]},\"node_modules/@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]},\"node_modules/@openzeppelin/contracts/utils/math/Math.sol\":{\"keccak256\":\"0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c\",\"dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS\"]},\"node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol\":{\"keccak256\":\"0x52a8cfb0f5239d11b457dcdd1b326992ef672714ca8da71a157255bddd13f3ad\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://495145362c7ff1c9ca88c58bbbbcb412e3c2004406647412394486552ff6c278\",\"dweb:/ipfs/QmNNCeng6d5eRPDn6tkWSQhjE39XWfQEfjA63rRwHmr1iH\"]},\"node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"keccak256\":\"0x58b21219689909c4f8339af00813760337f7e2e7f169a97fe49e2896dcfb3b9a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ef8e012e946dec20e59f2d4446f4b44bb098f3fa8bac103b1b5112fff777447b\",\"dweb:/ipfs/QmVTooKWcLkJ9W68yNX4MgdrbAKiAXwuRN9A7f4NkdcdtQ\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "BalanceMismatch"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "GreaterThanMaxInput"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InsufficientCapacity"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InsufficientLiquidity"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidRate"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidTradeActionAmount"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidTradeActionStrategyId"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "LowerThanMinReturn"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "NativeAmountMismatch"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "OrderDisabled"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "OutDated"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Overflow"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "Token",
+              "name": "token",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "FeesWithdrawn",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Initialized",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "Token",
+              "name": "token0",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token1",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint32",
+              "name": "prevFeePPM",
+              "type": "uint32",
+              "indexed": false
+            },
+            {
+              "internalType": "uint32",
+              "name": "newFeePPM",
+              "type": "uint32",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "PairTradingFeePPMUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token0",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token1",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "struct Order",
+              "name": "order0",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ],
+              "indexed": false
+            },
+            {
+              "internalType": "struct Order",
+              "name": "order1",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ],
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "StrategyCreated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token0",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token1",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "struct Order",
+              "name": "order0",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ],
+              "indexed": false
+            },
+            {
+              "internalType": "struct Order",
+              "name": "order1",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ],
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "StrategyDeleted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token0",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token1",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "struct Order",
+              "name": "order0",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ],
+              "indexed": false
+            },
+            {
+              "internalType": "struct Order",
+              "name": "order1",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ],
+              "indexed": false
+            },
+            {
+              "internalType": "uint8",
+              "name": "reason",
+              "type": "uint8",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "StrategyUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "trader",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "sourceToken",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "targetToken",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "sourceAmount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "targetAmount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint128",
+              "name": "tradingFeeAmount",
+              "type": "uint128",
+              "indexed": false
+            },
+            {
+              "internalType": "bool",
+              "name": "byTargetAmount",
+              "type": "bool",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TokensTraded",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint32",
+              "name": "prevFeePPM",
+              "type": "uint32",
+              "indexed": false
+            },
+            {
+              "internalType": "uint32",
+              "name": "newFeePPM",
+              "type": "uint32",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TradingFeePPMUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "expandedRate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "isValidRate",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct Order",
+              "name": "order",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ]
+            },
+            {
+              "internalType": "uint128",
+              "name": "amount",
+              "type": "uint128"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "tradeBySourceAmount",
+          "outputs": [
+            {
+              "internalType": "uint128",
+              "name": "",
+              "type": "uint128"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct Order",
+              "name": "order",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "y",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "z",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "A",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "B",
+                  "type": "uint64"
+                }
+              ]
+            },
+            {
+              "internalType": "uint128",
+              "name": "amount",
+              "type": "uint128"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "tradeByTargetAmount",
+          "outputs": [
+            {
+              "internalType": "uint128",
+              "name": "",
+              "type": "uint128"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/helpers/TestStrategies.sol": "TestStrategies"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/carbon/Pairs.sol": {
+        "keccak256": "0xf93c805727414083085098262481ac9def2bdeafcb71934234b0b92cc6320551",
+        "urls": [
+          "bzz-raw://9e20dd667bc2da286024e68e30924dacf9e5eef9d750bd3af879c46065afda63",
+          "dweb:/ipfs/QmW6DpK4egvQAXUH3z1iuUBNjEMRksegFcEKQ2HQPgUqv7"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/carbon/Strategies.sol": {
+        "keccak256": "0xba59c67b8d76573fd75a71fa1ef572044d6fcd936fa925c0933227f958bfe6c7",
+        "urls": [
+          "bzz-raw://37313cc5b1b04ab8d7fee913972b65e1e614d922039b7c7a89b52456ac185d1d",
+          "dweb:/ipfs/QmRKGWAcaNtFbbvQ8j4oVkdWaeNEc7awohDJ2akCn8NaNg"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/helpers/TestStrategies.sol": {
+        "keccak256": "0xa84e69350a855afd41f4771ddc904faee152cc14cedf118d7262749c53fb7cc1",
+        "urls": [
+          "bzz-raw://23c1c08e45accbad56ba11c891879f1d889378add409eecff781482b8eea5ca6",
+          "dweb:/ipfs/Qmc5p6UvQj7wqyUaAXcJyC35pui1tzBeLMRzA1mea3MXDc"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/token/Token.sol": {
+        "keccak256": "0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53",
+        "urls": [
+          "bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521",
+          "dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/Constants.sol": {
+        "keccak256": "0x6cbf2c0e48b5377fe5fea47278256856368612efd7e29b17c716f1611b64d0f3",
+        "urls": [
+          "bzz-raw://3ad5afc72e4194aa21ac7c02801e6031076bfcd1689f444071b18a123b14884a",
+          "dweb:/ipfs/QmdQ4EJgQs6h3oKqh38fbqHnzoEb3Mt26BKiHuesYkTb2f"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/Fraction.sol": {
+        "keccak256": "0x84c801ef901e7fd30e99637377b29dfa28c6c1fa140adb5c872fddd8b82fd358",
+        "urls": [
+          "bzz-raw://f7aa812bdb61aa1fff9dc357d67309fb104e08b1bfcf13d2e12cb7adea036c19",
+          "dweb:/ipfs/QmYNvFA6HbG5mwfZjHUPLNqRFUfHhqQH346PiHY6cEpxAD"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/MathEx.sol": {
+        "keccak256": "0x2ff481334338c5d5b13f918a3a58dfebb9ec3329848117acd7ac7e63382664c5",
+        "urls": [
+          "bzz-raw://a411ed9456feb5fcf7414a6eae0adf8c63be63c73cf7abdc6218b3bd3b03ff74",
+          "dweb:/ipfs/Qme7bfmJra8Wyv1DWT4v5keQsxSigSSMmWQW21GdBqJ4E4"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/Utils.sol": {
+        "keccak256": "0xf6f3ad1ec3ee378729ebe1ffc0ac72e95a6353a9ec5b85fdf3e4c3b0f54a5f1e",
+        "urls": [
+          "bzz-raw://fe8ad2c267dd51f7347c2939ede51a74e603cce0ac4fbad256d6d723bdc66675",
+          "dweb:/ipfs/QmQDzduCwAnZca5QHRrqJjPYbggA8jKTCwswoch7dzL744"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/interfaces/IUpgradeable.sol": {
+        "keccak256": "0xcc42138a568e5b5e6e1b96402d351ea04627e03bf24c0b62439910d3fda2773c",
+        "urls": [
+          "bzz-raw://1e565b58ac5be1d3f9016d06ef75acfbec80d53e533d711c8a7e219b21bcc978",
+          "dweb:/ipfs/QmVgRbwXZHN9CT6fCBE2a7eDvCBKQz2RHuy58FgSPMHmVU"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/interfaces/IVersioned.sol": {
+        "keccak256": "0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04",
+        "urls": [
+          "bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51",
+          "dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/voucher/interfaces/IVoucher.sol": {
+        "keccak256": "0x989f053712ccd26f2d5dfde61f149882a73cb07892f0f2f2ade13e0fd8ded054",
+        "urls": [
+          "bzz-raw://082409c5265f905ca7f0a46f5ba67dd7d806538a83a272ddad8b5dec0288764a",
+          "dweb:/ipfs/QmRh4tkxALT6sJJrzm6aokWqPCEdkGHvBrV2VkkMWDRNUW"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol": {
+        "keccak256": "0x7acbc538aad6eb4614e26612a8c5c0149bb8808db95e2638d245a8365f63e572",
+        "urls": [
+          "bzz-raw://ea07bdbf13b16d19ccf8a8f1a361c80bbfb6073e8b1d079b72f7a5f09dc642cd",
+          "dweb:/ipfs/QmQh5YhCySYR5RSAEFTt3NaDhq6MCxvSTdFh56874JPxbY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol": {
+        "keccak256": "0xb8f5302f12138c5561362e88a78d061573e6298b7a1a5afe84a1e2c8d4d5aeaa",
+        "urls": [
+          "bzz-raw://740cf4dc535e3082560cf5a031473029f322690fc8037fe9d5e3a8bef42e757c",
+          "dweb:/ipfs/QmTQxFdfxcaueQa23VX34wAPqzruZbkzyeN58tZK2yav2b"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
+        "keccak256": "0x89be10e757d242e9b18d5a32c9fbe2019f6d63052bbe46397a430a1d60d7f794",
+        "urls": [
+          "bzz-raw://f103ee2e4aecd37aac6ceefe670709cdd7613dee25fa2d4d9feaf7fc0aaa155e",
+          "dweb:/ipfs/QmRiNZLoJk5k3HPMYGPGjZFd2ke1ZxjhJZkM45Ec9GH9hv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol": {
+        "keccak256": "0xbe63437e37e32162d5d11ea8f11a44378c092b4bcbb05b51a813fe4bf33297d4",
+        "urls": [
+          "bzz-raw://68a514febde6ffd8afe3cb5b40815d10c0a926063237d5d167cbaa90239f75ae",
+          "dweb:/ipfs/QmVBvYeR6oGBw7K7vu5FMotr8josejtaGwugM68VTZacww"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
+        "keccak256": "0x9c80f545915582e63fe206c6ce27cbe85a86fc10b9cd2a0e8c9488fb7c2ee422",
+        "urls": [
+          "bzz-raw://310136ad60820af4177a11a61d77a3686faf5fca4942b600e08fc940db38396b",
+          "dweb:/ipfs/QmbCzMNSTL7Zi7M4UCSqBrkHtp4jjxUnGbkneCZKdR1qeq"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol": {
+        "keccak256": "0xc6cef87559d0aeffdf0a99803de655938a7779ec0a3cd5d4383483ad85565a09",
+        "urls": [
+          "bzz-raw://92ad7e572cf44e6b4b37631b44b62f9eb9fb1cf14d9ce51c1504d5dc7ccaf758",
+          "dweb:/ipfs/QmcnbqX85tsWnUXPmtuPLE4SczME2sJaTfmqEFkuAJvWhy"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol": {
+        "keccak256": "0x1c65595a26548a1b2263315b08a56334a2d7087319814437559c3c96025e939f",
+        "urls": [
+          "bzz-raw://876afb75e0d5615b07f70a0bc69ae7f098df8ef058251b5934b9d05c9c7e0d1f",
+          "dweb:/ipfs/Qmay4sdoBJQtP2cC1EDyQ8GzNPJZzo3v5soRRy8rDNLfBJ"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c",
+        "urls": [
+          "bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15",
+          "dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+        "urls": [
+          "bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
+          "dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol": {
+        "keccak256": "0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a",
+        "urls": [
+          "bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a",
+          "dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa",
+        "urls": [
+          "bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4",
+          "dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Address.sol": {
+        "keccak256": "0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa",
+        "urls": [
+          "bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931",
+          "dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
+        "keccak256": "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
+        "urls": [
+          "bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+          "dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": {
+        "keccak256": "0x52a8cfb0f5239d11b457dcdd1b326992ef672714ca8da71a157255bddd13f3ad",
+        "urls": [
+          "bzz-raw://495145362c7ff1c9ca88c58bbbbcb412e3c2004406647412394486552ff6c278",
+          "dweb:/ipfs/QmNNCeng6d5eRPDn6tkWSQhjE39XWfQEfjA63rRwHmr1iH"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol": {
+        "keccak256": "0x58b21219689909c4f8339af00813760337f7e2e7f169a97fe49e2896dcfb3b9a",
+        "urls": [
+          "bzz-raw://ef8e012e946dec20e59f2d4446f4b44bb098f3fa8bac103b1b5112fff777447b",
+          "dweb:/ipfs/QmVTooKWcLkJ9W68yNX4MgdrbAKiAXwuRN9A7f4NkdcdtQ"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/helpers/TestStrategies.sol",
+    "id": 5959,
+    "exportedSymbols": {
+      "Order": [
+        1491
+      ],
+      "Strategies": [
+        4215
+      ],
+      "TestStrategies": [
+        5958
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:829:18",
+    "nodes": [
+      {
+        "id": 5886,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:18",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 5889,
+        "nodeType": "ImportDirective",
+        "src": "76:61:18",
+        "nodes": [],
+        "absolutePath": "contracts/carbon/Strategies.sol",
+        "file": "../carbon/Strategies.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5959,
+        "sourceUnit": 4216,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5887,
+              "name": "Strategies",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 4215,
+              "src": "85:10:18",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 5888,
+              "name": "Order",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1491,
+              "src": "97:5:18",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5958,
+        "nodeType": "ContractDefinition",
+        "src": "139:740:18",
+        "nodes": [
+          {
+            "id": 5912,
+            "nodeType": "FunctionDefinition",
+            "src": "183:232:18",
+            "nodes": [],
+            "body": {
+              "id": 5911,
+              "nodeType": "Block",
+              "src": "280:135:18",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    null,
+                    5902
+                  ],
+                  "declarations": [
+                    null,
+                    {
+                      "constant": false,
+                      "id": 5902,
+                      "mutability": "mutable",
+                      "name": "targetAmount",
+                      "nameLocation": "301:12:18",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 5911,
+                      "src": "293:20:18",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint128",
+                        "typeString": "uint128"
+                      },
+                      "typeName": {
+                        "id": 5901,
+                        "name": "uint128",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "293:7:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 5908,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 5904,
+                        "name": "order",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5894,
+                        "src": "358:5:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Order_$1491_memory_ptr",
+                          "typeString": "struct Order memory"
+                        }
+                      },
+                      {
+                        "id": 5905,
+                        "name": "amount",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5896,
+                        "src": "365:6:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      },
+                      {
+                        "hexValue": "66616c7365",
+                        "id": 5906,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "bool",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "373:5:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        "value": "false"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_Order_$1491_memory_ptr",
+                          "typeString": "struct Order memory"
+                        },
+                        {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        },
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 5903,
+                      "name": "_singleTradeActionSourceAndTargetAmounts",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3970,
+                      "src": "317:40:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_struct$_Order_$1491_memory_ptr_$_t_uint128_$_t_bool_$returns$_t_uint128_$_t_uint128_$",
+                        "typeString": "function (struct Order memory,uint128,bool) pure returns (uint128,uint128)"
+                      }
+                    },
+                    "id": 5907,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "317:62:18",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_uint128_$_t_uint128_$",
+                      "typeString": "tuple(uint128,uint128)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "290:89:18"
+                },
+                {
+                  "expression": {
+                    "id": 5909,
+                    "name": "targetAmount",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5902,
+                    "src": "396:12:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "functionReturnParameters": 5900,
+                  "id": 5910,
+                  "nodeType": "Return",
+                  "src": "389:19:18"
+                }
+              ]
+            },
+            "functionSelector": "92fd04ca",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tradeBySourceAmount",
+            "nameLocation": "192:19:18",
+            "parameters": {
+              "id": 5897,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5894,
+                  "mutability": "mutable",
+                  "name": "order",
+                  "nameLocation": "225:5:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5912,
+                  "src": "212:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Order_$1491_memory_ptr",
+                    "typeString": "struct Order"
+                  },
+                  "typeName": {
+                    "id": 5893,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5892,
+                      "name": "Order",
+                      "nameLocations": [
+                        "212:5:18"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1491,
+                      "src": "212:5:18"
+                    },
+                    "referencedDeclaration": 1491,
+                    "src": "212:5:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Order_$1491_storage_ptr",
+                      "typeString": "struct Order"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5896,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "240:6:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5912,
+                  "src": "232:14:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 5895,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "232:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "211:36:18"
+            },
+            "returnParameters": {
+              "id": 5900,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5899,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5912,
+                  "src": "271:7:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 5898,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "271:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "270:9:18"
+            },
+            "scope": 5958,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5933,
+            "nodeType": "FunctionDefinition",
+            "src": "421:231:18",
+            "nodes": [],
+            "body": {
+              "id": 5932,
+              "nodeType": "Block",
+              "src": "518:134:18",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    5923,
+                    null
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 5923,
+                      "mutability": "mutable",
+                      "name": "sourceAmount",
+                      "nameLocation": "537:12:18",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 5932,
+                      "src": "529:20:18",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint128",
+                        "typeString": "uint128"
+                      },
+                      "typeName": {
+                        "id": 5922,
+                        "name": "uint128",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "529:7:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      },
+                      "visibility": "internal"
+                    },
+                    null
+                  ],
+                  "id": 5929,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 5925,
+                        "name": "order",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5915,
+                        "src": "596:5:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Order_$1491_memory_ptr",
+                          "typeString": "struct Order memory"
+                        }
+                      },
+                      {
+                        "id": 5926,
+                        "name": "amount",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5917,
+                        "src": "603:6:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      },
+                      {
+                        "hexValue": "74727565",
+                        "id": 5927,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "bool",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "611:4:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        "value": "true"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_Order_$1491_memory_ptr",
+                          "typeString": "struct Order memory"
+                        },
+                        {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        },
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 5924,
+                      "name": "_singleTradeActionSourceAndTargetAmounts",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3970,
+                      "src": "555:40:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_struct$_Order_$1491_memory_ptr_$_t_uint128_$_t_bool_$returns$_t_uint128_$_t_uint128_$",
+                        "typeString": "function (struct Order memory,uint128,bool) pure returns (uint128,uint128)"
+                      }
+                    },
+                    "id": 5928,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "555:61:18",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_uint128_$_t_uint128_$",
+                      "typeString": "tuple(uint128,uint128)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "528:88:18"
+                },
+                {
+                  "expression": {
+                    "id": 5930,
+                    "name": "sourceAmount",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5923,
+                    "src": "633:12:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "functionReturnParameters": 5921,
+                  "id": 5931,
+                  "nodeType": "Return",
+                  "src": "626:19:18"
+                }
+              ]
+            },
+            "functionSelector": "ab770e74",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tradeByTargetAmount",
+            "nameLocation": "430:19:18",
+            "parameters": {
+              "id": 5918,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5915,
+                  "mutability": "mutable",
+                  "name": "order",
+                  "nameLocation": "463:5:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5933,
+                  "src": "450:18:18",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Order_$1491_memory_ptr",
+                    "typeString": "struct Order"
+                  },
+                  "typeName": {
+                    "id": 5914,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5913,
+                      "name": "Order",
+                      "nameLocations": [
+                        "450:5:18"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1491,
+                      "src": "450:5:18"
+                    },
+                    "referencedDeclaration": 1491,
+                    "src": "450:5:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Order_$1491_storage_ptr",
+                      "typeString": "struct Order"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5917,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "478:6:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5933,
+                  "src": "470:14:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 5916,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "470:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "449:36:18"
+            },
+            "returnParameters": {
+              "id": 5921,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5920,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5933,
+                  "src": "509:7:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 5919,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "509:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "508:9:18"
+            },
+            "scope": 5958,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5945,
+            "nodeType": "FunctionDefinition",
+            "src": "658:104:18",
+            "nodes": [],
+            "body": {
+              "id": 5944,
+              "nodeType": "Block",
+              "src": "722:40:18",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5941,
+                        "name": "rate",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5935,
+                        "src": "750:4:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 5940,
+                      "name": "_validRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3882,
+                      "src": "739:10:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_uint256_$returns$_t_bool_$",
+                        "typeString": "function (uint256) pure returns (bool)"
+                      }
+                    },
+                    "id": 5942,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "739:16:18",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 5939,
+                  "id": 5943,
+                  "nodeType": "Return",
+                  "src": "732:23:18"
+                }
+              ]
+            },
+            "functionSelector": "b28087b6",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isValidRate",
+            "nameLocation": "667:11:18",
+            "parameters": {
+              "id": 5936,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5935,
+                  "mutability": "mutable",
+                  "name": "rate",
+                  "nameLocation": "687:4:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5945,
+                  "src": "679:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5934,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "679:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "678:14:18"
+            },
+            "returnParameters": {
+              "id": 5939,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5938,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5945,
+                  "src": "716:4:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5937,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "716:4:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "715:6:18"
+            },
+            "scope": 5958,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5957,
+            "nodeType": "FunctionDefinition",
+            "src": "768:109:18",
+            "nodes": [],
+            "body": {
+              "id": 5956,
+              "nodeType": "Block",
+              "src": "836:41:18",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5953,
+                        "name": "rate",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5947,
+                        "src": "865:4:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 5952,
+                      "name": "_expandRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3862,
+                      "src": "853:11:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_uint256_$returns$_t_uint256_$",
+                        "typeString": "function (uint256) pure returns (uint256)"
+                      }
+                    },
+                    "id": 5954,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "853:17:18",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 5951,
+                  "id": 5955,
+                  "nodeType": "Return",
+                  "src": "846:24:18"
+                }
+              ]
+            },
+            "functionSelector": "61c8b557",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "expandedRate",
+            "nameLocation": "777:12:18",
+            "parameters": {
+              "id": 5948,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5947,
+                  "mutability": "mutable",
+                  "name": "rate",
+                  "nameLocation": "798:4:18",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "790:12:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5946,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "790:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "789:14:18"
+            },
+            "returnParameters": {
+              "id": 5951,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5950,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "827:7:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5949,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "827:7:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "826:9:18"
+            },
+            "scope": 5958,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 5890,
+              "name": "Strategies",
+              "nameLocations": [
+                "166:10:18"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 4215,
+              "src": "166:10:18"
+            },
+            "id": 5891,
+            "nodeType": "InheritanceSpecifier",
+            "src": "166:10:18"
+          }
+        ],
+        "canonicalName": "TestStrategies",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          5958,
+          4215,
+          53810
+        ],
+        "name": "TestStrategies",
+        "nameLocation": "148:14:18",
+        "scope": 5959,
+        "usedErrors": [
+          1544,
+          1546,
+          1548,
+          1550,
+          1552,
+          1554,
+          1556,
+          1558,
+          1560,
+          1562,
+          1564,
+          7892
+        ]
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 18
+}

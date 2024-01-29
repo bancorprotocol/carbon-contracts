@@ -1,0 +1,493 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "Overflow",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint32",
+          "name": "timeElapsed",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "halfLife",
+          "type": "uint32"
+        }
+      ],
+      "name": "calcExpDecay",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b506107f0806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c806337627dde14610030575b600080fd5b61004361003e366004610715565b610055565b60405190815260200160405180910390f35b600061006284848461006c565b90505b9392505050565b6040805180820190915263ffffffff80841682528216602082015260009081610094826100b3565b90506100a986826020015183600001516104b7565b9695505050505050565b604080518082019091526000808252602082015260006100ec6f58b90bfbe8e7bcd5e4f1d9cc01f97b57846000015185602001516104b7565b905060008080700800000000000000000000000000000000841061013c576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6f10000000000000000000000000000000840692508291506001607f1b8280020491506710e1b3be415a00008202016001607f1b8383020491506705a0913f6b1e00008202016001607f1b838302049150670168244fdac780008202016001607f1b838302049150664807432bc180008202016001607f1b838302049150660c0135dca040008202016001607f1b8383020491506601b707b1cdc0008202016001607f1b8383020491506536e0f639b8008202016001607f1b838302049150650618fee9f8008202016001607f1b838302049150649c197dcc008202016001607f1b838302049150640e30dce4008202016001607f1b83830204915064012ebd13008202016001607f1b8383020491506317499f008202016001607f1b8383020491506301a9d4808202016001607f1b838302049150621c63808202016001607f1b8383020491506201c6388202016001607f1b838302049150611ab88202016001607f1b83830204915061017c8202016001607f1b83830204915060148202016001607f1b83830204915081016001607f1b836721c3677c82b400008304010190506f100000000000000000000000000000008416156103215770018ebef9eac820ae8682b9793ac6d1e7767001c3d6a24ed82218787d624d3e5eba95f982020490505b6f20000000000000000000000000000000841615610363577001368b2fc6f9609fe7aceb46aa619baed470018ebef9eac820ae8682b9793ac6d1e77882020490505b6f400000000000000000000000000000008416156103a4576fbc5ab1b16779be3575bd8f0520a9f21f7001368b2fc6f9609fe7aceb46aa619baed582020490505b6001607f1b8416156103d8576f454aaa8efe072e7f6ddbab84b40a55c96fbc5ab1b16779be3575bd8f0520a9f21e82020490505b700100000000000000000000000000000000841615610419576f0960aadc109e7a3bf4578099615711ea6f454aaa8efe072e7f6ddbab84b40a55c582020490505b700200000000000000000000000000000000841615610459576e2bf84208204f5977f9a8cf01fdce3d6f0960aadc109e7a3bf4578099615711d782020490505b700400000000000000000000000000000000841615610497576d03c6ab775dd0b95b4cbee7e65d116e2bf84208204f5977f9a8cf01fdc30782020490505b604080518082019091529081526001607f1b602082015295945050505050565b60008060006104c686866105b6565b91509150816000036104eb578381816104e1576104e1610751565b0492505050610065565b838210610524576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60006105318787876105f8565b9050600080610541858585610613565b91509150816000036105695786818161055c5761055c610751565b0495505050505050610065565b60008761057760008a61064b565b1690506000610587848484610655565b905060006105a3838b8161059d5761059d610751565b0461069a565b919091029b9a5050505050505050505050565b60008060006105c585856106cf565b90508484028082106105de5790819003925090506105f1565b60016105ea838361064b565b0393509150505b9250929050565b6000818061060857610608610751565b838509949350505050565b6000808284106106295750839050818303610643565b610634600186610780565b61063e858561064b565b915091505b935093915050565b8082035b92915050565b60008061067b8361066760008661064b565b8161067457610674610751565b0460010190565b905082848161068c5761068c610751565b048186021795945050505050565b60006001815b60088110156106c8576106be826106ba600287830261064b565b0290565b91506001016106a0565b5092915050565b60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8284099392505050565b803563ffffffff8116811461071057600080fd5b919050565b60008060006060848603121561072a57600080fd5b8335925061073a602085016106fc565b9150610748604085016106fc565b90509250925092565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b8181038181111561064f577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fdfea26469706673582212209092b7e62feeb036367ba7071c781289babc07e3f3e39750c713fb7911961b6564736f6c63430008130033",
+    "sourceMap": "137:221:10:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c806337627dde14610030575b600080fd5b61004361003e366004610715565b610055565b60405190815260200160405180910390f35b600061006284848461006c565b90505b9392505050565b6040805180820190915263ffffffff80841682528216602082015260009081610094826100b3565b90506100a986826020015183600001516104b7565b9695505050505050565b604080518082019091526000808252602082015260006100ec6f58b90bfbe8e7bcd5e4f1d9cc01f97b57846000015185602001516104b7565b905060008080700800000000000000000000000000000000841061013c576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6f10000000000000000000000000000000840692508291506001607f1b8280020491506710e1b3be415a00008202016001607f1b8383020491506705a0913f6b1e00008202016001607f1b838302049150670168244fdac780008202016001607f1b838302049150664807432bc180008202016001607f1b838302049150660c0135dca040008202016001607f1b8383020491506601b707b1cdc0008202016001607f1b8383020491506536e0f639b8008202016001607f1b838302049150650618fee9f8008202016001607f1b838302049150649c197dcc008202016001607f1b838302049150640e30dce4008202016001607f1b83830204915064012ebd13008202016001607f1b8383020491506317499f008202016001607f1b8383020491506301a9d4808202016001607f1b838302049150621c63808202016001607f1b8383020491506201c6388202016001607f1b838302049150611ab88202016001607f1b83830204915061017c8202016001607f1b83830204915060148202016001607f1b83830204915081016001607f1b836721c3677c82b400008304010190506f100000000000000000000000000000008416156103215770018ebef9eac820ae8682b9793ac6d1e7767001c3d6a24ed82218787d624d3e5eba95f982020490505b6f20000000000000000000000000000000841615610363577001368b2fc6f9609fe7aceb46aa619baed470018ebef9eac820ae8682b9793ac6d1e77882020490505b6f400000000000000000000000000000008416156103a4576fbc5ab1b16779be3575bd8f0520a9f21f7001368b2fc6f9609fe7aceb46aa619baed582020490505b6001607f1b8416156103d8576f454aaa8efe072e7f6ddbab84b40a55c96fbc5ab1b16779be3575bd8f0520a9f21e82020490505b700100000000000000000000000000000000841615610419576f0960aadc109e7a3bf4578099615711ea6f454aaa8efe072e7f6ddbab84b40a55c582020490505b700200000000000000000000000000000000841615610459576e2bf84208204f5977f9a8cf01fdce3d6f0960aadc109e7a3bf4578099615711d782020490505b700400000000000000000000000000000000841615610497576d03c6ab775dd0b95b4cbee7e65d116e2bf84208204f5977f9a8cf01fdc30782020490505b604080518082019091529081526001607f1b602082015295945050505050565b60008060006104c686866105b6565b91509150816000036104eb578381816104e1576104e1610751565b0492505050610065565b838210610524576040517f35278d1200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60006105318787876105f8565b9050600080610541858585610613565b91509150816000036105695786818161055c5761055c610751565b0495505050505050610065565b60008761057760008a61064b565b1690506000610587848484610655565b905060006105a3838b8161059d5761059d610751565b0461069a565b919091029b9a5050505050505050505050565b60008060006105c585856106cf565b90508484028082106105de5790819003925090506105f1565b60016105ea838361064b565b0393509150505b9250929050565b6000818061060857610608610751565b838509949350505050565b6000808284106106295750839050818303610643565b610634600186610780565b61063e858561064b565b915091505b935093915050565b8082035b92915050565b60008061067b8361066760008661064b565b8161067457610674610751565b0460010190565b905082848161068c5761068c610751565b048186021795945050505050565b60006001815b60088110156106c8576106be826106ba600287830261064b565b0290565b91506001016106a0565b5092915050565b60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8284099392505050565b803563ffffffff8116811461071057600080fd5b919050565b60008060006060848603121561072a57600080fd5b8335925061073a602085016106fc565b9150610748604085016106fc565b90509250925092565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b8181038181111561064f577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fdfea26469706673582212209092b7e62feeb036367ba7071c781289babc07e3f3e39750c713fb7911961b6564736f6c63430008130033",
+    "sourceMap": "137:221:10:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;169:187;;;;;;:::i;:::-;;:::i;:::-;;;657:25:127;;;645:2;630:18;169:187:10;;;;;;;;267:7;293:56;319:6;327:11;340:8;293:25;:56::i;:::-;286:63;;169:187;;;;;;:::o;685:301:28:-;826:41;;;;;;;;;;;;;;;;;;;;;783:7;;;902:18;826:41;902:11;:18::i;:::-;877:43;;937:42;952:6;960;:8;;;970:6;:8;;;937:14;:42::i;:::-;930:49;685:301;-1:-1:-1;;;;;;685:301:28:o;5317:3514:30:-;-1:-1:-1;;;;;;;;;;;;;;;;;5400:9:30;5412:29;202:34;5432:1;:3;;;5437:1;:3;;;5412:14;:29::i;:::-;5400:41;-1:-1:-1;5451:9:30;;;5519:8;5513:15;;5509:63;;5551:10;;;;;;;;;;;;;;5509:63;5619:8;5614:1;:14;;-1:-1:-1;5614:14:30;;-1:-1:-1;;;;5678:5:30;;;5677:13;;-1:-1:-1;5713:18:30;5709:22;;5704:27;-1:-1:-1;;;5776:5:30;;;5775:13;;-1:-1:-1;5811:18:30;5807:22;;5802:27;-1:-1:-1;;;5874:5:30;;;5873:13;;-1:-1:-1;5909:18:30;5905:22;;5900:27;-1:-1:-1;;;5972:5:30;;;5971:13;;-1:-1:-1;6007:18:30;6003:22;;5998:27;-1:-1:-1;;;6070:5:30;;;6069:13;;-1:-1:-1;6105:18:30;6101:22;;6096:27;-1:-1:-1;;;6168:5:30;;;6167:13;;-1:-1:-1;6203:18:30;6199:22;;6194:27;-1:-1:-1;;;6266:5:30;;;6265:13;;-1:-1:-1;6301:18:30;6297:22;;6292:27;-1:-1:-1;;;6364:5:30;;;6363:13;;-1:-1:-1;6399:18:30;6395:22;;6390:27;-1:-1:-1;;;6462:5:30;;;6461:13;;-1:-1:-1;6497:18:30;6493:22;;6488:27;-1:-1:-1;;;6560:5:30;;;6559:13;;-1:-1:-1;6595:18:30;6591:22;;6586:27;-1:-1:-1;;;6658:5:30;;;6657:13;;-1:-1:-1;6693:18:30;6689:22;;6684:27;-1:-1:-1;;;6756:5:30;;;6755:13;;-1:-1:-1;6791:18:30;6787:22;;6782:27;-1:-1:-1;;;6854:5:30;;;6853:13;;-1:-1:-1;6889:18:30;6885:22;;6880:27;-1:-1:-1;;;6952:5:30;;;6951:13;;-1:-1:-1;6987:18:30;6983:22;;6978:27;-1:-1:-1;;;7050:5:30;;;7049:13;;-1:-1:-1;7085:18:30;7081:22;;7076:27;-1:-1:-1;;;7148:5:30;;;7147:13;;-1:-1:-1;7183:18:30;7179:22;;7174:27;-1:-1:-1;;;7246:5:30;;;7245:13;;-1:-1:-1;7281:18:30;7277:22;;7272:27;-1:-1:-1;;;7344:5:30;;;7343:13;;-1:-1:-1;7379:18:30;7375:22;;7370:27;-1:-1:-1;;;7442:5:30;;;7441:13;;-1:-1:-1;7468:27:30;;-1:-1:-1;;;7564:1:30;7543:18;7468:27;7539:22;:26;:32;;-1:-1:-1;7646:8:30;7641:14;;7640:21;7636:126;;7727:35;7688;7684:39;;7683:79;7679:83;;7636:126;7810:8;7805:14;;7804:21;7800:126;;7891:35;7852;7848:39;;7847:79;7843:83;;7800:126;7974:8;7969:14;;7968:21;7964:126;;8055:35;8016;8012:39;;8011:79;8007:83;;7964:126;-1:-1:-1;;;8133:14:30;;8132:21;8128:126;;8219:35;8180;8176:39;;8175:79;8171:83;;8128:126;8302:8;8297:14;;8296:21;8292:126;;8383:35;8344;8340:39;;8339:79;8335:83;;8292:126;8466:8;8461:14;;8460:21;8456:126;;8547:35;8508;8504:39;;8503:79;8499:83;;8456:126;8630:8;8625:14;;8624:21;8620:126;;8711:35;8672;8668:39;;8667:79;8663:83;;8620:126;8798:26;;;;;;;;;;;;-1:-1:-1;;;8798:26:30;;;;;5317:3514;-1:-1:-1;;;;;5317:3514:30:o;447:1166::-;520:7;609:12;623;639:13;647:1;650;639:7;:13::i;:::-;608:44;;;;707:4;715:1;707:9;703:63;;750:1;743:4;:8;;;;;:::i;:::-;;736:15;;;;;;703:63;836:1;828:4;:9;824:65;;864:10;;;;;;;;;;;;;;824:65;903:9;915:16;923:1;926;929;915:7;:16::i;:::-;903:28;;965:11;978;993:22;1001:4;1007;1013:1;993:7;:22::i;:::-;964:51;;;;1118:3;1125:1;1118:8;1114:61;;1159:1;1153:3;:7;;;;;:::i;:::-;;1146:14;;;;;;;;;1114:61;1189:9;1220:1;1201:16;1212:1;1215;1201:10;:16::i;:::-;:20;1189:32;;1294:9;1306:20;1314:3;1319;1324:1;1306:7;:20::i;:::-;1294:32;;1427:9;1439:14;1451:1;1447;:5;;;;;:::i;:::-;;1439:7;:14::i;:::-;11315:5;;;;;1527:23;-1:-1:-1;;;;;;;;;;;447:1166:30:o;8894:449::-;8955:7;8964;8983:9;8995:16;9006:1;9009;8995:10;:16::i;:::-;8983:28;-1:-1:-1;11315:5:30;;;9063:6;;;9059:137;;9162:5;;;;;-1:-1:-1;9166:1:30;-1:-1:-1;9154:17:30;;9059:137;9321:1;9302:16;9313:1;9316;9302:10;:16::i;:::-;:20;;-1:-1:-1;9324:1:30;-1:-1:-1;;8894:449:30;;;;;;:::o;11585:120::-;11657:7;11696:1;11683:15;;;;;:::i;:::-;11693:1;11690;11683:15;11676:22;11585:120;-1:-1:-1;;;;11585:120:30:o;9406:301::-;9482:7;9491;9521:1;9514:3;:8;9510:145;;-1:-1:-1;9617:3:30;;-1:-1:-1;9622:7:30;;;9609:21;;9510:145;9672:7;9678:1;9672:3;:7;:::i;:::-;9681:18;9692:3;9697:1;9681:10;:18::i;:::-;9664:36;;;;9406:301;;;;;;;:::o;11003:136::-;11117:5;;;11003:136;;;;;:::o;9814:366::-;9894:7;9982:16;10001:43;10035:5;10012:20;10023:1;10026:5;10012:10;:20::i;:::-;:28;;;;;:::i;:::-;;10042:1;10919:5;;10805:136;10001:43;9982:62;;10120:5;10114:3;:11;;;;;:::i;:::-;;11315:5;;;10085:41;;9814:366;-1:-1:-1;;;;;9814:366:30:o;10305:438::-;10355:7;10486:1;10355:7;10557:152;10581:1;10577;:5;10557:152;;;10611:46;10622:1;10625:31;10636:1;11315:5;;;10625:10;:31::i;:::-;11315:5;;11201:136;10611:46;10607:50;-1:-1:-1;10584:3:30;;10557:152;;;-1:-1:-1;10735:1:30;10305:438;-1:-1:-1;;10305:438:30:o;11403:128::-;11467:7;11506:17;11503:1;11500;11493:31;11486:38;11403:128;-1:-1:-1;;;11403:128:30:o;14:163:127:-;81:20;;141:10;130:22;;120:33;;110:61;;167:1;164;157:12;110:61;14:163;;;:::o;182:324::-;257:6;265;273;326:2;314:9;305:7;301:23;297:32;294:52;;;342:1;339;332:12;294:52;378:9;365:23;355:33;;407:37;440:2;429:9;425:18;407:37;:::i;:::-;397:47;;463:37;496:2;485:9;481:18;463:37;:::i;:::-;453:47;;182:324;;;;;:::o;693:184::-;745:77;742:1;735:88;842:4;839:1;832:15;866:4;863:1;856:15;882:282;949:9;;;970:11;;;967:191;;;1014:77;1011:1;1004:88;1115:4;1112:1;1105:15;1143:4;1140:1;1133:15",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "calcExpDecay(uint256,uint32,uint32)": "37627dde"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"Overflow\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"timeElapsed\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"halfLife\",\"type\":\"uint32\"}],\"name\":\"calcExpDecay\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/helpers/TestExpDecayMath.sol\":\"TestExpDecayMath\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/helpers/TestExpDecayMath.sol\":{\"keccak256\":\"0xee27a6afd0e2187819118b55380dc3eeb7874e1329be0a43b7a53ec0e859f5e8\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f3bc81b73e1df33f2c426b981bcf8573332013bf4d9bbf67c61f9b54030787d9\",\"dweb:/ipfs/QmYQYNnjEqpKcqRrxQqcdHmX8k5Kxn4AC9Jp4SQFLrQLiH\"]},\"contracts/utility/ExpDecayMath.sol\":{\"keccak256\":\"0x0dc8b83464723a110c4ef9ef7ea1c6fede0c2d7bb05615cbdaa93886b8c4fad1\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://4ee145aef17be5c6abbb23b0cf1733b960237e93998fb65f8c1aa43f1df842bf\",\"dweb:/ipfs/QmeJXiKkgrhBV3eL3VDJjSLJSJrkEoWProvdvpGoJpJHYy\"]},\"contracts/utility/Fraction.sol\":{\"keccak256\":\"0x84c801ef901e7fd30e99637377b29dfa28c6c1fa140adb5c872fddd8b82fd358\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f7aa812bdb61aa1fff9dc357d67309fb104e08b1bfcf13d2e12cb7adea036c19\",\"dweb:/ipfs/QmYNvFA6HbG5mwfZjHUPLNqRFUfHhqQH346PiHY6cEpxAD\"]},\"contracts/utility/MathEx.sol\":{\"keccak256\":\"0x2ff481334338c5d5b13f918a3a58dfebb9ec3329848117acd7ac7e63382664c5\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://a411ed9456feb5fcf7414a6eae0adf8c63be63c73cf7abdc6218b3bd3b03ff74\",\"dweb:/ipfs/Qme7bfmJra8Wyv1DWT4v5keQsxSigSSMmWQW21GdBqJ4E4\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Overflow"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint32",
+              "name": "timeElapsed",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "halfLife",
+              "type": "uint32"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "calcExpDecay",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/helpers/TestExpDecayMath.sol": "TestExpDecayMath"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/helpers/TestExpDecayMath.sol": {
+        "keccak256": "0xee27a6afd0e2187819118b55380dc3eeb7874e1329be0a43b7a53ec0e859f5e8",
+        "urls": [
+          "bzz-raw://f3bc81b73e1df33f2c426b981bcf8573332013bf4d9bbf67c61f9b54030787d9",
+          "dweb:/ipfs/QmYQYNnjEqpKcqRrxQqcdHmX8k5Kxn4AC9Jp4SQFLrQLiH"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/ExpDecayMath.sol": {
+        "keccak256": "0x0dc8b83464723a110c4ef9ef7ea1c6fede0c2d7bb05615cbdaa93886b8c4fad1",
+        "urls": [
+          "bzz-raw://4ee145aef17be5c6abbb23b0cf1733b960237e93998fb65f8c1aa43f1df842bf",
+          "dweb:/ipfs/QmeJXiKkgrhBV3eL3VDJjSLJSJrkEoWProvdvpGoJpJHYy"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/Fraction.sol": {
+        "keccak256": "0x84c801ef901e7fd30e99637377b29dfa28c6c1fa140adb5c872fddd8b82fd358",
+        "urls": [
+          "bzz-raw://f7aa812bdb61aa1fff9dc357d67309fb104e08b1bfcf13d2e12cb7adea036c19",
+          "dweb:/ipfs/QmYNvFA6HbG5mwfZjHUPLNqRFUfHhqQH346PiHY6cEpxAD"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/MathEx.sol": {
+        "keccak256": "0x2ff481334338c5d5b13f918a3a58dfebb9ec3329848117acd7ac7e63382664c5",
+        "urls": [
+          "bzz-raw://a411ed9456feb5fcf7414a6eae0adf8c63be63c73cf7abdc6218b3bd3b03ff74",
+          "dweb:/ipfs/Qme7bfmJra8Wyv1DWT4v5keQsxSigSSMmWQW21GdBqJ4E4"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/helpers/TestExpDecayMath.sol",
+    "id": 5160,
+    "exportedSymbols": {
+      "ExpDecayMath": [
+        7872
+      ],
+      "TestExpDecayMath": [
+        5159
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:308:10",
+    "nodes": [
+      {
+        "id": 5137,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:10",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 5139,
+        "nodeType": "ImportDirective",
+        "src": "76:59:10",
+        "nodes": [],
+        "absolutePath": "contracts/utility/ExpDecayMath.sol",
+        "file": "../utility/ExpDecayMath.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5160,
+        "sourceUnit": 7873,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5138,
+              "name": "ExpDecayMath",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7872,
+              "src": "85:12:10",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5159,
+        "nodeType": "ContractDefinition",
+        "src": "137:221:10",
+        "nodes": [
+          {
+            "id": 5158,
+            "nodeType": "FunctionDefinition",
+            "src": "169:187:10",
+            "nodes": [],
+            "body": {
+              "id": 5157,
+              "nodeType": "Block",
+              "src": "276:80:10",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5152,
+                        "name": "amount",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5141,
+                        "src": "319:6:10",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 5153,
+                        "name": "timeElapsed",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5143,
+                        "src": "327:11:10",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint32",
+                          "typeString": "uint32"
+                        }
+                      },
+                      {
+                        "id": 5154,
+                        "name": "halfLife",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5145,
+                        "src": "340:8:10",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint32",
+                          "typeString": "uint32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint32",
+                          "typeString": "uint32"
+                        },
+                        {
+                          "typeIdentifier": "t_uint32",
+                          "typeString": "uint32"
+                        }
+                      ],
+                      "expression": {
+                        "id": 5150,
+                        "name": "ExpDecayMath",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 7872,
+                        "src": "293:12:10",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_ExpDecayMath_$7872_$",
+                          "typeString": "type(library ExpDecayMath)"
+                        }
+                      },
+                      "id": 5151,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberLocation": "306:12:10",
+                      "memberName": "calcExpDecay",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 7871,
+                      "src": "293:25:10",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint32_$_t_uint32_$returns$_t_uint256_$",
+                        "typeString": "function (uint256,uint32,uint32) pure returns (uint256)"
+                      }
+                    },
+                    "id": 5155,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "293:56:10",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 5149,
+                  "id": 5156,
+                  "nodeType": "Return",
+                  "src": "286:63:10"
+                }
+              ]
+            },
+            "functionSelector": "37627dde",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "calcExpDecay",
+            "nameLocation": "178:12:10",
+            "parameters": {
+              "id": 5146,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5141,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "199:6:10",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5158,
+                  "src": "191:14:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5140,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "191:7:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5143,
+                  "mutability": "mutable",
+                  "name": "timeElapsed",
+                  "nameLocation": "214:11:10",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5158,
+                  "src": "207:18:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 5142,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "207:6:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5145,
+                  "mutability": "mutable",
+                  "name": "halfLife",
+                  "nameLocation": "234:8:10",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5158,
+                  "src": "227:15:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 5144,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "227:6:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "190:53:10"
+            },
+            "returnParameters": {
+              "id": 5149,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5148,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5158,
+                  "src": "267:7:10",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5147,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "267:7:10",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "266:9:10"
+            },
+            "scope": 5159,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "TestExpDecayMath",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          5159
+        ],
+        "name": "TestExpDecayMath",
+        "nameLocation": "146:16:10",
+        "scope": 5160,
+        "usedErrors": [
+          7892
+        ]
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 10
+}

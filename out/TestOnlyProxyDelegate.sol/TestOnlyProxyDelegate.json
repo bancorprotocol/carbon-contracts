@@ -1,0 +1,440 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "delegator",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "UnknownDelegator",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "testOnlyProxyDelegate",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60a060405234801561001057600080fd5b5060405161018338038061018383398101604081905261002f91610040565b6001600160a01b0316608052610070565b60006020828403121561005257600080fd5b81516001600160a01b038116811461006957600080fd5b9392505050565b60805160fb6100886000396000606d015260fb6000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c4cb3d0c14602d575b600080fd5b60336047565b604051901515815260200160405180910390f35b6000604f6055565b50600190565b3073ffffffffffffffffffffffffffffffffffffffff7f0000000000000000000000000000000000000000000000000000000000000000161460c3576040517fd0c8bfe500000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b56fea26469706673582212201eee408b7beaf37829b9a09c4e49a2d1df6da31a208174ce16090e62b3b3aa7e64736f6c63430008130033",
+    "sourceMap": "147:236:13:-:0;;;205:62;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;-1:-1:-1;;;;;261:14:31;;;147:236:13;;14:290:127;84:6;137:2;125:9;116:7;112:23;108:32;105:52;;;153:1;150;143:12;105:52;179:16;;-1:-1:-1;;;;;224:31:127;;214:42;;204:70;;270:1;267;260:12;204:70;293:5;14:290;-1:-1:-1;;;14:290:127:o;:::-;147:236:13;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063c4cb3d0c14602d575b600080fd5b60336047565b604051901515815260200160405180910390f35b6000604f6055565b50600190565b3073ffffffffffffffffffffffffffffffffffffffff7f0000000000000000000000000000000000000000000000000000000000000000161460c3576040517fd0c8bfe500000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b56fea26469706673582212201eee408b7beaf37829b9a09c4e49a2d1df6da31a208174ce16090e62b3b3aa7e64736f6c63430008130033",
+    "sourceMap": "147:236:13:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;273:108;;;:::i;:::-;;;179:14:127;;172:22;154:41;;142:2;127:18;273:108:13;;;;;;;;347:4;327:20:31;:18;:20::i;:::-;-1:-1:-1;370:4:13::1;273:108:::0;:::o;372:139:31:-;438:4;430:23;447:6;430:23;;426:79;;476:18;;;;;;;;;;;;;;426:79;372:139::o",
+    "linkReferences": {},
+    "immutableReferences": {
+      "8814": [
+        {
+          "start": 109,
+          "length": 32
+        }
+      ]
+    }
+  },
+  "methodIdentifiers": {
+    "testOnlyProxyDelegate()": "c4cb3d0c"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"delegator\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"UnknownDelegator\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"testOnlyProxyDelegate\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/helpers/TestOnlyProxyDelegate.sol\":\"TestOnlyProxyDelegate\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/helpers/TestOnlyProxyDelegate.sol\":{\"keccak256\":\"0x6c93a170587bb918a0c4f9f4a7314c386f3b4d2b37541399e8821b011cc3f2e0\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://dab83e56931ea7ebe5fdb65caf4e7cf93bc7b0c4df1367f52ca12f54a8e674f7\",\"dweb:/ipfs/QmPxoZVFrFYiGojMofCLC6aiQExx6mB9YQDHGvpfFPqE5B\"]},\"contracts/utility/OnlyProxyDelegate.sol\":{\"keccak256\":\"0x47a46b82fc8870eda785f8f0c7c9839a93c1503103d081d493e6ee42fefc3bb0\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://57141475c70be8aa2ac269d15b04ed6d51f2f168c2315f035dfb4ee20d7d5746\",\"dweb:/ipfs/QmeJjLcNzFk74vGKpnP6viPd9diUYxjXp7kMjDCcuFXtCS\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "delegator",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "UnknownDelegator"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "testOnlyProxyDelegate",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/helpers/TestOnlyProxyDelegate.sol": "TestOnlyProxyDelegate"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/helpers/TestOnlyProxyDelegate.sol": {
+        "keccak256": "0x6c93a170587bb918a0c4f9f4a7314c386f3b4d2b37541399e8821b011cc3f2e0",
+        "urls": [
+          "bzz-raw://dab83e56931ea7ebe5fdb65caf4e7cf93bc7b0c4df1367f52ca12f54a8e674f7",
+          "dweb:/ipfs/QmPxoZVFrFYiGojMofCLC6aiQExx6mB9YQDHGvpfFPqE5B"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/OnlyProxyDelegate.sol": {
+        "keccak256": "0x47a46b82fc8870eda785f8f0c7c9839a93c1503103d081d493e6ee42fefc3bb0",
+        "urls": [
+          "bzz-raw://57141475c70be8aa2ac269d15b04ed6d51f2f168c2315f035dfb4ee20d7d5746",
+          "dweb:/ipfs/QmeJjLcNzFk74vGKpnP6viPd9diUYxjXp7kMjDCcuFXtCS"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/helpers/TestOnlyProxyDelegate.sol",
+    "id": 5353,
+    "exportedSymbols": {
+      "OnlyProxyDelegate": [
+        8849
+      ],
+      "TestOnlyProxyDelegate": [
+        5352
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:333:13",
+    "nodes": [
+      {
+        "id": 5328,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:13",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 5330,
+        "nodeType": "ImportDirective",
+        "src": "76:69:13",
+        "nodes": [],
+        "absolutePath": "contracts/utility/OnlyProxyDelegate.sol",
+        "file": "../utility/OnlyProxyDelegate.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5353,
+        "sourceUnit": 8850,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5329,
+              "name": "OnlyProxyDelegate",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 8849,
+              "src": "85:17:13",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5352,
+        "nodeType": "ContractDefinition",
+        "src": "147:236:13",
+        "nodes": [
+          {
+            "id": 5341,
+            "nodeType": "FunctionDefinition",
+            "src": "205:62:13",
+            "nodes": [],
+            "body": {
+              "id": 5340,
+              "nodeType": "Block",
+              "src": "265:2:13",
+              "nodes": [],
+              "statements": []
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "id": 5337,
+                    "name": "delegator",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5334,
+                    "src": "254:9:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  }
+                ],
+                "id": 5338,
+                "kind": "baseConstructorSpecifier",
+                "modifierName": {
+                  "id": 5336,
+                  "name": "OnlyProxyDelegate",
+                  "nameLocations": [
+                    "236:17:13"
+                  ],
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 8849,
+                  "src": "236:17:13"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "236:28:13"
+              }
+            ],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 5335,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5334,
+                  "mutability": "mutable",
+                  "name": "delegator",
+                  "nameLocation": "225:9:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5341,
+                  "src": "217:17:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5333,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "217:7:13",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "216:19:13"
+            },
+            "returnParameters": {
+              "id": 5339,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "265:0:13"
+            },
+            "scope": 5352,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 5351,
+            "nodeType": "FunctionDefinition",
+            "src": "273:108:13",
+            "nodes": [],
+            "body": {
+              "id": 5350,
+              "nodeType": "Block",
+              "src": "353:28:13",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "hexValue": "74727565",
+                    "id": 5348,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "370:4:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 5347,
+                  "id": 5349,
+                  "nodeType": "Return",
+                  "src": "363:11:13"
+                }
+              ]
+            },
+            "functionSelector": "c4cb3d0c",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "id": 5344,
+                "kind": "modifierInvocation",
+                "modifierName": {
+                  "id": 5343,
+                  "name": "onlyProxyDelegate",
+                  "nameLocations": [
+                    "320:17:13"
+                  ],
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 8833,
+                  "src": "320:17:13"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "320:17:13"
+              }
+            ],
+            "name": "testOnlyProxyDelegate",
+            "nameLocation": "282:21:13",
+            "parameters": {
+              "id": 5342,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "303:2:13"
+            },
+            "returnParameters": {
+              "id": 5347,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5346,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5351,
+                  "src": "347:4:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5345,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "347:4:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "346:6:13"
+            },
+            "scope": 5352,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 5331,
+              "name": "OnlyProxyDelegate",
+              "nameLocations": [
+                "181:17:13"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 8849,
+              "src": "181:17:13"
+            },
+            "id": 5332,
+            "nodeType": "InheritanceSpecifier",
+            "src": "181:17:13"
+          }
+        ],
+        "canonicalName": "TestOnlyProxyDelegate",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          5352,
+          8849
+        ],
+        "name": "TestOnlyProxyDelegate",
+        "nameLocation": "156:21:13",
+        "scope": 5353,
+        "usedErrors": [
+          8816
+        ]
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 13
+}

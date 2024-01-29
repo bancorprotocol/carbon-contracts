@@ -1,0 +1,523 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "UnknownDelegator",
+      "type": "error"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"UnknownDelegator\",\"type\":\"error\"}],\"devdoc\":{\"details\":\"restrict delegation\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/utility/OnlyProxyDelegate.sol\":\"OnlyProxyDelegate\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/utility/OnlyProxyDelegate.sol\":{\"keccak256\":\"0x47a46b82fc8870eda785f8f0c7c9839a93c1503103d081d493e6ee42fefc3bb0\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://57141475c70be8aa2ac269d15b04ed6d51f2f168c2315f035dfb4ee20d7d5746\",\"dweb:/ipfs/QmeJjLcNzFk74vGKpnP6viPd9diUYxjXp7kMjDCcuFXtCS\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "UnknownDelegator"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/utility/OnlyProxyDelegate.sol": "OnlyProxyDelegate"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/utility/OnlyProxyDelegate.sol": {
+        "keccak256": "0x47a46b82fc8870eda785f8f0c7c9839a93c1503103d081d493e6ee42fefc3bb0",
+        "urls": [
+          "bzz-raw://57141475c70be8aa2ac269d15b04ed6d51f2f168c2315f035dfb4ee20d7d5746",
+          "dweb:/ipfs/QmeJjLcNzFk74vGKpnP6viPd9diUYxjXp7kMjDCcuFXtCS"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/utility/OnlyProxyDelegate.sol",
+    "id": 8850,
+    "exportedSymbols": {
+      "OnlyProxyDelegate": [
+        8849
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:463:31",
+    "nodes": [
+      {
+        "id": 8811,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:31",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 8849,
+        "nodeType": "ContractDefinition",
+        "src": "112:401:31",
+        "nodes": [
+          {
+            "id": 8814,
+            "nodeType": "VariableDeclaration",
+            "src": "154:32:31",
+            "nodes": [],
+            "constant": false,
+            "mutability": "immutable",
+            "name": "_proxy",
+            "nameLocation": "180:6:31",
+            "scope": 8849,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 8813,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "154:7:31",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "id": 8816,
+            "nodeType": "ErrorDefinition",
+            "src": "193:25:31",
+            "nodes": [],
+            "errorSelector": "d0c8bfe5",
+            "name": "UnknownDelegator",
+            "nameLocation": "199:16:31",
+            "parameters": {
+              "id": 8815,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "215:2:31"
+            }
+          },
+          {
+            "id": 8826,
+            "nodeType": "FunctionDefinition",
+            "src": "224:58:31",
+            "nodes": [],
+            "body": {
+              "id": 8825,
+              "nodeType": "Block",
+              "src": "251:31:31",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 8823,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 8821,
+                      "name": "_proxy",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 8814,
+                      "src": "261:6:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 8822,
+                      "name": "proxy",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 8818,
+                      "src": "270:5:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "261:14:31",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 8824,
+                  "nodeType": "ExpressionStatement",
+                  "src": "261:14:31"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 8819,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8818,
+                  "mutability": "mutable",
+                  "name": "proxy",
+                  "nameLocation": "244:5:31",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8826,
+                  "src": "236:13:31",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8817,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "236:7:31",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "235:15:31"
+            },
+            "returnParameters": {
+              "id": 8820,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "251:0:31"
+            },
+            "scope": 8849,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 8833,
+            "nodeType": "ModifierDefinition",
+            "src": "288:78:31",
+            "nodes": [],
+            "body": {
+              "id": 8832,
+              "nodeType": "Block",
+              "src": "317:49:31",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 8828,
+                      "name": "_onlyProxyDelegate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 8848,
+                      "src": "327:18:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$__$returns$__$",
+                        "typeString": "function () view"
+                      }
+                    },
+                    "id": 8829,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "327:20:31",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 8830,
+                  "nodeType": "ExpressionStatement",
+                  "src": "327:20:31"
+                },
+                {
+                  "id": 8831,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "358:1:31"
+                }
+              ]
+            },
+            "name": "onlyProxyDelegate",
+            "nameLocation": "297:17:31",
+            "parameters": {
+              "id": 8827,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "314:2:31"
+            },
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 8848,
+            "nodeType": "FunctionDefinition",
+            "src": "372:139:31",
+            "nodes": [],
+            "body": {
+              "id": 8847,
+              "nodeType": "Block",
+              "src": "416:95:31",
+              "nodes": [],
+              "statements": [
+                {
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    },
+                    "id": 8841,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "arguments": [
+                        {
+                          "id": 8838,
+                          "name": "this",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -28,
+                          "src": "438:4:31",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_OnlyProxyDelegate_$8849",
+                            "typeString": "contract OnlyProxyDelegate"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_contract$_OnlyProxyDelegate_$8849",
+                            "typeString": "contract OnlyProxyDelegate"
+                          }
+                        ],
+                        "id": 8837,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "430:7:31",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_address_$",
+                          "typeString": "type(address)"
+                        },
+                        "typeName": {
+                          "id": 8836,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "430:7:31",
+                          "typeDescriptions": {}
+                        }
+                      },
+                      "id": 8839,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "nameLocations": [],
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "430:13:31",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "!=",
+                    "rightExpression": {
+                      "id": 8840,
+                      "name": "_proxy",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 8814,
+                      "src": "447:6:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "430:23:31",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 8846,
+                  "nodeType": "IfStatement",
+                  "src": "426:79:31",
+                  "trueBody": {
+                    "id": 8845,
+                    "nodeType": "Block",
+                    "src": "455:50:31",
+                    "statements": [
+                      {
+                        "errorCall": {
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "id": 8842,
+                            "name": "UnknownDelegator",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 8816,
+                            "src": "476:16:31",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_error_pure$__$returns$__$",
+                              "typeString": "function () pure"
+                            }
+                          },
+                          "id": 8843,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "nameLocations": [],
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "476:18:31",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 8844,
+                        "nodeType": "RevertStatement",
+                        "src": "469:25:31"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_onlyProxyDelegate",
+            "nameLocation": "381:18:31",
+            "parameters": {
+              "id": 8834,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "399:2:31"
+            },
+            "returnParameters": {
+              "id": 8835,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "416:0:31"
+            },
+            "scope": 8849,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "abstract": true,
+        "baseContracts": [],
+        "canonicalName": "OnlyProxyDelegate",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 8812,
+          "nodeType": "StructuredDocumentation",
+          "src": "76:35:31",
+          "text": " @dev restrict delegation"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          8849
+        ],
+        "name": "OnlyProxyDelegate",
+        "nameLocation": "130:17:31",
+        "scope": 8850,
+        "usedErrors": [
+          8816
+        ]
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 31
+}

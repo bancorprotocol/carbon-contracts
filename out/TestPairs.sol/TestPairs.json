@@ -1,0 +1,919 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "PairAlreadyExists",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "PairDoesNotExist",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint128",
+          "name": "pairId",
+          "type": "uint128"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "Token",
+          "name": "token1",
+          "type": "address"
+        }
+      ],
+      "name": "PairCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "Token",
+          "name": "token0",
+          "type": "address"
+        },
+        {
+          "internalType": "Token",
+          "name": "token1",
+          "type": "address"
+        }
+      ],
+      "name": "createPairTest",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "id",
+              "type": "uint128"
+            },
+            {
+              "internalType": "Token[2]",
+              "name": "tokens",
+              "type": "address[2]"
+            }
+          ],
+          "internalType": "struct Pair",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "pairId",
+          "type": "uint128"
+        }
+      ],
+      "name": "pairByIdTest",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "id",
+              "type": "uint128"
+            },
+            {
+              "internalType": "Token[2]",
+              "name": "tokens",
+              "type": "address[2]"
+            }
+          ],
+          "internalType": "struct Pair",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5061067d806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80632b005d331461003b578063e566bb9b14610064575b600080fd5b61004e6100493660046104e8565b610077565b60405161005b919061051a565b60405180910390f35b61004e61007236600461058e565b61008e565b61007f610414565b610088826100a7565b92915050565b610096610414565b6100a08383610192565b9392505050565b6100af610414565b6fffffffffffffffffffffffffffffffff8216600090815260026020819052604080832081518083019283905292909182845b81546001600160a01b031681526001909101906020018083116100e2575050505050905060006001600160a01b031681600060028110610124576101246105c1565b60200201516001600160a01b031603610169576040517fc5fc4bf400000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b604080518082019091526fffffffffffffffffffffffffffffffff909316835260208301525090565b61019a610414565b6101a48383610342565b156101db576040517fc9bb25eb00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60006101e784846103ae565b6000805491925090610212906201000090046fffffffffffffffffffffffffffffffff1660016105f0565b600080547fffffffffffffffffffffffffffff00000000000000000000000000000000ffff16620100006fffffffffffffffffffffffffffffffff8416908102919091178255815260026020819052604090912091925061027591908490610445565b5081516001600160a01b039081166000908152600160209081526040808320828701805186168552925280832080547fffffffffffffffffffffffffffffffff00000000000000000000000000000000166fffffffffffffffffffffffffffffffff87169081179091559151865191519085169491909116927f6365c594f5448f79c1cc1e6f661bdbf1d16f2e8f85747e13f8e80f1fd168b7c391a46040518060400160405280826fffffffffffffffffffffffffffffffff168152602001838152509250505092915050565b60008061034f84846103ae565b80516001600160a01b039081166000908152600160209081526040808320828601519094168352929052908120549192506fffffffffffffffffffffffffffffffff90911690036103a4576000915050610088565b5060019392505050565b6103b66104b5565b816001600160a01b0316836001600160a01b0316106103f257604080518082019091526001600160a01b038084168252841660208201526100a0565b50604080518082019091526001600160a01b0392831681529116602082015290565b604051806040016040528060006fffffffffffffffffffffffffffffffff1681526020016104406104b5565b905290565b82600281019282156104a5579160200282015b828111156104a557825182547fffffffffffffffffffffffff0000000000000000000000000000000000000000166001600160a01b03909116178255602090920191600190910190610458565b506104b19291506104d3565b5090565b60405180604001604052806002906020820280368337509192915050565b5b808211156104b157600081556001016104d4565b6000602082840312156104fa57600080fd5b81356fffffffffffffffffffffffffffffffff811681146100a057600080fd5b81516fffffffffffffffffffffffffffffffff16815260208083015160608301919081840160005b60028110156105685782516001600160a01b031682529183019190830190600101610542565b5050505092915050565b80356001600160a01b038116811461058957600080fd5b919050565b600080604083850312156105a157600080fd5b6105aa83610572565b91506105b860208401610572565b90509250929050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052603260045260246000fd5b6fffffffffffffffffffffffffffffffff818116838216019080821115610640577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b509291505056fea2646970667358221220833b10d11b585d9a24373e0480f09488c42c985b0e0129c8091a84d99f6b401e64736f6c63430008130033",
+    "sourceMap": "172:291:14:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80632b005d331461003b578063e566bb9b14610064575b600080fd5b61004e6100493660046104e8565b610077565b60405161005b919061051a565b60405180910390f35b61004e61007236600461058e565b61008e565b61007f610414565b610088826100a7565b92915050565b610096610414565b6100a08383610192565b9392505050565b6100af610414565b6fffffffffffffffffffffffffffffffff8216600090815260026020819052604080832081518083019283905292909182845b81546001600160a01b031681526001909101906020018083116100e2575050505050905060006001600160a01b031681600060028110610124576101246105c1565b60200201516001600160a01b031603610169576040517fc5fc4bf400000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b604080518082019091526fffffffffffffffffffffffffffffffff909316835260208301525090565b61019a610414565b6101a48383610342565b156101db576040517fc9bb25eb00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60006101e784846103ae565b6000805491925090610212906201000090046fffffffffffffffffffffffffffffffff1660016105f0565b600080547fffffffffffffffffffffffffffff00000000000000000000000000000000ffff16620100006fffffffffffffffffffffffffffffffff8416908102919091178255815260026020819052604090912091925061027591908490610445565b5081516001600160a01b039081166000908152600160209081526040808320828701805186168552925280832080547fffffffffffffffffffffffffffffffff00000000000000000000000000000000166fffffffffffffffffffffffffffffffff87169081179091559151865191519085169491909116927f6365c594f5448f79c1cc1e6f661bdbf1d16f2e8f85747e13f8e80f1fd168b7c391a46040518060400160405280826fffffffffffffffffffffffffffffffff168152602001838152509250505092915050565b60008061034f84846103ae565b80516001600160a01b039081166000908152600160209081526040808320828601519094168352929052908120549192506fffffffffffffffffffffffffffffffff90911690036103a4576000915050610088565b5060019392505050565b6103b66104b5565b816001600160a01b0316836001600160a01b0316106103f257604080518082019091526001600160a01b038084168252841660208201526100a0565b50604080518082019091526001600160a01b0392831681529116602082015290565b604051806040016040528060006fffffffffffffffffffffffffffffffff1681526020016104406104b5565b905290565b82600281019282156104a5579160200282015b828111156104a557825182547fffffffffffffffffffffffff0000000000000000000000000000000000000000166001600160a01b03909116178255602090920191600190910190610458565b506104b19291506104d3565b5090565b60405180604001604052806002906020820280368337509192915050565b5b808211156104b157600081556001016104d4565b6000602082840312156104fa57600080fd5b81356fffffffffffffffffffffffffffffffff811681146100a057600080fd5b81516fffffffffffffffffffffffffffffffff16815260208083015160608301919081840160005b60028110156105685782516001600160a01b031682529183019190830190600101610542565b5050505092915050565b80356001600160a01b038116811461058957600080fd5b919050565b600080604083850312156105a157600080fd5b6105aa83610572565b91506105b860208401610572565b90509250929050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052603260045260246000fd5b6fffffffffffffffffffffffffffffffff818116838216019080821115610640577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b509291505056fea2646970667358221220833b10d11b585d9a24373e0480f09488c42c985b0e0129c8091a84d99f6b401e64736f6c63430008130033",
+    "sourceMap": "172:291:14:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;206:115;;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;327:134;;;;;;:::i;:::-;;:::i;206:115::-;267:11;;:::i;:::-;297:17;307:6;297:9;:17::i;:::-;290:24;206:115;-1:-1:-1;;206:115:14:o;327:134::-;397:11;;:::i;:::-;427:27;439:6;447;427:11;:27::i;:::-;420:34;327:134;-1:-1:-1;;;327:134:14:o;2683:289:1:-;2741:11;;:::i;:::-;2789:21;;;2764:22;2789:21;;;:13;:21;;;;;;;;2764:46;;;;;;;;;;2789:21;;;2764:46;;;;-1:-1:-1;;;;;2764:46:1;;;;;;;;;;;;;;;;;;;;;;2859:1;-1:-1:-1;;;;;2824:37:1;2837:6;2844:1;2837:9;;;;;;;:::i;:::-;;;;;-1:-1:-1;;;;;2824:37:1;;2820:93;;2884:18;;;;;;;;;;;;;;2820:93;2929:36;;;;;;;;;;;;;;;;;;;-1:-1:-1;2929:36:1;2683:289::o;1510:643::-;1577:11;;:::i;:::-;1639:27;1651:6;1659;1639:11;:27::i;:::-;1635:84;;;1689:19;;;;;;;;;;;;;;1635:84;1752:28;1783:27;1795:6;1803;1783:11;:27::i;:::-;1850:10;1863:11;;1752:58;;-1:-1:-1;1850:10:1;1863:15;;:11;;;;;1877:1;1863:15;:::i;:::-;1888:11;:16;;;;;;;;;;;;;;;;;1937:17;;1888:11;1937:17;;;;;;;;1888:16;;-1:-1:-1;1937:32:1;;:17;1957:12;;1937:32;:::i;:::-;-1:-1:-1;1988:15:1;;-1:-1:-1;;;;;1979:25:1;;;;;;;:8;1988:15;1979:25;;;;;;;2005:15;;;;;1979:42;;;;;;;;;:47;;;;;;;;;;;;;2075:15;;2058;;2042:49;;;;;;;;;;;;;;2108:38;;;;;;;;2119:2;2108:38;;;;;;2131:12;2108:38;;;2101:45;;;;1510:643;;;;:::o;3090:297::-;3162:4;3201:28;3232:27;3244:6;3252;3232:11;:27::i;:::-;3283:15;;-1:-1:-1;;;;;3274:25:1;;;;;;;:8;3283:15;3274:25;;;;;;;3300:15;;;;3274:42;;;;;;;;;;;;3283:15;;-1:-1:-1;3274:42:1;;;;:47;;3270:90;;3344:5;3337:12;;;;;3270:90;-1:-1:-1;3376:4:1;;3090:297;-1:-1:-1;;;3090:297:1:o;3837:193::-;3908:15;;:::i;:::-;3978:6;-1:-1:-1;;;;;3942:43:1;3955:6;-1:-1:-1;;;;;3942:43:1;;:81;;;;;;;;;;;-1:-1:-1;;;;;3942:81:1;;;;;;;;;;;;;;-1:-1:-1;3942:81:1;;;;;;;;;-1:-1:-1;;;;;3942:81:1;;;;;;;;;;;;3837:193::o;-1:-1:-1:-;;;;;;;;;;;;;;;;;;:::i;:::-;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;;;;;;;;;14:301:127;73:6;126:2;114:9;105:7;101:23;97:32;94:52;;;142:1;139;132:12;94:52;181:9;168:23;231:34;224:5;220:46;213:5;210:57;200:85;;281:1;278;271:12;320:679;532:13;;547:34;528:54;510:73;;602:4;641:15;;;635:22;498:2;483:18;;;602:4;677:18;;;456:4;777:216;791:4;788:1;785:11;777:216;;;854:13;;-1:-1:-1;;;;;850:62:127;838:75;;968:15;;;;933:12;;;;811:1;804:9;777:216;;;781:3;;;;320:679;;;;:::o;1004:215::-;1091:20;;-1:-1:-1;;;;;1140:54:127;;1130:65;;1120:93;;1209:1;1206;1199:12;1120:93;1004:215;;;:::o;1224:350::-;1344:6;1352;1405:2;1393:9;1384:7;1380:23;1376:32;1373:52;;;1421:1;1418;1411:12;1373:52;1444:48;1482:9;1444:48;:::i;:::-;1434:58;;1511:57;1564:2;1553:9;1549:18;1511:57;:::i;:::-;1501:67;;1224:350;;;;;:::o;1579:184::-;1631:77;1628:1;1621:88;1728:4;1725:1;1718:15;1752:4;1749:1;1742:15;1768:351;1836:34;1890:10;;;1902;;;1886:27;;1925:11;;;1922:191;;;1969:77;1966:1;1959:88;2070:4;2067:1;2060:15;2098:4;2095:1;2088:15;1922:191;;1768:351;;;;:::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "createPairTest(address,address)": "e566bb9b",
+    "pairByIdTest(uint128)": "2b005d33"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"PairAlreadyExists\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"PairDoesNotExist\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint128\",\"name\":\"pairId\",\"type\":\"uint128\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token0\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"Token\",\"name\":\"token1\",\"type\":\"address\"}],\"name\":\"PairCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"Token\",\"name\":\"token0\",\"type\":\"address\"},{\"internalType\":\"Token\",\"name\":\"token1\",\"type\":\"address\"}],\"name\":\"createPairTest\",\"outputs\":[{\"components\":[{\"internalType\":\"uint128\",\"name\":\"id\",\"type\":\"uint128\"},{\"internalType\":\"Token[2]\",\"name\":\"tokens\",\"type\":\"address[2]\"}],\"internalType\":\"struct Pair\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint128\",\"name\":\"pairId\",\"type\":\"uint128\"}],\"name\":\"pairByIdTest\",\"outputs\":[{\"components\":[{\"internalType\":\"uint128\",\"name\":\"id\",\"type\":\"uint128\"},{\"internalType\":\"Token[2]\",\"name\":\"tokens\",\"type\":\"address[2]\"}],\"internalType\":\"struct Pair\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"Initialized(uint8)\":{\"details\":\"Triggered when the contract has been initialized or reinitialized.\"},\"PairCreated(uint128,address,address)\":{\"details\":\"triggered when a new pair is created\"}},\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/helpers/TestPairs.sol\":\"TestPairs\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/carbon/Pairs.sol\":{\"keccak256\":\"0xf93c805727414083085098262481ac9def2bdeafcb71934234b0b92cc6320551\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://9e20dd667bc2da286024e68e30924dacf9e5eef9d750bd3af879c46065afda63\",\"dweb:/ipfs/QmW6DpK4egvQAXUH3z1iuUBNjEMRksegFcEKQ2HQPgUqv7\"]},\"contracts/helpers/TestPairs.sol\":{\"keccak256\":\"0x657f5fca2f59f833c8be01c15a71fd78a96b6f34afe031333d45ade9bce5ee46\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://c502e835ac6f63fb4051ce07dbcd5358b23f0cd983d9a36f717ed5918a5b77f8\",\"dweb:/ipfs/QmPcsb8odAqhJ8e46pj199d2VuZD5D3uQcKgZT35eEkdQ1\"]},\"contracts/token/Token.sol\":{\"keccak256\":\"0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521\",\"dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi\"]},\"contracts/utility/Constants.sol\":{\"keccak256\":\"0x6cbf2c0e48b5377fe5fea47278256856368612efd7e29b17c716f1611b64d0f3\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://3ad5afc72e4194aa21ac7c02801e6031076bfcd1689f444071b18a123b14884a\",\"dweb:/ipfs/QmdQ4EJgQs6h3oKqh38fbqHnzoEb3Mt26BKiHuesYkTb2f\"]},\"node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol\":{\"keccak256\":\"0x89be10e757d242e9b18d5a32c9fbe2019f6d63052bbe46397a430a1d60d7f794\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f103ee2e4aecd37aac6ceefe670709cdd7613dee25fa2d4d9feaf7fc0aaa155e\",\"dweb:/ipfs/QmRiNZLoJk5k3HPMYGPGjZFd2ke1ZxjhJZkM45Ec9GH9hv\"]},\"node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol\":{\"keccak256\":\"0x9c80f545915582e63fe206c6ce27cbe85a86fc10b9cd2a0e8c9488fb7c2ee422\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://310136ad60820af4177a11a61d77a3686faf5fca4942b600e08fc940db38396b\",\"dweb:/ipfs/QmbCzMNSTL7Zi7M4UCSqBrkHtp4jjxUnGbkneCZKdR1qeq\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15\",\"dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5\",\"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol\":{\"keccak256\":\"0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a\",\"dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4\",\"dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx\"]},\"node_modules/@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931\",\"dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm\"]},\"node_modules/@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "PairAlreadyExists"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "PairDoesNotExist"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Initialized",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint128",
+              "name": "pairId",
+              "type": "uint128",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token0",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token",
+              "name": "token1",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "PairCreated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "Token",
+              "name": "token0",
+              "type": "address"
+            },
+            {
+              "internalType": "Token",
+              "name": "token1",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "createPairTest",
+          "outputs": [
+            {
+              "internalType": "struct Pair",
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "id",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "Token[2]",
+                  "name": "tokens",
+                  "type": "address[2]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint128",
+              "name": "pairId",
+              "type": "uint128"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "pairByIdTest",
+          "outputs": [
+            {
+              "internalType": "struct Pair",
+              "name": "",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "uint128",
+                  "name": "id",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "Token[2]",
+                  "name": "tokens",
+                  "type": "address[2]"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/helpers/TestPairs.sol": "TestPairs"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/carbon/Pairs.sol": {
+        "keccak256": "0xf93c805727414083085098262481ac9def2bdeafcb71934234b0b92cc6320551",
+        "urls": [
+          "bzz-raw://9e20dd667bc2da286024e68e30924dacf9e5eef9d750bd3af879c46065afda63",
+          "dweb:/ipfs/QmW6DpK4egvQAXUH3z1iuUBNjEMRksegFcEKQ2HQPgUqv7"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/helpers/TestPairs.sol": {
+        "keccak256": "0x657f5fca2f59f833c8be01c15a71fd78a96b6f34afe031333d45ade9bce5ee46",
+        "urls": [
+          "bzz-raw://c502e835ac6f63fb4051ce07dbcd5358b23f0cd983d9a36f717ed5918a5b77f8",
+          "dweb:/ipfs/QmPcsb8odAqhJ8e46pj199d2VuZD5D3uQcKgZT35eEkdQ1"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/token/Token.sol": {
+        "keccak256": "0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53",
+        "urls": [
+          "bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521",
+          "dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/Constants.sol": {
+        "keccak256": "0x6cbf2c0e48b5377fe5fea47278256856368612efd7e29b17c716f1611b64d0f3",
+        "urls": [
+          "bzz-raw://3ad5afc72e4194aa21ac7c02801e6031076bfcd1689f444071b18a123b14884a",
+          "dweb:/ipfs/QmdQ4EJgQs6h3oKqh38fbqHnzoEb3Mt26BKiHuesYkTb2f"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
+        "keccak256": "0x89be10e757d242e9b18d5a32c9fbe2019f6d63052bbe46397a430a1d60d7f794",
+        "urls": [
+          "bzz-raw://f103ee2e4aecd37aac6ceefe670709cdd7613dee25fa2d4d9feaf7fc0aaa155e",
+          "dweb:/ipfs/QmRiNZLoJk5k3HPMYGPGjZFd2ke1ZxjhJZkM45Ec9GH9hv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
+        "keccak256": "0x9c80f545915582e63fe206c6ce27cbe85a86fc10b9cd2a0e8c9488fb7c2ee422",
+        "urls": [
+          "bzz-raw://310136ad60820af4177a11a61d77a3686faf5fca4942b600e08fc940db38396b",
+          "dweb:/ipfs/QmbCzMNSTL7Zi7M4UCSqBrkHtp4jjxUnGbkneCZKdR1qeq"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c",
+        "urls": [
+          "bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15",
+          "dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+        "urls": [
+          "bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
+          "dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol": {
+        "keccak256": "0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a",
+        "urls": [
+          "bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a",
+          "dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa",
+        "urls": [
+          "bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4",
+          "dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Address.sol": {
+        "keccak256": "0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa",
+        "urls": [
+          "bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931",
+          "dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/helpers/TestPairs.sol",
+    "id": 5394,
+    "exportedSymbols": {
+      "Pair": [
+        1098
+      ],
+      "Pairs": [
+        1454
+      ],
+      "TestPairs": [
+        5393
+      ],
+      "Token": [
+        7445
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:413:14",
+    "nodes": [
+      {
+        "id": 5354,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:14",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 5357,
+        "nodeType": "ImportDirective",
+        "src": "76:50:14",
+        "nodes": [],
+        "absolutePath": "contracts/carbon/Pairs.sol",
+        "file": "../carbon/Pairs.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5394,
+        "sourceUnit": 1455,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5355,
+              "name": "Pairs",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1454,
+              "src": "85:5:14",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 5356,
+              "name": "Pair",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1098,
+              "src": "92:4:14",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5359,
+        "nodeType": "ImportDirective",
+        "src": "127:43:14",
+        "nodes": [],
+        "absolutePath": "contracts/token/Token.sol",
+        "file": "../token/Token.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5394,
+        "sourceUnit": 7801,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5358,
+              "name": "Token",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7445,
+              "src": "136:5:14",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5393,
+        "nodeType": "ContractDefinition",
+        "src": "172:291:14",
+        "nodes": [
+          {
+            "id": 5374,
+            "nodeType": "FunctionDefinition",
+            "src": "206:115:14",
+            "nodes": [],
+            "body": {
+              "id": 5373,
+              "nodeType": "Block",
+              "src": "280:41:14",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5370,
+                        "name": "pairId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5363,
+                        "src": "307:6:14",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint128",
+                          "typeString": "uint128"
+                        }
+                      ],
+                      "id": 5369,
+                      "name": "_pairById",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1324,
+                      "src": "297:9:14",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$_t_uint128_$returns$_t_struct$_Pair_$1098_memory_ptr_$",
+                        "typeString": "function (uint128) view returns (struct Pair memory)"
+                      }
+                    },
+                    "id": 5371,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "297:17:14",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pair_$1098_memory_ptr",
+                      "typeString": "struct Pair memory"
+                    }
+                  },
+                  "functionReturnParameters": 5368,
+                  "id": 5372,
+                  "nodeType": "Return",
+                  "src": "290:24:14"
+                }
+              ]
+            },
+            "functionSelector": "2b005d33",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "pairByIdTest",
+            "nameLocation": "215:12:14",
+            "parameters": {
+              "id": 5364,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5363,
+                  "mutability": "mutable",
+                  "name": "pairId",
+                  "nameLocation": "236:6:14",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5374,
+                  "src": "228:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint128",
+                    "typeString": "uint128"
+                  },
+                  "typeName": {
+                    "id": 5362,
+                    "name": "uint128",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "228:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint128",
+                      "typeString": "uint128"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "227:16:14"
+            },
+            "returnParameters": {
+              "id": 5368,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5367,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5374,
+                  "src": "267:11:14",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Pair_$1098_memory_ptr",
+                    "typeString": "struct Pair"
+                  },
+                  "typeName": {
+                    "id": 5366,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5365,
+                      "name": "Pair",
+                      "nameLocations": [
+                        "267:4:14"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1098,
+                      "src": "267:4:14"
+                    },
+                    "referencedDeclaration": 1098,
+                    "src": "267:4:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pair_$1098_storage_ptr",
+                      "typeString": "struct Pair"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "266:13:14"
+            },
+            "scope": 5393,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5392,
+            "nodeType": "FunctionDefinition",
+            "src": "327:134:14",
+            "nodes": [],
+            "body": {
+              "id": 5391,
+              "nodeType": "Block",
+              "src": "410:51:14",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5387,
+                        "name": "token0",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5377,
+                        "src": "439:6:14",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                          "typeString": "Token"
+                        }
+                      },
+                      {
+                        "id": 5388,
+                        "name": "token1",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5380,
+                        "src": "447:6:14",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                          "typeString": "Token"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                          "typeString": "Token"
+                        },
+                        {
+                          "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                          "typeString": "Token"
+                        }
+                      ],
+                      "id": 5386,
+                      "name": "_createPair",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1232,
+                      "src": "427:11:14",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_userDefinedValueType$_Token_$7445_$_t_userDefinedValueType$_Token_$7445_$returns$_t_struct$_Pair_$1098_memory_ptr_$",
+                        "typeString": "function (Token,Token) returns (struct Pair memory)"
+                      }
+                    },
+                    "id": 5389,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "427:27:14",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pair_$1098_memory_ptr",
+                      "typeString": "struct Pair memory"
+                    }
+                  },
+                  "functionReturnParameters": 5385,
+                  "id": 5390,
+                  "nodeType": "Return",
+                  "src": "420:34:14"
+                }
+              ]
+            },
+            "functionSelector": "e566bb9b",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "createPairTest",
+            "nameLocation": "336:14:14",
+            "parameters": {
+              "id": 5381,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5377,
+                  "mutability": "mutable",
+                  "name": "token0",
+                  "nameLocation": "357:6:14",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5392,
+                  "src": "351:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                    "typeString": "Token"
+                  },
+                  "typeName": {
+                    "id": 5376,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5375,
+                      "name": "Token",
+                      "nameLocations": [
+                        "351:5:14"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 7445,
+                      "src": "351:5:14"
+                    },
+                    "referencedDeclaration": 7445,
+                    "src": "351:5:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                      "typeString": "Token"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5380,
+                  "mutability": "mutable",
+                  "name": "token1",
+                  "nameLocation": "371:6:14",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5392,
+                  "src": "365:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                    "typeString": "Token"
+                  },
+                  "typeName": {
+                    "id": 5379,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5378,
+                      "name": "Token",
+                      "nameLocations": [
+                        "365:5:14"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 7445,
+                      "src": "365:5:14"
+                    },
+                    "referencedDeclaration": 7445,
+                    "src": "365:5:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                      "typeString": "Token"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "350:28:14"
+            },
+            "returnParameters": {
+              "id": 5385,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5384,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5392,
+                  "src": "397:11:14",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Pair_$1098_memory_ptr",
+                    "typeString": "struct Pair"
+                  },
+                  "typeName": {
+                    "id": 5383,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5382,
+                      "name": "Pair",
+                      "nameLocations": [
+                        "397:4:14"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1098,
+                      "src": "397:4:14"
+                    },
+                    "referencedDeclaration": 1098,
+                    "src": "397:4:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Pair_$1098_storage_ptr",
+                      "typeString": "struct Pair"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "396:13:14"
+            },
+            "scope": 5393,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 5360,
+              "name": "Pairs",
+              "nameLocations": [
+                "194:5:14"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 1454,
+              "src": "194:5:14"
+            },
+            "id": 5361,
+            "nodeType": "InheritanceSpecifier",
+            "src": "194:5:14"
+          }
+        ],
+        "canonicalName": "TestPairs",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          5393,
+          1454,
+          53810
+        ],
+        "name": "TestPairs",
+        "nameLocation": "181:9:14",
+        "scope": 5394,
+        "usedErrors": [
+          1102,
+          1104
+        ]
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 14
+}

@@ -2,9 +2,9 @@
 pragma solidity 0.8.19;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { EnumerableSetUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
-import { MathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
-import { SafeMathUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import { SafeCastUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/math/SafeCastUpgradeable.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MathEx } from "../utility/MathEx.sol";
 import { InvalidIndices } from "../utility/Utils.sol";
@@ -127,9 +127,9 @@ uint8 constant STRATEGY_UPDATE_REASON_TRADE = 1;
 abstract contract Strategies is Initializable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using Address for address payable;
-    using MathUpgradeable for uint256;
-    using SafeMathUpgradeable for uint256;
-    using SafeCastUpgradeable for uint256;
+    using Math for uint256;
+    using SafeMath for uint256;
+    using SafeCast for uint256;
 
     error NativeAmountMismatch();
     error BalanceMismatch();
@@ -776,12 +776,12 @@ abstract contract Strategies is Initializable {
 
         uint256 factor1 = MathEx.minFactor(temp1, temp1);
         uint256 factor2 = MathEx.minFactor(temp3, A);
-        uint256 factor = MathUpgradeable.max(factor1, factor2);
+        uint256 factor = Math.max(factor1, factor2);
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
         uint256 temp5 = MathEx.mulDivC(temp3, A, factor);
 
-        (bool safe, uint256 sum) = SafeMathUpgradeable.tryAdd(temp4, temp5);
+        (bool safe, uint256 sum) = SafeMath.tryAdd(temp4, temp5);
         if (safe) {
             return MathEx.mulDivF(temp2, temp3 / factor, sum);
         }
@@ -820,7 +820,7 @@ abstract contract Strategies is Initializable {
 
         uint256 factor1 = MathEx.minFactor(temp1, temp1);
         uint256 factor2 = MathEx.minFactor(temp2, temp3);
-        uint256 factor = MathUpgradeable.max(factor1, factor2);
+        uint256 factor = Math.max(factor1, factor2);
 
         uint256 temp4 = MathEx.mulDivC(temp1, temp1, factor);
         uint256 temp5 = MathEx.mulDivF(temp2, temp3, factor);

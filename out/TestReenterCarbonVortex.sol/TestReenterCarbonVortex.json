@@ -1,0 +1,908 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract ICarbonVortex",
+          "name": "carbonVortexInit",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "Token[]",
+          "name": "tokens",
+          "type": "address[]"
+        }
+      ],
+      "name": "tryReenterCarbonVortex",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60a060405234801561001057600080fd5b5060405161039638038061039683398101604081905261002f91610040565b6001600160a01b0316608052610070565b60006020828403121561005257600080fd5b81516001600160a01b038116811461006957600080fd5b9392505050565b60805161030561009160003960008181605d015261013101526103056000f3fe6080604052600436106100225760003560e01c8063d030f861146100d957600080fd5b366100d457604080516000815260208101918290527f4c0a0dfa000000000000000000000000000000000000000000000000000000009091527f000000000000000000000000000000000000000000000000000000000000000073ffffffffffffffffffffffffffffffffffffffff16634c0a0dfa6100a4836024810161019e565b600060405180830381600087803b1580156100be57600080fd5b505af11580156100d2573d6000803e3d6000fd5b005b600080fd5b3480156100e557600080fd5b506100d26100f43660046101f8565b6040517f4c0a0dfa00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff7f00000000000000000000000000000000000000000000000000000000000000001690634c0a0dfa90610168908590859060040161026d565b600060405180830381600087803b15801561018257600080fd5b505af1158015610196573d6000803e3d6000fd5b505050505050565b6020808252825182820181905260009190848201906040850190845b818110156101ec57835173ffffffffffffffffffffffffffffffffffffffff16835292840192918401916001016101ba565b50909695505050505050565b6000806020838503121561020b57600080fd5b823567ffffffffffffffff8082111561022357600080fd5b818501915085601f83011261023757600080fd5b81358181111561024657600080fd5b8660208260051b850101111561025b57600080fd5b60209290920196919550909350505050565b6020808252818101839052600090846040840183805b878110156102c257833573ffffffffffffffffffffffffffffffffffffffff81168082146102af578384fd5b8452509284019291840191600101610283565b509097965050505050505056fea2646970667358221220f3376e1319bd6ba0c6c2f5cae8b9d5758f80f695c43590ec6f0cf69df444f75064736f6c63430008130033",
+    "sourceMap": "258:478:16:-:0;;;349:93;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;-1:-1:-1;;;;;403:32:16;;;258:478;;14:312:127;106:6;159:2;147:9;138:7;134:23;130:32;127:52;;;175:1;172;165:12;127:52;201:16;;-1:-1:-1;;;;;246:31:127;;236:42;;226:70;;292:1;289;282:12;226:70;315:5;14:312;-1:-1:-1;;;14:312:127:o;:::-;258:478:16;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052600436106100225760003560e01c8063d030f861146100d957600080fd5b366100d457604080516000815260208101918290527f4c0a0dfa000000000000000000000000000000000000000000000000000000009091527f000000000000000000000000000000000000000000000000000000000000000073ffffffffffffffffffffffffffffffffffffffff16634c0a0dfa6100a4836024810161019e565b600060405180830381600087803b1580156100be57600080fd5b505af11580156100d2573d6000803e3d6000fd5b005b600080fd5b3480156100e557600080fd5b506100d26100f43660046101f8565b6040517f4c0a0dfa00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff7f00000000000000000000000000000000000000000000000000000000000000001690634c0a0dfa90610168908590859060040161026d565b600060405180830381600087803b15801561018257600080fd5b505af1158015610196573d6000803e3d6000fd5b505050505050565b6020808252825182820181905260009190848201906040850190845b818110156101ec57835173ffffffffffffffffffffffffffffffffffffffff16835292840192918401916001016101ba565b50909695505050505050565b6000806020838503121561020b57600080fd5b823567ffffffffffffffff8082111561022357600080fd5b818501915085601f83011261023757600080fd5b81358181111561024657600080fd5b8660208260051b850101111561025b57600080fd5b60209290920196919550909350505050565b6020808252818101839052600090846040840183805b878110156102c257833573ffffffffffffffffffffffffffffffffffffffff81168082146102af578384fd5b8452509284019291840191600101610283565b509097965050505050505056fea2646970667358221220f3376e1319bd6ba0c6c2f5cae8b9d5758f80f695c43590ec6f0cf69df444f75064736f6c63430008130033",
+    "sourceMap": "258:478:16:-:0;;;;;;;;;;;;;;;;;;;;;;;;509:14;;;485:21;509:14;;;;;;;;;580:29;;;;:13;:21;;;:29;509:14;580:29;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;258:478;;;;622:112;;;;;;;;;;-1:-1:-1;622:112:16;;;;;:::i;:::-;698:29;;;;;:21;:13;:21;;;;:29;;720:6;;;;698:29;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;622:112;;:::o;203:707:127:-;400:2;452:21;;;522:13;;425:18;;;544:22;;;371:4;;400:2;623:15;;;;597:2;582:18;;;371:4;666:218;680:6;677:1;674:13;666:218;;;745:13;;760:42;741:62;729:75;;859:15;;;;824:12;;;;702:1;695:9;666:218;;;-1:-1:-1;901:3:127;;203:707;-1:-1:-1;;;;;;203:707:127:o;915:641::-;1027:6;1035;1088:2;1076:9;1067:7;1063:23;1059:32;1056:52;;;1104:1;1101;1094:12;1056:52;1144:9;1131:23;1173:18;1214:2;1206:6;1203:14;1200:34;;;1230:1;1227;1220:12;1200:34;1268:6;1257:9;1253:22;1243:32;;1313:7;1306:4;1302:2;1298:13;1294:27;1284:55;;1335:1;1332;1325:12;1284:55;1375:2;1362:16;1401:2;1393:6;1390:14;1387:34;;;1417:1;1414;1407:12;1387:34;1470:7;1465:2;1455:6;1452:1;1448:14;1444:2;1440:23;1436:32;1433:45;1430:65;;;1491:1;1488;1481:12;1430:65;1522:2;1514:11;;;;;1544:6;;-1:-1:-1;915:641:127;;-1:-1:-1;;;;915:641:127:o;1561:816::-;1768:2;1820:21;;;1793:18;;;1876:22;;;1739:4;;1955:6;1929:2;1914:18;;1739:4;;2010:341;2026:6;2021:3;2018:15;2010:341;;;2105:6;2092:20;2146:42;2139:5;2135:54;2222:2;2215:5;2212:13;2202:41;;2239:1;2236;2229:12;2202:41;2256:15;;-1:-1:-1;2326:15:127;;;;2291:12;;;;2052:1;2043:11;2010:341;;;-1:-1:-1;2368:3:127;;1561:816;-1:-1:-1;;;;;;;1561:816:127:o",
+    "linkReferences": {},
+    "immutableReferences": {
+      "5469": [
+        {
+          "start": 93,
+          "length": 32
+        },
+        {
+          "start": 305,
+          "length": 32
+        }
+      ]
+    }
+  },
+  "methodIdentifiers": {
+    "tryReenterCarbonVortex(address[])": "d030f861"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract ICarbonVortex\",\"name\":\"carbonVortexInit\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"Token[]\",\"name\":\"tokens\",\"type\":\"address[]\"}],\"name\":\"tryReenterCarbonVortex\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"details\":\"contract which attempts to re-enter CarbonVortex\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/helpers/TestReenterCarbonVortex.sol\":\"TestReenterCarbonVortex\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/helpers/TestReenterCarbonVortex.sol\":{\"keccak256\":\"0xd0e65fdde9567b67bfbc16d4b716df053f338fcb9fe956cd98b1e1e25b2ac5c6\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://a80b8bbb5edc12d8d1e0e100ce7836d60217647336d38a33509288910c52357b\",\"dweb:/ipfs/QmfX6anVbWLFhR2ewSGQyoUU5GQ1ZdkMFp3eDzc9CdbXVv\"]},\"contracts/token/Token.sol\":{\"keccak256\":\"0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521\",\"dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi\"]},\"contracts/utility/interfaces/IUpgradeable.sol\":{\"keccak256\":\"0xcc42138a568e5b5e6e1b96402d351ea04627e03bf24c0b62439910d3fda2773c\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://1e565b58ac5be1d3f9016d06ef75acfbec80d53e533d711c8a7e219b21bcc978\",\"dweb:/ipfs/QmVgRbwXZHN9CT6fCBE2a7eDvCBKQz2RHuy58FgSPMHmVU\"]},\"contracts/utility/interfaces/IVersioned.sol\":{\"keccak256\":\"0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51\",\"dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif\"]},\"contracts/vortex/interfaces/ICarbonVortex.sol\":{\"keccak256\":\"0x2390f31784bdd056f37e2b381460483a1002ed8b9630d9b2b06749778c5bccfb\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://369c98f30f8673bc8d6af804734d4edbbd8980e434d74d9310aa377f2e565219\",\"dweb:/ipfs/Qmb7NGs9snZnE5v1XiNXGreMLX8jpyyFoBirqYym6eLud2\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol\":{\"keccak256\":\"0x7acbc538aad6eb4614e26612a8c5c0149bb8808db95e2638d245a8365f63e572\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ea07bdbf13b16d19ccf8a8f1a361c80bbfb6073e8b1d079b72f7a5f09dc642cd\",\"dweb:/ipfs/QmQh5YhCySYR5RSAEFTt3NaDhq6MCxvSTdFh56874JPxbY\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol\":{\"keccak256\":\"0xb8f5302f12138c5561362e88a78d061573e6298b7a1a5afe84a1e2c8d4d5aeaa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://740cf4dc535e3082560cf5a031473029f322690fc8037fe9d5e3a8bef42e757c\",\"dweb:/ipfs/QmTQxFdfxcaueQa23VX34wAPqzruZbkzyeN58tZK2yav2b\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15\",\"dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5\",\"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol\":{\"keccak256\":\"0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a\",\"dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4\",\"dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx\"]},\"node_modules/@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931\",\"dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm\"]},\"node_modules/@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "contract ICarbonVortex",
+              "name": "carbonVortexInit",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "Token[]",
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "tryReenterCarbonVortex"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "receive"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/helpers/TestReenterCarbonVortex.sol": "TestReenterCarbonVortex"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/helpers/TestReenterCarbonVortex.sol": {
+        "keccak256": "0xd0e65fdde9567b67bfbc16d4b716df053f338fcb9fe956cd98b1e1e25b2ac5c6",
+        "urls": [
+          "bzz-raw://a80b8bbb5edc12d8d1e0e100ce7836d60217647336d38a33509288910c52357b",
+          "dweb:/ipfs/QmfX6anVbWLFhR2ewSGQyoUU5GQ1ZdkMFp3eDzc9CdbXVv"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/token/Token.sol": {
+        "keccak256": "0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53",
+        "urls": [
+          "bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521",
+          "dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/interfaces/IUpgradeable.sol": {
+        "keccak256": "0xcc42138a568e5b5e6e1b96402d351ea04627e03bf24c0b62439910d3fda2773c",
+        "urls": [
+          "bzz-raw://1e565b58ac5be1d3f9016d06ef75acfbec80d53e533d711c8a7e219b21bcc978",
+          "dweb:/ipfs/QmVgRbwXZHN9CT6fCBE2a7eDvCBKQz2RHuy58FgSPMHmVU"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/interfaces/IVersioned.sol": {
+        "keccak256": "0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04",
+        "urls": [
+          "bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51",
+          "dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/vortex/interfaces/ICarbonVortex.sol": {
+        "keccak256": "0x2390f31784bdd056f37e2b381460483a1002ed8b9630d9b2b06749778c5bccfb",
+        "urls": [
+          "bzz-raw://369c98f30f8673bc8d6af804734d4edbbd8980e434d74d9310aa377f2e565219",
+          "dweb:/ipfs/Qmb7NGs9snZnE5v1XiNXGreMLX8jpyyFoBirqYym6eLud2"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol": {
+        "keccak256": "0x7acbc538aad6eb4614e26612a8c5c0149bb8808db95e2638d245a8365f63e572",
+        "urls": [
+          "bzz-raw://ea07bdbf13b16d19ccf8a8f1a361c80bbfb6073e8b1d079b72f7a5f09dc642cd",
+          "dweb:/ipfs/QmQh5YhCySYR5RSAEFTt3NaDhq6MCxvSTdFh56874JPxbY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol": {
+        "keccak256": "0xb8f5302f12138c5561362e88a78d061573e6298b7a1a5afe84a1e2c8d4d5aeaa",
+        "urls": [
+          "bzz-raw://740cf4dc535e3082560cf5a031473029f322690fc8037fe9d5e3a8bef42e757c",
+          "dweb:/ipfs/QmTQxFdfxcaueQa23VX34wAPqzruZbkzyeN58tZK2yav2b"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c",
+        "urls": [
+          "bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15",
+          "dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+        "urls": [
+          "bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
+          "dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol": {
+        "keccak256": "0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a",
+        "urls": [
+          "bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a",
+          "dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa",
+        "urls": [
+          "bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4",
+          "dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Address.sol": {
+        "keccak256": "0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa",
+        "urls": [
+          "bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931",
+          "dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/helpers/TestReenterCarbonVortex.sol",
+    "id": 5518,
+    "exportedSymbols": {
+      "ICarbonVortex": [
+        9932
+      ],
+      "TestReenterCarbonVortex": [
+        5517
+      ],
+      "Token": [
+        7445
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:686:16",
+    "nodes": [
+      {
+        "id": 5461,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:16",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 5463,
+        "nodeType": "ImportDirective",
+        "src": "76:71:16",
+        "nodes": [],
+        "absolutePath": "contracts/vortex/interfaces/ICarbonVortex.sol",
+        "file": "../vortex/interfaces/ICarbonVortex.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5518,
+        "sourceUnit": 9933,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5462,
+              "name": "ICarbonVortex",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 9932,
+              "src": "85:13:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5465,
+        "nodeType": "ImportDirective",
+        "src": "148:43:16",
+        "nodes": [],
+        "absolutePath": "contracts/token/Token.sol",
+        "file": "../token/Token.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5518,
+        "sourceUnit": 7801,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5464,
+              "name": "Token",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7445,
+              "src": "157:5:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5517,
+        "nodeType": "ContractDefinition",
+        "src": "258:478:16",
+        "nodes": [
+          {
+            "id": 5469,
+            "nodeType": "VariableDeclaration",
+            "src": "297:45:16",
+            "nodes": [],
+            "constant": false,
+            "mutability": "immutable",
+            "name": "_carbonVortex",
+            "nameLocation": "329:13:16",
+            "scope": 5517,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+              "typeString": "contract ICarbonVortex"
+            },
+            "typeName": {
+              "id": 5468,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 5467,
+                "name": "ICarbonVortex",
+                "nameLocations": [
+                  "297:13:16"
+                ],
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 9932,
+                "src": "297:13:16"
+              },
+              "referencedDeclaration": 9932,
+              "src": "297:13:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                "typeString": "contract ICarbonVortex"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "id": 5480,
+            "nodeType": "FunctionDefinition",
+            "src": "349:93:16",
+            "nodes": [],
+            "body": {
+              "id": 5479,
+              "nodeType": "Block",
+              "src": "393:49:16",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 5477,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 5475,
+                      "name": "_carbonVortex",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5469,
+                      "src": "403:13:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                        "typeString": "contract ICarbonVortex"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 5476,
+                      "name": "carbonVortexInit",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5472,
+                      "src": "419:16:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                        "typeString": "contract ICarbonVortex"
+                      }
+                    },
+                    "src": "403:32:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                      "typeString": "contract ICarbonVortex"
+                    }
+                  },
+                  "id": 5478,
+                  "nodeType": "ExpressionStatement",
+                  "src": "403:32:16"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 5473,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5472,
+                  "mutability": "mutable",
+                  "name": "carbonVortexInit",
+                  "nameLocation": "375:16:16",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5480,
+                  "src": "361:30:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                    "typeString": "contract ICarbonVortex"
+                  },
+                  "typeName": {
+                    "id": 5471,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5470,
+                      "name": "ICarbonVortex",
+                      "nameLocations": [
+                        "361:13:16"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 9932,
+                      "src": "361:13:16"
+                    },
+                    "referencedDeclaration": 9932,
+                    "src": "361:13:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                      "typeString": "contract ICarbonVortex"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "360:32:16"
+            },
+            "returnParameters": {
+              "id": 5474,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "393:0:16"
+            },
+            "scope": 5517,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 5502,
+            "nodeType": "FunctionDefinition",
+            "src": "448:168:16",
+            "nodes": [],
+            "body": {
+              "id": 5501,
+              "nodeType": "Block",
+              "src": "475:141:16",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    5487
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 5487,
+                      "mutability": "mutable",
+                      "name": "tokens",
+                      "nameLocation": "500:6:16",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 5501,
+                      "src": "485:21:16",
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr",
+                        "typeString": "Token[]"
+                      },
+                      "typeName": {
+                        "baseType": {
+                          "id": 5485,
+                          "nodeType": "UserDefinedTypeName",
+                          "pathNode": {
+                            "id": 5484,
+                            "name": "Token",
+                            "nameLocations": [
+                              "485:5:16"
+                            ],
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 7445,
+                            "src": "485:5:16"
+                          },
+                          "referencedDeclaration": 7445,
+                          "src": "485:5:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                            "typeString": "Token"
+                          }
+                        },
+                        "id": 5486,
+                        "nodeType": "ArrayTypeName",
+                        "src": "485:7:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_storage_ptr",
+                          "typeString": "Token[]"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 5494,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "hexValue": "30",
+                        "id": 5492,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "521:1:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_0_by_1",
+                          "typeString": "int_const 0"
+                        },
+                        "value": "0"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_rational_0_by_1",
+                          "typeString": "int_const 0"
+                        }
+                      ],
+                      "id": 5491,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "nodeType": "NewExpression",
+                      "src": "509:11:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr_$",
+                        "typeString": "function (uint256) pure returns (Token[] memory)"
+                      },
+                      "typeName": {
+                        "baseType": {
+                          "id": 5489,
+                          "nodeType": "UserDefinedTypeName",
+                          "pathNode": {
+                            "id": 5488,
+                            "name": "Token",
+                            "nameLocations": [
+                              "513:5:16"
+                            ],
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 7445,
+                            "src": "513:5:16"
+                          },
+                          "referencedDeclaration": 7445,
+                          "src": "513:5:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                            "typeString": "Token"
+                          }
+                        },
+                        "id": 5490,
+                        "nodeType": "ArrayTypeName",
+                        "src": "513:7:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_storage_ptr",
+                          "typeString": "Token[]"
+                        }
+                      }
+                    },
+                    "id": 5493,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "509:14:16",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr",
+                      "typeString": "Token[] memory"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "485:38:16"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5498,
+                        "name": "tokens",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5487,
+                        "src": "602:6:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr",
+                          "typeString": "Token[] memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr",
+                          "typeString": "Token[] memory"
+                        }
+                      ],
+                      "expression": {
+                        "id": 5495,
+                        "name": "_carbonVortex",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5469,
+                        "src": "580:13:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                          "typeString": "contract ICarbonVortex"
+                        }
+                      },
+                      "id": 5497,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberLocation": "594:7:16",
+                      "memberName": "execute",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 9925,
+                      "src": "580:21:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr_$returns$__$",
+                        "typeString": "function (Token[] memory) external"
+                      }
+                    },
+                    "id": 5499,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "580:29:16",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 5500,
+                  "nodeType": "ExpressionStatement",
+                  "src": "580:29:16"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "receive",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 5481,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "455:2:16"
+            },
+            "returnParameters": {
+              "id": 5482,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "475:0:16"
+            },
+            "scope": 5517,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5516,
+            "nodeType": "FunctionDefinition",
+            "src": "622:112:16",
+            "nodes": [],
+            "body": {
+              "id": 5515,
+              "nodeType": "Block",
+              "src": "688:46:16",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 5512,
+                        "name": "tokens",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5506,
+                        "src": "720:6:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_calldata_ptr",
+                          "typeString": "Token[] calldata"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_calldata_ptr",
+                          "typeString": "Token[] calldata"
+                        }
+                      ],
+                      "expression": {
+                        "id": 5509,
+                        "name": "_carbonVortex",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5469,
+                        "src": "698:13:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_ICarbonVortex_$9932",
+                          "typeString": "contract ICarbonVortex"
+                        }
+                      },
+                      "id": 5511,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberLocation": "712:7:16",
+                      "memberName": "execute",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 9925,
+                      "src": "698:21:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr_$returns$__$",
+                        "typeString": "function (Token[] memory) external"
+                      }
+                    },
+                    "id": 5513,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "698:29:16",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 5514,
+                  "nodeType": "ExpressionStatement",
+                  "src": "698:29:16"
+                }
+              ]
+            },
+            "functionSelector": "d030f861",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tryReenterCarbonVortex",
+            "nameLocation": "631:22:16",
+            "parameters": {
+              "id": 5507,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5506,
+                  "mutability": "mutable",
+                  "name": "tokens",
+                  "nameLocation": "671:6:16",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5516,
+                  "src": "654:23:16",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_calldata_ptr",
+                    "typeString": "Token[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 5504,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 5503,
+                        "name": "Token",
+                        "nameLocations": [
+                          "654:5:16"
+                        ],
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 7445,
+                        "src": "654:5:16"
+                      },
+                      "referencedDeclaration": 7445,
+                      "src": "654:5:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                        "typeString": "Token"
+                      }
+                    },
+                    "id": 5505,
+                    "nodeType": "ArrayTypeName",
+                    "src": "654:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_storage_ptr",
+                      "typeString": "Token[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "653:25:16"
+            },
+            "returnParameters": {
+              "id": 5508,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "688:0:16"
+            },
+            "scope": 5517,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "TestReenterCarbonVortex",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 5466,
+          "nodeType": "StructuredDocumentation",
+          "src": "193:64:16",
+          "text": " @dev contract which attempts to re-enter CarbonVortex"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          5517
+        ],
+        "name": "TestReenterCarbonVortex",
+        "nameLocation": "267:23:16",
+        "scope": 5518,
+        "usedErrors": []
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 16
+}

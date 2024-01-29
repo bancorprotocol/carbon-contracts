@@ -1,0 +1,210 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "version()": "54fd4d50"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"an interface for a versioned contract\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/utility/interfaces/IVersioned.sol\":\"IVersioned\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/utility/interfaces/IVersioned.sol\":{\"keccak256\":\"0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51\",\"dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "version",
+          "outputs": [
+            {
+              "internalType": "uint16",
+              "name": "",
+              "type": "uint16"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/utility/interfaces/IVersioned.sol": "IVersioned"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/utility/interfaces/IVersioned.sol": {
+        "keccak256": "0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04",
+        "urls": [
+          "bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51",
+          "dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/utility/interfaces/IVersioned.sol",
+    "id": 9125,
+    "exportedSymbols": {
+      "IVersioned": [
+        9124
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:159:35",
+    "nodes": [
+      {
+        "id": 9117,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:35",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 9124,
+        "nodeType": "ContractDefinition",
+        "src": "130:79:35",
+        "nodes": [
+          {
+            "id": 9123,
+            "nodeType": "FunctionDefinition",
+            "src": "157:50:35",
+            "nodes": [],
+            "functionSelector": "54fd4d50",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "version",
+            "nameLocation": "166:7:35",
+            "parameters": {
+              "id": 9119,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "173:2:35"
+            },
+            "returnParameters": {
+              "id": 9122,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9121,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9123,
+                  "src": "199:6:35",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 9120,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "199:6:35",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "198:8:35"
+            },
+            "scope": 9124,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IVersioned",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 9118,
+          "nodeType": "StructuredDocumentation",
+          "src": "76:53:35",
+          "text": " @dev an interface for a versioned contract"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          9124
+        ],
+        "name": "IVersioned",
+        "nameLocation": "140:10:35",
+        "scope": 9125,
+        "usedErrors": []
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 35
+}

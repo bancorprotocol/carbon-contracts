@@ -1,0 +1,128 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/utility/Constants.sol",
+    "id": 7827,
+    "exportedSymbols": {
+      "MAX_GAP": [
+        7826
+      ],
+      "PPM_RESOLUTION": [
+        7823
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:100:27",
+    "nodes": [
+      {
+        "id": 7820,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:27",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 7823,
+        "nodeType": "VariableDeclaration",
+        "src": "76:42:27",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "PPM_RESOLUTION",
+        "nameLocation": "92:14:27",
+        "scope": 7827,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_uint32",
+          "typeString": "uint32"
+        },
+        "typeName": {
+          "id": 7821,
+          "name": "uint32",
+          "nodeType": "ElementaryTypeName",
+          "src": "76:6:27",
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint32",
+            "typeString": "uint32"
+          }
+        },
+        "value": {
+          "hexValue": "315f3030305f303030",
+          "id": 7822,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "109:9:27",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_1000000_by_1",
+            "typeString": "int_const 1000000"
+          },
+          "value": "1_000_000"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 7826,
+        "nodeType": "VariableDeclaration",
+        "src": "121:28:27",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "MAX_GAP",
+        "nameLocation": "137:7:27",
+        "scope": 7827,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_uint32",
+          "typeString": "uint32"
+        },
+        "typeName": {
+          "id": 7824,
+          "name": "uint32",
+          "nodeType": "ElementaryTypeName",
+          "src": "121:6:27",
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint32",
+            "typeString": "uint32"
+          }
+        },
+        "value": {
+          "hexValue": "3530",
+          "id": 7825,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "147:2:27",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_50_by_1",
+            "typeString": "int_const 50"
+          },
+          "value": "50"
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 27
+}

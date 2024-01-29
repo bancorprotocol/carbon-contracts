@@ -1,0 +1,1733 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "DuplicateToken",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidToken",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTokenLength",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "prevRewardsPPM",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newRewardsPPM",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardsUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "caller",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "Token[]",
+          "name": "tokens",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256[]",
+          "name": "rewardAmounts",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "burnAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokensBurned",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "Token",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "availableTokens",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "Token[]",
+          "name": "tokens",
+          "type": "address[]"
+        }
+      ],
+      "name": "execute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoleMember",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleMemberCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardsPPM",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newRewardsPercentagePPM",
+          "type": "uint256"
+        }
+      ],
+      "name": "setRewardsPPM",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalBurned",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "version",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "availableTokens(address)": "94cb0947",
+    "execute(address[])": "4c0a0dfa",
+    "getRoleAdmin(bytes32)": "248a9ca3",
+    "getRoleMember(bytes32,uint256)": "9010d07c",
+    "getRoleMemberCount(bytes32)": "ca15c873",
+    "grantRole(bytes32,address)": "2f2ff15d",
+    "hasRole(bytes32,address)": "91d14854",
+    "renounceRole(bytes32,address)": "36568abe",
+    "revokeRole(bytes32,address)": "d547741f",
+    "rewardsPPM()": "c7f53874",
+    "setRewardsPPM(uint256)": "ebf80ff5",
+    "totalBurned()": "d89135cd",
+    "version()": "54fd4d50"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"DuplicateToken\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidToken\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidTokenLength\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"prevRewardsPPM\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newRewardsPPM\",\"type\":\"uint256\"}],\"name\":\"RewardsUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"Token[]\",\"name\":\"tokens\",\"type\":\"address[]\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"rewardAmounts\",\"type\":\"uint256[]\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"burnAmount\",\"type\":\"uint256\"}],\"name\":\"TokensBurned\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"Token\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"availableTokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"Token[]\",\"name\":\"tokens\",\"type\":\"address[]\"}],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"rewardsPPM\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newRewardsPercentagePPM\",\"type\":\"uint256\"}],\"name\":\"setRewardsPPM\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalBurned\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"CarbonVortex interface\",\"events\":{\"RewardsUpdated(uint256,uint256)\":{\"details\":\"triggered when the rewards ppm are updated\"},\"RoleAdminChanged(bytes32,bytes32,bytes32)\":{\"details\":\"Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted signaling this. _Available since v3.1._\"},\"RoleGranted(bytes32,address,address)\":{\"details\":\"Emitted when `account` is granted `role`. `sender` is the account that originated the contract call, an admin role bearer except when using {AccessControl-_setupRole}.\"},\"RoleRevoked(bytes32,address,address)\":{\"details\":\"Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call:   - if using `revokeRole`, it is the admin role bearer   - if using `renounceRole`, it is the role bearer (i.e. `account`)\"},\"TokensBurned(address,address[],uint256[],uint256)\":{\"details\":\"triggered after a successful burn is executed\"}},\"kind\":\"dev\",\"methods\":{\"availableTokens(address)\":{\"details\":\"returns the total available fees for the given token\"},\"execute(address[])\":{\"details\":\"withdraws the fees of the provided tokens from Carbonconverts them along with the available contract token balance to BNT,rewards the caller and burns the rest of the tokens\"},\"getRoleAdmin(bytes32)\":{\"details\":\"Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {AccessControl-_setRoleAdmin}.\"},\"getRoleMember(bytes32,uint256)\":{\"details\":\"Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.\"},\"getRoleMemberCount(bytes32)\":{\"details\":\"Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.\"},\"grantRole(bytes32,address)\":{\"details\":\"Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.\"},\"hasRole(bytes32,address)\":{\"details\":\"Returns `true` if `account` has been granted `role`.\"},\"renounceRole(bytes32,address)\":{\"details\":\"Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.\"},\"revokeRole(bytes32,address)\":{\"details\":\"Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.\"},\"rewardsPPM()\":{\"details\":\"returns the rewards percentage ppm\"},\"setRewardsPPM(uint256)\":{\"details\":\"sets the rewards percentage ppm requirements: - the caller must be the admin of the contract\"},\"totalBurned()\":{\"details\":\"returns the total amount burned\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/vortex/interfaces/ICarbonVortex.sol\":\"ICarbonVortex\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/token/Token.sol\":{\"keccak256\":\"0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521\",\"dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi\"]},\"contracts/utility/interfaces/IUpgradeable.sol\":{\"keccak256\":\"0xcc42138a568e5b5e6e1b96402d351ea04627e03bf24c0b62439910d3fda2773c\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://1e565b58ac5be1d3f9016d06ef75acfbec80d53e533d711c8a7e219b21bcc978\",\"dweb:/ipfs/QmVgRbwXZHN9CT6fCBE2a7eDvCBKQz2RHuy58FgSPMHmVU\"]},\"contracts/utility/interfaces/IVersioned.sol\":{\"keccak256\":\"0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51\",\"dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif\"]},\"contracts/vortex/interfaces/ICarbonVortex.sol\":{\"keccak256\":\"0x2390f31784bdd056f37e2b381460483a1002ed8b9630d9b2b06749778c5bccfb\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://369c98f30f8673bc8d6af804734d4edbbd8980e434d74d9310aa377f2e565219\",\"dweb:/ipfs/Qmb7NGs9snZnE5v1XiNXGreMLX8jpyyFoBirqYym6eLud2\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol\":{\"keccak256\":\"0x7acbc538aad6eb4614e26612a8c5c0149bb8808db95e2638d245a8365f63e572\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ea07bdbf13b16d19ccf8a8f1a361c80bbfb6073e8b1d079b72f7a5f09dc642cd\",\"dweb:/ipfs/QmQh5YhCySYR5RSAEFTt3NaDhq6MCxvSTdFh56874JPxbY\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol\":{\"keccak256\":\"0xb8f5302f12138c5561362e88a78d061573e6298b7a1a5afe84a1e2c8d4d5aeaa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://740cf4dc535e3082560cf5a031473029f322690fc8037fe9d5e3a8bef42e757c\",\"dweb:/ipfs/QmTQxFdfxcaueQa23VX34wAPqzruZbkzyeN58tZK2yav2b\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15\",\"dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5\",\"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd\",\"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol\":{\"keccak256\":\"0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a\",\"dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv\"]},\"node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4\",\"dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx\"]},\"node_modules/@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931\",\"dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm\"]},\"node_modules/@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92\",\"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "DuplicateToken"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidToken"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidTokenLength"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "prevRewardsPPM",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "newRewardsPPM",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "RewardsUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "RoleAdminChanged",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "RoleGranted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "RoleRevoked",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "caller",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "Token[]",
+              "name": "tokens",
+              "type": "address[]",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "rewardAmounts",
+              "type": "uint256[]",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "burnAmount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TokensBurned",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "Token",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "availableTokens",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "Token[]",
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "execute"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getRoleAdmin",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getRoleMember",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getRoleMemberCount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "grantRole"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "hasRole",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "renounceRole"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "revokeRole"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "rewardsPPM",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "newRewardsPercentagePPM",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setRewardsPPM"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalBurned",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "version",
+          "outputs": [
+            {
+              "internalType": "uint16",
+              "name": "",
+              "type": "uint16"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "availableTokens(address)": {
+            "details": "returns the total available fees for the given token"
+          },
+          "execute(address[])": {
+            "details": "withdraws the fees of the provided tokens from Carbonconverts them along with the available contract token balance to BNT,rewards the caller and burns the rest of the tokens"
+          },
+          "getRoleAdmin(bytes32)": {
+            "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {AccessControl-_setRoleAdmin}."
+          },
+          "getRoleMember(bytes32,uint256)": {
+            "details": "Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information."
+          },
+          "getRoleMemberCount(bytes32)": {
+            "details": "Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role."
+          },
+          "grantRole(bytes32,address)": {
+            "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role."
+          },
+          "hasRole(bytes32,address)": {
+            "details": "Returns `true` if `account` has been granted `role`."
+          },
+          "renounceRole(bytes32,address)": {
+            "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`."
+          },
+          "revokeRole(bytes32,address)": {
+            "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role."
+          },
+          "rewardsPPM()": {
+            "details": "returns the rewards percentage ppm"
+          },
+          "setRewardsPPM(uint256)": {
+            "details": "sets the rewards percentage ppm requirements: - the caller must be the admin of the contract"
+          },
+          "totalBurned()": {
+            "details": "returns the total amount burned"
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/vortex/interfaces/ICarbonVortex.sol": "ICarbonVortex"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/token/Token.sol": {
+        "keccak256": "0xe3b5a35bd3a75be705b6de9618db1ecf49ea738c7187d874dc5a0a0d2cf81f53",
+        "urls": [
+          "bzz-raw://f3c89f9a1609fdbf873d51af9e3846c7469f66b31e08429f85089b5ee3e85521",
+          "dweb:/ipfs/QmZq75X5qJTEgMfaAm39G42xBDtpiyQ1Hx48KQtjLC2gPi"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/interfaces/IUpgradeable.sol": {
+        "keccak256": "0xcc42138a568e5b5e6e1b96402d351ea04627e03bf24c0b62439910d3fda2773c",
+        "urls": [
+          "bzz-raw://1e565b58ac5be1d3f9016d06ef75acfbec80d53e533d711c8a7e219b21bcc978",
+          "dweb:/ipfs/QmVgRbwXZHN9CT6fCBE2a7eDvCBKQz2RHuy58FgSPMHmVU"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/utility/interfaces/IVersioned.sol": {
+        "keccak256": "0xa5068bacf412d0eac67377cfed9cc2bd6b36099cc4bba9f360a38d05a7bf4a04",
+        "urls": [
+          "bzz-raw://c740479f5afd2e567b9436fb85f0feaf96067165621d2b049858c3164a8d1c51",
+          "dweb:/ipfs/QmQT9CkwZahKii2tEK4aWF5Jist8Ri7zVemjkLyEPrACif"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "contracts/vortex/interfaces/ICarbonVortex.sol": {
+        "keccak256": "0x2390f31784bdd056f37e2b381460483a1002ed8b9630d9b2b06749778c5bccfb",
+        "urls": [
+          "bzz-raw://369c98f30f8673bc8d6af804734d4edbbd8980e434d74d9310aa377f2e565219",
+          "dweb:/ipfs/Qmb7NGs9snZnE5v1XiNXGreMLX8jpyyFoBirqYym6eLud2"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlEnumerableUpgradeable.sol": {
+        "keccak256": "0x7acbc538aad6eb4614e26612a8c5c0149bb8808db95e2638d245a8365f63e572",
+        "urls": [
+          "bzz-raw://ea07bdbf13b16d19ccf8a8f1a361c80bbfb6073e8b1d079b72f7a5f09dc642cd",
+          "dweb:/ipfs/QmQh5YhCySYR5RSAEFTt3NaDhq6MCxvSTdFh56874JPxbY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol": {
+        "keccak256": "0xb8f5302f12138c5561362e88a78d061573e6298b7a1a5afe84a1e2c8d4d5aeaa",
+        "urls": [
+          "bzz-raw://740cf4dc535e3082560cf5a031473029f322690fc8037fe9d5e3a8bef42e757c",
+          "dweb:/ipfs/QmTQxFdfxcaueQa23VX34wAPqzruZbkzyeN58tZK2yav2b"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+        "keccak256": "0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c",
+        "urls": [
+          "bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15",
+          "dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+        "urls": [
+          "bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
+          "dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+        "urls": [
+          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol": {
+        "keccak256": "0xec63854014a5b4f2b3290ab9103a21bdf902a508d0f41a8573fea49e98bf571a",
+        "urls": [
+          "bzz-raw://bc5b5dc12fbc4002f282eaa7a5f06d8310ed62c1c77c5770f6283e058454c39a",
+          "dweb:/ipfs/Qme9rE2wS3yBuyJq9GgbmzbsBQsW2M2sVFqYYLw7bosGrv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x909d608c2db6eb165ca178c81289a07ed2e118e444d0025b2a85c97d0b44a4fa",
+        "urls": [
+          "bzz-raw://656cda26512ddd7373c2d5551c8fae759fc30f05b10f0fc2e738e9274199dbd4",
+          "dweb:/ipfs/QmTSArSzQRFbQmHgq7U1PZXnsDFhvDZhKVu9CzMG4yo6Lx"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Address.sol": {
+        "keccak256": "0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa",
+        "urls": [
+          "bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931",
+          "dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+        "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+        "urls": [
+          "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+          "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/vortex/interfaces/ICarbonVortex.sol",
+    "id": 9933,
+    "exportedSymbols": {
+      "ICarbonVortex": [
+        9932
+      ],
+      "IUpgradeable": [
+        9115
+      ],
+      "Token": [
+        7445
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:1551:37",
+    "nodes": [
+      {
+        "id": 9862,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:37",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 9864,
+        "nodeType": "ImportDirective",
+        "src": "76:73:37",
+        "nodes": [],
+        "absolutePath": "contracts/utility/interfaces/IUpgradeable.sol",
+        "file": "../../utility/interfaces/IUpgradeable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 9933,
+        "sourceUnit": 9116,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 9863,
+              "name": "IUpgradeable",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 9115,
+              "src": "85:12:37",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 9866,
+        "nodeType": "ImportDirective",
+        "src": "150:46:37",
+        "nodes": [],
+        "absolutePath": "contracts/token/Token.sol",
+        "file": "../../token/Token.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 9933,
+        "sourceUnit": 7801,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 9865,
+              "name": "Token",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7445,
+              "src": "159:5:37",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 9932,
+        "nodeType": "ContractDefinition",
+        "src": "237:1364:37",
+        "nodes": [
+          {
+            "id": 9871,
+            "nodeType": "ErrorDefinition",
+            "src": "283:23:37",
+            "nodes": [],
+            "errorSelector": "464e3f6a",
+            "name": "DuplicateToken",
+            "nameLocation": "289:14:37",
+            "parameters": {
+              "id": 9870,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "303:2:37"
+            }
+          },
+          {
+            "id": 9873,
+            "nodeType": "ErrorDefinition",
+            "src": "311:21:37",
+            "nodes": [],
+            "errorSelector": "c1ab6dc1",
+            "name": "InvalidToken",
+            "nameLocation": "317:12:37",
+            "parameters": {
+              "id": 9872,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "329:2:37"
+            }
+          },
+          {
+            "id": 9875,
+            "nodeType": "ErrorDefinition",
+            "src": "337:27:37",
+            "nodes": [],
+            "errorSelector": "7dee3bcb",
+            "name": "InvalidTokenLength",
+            "nameLocation": "343:18:37",
+            "parameters": {
+              "id": 9874,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "361:2:37"
+            }
+          },
+          {
+            "id": 9889,
+            "nodeType": "EventDefinition",
+            "src": "444:104:37",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 9876,
+              "nodeType": "StructuredDocumentation",
+              "src": "370:69:37",
+              "text": " @dev triggered after a successful burn is executed"
+            },
+            "eventSelector": "907848d27eec20126a73629db507f65182b8da8ba77d96a99ff9c952d65466e8",
+            "name": "TokensBurned",
+            "nameLocation": "450:12:37",
+            "parameters": {
+              "id": 9888,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9878,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "caller",
+                  "nameLocation": "479:6:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9889,
+                  "src": "463:22:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 9877,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "463:7:37",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 9882,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "tokens",
+                  "nameLocation": "495:6:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9889,
+                  "src": "487:14:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_memory_ptr",
+                    "typeString": "Token[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 9880,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 9879,
+                        "name": "Token",
+                        "nameLocations": [
+                          "487:5:37"
+                        ],
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 7445,
+                        "src": "487:5:37"
+                      },
+                      "referencedDeclaration": 7445,
+                      "src": "487:5:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                        "typeString": "Token"
+                      }
+                    },
+                    "id": 9881,
+                    "nodeType": "ArrayTypeName",
+                    "src": "487:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_storage_ptr",
+                      "typeString": "Token[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 9885,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "rewardAmounts",
+                  "nameLocation": "513:13:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9889,
+                  "src": "503:23:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 9883,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "503:7:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 9884,
+                    "nodeType": "ArrayTypeName",
+                    "src": "503:9:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 9887,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "burnAmount",
+                  "nameLocation": "536:10:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9889,
+                  "src": "528:18:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9886,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "528:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "462:85:37"
+            }
+          },
+          {
+            "id": 9896,
+            "nodeType": "EventDefinition",
+            "src": "625:68:37",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 9890,
+              "nodeType": "StructuredDocumentation",
+              "src": "554:66:37",
+              "text": " @dev triggered when the rewards ppm are updated"
+            },
+            "eventSelector": "cd7c861d63893659123f817b192b8621ff1923a7c4589c260173cedcf9e986a6",
+            "name": "RewardsUpdated",
+            "nameLocation": "631:14:37",
+            "parameters": {
+              "id": 9895,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9892,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "prevRewardsPPM",
+                  "nameLocation": "654:14:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9896,
+                  "src": "646:22:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9891,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "646:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 9894,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "newRewardsPPM",
+                  "nameLocation": "678:13:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9896,
+                  "src": "670:21:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9893,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "670:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "645:47:37"
+            }
+          },
+          {
+            "id": 9902,
+            "nodeType": "FunctionDefinition",
+            "src": "762:54:37",
+            "nodes": [],
+            "documentation": {
+              "id": 9897,
+              "nodeType": "StructuredDocumentation",
+              "src": "699:58:37",
+              "text": " @dev returns the rewards percentage ppm"
+            },
+            "functionSelector": "c7f53874",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "rewardsPPM",
+            "nameLocation": "771:10:37",
+            "parameters": {
+              "id": 9898,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "781:2:37"
+            },
+            "returnParameters": {
+              "id": 9901,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9900,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9902,
+                  "src": "807:7:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9899,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "807:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "806:9:37"
+            },
+            "scope": 9932,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 9908,
+            "nodeType": "FunctionDefinition",
+            "src": "882:55:37",
+            "nodes": [],
+            "documentation": {
+              "id": 9903,
+              "nodeType": "StructuredDocumentation",
+              "src": "822:55:37",
+              "text": " @dev returns the total amount burned"
+            },
+            "functionSelector": "d89135cd",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "totalBurned",
+            "nameLocation": "891:11:37",
+            "parameters": {
+              "id": 9904,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "902:2:37"
+            },
+            "returnParameters": {
+              "id": 9907,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9906,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9908,
+                  "src": "928:7:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9905,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "928:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "927:9:37"
+            },
+            "scope": 9932,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 9917,
+            "nodeType": "FunctionDefinition",
+            "src": "1024:70:37",
+            "nodes": [],
+            "documentation": {
+              "id": 9909,
+              "nodeType": "StructuredDocumentation",
+              "src": "943:76:37",
+              "text": " @dev returns the total available fees for the given token"
+            },
+            "functionSelector": "94cb0947",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "availableTokens",
+            "nameLocation": "1033:15:37",
+            "parameters": {
+              "id": 9913,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9912,
+                  "mutability": "mutable",
+                  "name": "token",
+                  "nameLocation": "1055:5:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9917,
+                  "src": "1049:11:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                    "typeString": "Token"
+                  },
+                  "typeName": {
+                    "id": 9911,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 9910,
+                      "name": "Token",
+                      "nameLocations": [
+                        "1049:5:37"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 7445,
+                      "src": "1049:5:37"
+                    },
+                    "referencedDeclaration": 7445,
+                    "src": "1049:5:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                      "typeString": "Token"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1048:13:37"
+            },
+            "returnParameters": {
+              "id": 9916,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9915,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9917,
+                  "src": "1085:7:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9914,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1085:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1084:9:37"
+            },
+            "scope": 9932,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 9925,
+            "nodeType": "FunctionDefinition",
+            "src": "1328:51:37",
+            "nodes": [],
+            "documentation": {
+              "id": 9918,
+              "nodeType": "StructuredDocumentation",
+              "src": "1100:223:37",
+              "text": " @dev withdraws the fees of the provided tokens from Carbon\n @dev converts them along with the available contract token balance to BNT,\n @dev rewards the caller and burns the rest of the tokens"
+            },
+            "functionSelector": "4c0a0dfa",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nameLocation": "1337:7:37",
+            "parameters": {
+              "id": 9923,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9922,
+                  "mutability": "mutable",
+                  "name": "tokens",
+                  "nameLocation": "1362:6:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9925,
+                  "src": "1345:23:37",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_calldata_ptr",
+                    "typeString": "Token[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 9920,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 9919,
+                        "name": "Token",
+                        "nameLocations": [
+                          "1345:5:37"
+                        ],
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 7445,
+                        "src": "1345:5:37"
+                      },
+                      "referencedDeclaration": 7445,
+                      "src": "1345:5:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_userDefinedValueType$_Token_$7445",
+                        "typeString": "Token"
+                      }
+                    },
+                    "id": 9921,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1345:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_userDefinedValueType$_Token_$7445_$dyn_storage_ptr",
+                      "typeString": "Token[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1344:25:37"
+            },
+            "returnParameters": {
+              "id": 9924,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1378:0:37"
+            },
+            "scope": 9932,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 9931,
+            "nodeType": "FunctionDefinition",
+            "src": "1534:65:37",
+            "nodes": [],
+            "documentation": {
+              "id": 9926,
+              "nodeType": "StructuredDocumentation",
+              "src": "1385:144:37",
+              "text": " @dev sets the rewards percentage ppm\n requirements:\n - the caller must be the admin of the contract"
+            },
+            "functionSelector": "ebf80ff5",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setRewardsPPM",
+            "nameLocation": "1543:13:37",
+            "parameters": {
+              "id": 9929,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 9928,
+                  "mutability": "mutable",
+                  "name": "newRewardsPercentagePPM",
+                  "nameLocation": "1565:23:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9931,
+                  "src": "1557:31:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 9927,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1557:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1556:33:37"
+            },
+            "returnParameters": {
+              "id": 9930,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1598:0:37"
+            },
+            "scope": 9932,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 9868,
+              "name": "IUpgradeable",
+              "nameLocations": [
+                "264:12:37"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 9115,
+              "src": "264:12:37"
+            },
+            "id": 9869,
+            "nodeType": "InheritanceSpecifier",
+            "src": "264:12:37"
+          }
+        ],
+        "canonicalName": "ICarbonVortex",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 9867,
+          "nodeType": "StructuredDocumentation",
+          "src": "198:38:37",
+          "text": " @dev CarbonVortex interface"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          9932,
+          9115,
+          9124,
+          53565,
+          53638
+        ],
+        "name": "ICarbonVortex",
+        "nameLocation": "247:13:37",
+        "scope": 9933,
+        "usedErrors": [
+          9871,
+          9873,
+          9875
+        ]
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 37
+}

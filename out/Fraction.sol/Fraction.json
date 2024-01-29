@@ -1,0 +1,104 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "contracts/utility/Fraction.sol",
+    "id": 7880,
+    "exportedSymbols": {
+      "Fraction": [
+        7879
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:75:29",
+    "nodes": [
+      {
+        "id": 7874,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:29",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".19"
+        ]
+      },
+      {
+        "id": 7879,
+        "nodeType": "StructDefinition",
+        "src": "76:49:29",
+        "nodes": [],
+        "canonicalName": "Fraction",
+        "members": [
+          {
+            "constant": false,
+            "id": 7876,
+            "mutability": "mutable",
+            "name": "n",
+            "nameLocation": "106:1:29",
+            "nodeType": "VariableDeclaration",
+            "scope": 7879,
+            "src": "98:9:29",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 7875,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "98:7:29",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 7878,
+            "mutability": "mutable",
+            "name": "d",
+            "nameLocation": "121:1:29",
+            "nodeType": "VariableDeclaration",
+            "scope": 7879,
+            "src": "113:9:29",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 7877,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "113:7:29",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "name": "Fraction",
+        "nameLocation": "83:8:29",
+        "scope": 7880,
+        "visibility": "public"
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 29
+}

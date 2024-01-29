@@ -1,0 +1,348 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "burn",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "burnFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "burn(uint256)": "42966c68",
+    "burnFrom(address,uint256)": "79cc6790"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"burnFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"burnable ERC20 interface\",\"kind\":\"dev\",\"methods\":{\"burn(uint256)\":{\"details\":\"Destroys tokens from the caller.\"},\"burnFrom(address,uint256)\":{\"details\":\"Destroys tokens from a recipient, deducting from the caller's allowance requirements: - the caller must have allowance for recipient's tokens of at least the specified amount\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/token/interfaces/IERC20Burnable.sol\":\"IERC20Burnable\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[\":@bancor/=node_modules/@bancor/\",\":@ensdomains/=node_modules/@ensdomains/\",\":@mean-finance/=node_modules/@mean-finance/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@rari-capital/=node_modules/@rari-capital/\",\":@uniswap/=node_modules/@uniswap/\",\":base64-sol/=node_modules/base64-sol/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":hardhat-deploy/=node_modules/hardhat-deploy/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/token/interfaces/IERC20Burnable.sol\":{\"keccak256\":\"0xf808a5a3a736c55c2350452df99db1a86411ff5d17a04d53c8614f469911f94f\",\"license\":\"SEE LICENSE IN LICENSE\",\"urls\":[\"bzz-raw://c02ae66429642975a19cea350f149f133f3952b6a91a1c859787bc9e1628dd62\",\"dweb:/ipfs/QmYfznC25jqAHUeoratjwS7wCmPhBjy3GCBXJ8eqCgkUp9\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.19+commit.7dd6d404"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "burn"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "burnFrom"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "burn(uint256)": {
+            "details": "Destroys tokens from the caller."
+          },
+          "burnFrom(address,uint256)": {
+            "details": "Destroys tokens from a recipient, deducting from the caller's allowance requirements: - the caller must have allowance for recipient's tokens of at least the specified amount"
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@bancor/=node_modules/@bancor/",
+        "@ensdomains/=node_modules/@ensdomains/",
+        "@mean-finance/=node_modules/@mean-finance/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "@rari-capital/=node_modules/@rari-capital/",
+        "@uniswap/=node_modules/@uniswap/",
+        "base64-sol/=node_modules/base64-sol/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=node_modules/hardhat-deploy/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 2000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/token/interfaces/IERC20Burnable.sol": "IERC20Burnable"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/token/interfaces/IERC20Burnable.sol": {
+        "keccak256": "0xf808a5a3a736c55c2350452df99db1a86411ff5d17a04d53c8614f469911f94f",
+        "urls": [
+          "bzz-raw://c02ae66429642975a19cea350f149f133f3952b6a91a1c859787bc9e1628dd62",
+          "dweb:/ipfs/QmYfznC25jqAHUeoratjwS7wCmPhBjy3GCBXJ8eqCgkUp9"
+        ],
+        "license": "SEE LICENSE IN LICENSE"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/token/interfaces/IERC20Burnable.sol",
+    "id": 7819,
+    "exportedSymbols": {
+      "IERC20Burnable": [
+        7818
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "51:499:26",
+    "nodes": [
+      {
+        "id": 7802,
+        "nodeType": "PragmaDirective",
+        "src": "51:23:26",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 7818,
+        "nodeType": "ContractDefinition",
+        "src": "117:432:26",
+        "nodes": [
+          {
+            "id": 7809,
+            "nodeType": "FunctionDefinition",
+            "src": "209:39:26",
+            "nodes": [],
+            "documentation": {
+              "id": 7804,
+              "nodeType": "StructuredDocumentation",
+              "src": "148:56:26",
+              "text": " @dev Destroys tokens from the caller."
+            },
+            "functionSelector": "42966c68",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "burn",
+            "nameLocation": "218:4:26",
+            "parameters": {
+              "id": 7807,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 7806,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "231:6:26",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 7809,
+                  "src": "223:14:26",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 7805,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "223:7:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "222:16:26"
+            },
+            "returnParameters": {
+              "id": 7808,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "247:0:26"
+            },
+            "scope": 7818,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 7817,
+            "nodeType": "FunctionDefinition",
+            "src": "485:62:26",
+            "nodes": [],
+            "documentation": {
+              "id": 7810,
+              "nodeType": "StructuredDocumentation",
+              "src": "254:226:26",
+              "text": " @dev Destroys tokens from a recipient, deducting from the caller's allowance\n requirements:\n - the caller must have allowance for recipient's tokens of at least the specified amount"
+            },
+            "functionSelector": "79cc6790",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "burnFrom",
+            "nameLocation": "494:8:26",
+            "parameters": {
+              "id": 7815,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 7812,
+                  "mutability": "mutable",
+                  "name": "recipient",
+                  "nameLocation": "511:9:26",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 7817,
+                  "src": "503:17:26",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 7811,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "503:7:26",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 7814,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "530:6:26",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 7817,
+                  "src": "522:14:26",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 7813,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "522:7:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "502:35:26"
+            },
+            "returnParameters": {
+              "id": 7816,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "546:0:26"
+            },
+            "scope": 7818,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IERC20Burnable",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 7803,
+          "nodeType": "StructuredDocumentation",
+          "src": "76:40:26",
+          "text": " @dev burnable ERC20 interface"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          7818
+        ],
+        "name": "IERC20Burnable",
+        "nameLocation": "127:14:26",
+        "scope": 7819,
+        "usedErrors": []
+      }
+    ],
+    "license": "SEE LICENSE IN LICENSE"
+  },
+  "id": 26
+}
