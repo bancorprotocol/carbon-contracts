@@ -11,6 +11,8 @@ dist
 cache
 artifacts
 typechain-types
+out
+cache_forge
 
 contracts/hardhat-dependency-compiler
 
