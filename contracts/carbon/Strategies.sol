@@ -127,8 +127,6 @@ uint8 constant STRATEGY_UPDATE_REASON_TRADE = 1;
 abstract contract Strategies is Initializable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using Address for address payable;
-    using Math for uint256;
-    using SafeMath for uint256;
     using SafeCast for uint256;
 
     error NativeAmountMismatch();
