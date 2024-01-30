@@ -21,7 +21,7 @@ const TestNamedAccounts = {
         ...mainnet('0x55FE002aefF02F77364de339a1292923A15844B8')
     },
     wbtcWhale: {
-        ...mainnet('0x77134cbC06cB00b66F4c7e623D5fdBF6777635EC')
+        ...mainnet('0x051d091B254EcdBBB4eB8E6311b7939829380b27')
     },
     bntWhale: {
         ...mainnet('0x221A0e3C9AcEa6B3f1CC9DfC7063509c89bE7BC3')
