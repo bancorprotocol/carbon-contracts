@@ -50,17 +50,23 @@ const fundAccount = async (account: string, fundingRequests: FundingRequest[]) =
         if (fundingRequest.token === ZERO_ADDRESS) {
             continue;
         }
-        if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
-            await fundingRequest.whale.sendTransaction({
-                value: fundingRequest.amount,
-                to: account
-            });
+        try {
+            if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
+                await fundingRequest.whale.sendTransaction({
+                    value: fundingRequest.amount,
+                    to: account
+                });
 
-            continue;
+                continue;
+            }
+
+            const tokenContract = await Contracts.ERC20.attach(fundingRequest.token);
+            await tokenContract.connect(fundingRequest.whale).transfer(account, fundingRequest.amount);
+        } catch (error) {
+            Logger.error(`Failed to fund ${account} with ${fundingRequest.amount} of token ${fundingRequest.tokenName}`);
+            Logger.error(error);
+            Logger.error();
         }
-
-        const tokenContract = await Contracts.ERC20.attach(fundingRequest.token);
-        await tokenContract.connect(fundingRequest.whale).transfer(account, fundingRequest.amount);
     }
 };
 
