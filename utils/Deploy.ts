@@ -3,7 +3,7 @@ import { CarbonController, CarbonPOL, CarbonVortex, IVersioned, ProxyAdmin, Vouc
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, NetworkId, ZERO_BYTES } from './Constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, Contract, ContractInterface, utils } from 'ethers';
+import { BigNumber, BigNumberish, Contract, ContractInterface, utils } from 'ethers';
 import fs from 'fs';
 import glob from 'glob';
 import { config, deployments, ethers, getNamedAccounts, tenderly } from 'hardhat';
@@ -101,22 +101,22 @@ export const getNamedSigners = async (): Promise<Record<string, SignerWithAddres
     return signers;
 };
 
-export const fundAccount = async (account: string | SignerWithAddress) => {
+export const fundAccount = async (account: string | SignerWithAddress, amount?: BigNumberish) => {
     if (!isTenderly()) {
         return;
     }
 
     const address = typeof account === 'string' ? account : account.address;
 
-    const balance = await ethers.provider.send('eth_getBalance', [address, 'latest']);
-    if (BigNumber.from(balance).gte(TEST_MINIMUM_BALANCE)) {
+    const balance = await ethers.provider.getBalance(address);
+    if (!amount && balance.gte(TEST_MINIMUM_BALANCE)) {
         return;
     }
 
     const { ethWhale } = await getNamedSigners();
 
     return ethWhale.sendTransaction({
-        value: TEST_FUNDING,
+        value: amount ?? TEST_FUNDING,
         to: address
     });
 };
