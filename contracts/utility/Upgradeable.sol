@@ -42,7 +42,7 @@ abstract contract Upgradeable is IUpgradeable, AccessControlEnumerableUpgradeabl
      * @dev performs contract-specific initialization
      */
     function __Upgradeable_init_unchained() internal onlyInitializing {
-        _initializations = 1;
+        _initializations = version() - 1;
 
         // set up administrative roles
         _setRoleAdmin(ROLE_ADMIN, ROLE_ADMIN);

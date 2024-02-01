@@ -16,12 +16,19 @@ import 'hardhat-watcher';
 import { HardhatUserConfig } from 'hardhat/config';
 import { MochaOptions } from 'mocha';
 import 'solidity-coverage';
+import chainIds from './utils/chainIds.json';
 
 interface EnvOptions {
     ETHEREUM_PROVIDER_URL?: string;
-    ETHEREUM_RINKEBY_PROVIDER_URL?: string;
+    MANTLE_PROVIDER_URL?: string;
+    BASE_PROVIDER_URL?: string;
+    ARBITRUM_PROVIDER_URL?: string;
+    ETHEREUM_SEPOLIA_PROVIDER_URL?: string;
     TENDERLY_TESTNET_PROVIDER_URL?: string;
-    ETHERSCAN_API_KEY?: string;
+    MAINNET_ETHERSCAN_API_KEY?: string;
+    SEPOLIA_ETHERSCAN_API_KEY?: string;
+    BASESCAN_API_KEY?: string;
+    ARBISCAN_API_KEY?: string;
     GAS_PRICE?: number | 'auto';
     NIGHTLY?: boolean;
     PROFILE?: boolean;
@@ -29,20 +36,26 @@ interface EnvOptions {
     TENDERLY_PROJECT?: string;
     TENDERLY_TEST_PROJECT?: string;
     TENDERLY_USERNAME?: string;
+    TENDERLY_NETWORK_NAME?: string;
 }
 
 const {
     ETHEREUM_PROVIDER_URL = '',
-    ETHEREUM_RINKEBY_PROVIDER_URL = '',
+    BASE_PROVIDER_URL = '',
+    MANTLE_PROVIDER_URL = '',
+    ARBITRUM_PROVIDER_URL = '',
+    ETHEREUM_SEPOLIA_PROVIDER_URL = '',
     TENDERLY_TESTNET_PROVIDER_URL = '',
-    ETHERSCAN_API_KEY,
+    MAINNET_ETHERSCAN_API_KEY = '',
+    SEPOLIA_ETHERSCAN_API_KEY = '',
+    BASESCAN_API_KEY = '',
+    ARBISCAN_API_KEY = '',
     GAS_PRICE: gasPrice = 'auto',
-    NIGHTLY: isNightly,
-    PROFILE: isProfiling,
     TENDERLY_FORK_ID = '',
     TENDERLY_PROJECT = '',
     TENDERLY_TEST_PROJECT = '',
-    TENDERLY_USERNAME = ''
+    TENDERLY_USERNAME = '',
+    TENDERLY_NETWORK_NAME = DeploymentNetwork.Mainnet
 }: EnvOptions = process.env as any as EnvOptions;
 
 const mochaOptions = (): MochaOptions => {
@@ -77,28 +90,74 @@ const config: HardhatUserConfig = {
             url: ETHEREUM_PROVIDER_URL,
             gasPrice,
             saveDeployments: true,
-            live: true
+            live: true,
+            verify: {
+                etherscan: {
+                    apiKey: MAINNET_ETHERSCAN_API_KEY
+                }
+            }
         },
-        [DeploymentNetwork.Rinkeby]: {
-            chainId: 4,
-            url: ETHEREUM_RINKEBY_PROVIDER_URL,
+        [DeploymentNetwork.Mantle]: {
+            chainId: chainIds[DeploymentNetwork.Mantle],
+            url: MANTLE_PROVIDER_URL,
+            gasPrice,
             saveDeployments: true,
-            live: true
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Mantle}`]
+        },
+        [DeploymentNetwork.Base]: {
+            chainId: chainIds[DeploymentNetwork.Base],
+            url: BASE_PROVIDER_URL,
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Base}`],
+            verify: {
+                etherscan: {
+                    apiKey: BASESCAN_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Arbitrum]: {
+            chainId: chainIds[DeploymentNetwork.Arbitrum],
+            url: ARBITRUM_PROVIDER_URL,
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Arbitrum}`],
+            verify: {
+                etherscan: {
+                    apiKey: ARBISCAN_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Sepolia]: {
+            chainId: chainIds[DeploymentNetwork.Sepolia],
+            url: ETHEREUM_SEPOLIA_PROVIDER_URL,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Sepolia}`],
+            verify: {
+                etherscan: {
+                    apiKey: SEPOLIA_ETHERSCAN_API_KEY
+                }
+            }
         },
         [DeploymentNetwork.Tenderly]: {
-            chainId: 1,
+            chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
             url: `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}`,
             autoImpersonate: true,
             saveDeployments: true,
             live: true,
-            gas: 6000000
+            deploy: [`deploy/scripts/${TENDERLY_NETWORK_NAME}`]
         },
         [DeploymentNetwork.TenderlyTestnet]: {
-            chainId: 1,
+            chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
             url: TENDERLY_TESTNET_PROVIDER_URL,
             autoImpersonate: true,
             saveDeployments: true,
-            live: true
+            live: true,
+            deploy: [`deploy/scripts/${TENDERLY_NETWORK_NAME}`]
         }
     },
 
@@ -107,7 +166,7 @@ const config: HardhatUserConfig = {
     },
 
     tenderly: {
-        forkNetwork: '1',
+        forkNetwork: chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds].toString(),
         project: TENDERLY_PROJECT || TENDERLY_TEST_PROJECT,
         username: TENDERLY_USERNAME
     },
@@ -146,6 +205,9 @@ const config: HardhatUserConfig = {
     external: {
         deployments: {
             [DeploymentNetwork.Mainnet]: [`deployments/${DeploymentNetwork.Mainnet}`],
+            [DeploymentNetwork.Mantle]: [`deployments/${DeploymentNetwork.Mantle}`],
+            [DeploymentNetwork.Base]: [`deployments/${DeploymentNetwork.Base}`],
+            [DeploymentNetwork.Arbitrum]: [`deployments/${DeploymentNetwork.Arbitrum}`],
             [DeploymentNetwork.Tenderly]: [`deployments/${DeploymentNetwork.Tenderly}`],
             [DeploymentNetwork.TenderlyTestnet]: [`deployments/${DeploymentNetwork.TenderlyTestnet}`]
         }
@@ -155,16 +217,6 @@ const config: HardhatUserConfig = {
         alphaSort: true,
         runOnCompile: false,
         disambiguatePaths: false
-    },
-
-    verify: {
-        etherscan: {
-            apiKey: ETHERSCAN_API_KEY
-        }
-    },
-
-    etherscan: {
-        apiKey: ETHERSCAN_API_KEY
     },
 
     watcher: {
