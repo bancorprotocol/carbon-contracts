@@ -232,7 +232,10 @@ const logParams = async (params: FunctionParams) => {
 
     for (const [i, arg] of args.entries()) {
         const input = fragment.inputs[i];
-        Logger.log(`    ${input?.name} (${input?.type}): ${arg?.toString()}`);
+        if (!input) {
+            continue;
+        }
+        Logger.log(`    ${input.name} (${input.type}): ${arg?.toString()}`);
     }
 };
 

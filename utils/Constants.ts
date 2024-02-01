@@ -34,6 +34,7 @@ export const ZERO_ADDRESS = AddressZero;
 export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 export const ZERO_FRACTION = { n: 0, d: 1 };
 export const PPM_RESOLUTION = 1_000_000;
+export const VOUCHER_URI = 'ipfs://QmUyDUzQtwAhMB1hrYaQAqmRTbgt9sUnwq11GeqyzzSuqn';
 
 export const DEFAULT_TRADING_FEE_PPM = toPPM(0.2);
 

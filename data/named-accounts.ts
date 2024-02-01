@@ -5,12 +5,12 @@ interface EnvOptions {
     TENDERLY_NETWORK_NAME?: string;
 }
 
-const { TENDERLY_NETWORK_NAME = 'mainnet' }: EnvOptions = process.env as any as EnvOptions;
+const { TENDERLY_NETWORK_NAME = DeploymentNetwork.Mainnet }: EnvOptions = process.env as any as EnvOptions;
 
 const TENDERLY_NETWORK_ID = chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds];
 
 const mainnet = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds['mainnet']) {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Mainnet]) {
         return {
             [DeploymentNetwork.Mainnet]: address,
             [DeploymentNetwork.Tenderly]: address,
@@ -23,7 +23,7 @@ const mainnet = (address: string) => {
 };
 
 const base = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds['base']) {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Base]) {
         return {
             [DeploymentNetwork.Base]: address,
             [DeploymentNetwork.Tenderly]: address,
@@ -36,7 +36,7 @@ const base = (address: string) => {
 };
 
 const arbitrum = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds['arbitrum']) {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Arbitrum]) {
         return {
             [DeploymentNetwork.Arbitrum]: address,
             [DeploymentNetwork.Tenderly]: address,
@@ -49,7 +49,7 @@ const arbitrum = (address: string) => {
 };
 
 const sepolia = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds['sepolia']) {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Sepolia]) {
         return {
             [DeploymentNetwork.Sepolia]: address,
             [DeploymentNetwork.Tenderly]: address,
@@ -62,7 +62,7 @@ const sepolia = (address: string) => {
 };
 
 const mantle = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds['mantle']) {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Mantle]) {
         return {
             [DeploymentNetwork.Mantle]: address,
             [DeploymentNetwork.Tenderly]: address,
@@ -106,7 +106,7 @@ const TestNamedAccounts = {
         ...getAddress(mainnet, '0xc6bed363b30DF7F35b601a5547fE56cd31Ec63DA'),
         ...getAddress(arbitrum, '0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530'),
         ...getAddress(mantle, ZERO_ADDRESS)
-    },
+    }
 };
 
 const TokenNamedAccounts = {
@@ -145,7 +145,7 @@ const TokenNamedAccounts = {
         ...getAddress(base, ZERO_ADDRESS),
         ...getAddress(arbitrum, ZERO_ADDRESS),
         ...getAddress(mantle, ZERO_ADDRESS)
-    },
+    }
 };
 
 const BancorNamedAccounts = {
