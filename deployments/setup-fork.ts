@@ -1,7 +1,7 @@
 import Contracts from '../components/Contracts';
-import { DeployedContracts, getNamedSigners, isTenderlyFork, runPendingDeployments } from '../utils/Deploy';
+import { getNamedSigners, isTenderly, isTenderlyFork, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
 import Logger from '../utils/Logger';
-import { NATIVE_TOKEN_ADDRESS } from '../utils/TokenData';
+import { NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from '../utils/Constants';
 import { toWei } from '../utils/Types';
 import '@nomiclabs/hardhat-ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -11,6 +11,7 @@ import AdmZip from 'adm-zip';
 import { BigNumber } from 'ethers';
 import { getNamedAccounts } from 'hardhat';
 import 'hardhat-deploy';
+import { capitalize } from 'lodash';
 import path from 'path';
 
 interface EnvOptions {
@@ -20,6 +21,7 @@ interface EnvOptions {
     TENDERLY_PROJECT: string;
     TENDERLY_USERNAME: string;
     TENDERLY_FORK_ID: string;
+    TENDERLY_NETWORK_NAME: string;
 }
 
 const {
@@ -28,11 +30,13 @@ const {
     FORK_RESEARCH: isResearch,
     TENDERLY_PROJECT,
     TENDERLY_USERNAME,
-    TENDERLY_FORK_ID: forkId
+    TENDERLY_FORK_ID: forkId,
+    TENDERLY_NETWORK_NAME = 'mainnet'
 }: EnvOptions = process.env as any as EnvOptions;
 
 interface FundingRequest {
     token: string;
+    tokenName: string;
     amount: BigNumber;
     whale: SignerWithAddress;
 }
@@ -42,6 +46,10 @@ const fundAccount = async (account: string, fundingRequests: FundingRequest[]) =
 
     for (const fundingRequest of fundingRequests) {
         try {
+            // for tokens which are missing on a network skip funding request (BNT is not on Base, Arbitrum, etc.)
+            if (fundingRequest.token === ZERO_ADDRESS) {
+                continue;
+            }
             if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
                 await fundingRequest.whale.sendTransaction({
                     value: fundingRequest.amount,
@@ -65,33 +73,68 @@ const fundAccounts = async () => {
     Logger.log('Funding test accounts...');
     Logger.log();
 
-    const { dai, usdc, wbtc } = await getNamedAccounts();
-    const { ethWhale, daiWhale, usdcWhale, wbtcWhale } = await getNamedSigners();
+    const { dai, link, usdc, wbtc, bnt } = await getNamedAccounts();
+    const { ethWhale, bntWhale, daiWhale, linkWhale, usdcWhale, wbtcWhale } = await getNamedSigners();
 
     const fundingRequests = [
         {
             token: NATIVE_TOKEN_ADDRESS,
-            amount: toWei(10_000),
+            tokenName: 'eth',
+            amount: toWei(1000),
             whale: ethWhale
         },
         {
+            token: bnt,
+            tokenName: 'bnt',
+            amount: toWei(10_000),
+            whale: bntWhale
+        },
+        {
             token: dai,
-            amount: toWei(500_000),
+            tokenName: 'dai',
+            amount: toWei(20_000),
             whale: daiWhale
         },
         {
+            token: link,
+            tokenName: 'link',
+            amount: toWei(10_000),
+            whale: linkWhale
+        },
+        {
             token: usdc,
-            amount: toWei(500_000, 6),
+            tokenName: 'usdc',
+            amount: toWei(100_000, 6),
             whale: usdcWhale
         },
         {
             token: wbtc,
-            amount: toWei(70, 8),
+            tokenName: 'wbtc',
+            amount: toWei(100, 8),
             whale: wbtcWhale
         }
     ];
 
     const devAddresses = DEV_ADDRESSES.split(',');
+
+    for(const fundingRequest of fundingRequests) {
+        if(fundingRequest.token == ZERO_ADDRESS) {
+            Logger.log(`Skipping funding for ${fundingRequest.tokenName}`);
+        }
+        const { whale } = fundingRequest;
+        if (!whale) {
+            continue;
+        }
+        const whaleBalance = await whale.getBalance();
+        // transfer ETH to the funding account if it doesn't have ETH
+
+        if (whaleBalance.lt(toWei(1))) {
+            await fundingRequests[0].whale.sendTransaction({
+                value: toWei(1),
+                to: whale.address
+            });
+        }
+    }
 
     for (const account of devAddresses) {
         await fundAccount(account, fundingRequests);
@@ -113,7 +156,7 @@ const archiveArtifacts = async () => {
     const zip = new AdmZip();
 
     const srcDir = path.resolve(path.join(__dirname, './tenderly'));
-    const dest = path.resolve(path.join(__dirname, `../fork-${forkId}.zip`));
+    const dest = path.resolve(path.join(__dirname, '..', 'forks', `fork-${forkId}.zip`));
 
     zip.addLocalFolder(srcDir);
     zip.writeZip(dest);
@@ -123,7 +166,7 @@ const archiveArtifacts = async () => {
 };
 
 const main = async () => {
-    if (!isTenderlyFork()) {
+    if (!isTenderly()) {
         throw new Error('Invalid network');
     }
 
@@ -135,7 +178,9 @@ const main = async () => {
 
     await archiveArtifacts();
 
-    const description = `${FORK_NAME} Fork`;
+    const networkName = capitalize(TENDERLY_NETWORK_NAME);
+
+    const description = `${networkName} ${FORK_NAME ? FORK_NAME : ""} Fork`;
 
     Logger.log('********************************************************************************');
     Logger.log();

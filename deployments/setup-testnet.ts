@@ -1,8 +1,7 @@
 import Contracts from '../components/Contracts';
-import { getNamedSigners, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
+import { getNamedSigners, isTenderly, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
 import Logger from '../utils/Logger';
-import { ZERO_ADDRESS } from '../utils/Constants';
-import { NATIVE_TOKEN_ADDRESS } from '../utils/TokenData';
+import { NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from '../utils/Constants';
 import { toWei } from '../utils/Types';
 import '@nomiclabs/hardhat-ethers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -21,7 +20,7 @@ interface EnvOptions {
     TENDERLY_PROJECT: string;
     TENDERLY_USERNAME: string;
     TENDERLY_TESTNET_ID: string;
-    TENDERLY_FORK_NETWORK_NAME: string;
+    TENDERLY_NETWORK_NAME: string;
     TENDERLY_TESTNET_PROVIDER_URL?: string;
 }
 
@@ -31,7 +30,7 @@ const {
     TENDERLY_PROJECT,
     TENDERLY_USERNAME,
     TENDERLY_TESTNET_ID: testnetId = '',
-    TENDERLY_FORK_NETWORK_NAME = 'mainnet',
+    TENDERLY_NETWORK_NAME = 'mainnet',
     TENDERLY_TESTNET_PROVIDER_URL: testnetRpcUrl
 }: EnvOptions = process.env as any as EnvOptions;
 
@@ -46,11 +45,11 @@ const fundAccount = async (account: string, fundingRequests: FundingRequest[]) =
     Logger.log(`Funding ${account}...`);
 
     for (const fundingRequest of fundingRequests) {
-        // for tokens which are missing on a network skip funding request
-        if (fundingRequest.token === ZERO_ADDRESS) {
-            continue;
-        }
         try {
+            // for tokens which are missing on a network skip funding request (BNT is not on Base, Arbitrum, etc.)
+            if (fundingRequest.token === ZERO_ADDRESS) {
+                continue;
+            }
             if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
                 await fundingRequest.whale.sendTransaction({
                     value: fundingRequest.amount,
@@ -93,7 +92,7 @@ const fundAccounts = async () => {
         {
             token: dai,
             tokenName: 'dai',
-            amount: toWei(100_000),
+            amount: toWei(20_000),
             whale: daiWhale
         },
         {
@@ -122,6 +121,18 @@ const fundAccounts = async () => {
         if(fundingRequest.token == ZERO_ADDRESS) {
             Logger.log(`Skipping funding for ${fundingRequest.tokenName}`);
         }
+        const { whale } = fundingRequest;
+        if (!whale) {
+            continue;
+        }
+        const whaleBalance = await whale.getBalance();
+        // transfer ETH to the funding account if it doesn't have ETH
+        if (whaleBalance.lt(toWei(1))) {
+            await fundingRequests[0].whale.sendTransaction({
+                value: toWei(1),
+                to: whale.address
+            });
+        }
     }
 
     for (const account of devAddresses) {
@@ -144,7 +155,7 @@ const archiveArtifacts = async () => {
     const zip = new AdmZip();
 
     const srcDir = path.resolve(path.join(__dirname, './tenderly-testnet'));
-    const dest = path.resolve(path.join(__dirname, `../testnet-${testnetId}.zip`));
+    const dest = path.resolve(path.join(__dirname, '..', 'testnets', `testnet-${testnetId}.zip`));
 
     zip.addLocalFolder(srcDir);
     zip.writeZip(dest);
@@ -154,7 +165,7 @@ const archiveArtifacts = async () => {
 };
 
 const main = async () => {
-    if (!isTenderlyTestnet()) {
+    if (!isTenderly()) {
         throw new Error('Invalid network');
     }
 
@@ -166,7 +177,7 @@ const main = async () => {
 
     await archiveArtifacts();
 
-    const networkName = capitalize(TENDERLY_FORK_NETWORK_NAME);
+    const networkName = capitalize(TENDERLY_NETWORK_NAME);
 
     const description = `${networkName} ${TESTNET_NAME ? TESTNET_NAME : ""} Tenderly Testnet`;
 
