@@ -32,7 +32,7 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
     // a mapping between an owner to its tokenIds
     mapping(address => EnumerableSet.UintSet) internal _ownedTokens;
 
-    // controller address
+    // controller address - used to mint / burn
     address private _controller;
 
     // a flag indicating whether the controller role has been set
