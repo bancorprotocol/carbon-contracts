@@ -9,12 +9,15 @@ import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
  * @dev Voucher interface
  */
 interface IVoucher is IUpgradeable, IERC721Upgradeable {
+    error ControllerAlreadySet();
+    error OnlyController();
+    
     /**
      * @dev creates a new voucher token for the given strategyId, transfers it to the owner
      *
      * requirements:
      *
-     * - the caller must have the ROLE_MINTER privilege
+     * - the caller must be the controller address
      *
      */
     function mint(address owner, uint256 strategyId) external;
@@ -24,7 +27,7 @@ interface IVoucher is IUpgradeable, IERC721Upgradeable {
      *
      * requirements:
      *
-     * - the caller must have the ROLE_MINTER privilege
+     * - the caller must be the controller address
      *
      */
     function burn(uint256 strategyId) external;

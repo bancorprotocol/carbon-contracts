@@ -20,9 +20,6 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
 
     error BatchNotSupported();
 
-    // the minter role is required to mint/burn
-    bytes32 private constant ROLE_MINTER = keccak256("ROLE_MINTER");
-
     // a flag used to toggle between a unique URI per token / one global URI for all tokens
     bool private _useGlobalURI;
 
@@ -35,8 +32,14 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
     // a mapping between an owner to its tokenIds
     mapping(address => EnumerableSet.UintSet) internal _ownedTokens;
 
+    // controller address
+    address private _controller;
+
+    // a flag indicating whether the controller role has been set
+    bool private _controllerSet;
+
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 4] private __gap;
+    uint256[MAX_GAP - 5] private __gap;
 
     /**
      @dev triggered when updating useGlobalURI
@@ -95,9 +98,6 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
         string memory newBaseURI,
         string memory newBaseExtension
     ) internal onlyInitializing {
-        // set up administrative roles
-        _setRoleAdmin(ROLE_MINTER, ROLE_ADMIN);
-
         _useGlobalURI = newUseGlobalURI;
         __baseURI = newBaseURI;
         _baseExtension = newBaseExtension;
@@ -118,27 +118,20 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
      * @inheritdoc Upgradeable
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
-        return 1;
-    }
-
-    /**
-     * @dev returns the minter role
-     */
-    function roleMinter() external pure returns (bytes32) {
-        return ROLE_MINTER;
+        return 2;
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function mint(address owner, uint256 tokenId) external onlyRoleMember(ROLE_MINTER) {
+    function mint(address owner, uint256 tokenId) external onlyController {
         _safeMint(owner, tokenId);
     }
 
     /**
      * @inheritdoc IVoucher
      */
-    function burn(uint256 tokenId) external onlyRoleMember(ROLE_MINTER) {
+    function burn(uint256 tokenId) external onlyController {
         _burn(tokenId);
     }
 
@@ -231,6 +224,33 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
 
         _useGlobalURI = newUseGlobalURI;
         emit UseGlobalURIUpdated(newUseGlobalURI);
+    }
+
+    /**
+     * @dev sets the controller address
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of this contract
+     * - controller address must not be set
+     */
+    function setController(address controllerAddress) public onlyAdmin {
+        if (_controllerSet) {
+            revert ControllerAlreadySet();
+        }
+        _controller = controllerAddress;
+        _controllerSet = true;
+    }
+
+    modifier onlyController() {
+        _onlyController();
+        _;
+    }
+
+    function _onlyController() private view {
+        if (msg.sender != _controller) {
+            revert OnlyController();
+        }
     }
 
     /**
