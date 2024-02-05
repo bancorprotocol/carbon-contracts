@@ -35,9 +35,6 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
     // controller address - used to mint / burn
     address private _controller;
 
-    // a flag indicating whether the controller role has been set
-    bool private _controllerSet;
-
     // upgrade forward-compatibility storage gap
     uint256[MAX_GAP - 5] private __gap;
 
@@ -119,6 +116,13 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
         return 2;
+    }
+
+    /**
+     * @inheritdoc IVoucher
+     */
+    function controller() external view returns (address) {
+        return _controller;
     }
 
     /**
@@ -234,12 +238,11 @@ contract Voucher is IVoucher, Upgradeable, ERC721Upgradeable, Utils {
      * - the caller must be the admin of this contract
      * - controller address must not be set
      */
-    function setController(address controllerAddress) public onlyAdmin {
-        if (_controllerSet) {
+    function setController(address controllerAddress) external onlyAdmin {
+        if (_controller != address(0)) {
             revert ControllerAlreadySet();
         }
         _controller = controllerAddress;
-        _controllerSet = true;
     }
 
     modifier onlyController() {

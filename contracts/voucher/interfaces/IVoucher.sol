@@ -11,6 +11,11 @@ import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 interface IVoucher is IUpgradeable, IERC721Upgradeable {
     error ControllerAlreadySet();
     error OnlyController();
+
+    /**
+     * @dev returns the controller address
+     */
+    function controller() external view returns (address);
     
     /**
      * @dev creates a new voucher token for the given strategyId, transfers it to the owner

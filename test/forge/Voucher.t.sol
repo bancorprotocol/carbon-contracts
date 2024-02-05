@@ -71,6 +71,11 @@ contract VoucherTest is TestFixture {
         assertEq(VOUCHER_NAME, voucher.name());
     }
 
+    /// @dev test should return the controller address
+    function testShouldReturnControllerAddress() public {
+        assertEq(address(carbonController), voucher.controller());
+    }
+
     /// @dev test should revert when attempting to reinitialize
     function testShouldRevertWhenAttemptingToReinitialize() public {
         vm.expectRevert("Initializable: contract is already initialized");
