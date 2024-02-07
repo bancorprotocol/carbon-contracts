@@ -2,12 +2,11 @@ import { ZERO_ADDRESS } from '../../../utils/Constants';
 import {
     DeployedContracts,
     deployProxy,
-    grantRole,
+    execute,
     InstanceName,
     setDeploymentMetadata,
     upgradeProxy
 } from '../../../utils/Deploy';
-import { Roles } from '../../../utils/Roles';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
@@ -29,10 +28,11 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         args: [voucher.address, carbonController.address]
     });
 
-    await grantRole({
+    // Set the carbon controller address in the voucher contract
+    await execute({
         name: InstanceName.Voucher,
-        id: Roles.Voucher.ROLE_MINTER,
-        member: carbonController.address,
+        methodName: 'setController',
+        args: [carbonController.address],
         from: deployer
     });
 

@@ -1671,7 +1671,7 @@ contract StrategiesTest is TestFixture {
         Order memory order = generateTestOrder();
         order.y = 0;
         // create strategy
-        vm.expectRevert(AccessDenied.selector);
+        vm.expectRevert(IVoucher.OnlyController.selector);
         newCarbonController.createStrategy(token0, token1, [order, order]);
 
         vm.stopPrank();

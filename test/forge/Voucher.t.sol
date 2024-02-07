@@ -7,6 +7,8 @@ import { TestFixture } from "./TestFixture.t.sol";
 
 import { AccessDenied, InvalidAddress, InvalidIndices } from "../../contracts/utility/Utils.sol";
 
+import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
+
 contract VoucherTest is TestFixture {
     using Address for address payable;
 
@@ -56,21 +58,22 @@ contract VoucherTest is TestFixture {
     /// @dev test should be initialized properly
     function testShouldBeInitializedProperly() public {
         uint256 version = voucher.version();
-        assertEq(version, 1);
+        assertEq(version, 2);
 
         bytes32 adminRole = keccak256("ROLE_ADMIN");
-        bytes32 minterRole = keccak256("ROLE_MINTER");
         assertEq(adminRole, voucher.roleAdmin());
-        assertEq(minterRole, voucher.roleMinter());
 
         assertEq(admin, voucher.getRoleMember(adminRole, 0));
-        assertEq(address(carbonController), voucher.getRoleMember(minterRole, 0));
 
         assertEq(1, voucher.getRoleMemberCount(adminRole));
-        assertEq(1, voucher.getRoleMemberCount(minterRole));
 
         assertEq(VOUCHER_SYMBOL, voucher.symbol());
         assertEq(VOUCHER_NAME, voucher.name());
+    }
+
+    /// @dev test should return the controller address
+    function testShouldReturnControllerAddress() public {
+        assertEq(address(carbonController), voucher.controller());
     }
 
     /// @dev test should revert when attempting to reinitialize
@@ -79,17 +82,17 @@ contract VoucherTest is TestFixture {
         voucher.initialize(true, "ipfs://xxx", "");
     }
 
-    /// @dev test should revert when attempting to mint without the minter role
-    function testShouldRevertWhenAttemptingToMintWithoutTheMinterRole() public {
+    /// @dev test should revert when attempting to mint from address other than the controller
+    function testShouldRevertWhenAttemptingToMintFromAddressOtherThanTheController() public {
         vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
+        vm.expectRevert(IVoucher.OnlyController.selector);
         voucher.mint(user1, 1);
     }
 
-    /// @dev test should revert when attempting to burn without the minter role
-    function testShouldRevertWhenAttemptingToBurnWithoutTheMinterRole() public {
+    /// @dev test should revert when attempting to burn from address other than the controller
+    function testShouldRevertWhenAttemptingToBurnFromAddressOtherThanTheController() public {
         vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
+        vm.expectRevert(IVoucher.OnlyController.selector);
         voucher.burn(1);
     }
 
@@ -225,6 +228,20 @@ contract VoucherTest is TestFixture {
         }
         vm.expectRevert(InvalidIndices.selector);
         voucher.tokensByOwner(user1, 6, 5);
+    }
+
+    /// @dev test reverts on attempt to set controller by user other than admin
+    function testRevertsOnAttemptToSetControllerByUser() public {
+        vm.prank(user1);
+        vm.expectRevert(AccessDenied.selector);
+        voucher.setController(user1);
+    }
+
+    /// @dev test attempt to set the controller address by admin should revert after the address has been set
+    function testRevertsOnAttemptToChangeControllerByAdmin() public {
+        vm.prank(admin);
+        vm.expectRevert(IVoucher.ControllerAlreadySet.selector);
+        voucher.setController(user1);
     }
 
     /// @dev test tokensByOwner should map owner when minting

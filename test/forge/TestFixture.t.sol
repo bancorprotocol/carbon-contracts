@@ -113,8 +113,8 @@ contract TestFixture is Test {
         // Set Carbon Controller address
         carbonController = TestCarbonController(payable(address(carbonController)));
 
-        // Grant minter role for voucher to carbon controller
-        voucher.grantRole(voucher.roleMinter(), address(carbonController));
+        // Set controller address on voucher
+        voucher.setController(address(carbonController));
 
         vm.stopPrank();
     }

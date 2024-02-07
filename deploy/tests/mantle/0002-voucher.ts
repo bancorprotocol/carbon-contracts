@@ -14,7 +14,7 @@ describeDeployment(__filename, () => {
 
     it('should deploy and configure the voucher contract', async () => {
         expect(await proxyAdmin.getProxyAdmin(voucher.address)).to.equal(proxyAdmin.address);
-        expect(await voucher.version()).to.equal(1);
+        expect(await voucher.version()).to.equal(2);
     });
 
     it('voucher implementation should be initialized', async () => {

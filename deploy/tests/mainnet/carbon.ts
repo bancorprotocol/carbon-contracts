@@ -537,7 +537,10 @@ import { ethers, getNamedAccounts } from 'hardhat';
                     it(`(${token0}->${token1})`, async () => {
                         const _token0 = tokens[token0] ? tokens[token0].address : ZERO_ADDRESS;
                         const _token1 = tokens[token1] ? tokens[token1].address : ZERO_ADDRESS;
-                        const tx = await carbonController.createStrategy(_token0, _token1, [order, order]);
+                        // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
+                        const tx = await carbonController.createStrategy(_token0, _token1, [order, order], {
+                            gasLimit: 6000000
+                        });
                         await expect(tx.wait()).to.be.reverted;
                     });
                 }
