@@ -101,7 +101,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @inheritdoc Upgradeable
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
-        return 2;
+        return 3;
     }
 
     /**
@@ -181,6 +181,28 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
 
         // allocate rewards to caller and burn the rest
         _allocateRewards(msg.sender, tokens, rewardAmounts);
+    }
+
+    /**
+     * @dev withdraws funds held by the contract and sends them to an account
+     *
+     * requirements:
+     *
+     * - the caller must be the admin of the contract
+     */
+    function withdrawFunds(
+        Token token,
+        address payable target,
+        uint256 amount
+    ) external validAddress(target) nonReentrant onlyAdmin {
+        if (amount == 0) {
+            return;
+        }
+
+        // safe due to nonReentrant modifier (forwards all available gas in case of ETH)
+        token.unsafeTransfer(target, amount);
+
+        emit FundsWithdrawn({ token: token, caller: msg.sender, target: target, amount: amount });
     }
 
     /**

@@ -23,6 +23,7 @@ contract CarbonVortexTest is TestFixture {
 
     uint256 private constant REWARDS_PPM_DEFAULT = 100_000;
     uint256 private constant REWARDS_PPM_UPDATED = 110_000;
+    uint256 private constant MAX_WITHDRAW_AMOUNT = 100_000_000 ether;
 
     // Events
     /**
@@ -39,6 +40,11 @@ contract CarbonVortexTest is TestFixture {
      * @dev triggered when fees are withdrawn
      */
     event FeesWithdrawn(Token indexed token, address indexed recipient, uint256 indexed amount, address sender);
+
+    /**
+     * @dev triggered when tokens have been withdrawn by admin
+     */
+    event FundsWithdrawn(Token indexed token, address indexed caller, address indexed target, uint256 amount);
 
     /**
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
@@ -85,7 +91,7 @@ contract CarbonVortexTest is TestFixture {
 
     function testShouldBeInitialized() public {
         uint16 version = carbonVortex.version();
-        assertEq(version, 2);
+        assertEq(version, 3);
     }
 
     function testShouldntBeAbleToReinitialize() public {
@@ -132,6 +138,100 @@ contract CarbonVortexTest is TestFixture {
         rewardsPPM = carbonVortex.rewardsPPM();
         assertEq(rewardsPPM, REWARDS_PPM_UPDATED);
         vm.stopPrank();
+    }
+
+    /**
+     * @dev withdrawFunds tests
+     */
+
+    /// @dev test should revert when attempting to withdraw funds without the admin role
+    function testShouldRevertWhenAttemptingToWithdrawFundsWithoutTheAdminRole() public {
+        uint256 withdrawAmount = 1000;
+        vm.prank(user2);
+        vm.expectRevert(AccessDenied.selector);
+        carbonVortex.withdrawFunds(token1, user2, withdrawAmount);
+    }
+
+    /// @dev test should revert when attempting to withdraw funds to an invalid address
+    function testShouldRevertWhenAttemptingToWithdrawFundsToAnInvalidAddress() public {
+        uint256 withdrawAmount = 1000;
+        vm.prank(admin);
+        vm.expectRevert(InvalidAddress.selector);
+        carbonVortex.withdrawFunds(token1, payable(address(0)), withdrawAmount);
+    }
+
+    /// @dev test admin should be able to withdraw tokens
+    function testAdminShouldBeAbleToWithdrawTokens(uint256 withdrawAmount) public {
+        withdrawAmount = bound(withdrawAmount, 0, MAX_WITHDRAW_AMOUNT);
+
+        vm.startPrank(admin);
+        // transfer funds to vortex
+        token1.safeTransfer(address(carbonVortex), MAX_WITHDRAW_AMOUNT);
+
+        uint256 balanceBeforeVault = token1.balanceOf(address(carbonVortex));
+        uint256 balanceBeforeUser2 = token1.balanceOf(user2);
+
+        // withdraw token to user2
+        carbonVortex.withdrawFunds(token1, user2, withdrawAmount);
+
+        uint256 balanceAfterVault = token1.balanceOf(address(carbonVortex));
+        uint256 balanceAfterUser2 = token1.balanceOf(user2);
+
+        uint256 balanceWithdrawn = balanceBeforeVault - balanceAfterVault;
+        uint256 balanceGainUser2 = balanceAfterUser2 - balanceBeforeUser2;
+
+        assertEq(balanceWithdrawn, withdrawAmount);
+        assertEq(balanceGainUser2, withdrawAmount);
+    }
+
+    /// @dev test admin should be able to withdraw the native token
+    function testAdminShouldBeAbleToWithdrawNativeToken(uint256 withdrawAmount) public {
+        withdrawAmount = bound(withdrawAmount, 0, MAX_WITHDRAW_AMOUNT);
+
+        // transfer eth to the vortex
+        vm.deal(address(carbonVortex), MAX_WITHDRAW_AMOUNT);
+
+        uint256 balanceBeforeVault = address(carbonVortex).balance;
+        uint256 balanceBeforeUser2 = user2.balance;
+
+        vm.prank(admin);
+        // withdraw native token to user2
+        carbonVortex.withdrawFunds(NATIVE_TOKEN, user2, withdrawAmount);
+
+        uint256 balanceAfterVault = address(carbonVortex).balance;
+        uint256 balanceAfterUser2 = user2.balance;
+
+        uint256 balanceWithdrawn = balanceBeforeVault - balanceAfterVault;
+        uint256 balanceGainUser2 = balanceAfterUser2 - balanceBeforeUser2;
+
+        assertEq(balanceWithdrawn, withdrawAmount);
+        assertEq(balanceGainUser2, withdrawAmount);
+    }
+
+    /// @dev test withdrawing funds should emit event
+    function testWithdrawingFundsShouldEmitEvent() public {
+        uint256 withdrawAmount = 1000;
+
+        vm.startPrank(admin);
+        // transfer funds to vortex
+        token1.safeTransfer(address(carbonVortex), withdrawAmount);
+
+        vm.expectEmit();
+        emit FundsWithdrawn(token1, admin, user2, withdrawAmount);
+        // withdraw token to user2
+        carbonVortex.withdrawFunds(token1, user2, withdrawAmount);
+
+        vm.stopPrank();
+    }
+
+    /// @dev test withdrawing funds shouldn't emit event if withdrawing zero amount
+    function testFailWithdrawingFundsShouldnEmitEventIfWithdrawingZeroAmount() public {
+        uint256 withdrawAmount = 0;
+        vm.prank(admin);
+        vm.expectEmit();
+        emit FundsWithdrawn(token1, admin, user2, withdrawAmount);
+        // withdraw token to user2
+        carbonVortex.withdrawFunds(token1, user2, withdrawAmount);
     }
 
     /**
