@@ -4,12 +4,14 @@ pragma solidity 0.8.19;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 /**
  * @dev This type implements ERC20 and SafeERC20 utilities for both the native token and for ERC20 tokens
  */
 type Token is address;
 using SafeERC20 for IERC20;
+using Address for address payable;
 
 // the address that represents the native token reserve
 address constant NATIVE_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -34,7 +36,8 @@ using {
     safeTransfer,
     safeTransferFrom,
     safeApprove,
-    safeIncreaseAllowance
+    safeIncreaseAllowance,
+    unsafeTransfer
 } for Token global;
 
 /* solhint-disable func-visibility */
@@ -142,6 +145,22 @@ function safeIncreaseAllowance(Token token, address spender, uint256 amount) {
         return;
     }
     toIERC20(token).safeIncreaseAllowance(spender, amount);
+}
+
+/**
+ * @dev transfers a specific amount of the native token/ERC20 token
+ * @dev forwards all available gas if sending native token
+ */
+function unsafeTransfer(Token token, address to, uint256 amount) {
+    if (amount == 0) {
+        return;
+    }
+
+    if (isNative(token)) {
+        payable(to).sendValue(amount);
+    } else {
+        toIERC20(token).safeTransfer(to, amount);
+    }
 }
 
 /**

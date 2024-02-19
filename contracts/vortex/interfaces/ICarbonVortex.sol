@@ -23,6 +23,11 @@ interface ICarbonVortex is IUpgradeable {
     event RewardsUpdated(uint256 prevRewardsPPM, uint256 newRewardsPPM);
 
     /**
+     * @dev triggered when tokens have been withdrawn by the admin
+     */
+    event FundsWithdrawn(Token indexed token, address indexed caller, address indexed target, uint256 amount);
+
+    /**
      * @dev returns the rewards percentage ppm
      */
     function rewardsPPM() external view returns (uint256);
