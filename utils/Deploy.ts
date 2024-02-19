@@ -635,7 +635,7 @@ export const getNetworkNameById = (networkId: number | undefined): string => {
     if (!networkName) {
         throw new Error(`Cannot find network with id: ${networkId}`);
     }
-    return networkName;
+    return networkName.toLowerCase();
 };
 
 export const getInstanceNameByAddress = (address: string): InstanceName => {

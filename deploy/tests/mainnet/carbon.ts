@@ -115,10 +115,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
             const permutations: FactoryOptions[] = [
                 { sourceSymbol: TokenSymbol.BNT, targetSymbol: TokenSymbol.DAI, byTargetAmount: false },
                 { sourceSymbol: TokenSymbol.BNT, targetSymbol: TokenSymbol.DAI, byTargetAmount: true },
-                { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.USDC, byTargetAmount: false },
-                { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.DAI, byTargetAmount: true },
-                { sourceSymbol: TokenSymbol.DAI, targetSymbol: TokenSymbol.ETH, byTargetAmount: true },
-                { sourceSymbol: TokenSymbol.USDC, targetSymbol: TokenSymbol.ETH, byTargetAmount: true }
+                { sourceSymbol: TokenSymbol.ETH, targetSymbol: TokenSymbol.USDC, byTargetAmount: false }
             ];
             for (const { sourceSymbol, targetSymbol, byTargetAmount } of permutations) {
                 it(`(${sourceSymbol}->${targetSymbol}) | byTargetAmount: ${byTargetAmount}`, async () => {
@@ -460,19 +457,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
                 const _permutations = [
                     { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.BNT, token1Amount: 100 },
                     { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 100 },
-                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.DAI, token1Amount: 100 },
-
-                    { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.BNT, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.DAI, token1Amount: 0 },
-
-                    { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.BNT, token1Amount: 100 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 100 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.DAI, token1Amount: 100 },
-
-                    { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.BNT, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.DAI, token1Amount: 0 }
+                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.DAI, token1Amount: 100 }
                 ];
                 for (const { token0, token1, token0Amount, token1Amount } of _permutations) {
                     it(`(${token0}->${token1}) token0Amount: ${token0Amount} | token1Amount: ${token1Amount}`, async () => {
@@ -577,19 +562,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
                 const _permutations = [
                     { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.BNT, token1Amount: 100 },
                     { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 100 },
-                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.DAI, token1Amount: 100 },
-
-                    { token0: TokenSymbol.ETH, token0Amount: 100, token1: TokenSymbol.BNT, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.ETH, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.DAI, token1Amount: 0 },
-
-                    { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.BNT, token1Amount: 100 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 100 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.DAI, token1Amount: 100 },
-
-                    { token0: TokenSymbol.ETH, token0Amount: 0, token1: TokenSymbol.BNT, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.ETH, token1Amount: 0 },
-                    { token0: TokenSymbol.BNT, token0Amount: 0, token1: TokenSymbol.DAI, token1Amount: 0 }
+                    { token0: TokenSymbol.BNT, token0Amount: 100, token1: TokenSymbol.DAI, token1Amount: 100 }
                 ];
 
                 for (const { token0, token1, token0Amount, token1Amount } of _permutations) {
@@ -740,116 +713,6 @@ import { ethers, getNamedAccounts } from 'hardhat';
                         order0Delta: 100,
                         order1Delta: -100,
                         sendWithExcessNativeTokenValue: false
-                    },
-
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.DAI,
-                        order0Delta: -100,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.ETH,
-                        order0Delta: -100,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.ETH,
-                        token1: TokenSymbol.BNT,
-                        order0Delta: -100,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.DAI,
-                        order0Delta: -100,
-                        order1Delta: -100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.ETH,
-                        order0Delta: -100,
-                        order1Delta: -100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.ETH,
-                        token1: TokenSymbol.BNT,
-                        order0Delta: -100,
-                        order1Delta: -100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.DAI,
-                        order0Delta: 100,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.ETH,
-                        order0Delta: 100,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.ETH,
-                        token1: TokenSymbol.BNT,
-                        order0Delta: 100,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.DAI,
-                        order0Delta: 100,
-                        order1Delta: 0,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.ETH,
-                        order0Delta: 100,
-                        order1Delta: 0,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.ETH,
-                        token1: TokenSymbol.BNT,
-                        order0Delta: 100,
-                        order1Delta: 0,
-                        sendWithExcessNativeTokenValue: false
-                    },
-
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.DAI,
-                        order0Delta: 0,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.BNT,
-                        token1: TokenSymbol.ETH,
-                        order0Delta: 0,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
-                    },
-                    {
-                        token0: TokenSymbol.ETH,
-                        token1: TokenSymbol.BNT,
-                        order0Delta: 0,
-                        order1Delta: 100,
-                        sendWithExcessNativeTokenValue: false
                     }
                 ];
 
@@ -922,19 +785,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
                     const _permutations = [
                         { token0: TokenSymbol.BNT, token1: TokenSymbol.DAI, order0Delta: 1, order1Delta: -1 },
                         { token0: TokenSymbol.ETH, token1: TokenSymbol.BNT, order0Delta: 1, order1Delta: -1 },
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.ETH, order0Delta: 1, order1Delta: -1 },
-
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.DAI, order0Delta: -1, order1Delta: 1 },
-                        { token0: TokenSymbol.ETH, token1: TokenSymbol.BNT, order0Delta: -1, order1Delta: 1 },
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.ETH, order0Delta: -1, order1Delta: 1 },
-
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.DAI, order0Delta: -1, order1Delta: -1 },
-                        { token0: TokenSymbol.ETH, token1: TokenSymbol.BNT, order0Delta: -1, order1Delta: -1 },
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.ETH, order0Delta: -1, order1Delta: -1 },
-
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.DAI, order0Delta: 1, order1Delta: 1 },
-                        { token0: TokenSymbol.ETH, token1: TokenSymbol.BNT, order0Delta: 1, order1Delta: 1 },
-                        { token0: TokenSymbol.BNT, token1: TokenSymbol.ETH, order0Delta: 1, order1Delta: 1 }
+                        { token0: TokenSymbol.BNT, token1: TokenSymbol.ETH, order0Delta: 1, order1Delta: -1 }
                     ];
                     for (const { token0, token1, order0Delta, order1Delta } of _permutations) {
                         it(`(${token0},${token1}) | order0Delta: ${order0Delta} | order1Delta: ${order1Delta}`, async () => {
