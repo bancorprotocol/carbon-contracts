@@ -51,6 +51,21 @@ fork_id=$(curl -sX POST "${TENDERLY_FORK_API}" \
 echo "Created Tenderly Fork ${fork_id} at ${username}/${project}..."
 echo
 
+# if deployments/${network_name} doesn't exist, create it and create a .chainId file
+if [ ! -d "./deployments/${network_name}" ]; then
+    mkdir -p ./deployments/${network_name}
+    echo ${network_id} > ./deployments/${network_name}/.chainId
+fi
+
+# if deploy/scripts/${network_name} doesn't exist, create it and copy the network scripts
+if [ ! -d "./deploy/scripts/${network_name}" ]; then
+    mkdir -p ./deploy/scripts/${network_name}
+    cp -r ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+fi
+
+# Create a new dir for the deploy script files and copy them there
+rm -rf deployments/tenderly && cp -rf deployments/${network_name}/. deployments/tenderly
+
 command="TENDERLY_FORK_ID=${fork_id} TENDERLY_NETWORK_NAME=${network_name} ${@:1}"
 
 echo "Running:"

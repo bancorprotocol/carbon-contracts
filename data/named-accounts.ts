@@ -150,10 +150,7 @@ const TokenNamedAccounts = {
 
 const BancorNamedAccounts = {
     bancorNetworkV3: { 
-        ...getAddress(mainnet, '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB'),
-        ...getAddress(mantle, ZERO_ADDRESS),
-        ...getAddress(base, ZERO_ADDRESS),
-        ...getAddress(arbitrum, ZERO_ADDRESS)
+        ...getAddress(mainnet, '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB')
     }
 };
 
@@ -169,6 +166,7 @@ export const NamedAccounts = {
         ...getAddress(base, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
         ...getAddress(arbitrum, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
         ...getAddress(mantle, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
+        default: 0
     },
     deployerV2: { ...getAddress(mainnet, '0xdfeE8DC240c6CadC2c7f7f9c257c259914dEa84E') },
     foundationMultisig: { ...getAddress(mainnet, '0xeBeD45Ca22fcF70AdCcAb7618C51A3Dbb06C8d83') },

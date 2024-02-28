@@ -1,5 +1,5 @@
 import Contracts from '../components/Contracts';
-import { getNamedSigners, isTenderly, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
+import { getNamedSigners, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
 import Logger from '../utils/Logger';
 import { NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from '../utils/Constants';
 import { toWei } from '../utils/Types';
@@ -45,27 +45,25 @@ const fundAccount = async (account: string, fundingRequests: FundingRequest[]) =
     Logger.log(`Funding ${account}...`);
 
     for (const fundingRequest of fundingRequests) {
-        try {
-            // for tokens which are missing on a network skip funding request (BNT is not on Base, Arbitrum, etc.)
-            if (fundingRequest.token === ZERO_ADDRESS) {
-                continue;
-            }
-            if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
-                await fundingRequest.whale.sendTransaction({
-                    value: fundingRequest.amount,
-                    to: account
-                });
-
-                continue;
-            }
-
-            const tokenContract = await Contracts.ERC20.attach(fundingRequest.token);
-            await tokenContract.connect(fundingRequest.whale).transfer(account, fundingRequest.amount);
-        } catch (error) {
-            Logger.error(`Failed to fund ${account} with ${fundingRequest.amount} of token ${fundingRequest.tokenName}`);
-            Logger.error(error);
-            Logger.error();
+        // for tokens which are missing on a network skip funding request (BNT is not on Base, Arbitrum, etc.)
+        if (fundingRequest.token === ZERO_ADDRESS) {
+            continue;
         }
+        const { whale } = fundingRequest;
+        if (!whale) {
+            continue;
+        }
+        if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
+            await fundingRequest.whale.sendTransaction({
+                value: fundingRequest.amount,
+                to: account
+            });
+
+            continue;
+        }
+
+        const tokenContract = await Contracts.ERC20.attach(fundingRequest.token);
+        await tokenContract.connect(whale).transfer(account, fundingRequest.amount);
     }
 };
 
@@ -165,7 +163,7 @@ const archiveArtifacts = async () => {
 };
 
 const main = async () => {
-    if (!isTenderly()) {
+    if (!isTenderlyTestnet()) {
         throw new Error('Invalid network');
     }
 

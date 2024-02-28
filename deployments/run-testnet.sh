@@ -71,6 +71,21 @@ provider_url=$(echo "$response" | jq -r '.container.connectivityConfig.endpoints
 echo "Created Tenderly Testnet ${testnet_id} at ${username}/${project}..."
 echo
 
+# if deployments/${network_name} doesn't exist, create it and create a .chainId file
+if [ ! -d "./deployments/${network_name}" ]; then
+    mkdir -p ./deployments/${network_name}
+    echo ${network_id} > ./deployments/${network_name}/.chainId
+fi
+
+# if deploy/scripts/${network_name} doesn't exist, create it and copy the network scripts
+if [ ! -d "./deploy/scripts/${network_name}" ]; then
+    mkdir -p ./deploy/scripts/${network_name}
+    cp -r ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+fi
+
+# Create a new dir for the deploy script files and copy them there
+rm -rf deployments/tenderly-testnet && cp -rf deployments/${network_name}/. deployments/tenderly-testnet
+
 command="TENDERLY_TESTNET_ID=${testnet_id} TENDERLY_TESTNET_PROVIDER_URL=${provider_url} ${@:1}"
 
 echo "Running:"

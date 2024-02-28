@@ -1,7 +1,7 @@
 import { ArtifactData } from '../components/ContractBuilder';
 import { CarbonController, CarbonPOL, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
 import Logger from '../utils/Logger';
-import { DeploymentNetwork, NetworkId, ZERO_BYTES } from './Constants';
+import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, BigNumberish, Contract, ContractInterface, utils } from 'ethers';
 import fs from 'fs';
@@ -82,10 +82,7 @@ export const DeployedContracts = {
 
 export const isTenderlyFork = () => getNetworkName() === DeploymentNetwork.Tenderly;
 export const isTenderlyTestnet = () => getNetworkName() === DeploymentNetwork.TenderlyTestnet;
-export const isMainnet = () =>
-    getNetworkName() === DeploymentNetwork.Mainnet || isTenderlyFork() || isTenderlyTestnet();
-export const isMantle = () => getNetworkName() === DeploymentNetwork.Mantle || isTenderlyFork();
-export const isLive = () => (isMainnet() || isMantle()) && !isTenderly();
+export const isLive = () => !isTenderly();
 export const isTenderly = () => isTenderlyFork() || isTenderlyTestnet();
 
 const TEST_MINIMUM_BALANCE = toWei(10);
@@ -624,18 +621,18 @@ export const runPendingDeployments = async () => {
 };
 
 export const getNetworkNameById = (networkId: number | undefined): string => {
-    if (!networkId) {
+    if (networkId === undefined) {
         return DeploymentNetwork.Mainnet;
     }
-    const networkIdString = networkId.toString();
-    const networkName = Object.keys(DeploymentNetwork).find((key) => {
-        const correspondingNetworkId = NetworkId[key as keyof typeof NetworkId];
-        return correspondingNetworkId === networkIdString;
-    });
+
+    // Find the network name by its ID
+    const networkName = (Object.keys(chainIds) as (keyof typeof chainIds)[]).find((key) => chainIds[key] === networkId);
+
     if (!networkName) {
         throw new Error(`Cannot find network with id: ${networkId}`);
     }
-    return networkName.toLowerCase();
+
+    return networkName;
 };
 
 export const getInstanceNameByAddress = (address: string): InstanceName => {
