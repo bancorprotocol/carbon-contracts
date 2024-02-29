@@ -17,21 +17,14 @@ import { HardhatUserConfig } from 'hardhat/config';
 import { MochaOptions } from 'mocha';
 import 'solidity-coverage';
 import chainIds from './utils/chainIds.json';
+import rpcUrls from './utils/rpcUrls.json';
 
 interface EnvOptions {
-    ETHEREUM_PROVIDER_URL?: string;
-    MANTLE_PROVIDER_URL?: string;
-    BASE_PROVIDER_URL?: string;
-    ARBITRUM_PROVIDER_URL?: string;
-    ETHEREUM_SEPOLIA_PROVIDER_URL?: string;
     TENDERLY_TESTNET_PROVIDER_URL?: string;
-    MAINNET_ETHERSCAN_API_KEY?: string;
-    SEPOLIA_ETHERSCAN_API_KEY?: string;
-    BASESCAN_API_KEY?: string;
-    ARBISCAN_API_KEY?: string;
     GAS_PRICE?: number | 'auto';
     NIGHTLY?: boolean;
     PROFILE?: boolean;
+    VERIFY_API_KEY?: string;
     TENDERLY_FORK_ID?: string;
     TENDERLY_PROJECT?: string;
     TENDERLY_TEST_PROJECT?: string;
@@ -40,16 +33,8 @@ interface EnvOptions {
 }
 
 const {
-    ETHEREUM_PROVIDER_URL = '',
-    BASE_PROVIDER_URL = '',
-    MANTLE_PROVIDER_URL = '',
-    ARBITRUM_PROVIDER_URL = '',
-    ETHEREUM_SEPOLIA_PROVIDER_URL = '',
     TENDERLY_TESTNET_PROVIDER_URL = '',
-    MAINNET_ETHERSCAN_API_KEY = '',
-    SEPOLIA_ETHERSCAN_API_KEY = '',
-    BASESCAN_API_KEY = '',
-    ARBISCAN_API_KEY = '',
+    VERIFY_API_KEY = '',
     GAS_PRICE: gasPrice = 'auto',
     TENDERLY_FORK_ID = '',
     TENDERLY_PROJECT = '',
@@ -86,60 +71,378 @@ const config: HardhatUserConfig = {
             live: false
         },
         [DeploymentNetwork.Mainnet]: {
-            chainId: 1,
-            url: ETHEREUM_PROVIDER_URL,
+            chainId: chainIds[DeploymentNetwork.Mainnet],
+            url: rpcUrls[DeploymentNetwork.Mainnet],
             gasPrice,
             saveDeployments: true,
             live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Mainnet}`],
             verify: {
                 etherscan: {
-                    apiKey: MAINNET_ETHERSCAN_API_KEY
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Optimism]: {
+            chainId: chainIds[DeploymentNetwork.Optimism],
+            url: rpcUrls[DeploymentNetwork.Optimism],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Optimism}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Cronos]: {
+            chainId: chainIds[DeploymentNetwork.Cronos],
+            url: rpcUrls[DeploymentNetwork.Cronos],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Cronos}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Rootstock]: {
+            chainId: chainIds[DeploymentNetwork.Rootstock],
+            url: rpcUrls[DeploymentNetwork.Rootstock],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Rootstock}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Telos]: {
+            chainId: chainIds[DeploymentNetwork.Telos],
+            url: rpcUrls[DeploymentNetwork.Telos],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Telos}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.BSC]: {
+            chainId: chainIds[DeploymentNetwork.BSC],
+            url: rpcUrls[DeploymentNetwork.BSC],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.BSC}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Gnosis]: {
+            chainId: chainIds[DeploymentNetwork.Gnosis],
+            url: rpcUrls[DeploymentNetwork.Gnosis],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Gnosis}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Polygon]: {
+            chainId: chainIds[DeploymentNetwork.Polygon],
+            url: rpcUrls[DeploymentNetwork.Polygon],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Polygon}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Fantom]: {
+            chainId: chainIds[DeploymentNetwork.Fantom],
+            url: rpcUrls[DeploymentNetwork.Fantom],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Fantom}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Hedera]: {
+            chainId: chainIds[DeploymentNetwork.Hedera],
+            url: rpcUrls[DeploymentNetwork.Hedera],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Hedera}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.ZkSync]: {
+            chainId: chainIds[DeploymentNetwork.ZkSync],
+            url: rpcUrls[DeploymentNetwork.ZkSync],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.ZkSync}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.PulseChain]: {
+            chainId: chainIds[DeploymentNetwork.PulseChain],
+            url: rpcUrls[DeploymentNetwork.PulseChain],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.PulseChain}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Astar]: {
+            chainId: chainIds[DeploymentNetwork.Astar],
+            url: rpcUrls[DeploymentNetwork.Astar],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Astar}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Metis]: {
+            chainId: chainIds[DeploymentNetwork.Metis],
+            url: rpcUrls[DeploymentNetwork.Metis],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Metis}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Moonbeam]: {
+            chainId: chainIds[DeploymentNetwork.Moonbeam],
+            url: rpcUrls[DeploymentNetwork.Moonbeam],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Moonbeam}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Kava]: {
+            chainId: chainIds[DeploymentNetwork.Kava],
+            url: rpcUrls[DeploymentNetwork.Kava],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Kava}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
                 }
             }
         },
         [DeploymentNetwork.Mantle]: {
             chainId: chainIds[DeploymentNetwork.Mantle],
-            url: MANTLE_PROVIDER_URL,
+            url: rpcUrls[DeploymentNetwork.Mantle],
             gasPrice,
             saveDeployments: true,
             live: true,
-            deploy: [`deploy/scripts/${DeploymentNetwork.Mantle}`]
+            deploy: [`deploy/scripts/${DeploymentNetwork.Mantle}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Canto]: {
+            chainId: chainIds[DeploymentNetwork.Canto],
+            url: rpcUrls[DeploymentNetwork.Canto],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Canto}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Klaytn]: {
+            chainId: chainIds[DeploymentNetwork.Klaytn],
+            url: rpcUrls[DeploymentNetwork.Klaytn],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Klaytn}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
         },
         [DeploymentNetwork.Base]: {
             chainId: chainIds[DeploymentNetwork.Base],
-            url: BASE_PROVIDER_URL,
+            url: rpcUrls[DeploymentNetwork.Base],
             gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Base}`],
             verify: {
                 etherscan: {
-                    apiKey: BASESCAN_API_KEY
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Fusion]: {
+            chainId: chainIds[DeploymentNetwork.Fusion],
+            url: rpcUrls[DeploymentNetwork.Fusion],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Fusion}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Mode]: {
+            chainId: chainIds[DeploymentNetwork.Mode],
+            url: rpcUrls[DeploymentNetwork.Mode],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Mode}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
                 }
             }
         },
         [DeploymentNetwork.Arbitrum]: {
             chainId: chainIds[DeploymentNetwork.Arbitrum],
-            url: ARBITRUM_PROVIDER_URL,
+            url: rpcUrls[DeploymentNetwork.Arbitrum],
             gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Arbitrum}`],
             verify: {
                 etherscan: {
-                    apiKey: ARBISCAN_API_KEY
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Celo]: {
+            chainId: chainIds[DeploymentNetwork.Celo],
+            url: rpcUrls[DeploymentNetwork.Celo],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Celo}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Avalanche]: {
+            chainId: chainIds[DeploymentNetwork.Avalanche],
+            url: rpcUrls[DeploymentNetwork.Avalanche],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Avalanche}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Linea]: {
+            chainId: chainIds[DeploymentNetwork.Linea],
+            url: rpcUrls[DeploymentNetwork.Linea],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Linea}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Scroll]: {
+            chainId: chainIds[DeploymentNetwork.Scroll],
+            url: rpcUrls[DeploymentNetwork.Scroll],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Scroll}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
+        [DeploymentNetwork.Aurora]: {
+            chainId: chainIds[DeploymentNetwork.Aurora],
+            url: rpcUrls[DeploymentNetwork.Aurora],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Aurora}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
                 }
             }
         },
         [DeploymentNetwork.Sepolia]: {
             chainId: chainIds[DeploymentNetwork.Sepolia],
-            url: ETHEREUM_SEPOLIA_PROVIDER_URL,
+            url: rpcUrls[DeploymentNetwork.Sepolia],
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Sepolia}`],
             verify: {
                 etherscan: {
-                    apiKey: SEPOLIA_ETHERSCAN_API_KEY
+                    apiKey: VERIFY_API_KEY
                 }
             }
         },

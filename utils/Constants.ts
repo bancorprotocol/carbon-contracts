@@ -6,24 +6,49 @@ const {
     constants: { AddressZero, MaxUint256 }
 } = ethers;
 
-export enum DeploymentNetwork {
-    Mainnet = 'mainnet',
-    Mantle = 'mantle',
-    Base = 'base',
+export enum MainnetNetwork {
     Arbitrum = 'arbitrum',
-    Sepolia = 'sepolia',
+    Astar = 'astar',
+    Aurora = 'aurora',
+    Avalanche = 'avalanche',
+    Base = 'base',
+    BSC = 'bsc',
+    Canto = 'canto',
+    Celo = 'celo',
+    Cronos = 'cronos',
+    Fantom = 'fantom',
+    Fusion = 'fusion',
+    Gnosis = 'gnosis',
+    Hedera = 'hedera',
+    Kava = 'kava',
+    Klaytn = 'klaytn',
+    Linea = 'linea',
+    Mainnet = 'mainnet',
+    Manta = 'manta',
+    Mantle = 'mantle',
+    Metis = 'metis',
+    Mode = 'mode',
+    Moonbeam = 'moonbeam',
+    Optimism = 'optimism',
+    Polygon = 'polygon',
+    PulseChain = 'pulsechain',
+    Rootstock = 'rootstock',
+    Scroll = 'scroll',
+    Telos = 'telos',
+    ZkSync = 'zksync'
+}
+
+export enum TestnetNetwork {
     Hardhat = 'hardhat',
+    Sepolia = 'sepolia',
     Tenderly = 'tenderly',
     TenderlyTestnet = 'tenderly-testnet'
 }
 
-export enum NetworkId {
-    Mainnet = '1',
-    Mantle = '5000',
-    Base = '8453',
-    Arbitrum = '42161',
-    Sepolia = '11155111'
-}
+export const DeploymentNetwork = {
+    ...MainnetNetwork,
+    ...TestnetNetwork
+};
 
 export const EXP2_INPUT_TOO_HIGH = new Decimal(16).div(new Decimal(2).ln());
 export const MAX_UINT256 = MaxUint256;

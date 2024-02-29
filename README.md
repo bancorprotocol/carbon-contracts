@@ -141,16 +141,28 @@ pnpm test:coverage:nightly
 
 The contracts have built-in support for deployments on different chains and mainnet forks, powered by the awesome [hardhat-deploy](https://github.com/wighawag/hardhat-deploy) framework (tip of the hat to @wighawag for the crazy effort him and the rest of the contributors have put into the project).
 
-You can deploy the fully configured Carbon protocol via:
+You can deploy the fully configured Carbon protocol on any network by setting up the `HARDHAT_NETWORK` environmental variable in .env and running:
 
 ```sh
-pnpm deploy
+pnpm deploy:prepare && pnpm deploy:network
 ```
 
-There’s also a special deployment mode which deploys the protocol to a mainnet fork. It can be run via:
+The deployment artifacts are going to be in `deployments/{network_name}`.
+
+If deploying a licensed deployment on a network, it's recommended to fork the carbon-contracts repo and push the deployment artifacts after deployment.
+
+If you want to verify the contracts after deployment, please set up the `VERIFY_API_KEY` environmental variable to the etherscan api key.
+
+There’s also a special deployment mode which deploys the protocol to a tenderly fork. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
 
 ```sh
 pnpm deploy:fork
+```
+
+You can also deploy the protocol to a tenderly testnet. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
+
+```sh
+pnpm deploy:testnet
 ```
 
 ## Community
