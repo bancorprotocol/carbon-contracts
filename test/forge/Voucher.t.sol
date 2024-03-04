@@ -19,16 +19,6 @@ contract VoucherTest is TestFixture {
 
     // Events
     /**
-     * @dev Emitted when the pause is triggered by `account`.
-     */
-    event Paused(address account);
-
-    /**
-     * @dev Emitted when the pause is lifted by `account`.
-     */
-    event Unpaused(address account);
-
-    /**
      @dev triggered when updating useGlobalURI
      */
     event UseGlobalURIUpdated(bool newUseGlobalURI);

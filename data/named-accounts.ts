@@ -149,7 +149,7 @@ const TokenNamedAccounts = {
 };
 
 const BancorNamedAccounts = {
-    bancorNetworkV3: { 
+    bancorNetworkV3: {
         ...getAddress(mainnet, '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB')
     }
 };
@@ -172,7 +172,6 @@ export const NamedAccounts = {
     foundationMultisig: { ...getAddress(mainnet, '0xeBeD45Ca22fcF70AdCcAb7618C51A3Dbb06C8d83') },
     foundationMultisig2: { ...getAddress(mainnet, '0x0c333d48Af19c2b42577f3C8f4779F0347F8C819') },
     daoMultisig: { ...getAddress(mainnet, '0x7e3692a6d8c34a762079fa9057aed87be7e67cb8') },
-    daoPauserMultisig: { ...getAddress(mainnet, '0xc140c1CD2e587fC04DAa780d49b616F768476660') },
 
     ...TokenNamedAccounts,
     ...TestNamedAccounts,

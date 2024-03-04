@@ -49,7 +49,6 @@ contract TestFixture is Test {
     address payable internal admin;
     address payable internal user1;
     address payable internal user2;
-    address payable internal emergencyStopper;
 
     address internal constant NATIVE_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal constant MAX_SOURCE_AMOUNT = 100_000_000 ether;
@@ -61,7 +60,6 @@ contract TestFixture is Test {
         admin = users[0];
         user1 = users[1];
         user2 = users[2];
-        emergencyStopper = users[3];
 
         // deploy contracts from admin
         vm.startPrank(admin);

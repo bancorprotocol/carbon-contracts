@@ -20,27 +20,12 @@ contract CarbonControllerTest is TestFixture {
     uint16 private constant CONTROLLER_TYPE = 1;
     uint32 private constant TRADING_FEE_PPM = 2000;
 
-    // Events
-    /**
-     * @dev Emitted when the pause is triggered by `account`.
-     */
-    event Paused(address account);
-
-    /**
-     * @dev Emitted when the pause is lifted by `account`.
-     */
-    event Unpaused(address account);
-
     /// @dev function to set up state before tests
     function setUp() public virtual {
         // Set up tokens and users
         systemFixture();
         // Deploy Carbon Controller and Voucher
         setupCarbonController();
-        // Grant emergency stopper role
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), emergencyStopper);
-        vm.stopPrank();
     }
 
     /**
@@ -52,16 +37,13 @@ contract CarbonControllerTest is TestFixture {
         assertEq(version, 2);
 
         bytes32 adminRole = keccak256("ROLE_ADMIN");
-        bytes32 emergencyStopperRole = keccak256("ROLE_EMERGENCY_STOPPER");
         bytes32 feesManagerRole = keccak256("ROLE_FEES_MANAGER");
         assertEq(adminRole, carbonController.roleAdmin());
-        assertEq(emergencyStopperRole, carbonController.roleEmergencyStopper());
         assertEq(feesManagerRole, carbonController.roleFeesManager());
 
         assertEq(admin, carbonController.getRoleMember(adminRole, 0));
 
         assertEq(1, carbonController.getRoleMemberCount(adminRole));
-        assertEq(1, carbonController.getRoleMemberCount(emergencyStopperRole));
         assertEq(0, carbonController.getRoleMemberCount(feesManagerRole));
 
         assertEq(CONTROLLER_TYPE, carbonController.controllerType());
@@ -71,47 +53,6 @@ contract CarbonControllerTest is TestFixture {
     function testShouldRevertWhenAttemptingToReinitialize() public {
         vm.expectRevert("Initializable: contract is already initialized");
         carbonController.initialize();
-    }
-
-    /**
-     * @dev pausing / unpausing
-     */
-
-    /// @dev test emergency stopper should be able to pause
-    function testShouldBeAbleToPause() public {
-        vm.prank(emergencyStopper);
-        vm.expectEmit();
-        emit Paused(emergencyStopper);
-        carbonController.pause();
-        bool paused = carbonController.paused();
-        assertTrue(paused);
-    }
-
-    /// @dev test emergency stopper should be able to unpause
-    function testShouldBeAbleToUnpause() public {
-        vm.startPrank(emergencyStopper);
-        carbonController.pause();
-
-        vm.expectEmit();
-        emit Unpaused(emergencyStopper);
-        carbonController.unpause();
-        bool paused = carbonController.paused();
-        assertFalse(paused);
-        vm.stopPrank();
-    }
-
-    /// @dev test pausing should be restricted to emergency stopper role only
-    function testShouldRestrictPausing() public {
-        vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
-        carbonController.pause();
-    }
-
-    /// @dev test unpausing should be restricted to emergency stopper role only
-    function testShouldRestrictUnpausing() public {
-        vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
-        carbonController.unpause();
     }
 
     /**

@@ -26,9 +26,6 @@ contract CarbonController is
     OnlyProxyDelegate,
     Utils
 {
-    // the emergency manager role is required to pause/unpause
-    bytes32 private constant ROLE_EMERGENCY_STOPPER = keccak256("ROLE_EMERGENCY_STOPPER");
-
     // the fees manager role is required to withdraw fees
     bytes32 private constant ROLE_FEES_MANAGER = keccak256("ROLE_FEES_MANAGER");
 
@@ -82,7 +79,6 @@ contract CarbonController is
      */
     function __CarbonController_init_unchained() internal onlyInitializing {
         // set up administrative roles
-        _setRoleAdmin(ROLE_EMERGENCY_STOPPER, ROLE_ADMIN);
         _setRoleAdmin(ROLE_FEES_MANAGER, ROLE_ADMIN);
     }
 
@@ -92,14 +88,7 @@ contract CarbonController is
      * @inheritdoc Upgradeable
      */
     function version() public pure virtual override(IVersioned, Upgradeable) returns (uint16) {
-        return 5;
-    }
-
-    /**
-     * @dev returns the emergency stopper role
-     */
-    function roleEmergencyStopper() external pure returns (bytes32) {
-        return ROLE_EMERGENCY_STOPPER;
+        return 6;
     }
 
     /**
@@ -164,7 +153,7 @@ contract CarbonController is
     function createPair(
         Token token0,
         Token token1
-    ) external nonReentrant whenNotPaused onlyProxyDelegate returns (Pair memory) {
+    ) external nonReentrant onlyProxyDelegate returns (Pair memory) {
         _validateInputTokens(token0, token1);
         return _createPair(token0, token1);
     }
@@ -193,7 +182,7 @@ contract CarbonController is
         Token token0,
         Token token1,
         Order[2] calldata orders
-    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint256) {
+    ) external payable nonReentrant onlyProxyDelegate returns (uint256) {
         _validateInputTokens(token0, token1);
 
         // don't allow unnecessary eth
@@ -223,7 +212,7 @@ contract CarbonController is
         uint256 strategyId,
         Order[2] calldata currentOrders,
         Order[2] calldata newOrders
-    ) external payable nonReentrant whenNotPaused onlyProxyDelegate {
+    ) external payable nonReentrant onlyProxyDelegate {
         Pair memory strategyPair = _pairById(_pairIdByStrategyId(strategyId));
 
         // only the owner of the strategy is allowed to delete it
@@ -248,7 +237,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function deleteStrategy(uint256 strategyId) external nonReentrant whenNotPaused onlyProxyDelegate {
+    function deleteStrategy(uint256 strategyId) external nonReentrant onlyProxyDelegate {
         // find strategy, reverts if none
         Pair memory strategyPair = _pairById(_pairIdByStrategyId(strategyId));
 
@@ -303,7 +292,7 @@ contract CarbonController is
         TradeAction[] calldata tradeActions,
         uint256 deadline,
         uint128 minReturn
-    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
+    ) external payable nonReentrant onlyProxyDelegate returns (uint128) {
         _validateTradeParams(sourceToken, targetToken, deadline, msg.value, minReturn);
         Pair memory _pair = _pair(sourceToken, targetToken);
         TradeParams memory params = TradeParams({
@@ -329,7 +318,7 @@ contract CarbonController is
         TradeAction[] calldata tradeActions,
         uint256 deadline,
         uint128 maxInput
-    ) external payable nonReentrant whenNotPaused onlyProxyDelegate returns (uint128) {
+    ) external payable nonReentrant onlyProxyDelegate returns (uint128) {
         _validateTradeParams(sourceToken, targetToken, deadline, msg.value, maxInput);
 
         if (sourceToken.isNative()) {
@@ -400,7 +389,6 @@ contract CarbonController is
         address recipient
     )
         external
-        whenNotPaused
         onlyRoleMember(ROLE_FEES_MANAGER)
         validAddress(recipient)
         validAddress(Token.unwrap(token))
@@ -409,28 +397,6 @@ contract CarbonController is
         returns (uint256)
     {
         return _withdrawFees(msg.sender, amount, token, recipient);
-    }
-
-    /**
-     * @dev pauses the CarbonController
-     *
-     * requirements:
-     *
-     * - the caller must have the ROLE_EMERGENCY_STOPPER privilege
-     */
-    function pause() external onlyRoleMember(ROLE_EMERGENCY_STOPPER) {
-        _pause();
-    }
-
-    /**
-     * @dev resumes the CarbonController
-     *
-     * requirements:
-     *
-     * - the caller must have the ROLE_EMERGENCY_STOPPER privilege
-     */
-    function unpause() external onlyRoleMember(ROLE_EMERGENCY_STOPPER) {
-        _unpause();
     }
 
     /**

@@ -70,20 +70,6 @@ contract PairsTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test that pair creation reverts when contract is paused
-    function testShouldRevertWhenContractIsPaused() public {
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), emergencyStopper);
-        vm.stopPrank();
-
-        vm.prank(emergencyStopper);
-        carbonController.pause();
-
-        vm.prank(admin);
-        vm.expectRevert("Pausable: paused");
-        carbonController.createPair(token0, token1);
-    }
-
     /// @dev test that pair creation emits event and creates a pair
     function testShouldCreateAPair() public {
         vm.startPrank(admin);
