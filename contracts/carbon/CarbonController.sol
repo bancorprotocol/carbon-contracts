@@ -150,10 +150,7 @@ contract CarbonController is
     /**
      * @inheritdoc ICarbonController
      */
-    function createPair(
-        Token token0,
-        Token token1
-    ) external nonReentrant onlyProxyDelegate returns (Pair memory) {
+    function createPair(Token token0, Token token1) external nonReentrant onlyProxyDelegate returns (Pair memory) {
         _validateInputTokens(token0, token1);
         return _createPair(token0, token1);
     }

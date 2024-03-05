@@ -7,7 +7,7 @@ import { TestFixture } from "./TestFixture.t.sol";
 
 import { Order, TradeAction } from "../../contracts/carbon/Strategies.sol";
 
-import { AccessDenied, InvalidAddress } from "../../contracts/utility/Utils.sol";
+import { InvalidAddress } from "../../contracts/utility/Utils.sol";
 import { OnlyProxyDelegate } from "../../contracts/utility/OnlyProxyDelegate.sol";
 
 import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
