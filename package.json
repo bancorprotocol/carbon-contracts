@@ -30,6 +30,7 @@
     "test:coverage:nightly": "NIGHTLY=1 pnpm test:coverage",
     "test:nightly": "NIGHTLY=1 CI=1 forge test",
     "test:deploy": "TEST_FORK=1 ./deployments/run-fork.sh HARDHAT_NETWORK=tenderly mocha --require hardhat/register --extension ts --recursive --exit --timeout 600000 --bail --no-exit 'deploy/tests/network/**/*.ts'",
+    "test:deploy:mainnet": "TEST_FORK=1 ./deployments/run-fork.sh HARDHAT_NETWORK=tenderly mocha --require hardhat/register --extension ts --recursive --exit --timeout 600000 --bail --no-exit 'deploy/tests/mainnet/**/*.ts'",
     "test:health": "pnpm test:deploy",
     "export:storage": "pnpm cleanbuild && hardhat run deployments/storage-layout.ts",
     "deploy:prepare": "rm -rf ./node_modules && rm pnpm-lock.yaml && pnpm install && pnpm cleanbuild",
