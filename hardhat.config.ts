@@ -35,7 +35,7 @@ interface EnvOptions {
 const {
     TENDERLY_TESTNET_PROVIDER_URL = '',
     VERIFY_API_KEY = '',
-    GAS_PRICE = 'auto',
+    GAS_PRICE: gasPrice = 'auto',
     TENDERLY_FORK_ID = '',
     TENDERLY_PROJECT = '',
     TENDERLY_TEST_PROJECT = '',
@@ -73,7 +73,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Mainnet]: {
             chainId: chainIds[DeploymentNetwork.Mainnet],
             url: rpcUrls[DeploymentNetwork.Mainnet],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Mainnet}`],
@@ -86,7 +86,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Optimism]: {
             chainId: chainIds[DeploymentNetwork.Optimism],
             url: rpcUrls[DeploymentNetwork.Optimism],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Optimism}`],
@@ -99,7 +99,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Cronos]: {
             chainId: chainIds[DeploymentNetwork.Cronos],
             url: rpcUrls[DeploymentNetwork.Cronos],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Cronos}`],
@@ -112,7 +112,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Rootstock]: {
             chainId: chainIds[DeploymentNetwork.Rootstock],
             url: rpcUrls[DeploymentNetwork.Rootstock],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Rootstock}`],
@@ -125,7 +125,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Telos]: {
             chainId: chainIds[DeploymentNetwork.Telos],
             url: rpcUrls[DeploymentNetwork.Telos],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Telos}`],
@@ -138,7 +138,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.BSC]: {
             chainId: chainIds[DeploymentNetwork.BSC],
             url: rpcUrls[DeploymentNetwork.BSC],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.BSC}`],
@@ -151,7 +151,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Gnosis]: {
             chainId: chainIds[DeploymentNetwork.Gnosis],
             url: rpcUrls[DeploymentNetwork.Gnosis],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Gnosis}`],
@@ -164,7 +164,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Polygon]: {
             chainId: chainIds[DeploymentNetwork.Polygon],
             url: rpcUrls[DeploymentNetwork.Polygon],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Polygon}`],
@@ -177,7 +177,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Fantom]: {
             chainId: chainIds[DeploymentNetwork.Fantom],
             url: rpcUrls[DeploymentNetwork.Fantom],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Fantom}`],
@@ -190,7 +190,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Hedera]: {
             chainId: chainIds[DeploymentNetwork.Hedera],
             url: rpcUrls[DeploymentNetwork.Hedera],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Hedera}`],
@@ -203,7 +203,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.ZkSync]: {
             chainId: chainIds[DeploymentNetwork.ZkSync],
             url: rpcUrls[DeploymentNetwork.ZkSync],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.ZkSync}`],
@@ -216,7 +216,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.PulseChain]: {
             chainId: chainIds[DeploymentNetwork.PulseChain],
             url: rpcUrls[DeploymentNetwork.PulseChain],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.PulseChain}`],
@@ -229,7 +229,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Astar]: {
             chainId: chainIds[DeploymentNetwork.Astar],
             url: rpcUrls[DeploymentNetwork.Astar],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Astar}`],
@@ -242,7 +242,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Metis]: {
             chainId: chainIds[DeploymentNetwork.Metis],
             url: rpcUrls[DeploymentNetwork.Metis],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Metis}`],
@@ -255,7 +255,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Moonbeam]: {
             chainId: chainIds[DeploymentNetwork.Moonbeam],
             url: rpcUrls[DeploymentNetwork.Moonbeam],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Moonbeam}`],
@@ -268,7 +268,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Kava]: {
             chainId: chainIds[DeploymentNetwork.Kava],
             url: rpcUrls[DeploymentNetwork.Kava],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Kava}`],
@@ -281,7 +281,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Mantle]: {
             chainId: chainIds[DeploymentNetwork.Mantle],
             url: rpcUrls[DeploymentNetwork.Mantle],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Mantle}`],
@@ -294,7 +294,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Canto]: {
             chainId: chainIds[DeploymentNetwork.Canto],
             url: rpcUrls[DeploymentNetwork.Canto],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Canto}`],
@@ -307,7 +307,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Klaytn]: {
             chainId: chainIds[DeploymentNetwork.Klaytn],
             url: rpcUrls[DeploymentNetwork.Klaytn],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Klaytn}`],
@@ -320,7 +320,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Base]: {
             chainId: chainIds[DeploymentNetwork.Base],
             url: rpcUrls[DeploymentNetwork.Base],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Base}`],
@@ -333,7 +333,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Fusion]: {
             chainId: chainIds[DeploymentNetwork.Fusion],
             url: rpcUrls[DeploymentNetwork.Fusion],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Fusion}`],
@@ -346,7 +346,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Mode]: {
             chainId: chainIds[DeploymentNetwork.Mode],
             url: rpcUrls[DeploymentNetwork.Mode],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Mode}`],
@@ -359,7 +359,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Arbitrum]: {
             chainId: chainIds[DeploymentNetwork.Arbitrum],
             url: rpcUrls[DeploymentNetwork.Arbitrum],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Arbitrum}`],
@@ -372,7 +372,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Celo]: {
             chainId: chainIds[DeploymentNetwork.Celo],
             url: rpcUrls[DeploymentNetwork.Celo],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Celo}`],
@@ -385,7 +385,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Avalanche]: {
             chainId: chainIds[DeploymentNetwork.Avalanche],
             url: rpcUrls[DeploymentNetwork.Avalanche],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Avalanche}`],
@@ -398,7 +398,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Linea]: {
             chainId: chainIds[DeploymentNetwork.Linea],
             url: rpcUrls[DeploymentNetwork.Linea],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Linea}`],
@@ -411,7 +411,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Scroll]: {
             chainId: chainIds[DeploymentNetwork.Scroll],
             url: rpcUrls[DeploymentNetwork.Scroll],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Scroll}`],
@@ -424,7 +424,7 @@ const config: HardhatUserConfig = {
         [DeploymentNetwork.Aurora]: {
             chainId: chainIds[DeploymentNetwork.Aurora],
             url: rpcUrls[DeploymentNetwork.Aurora],
-            gasPrice: GAS_PRICE,
+            gasPrice,
             saveDeployments: true,
             live: true,
             deploy: [`deploy/scripts/${DeploymentNetwork.Aurora}`],
