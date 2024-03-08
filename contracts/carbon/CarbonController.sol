@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { IVersioned } from "../utility/interfaces/IVersioned.sol";
 import { Pairs, Pair } from "./Pairs.sol";
 import { Token } from "../token/Token.sol";
@@ -22,7 +22,6 @@ contract CarbonController is
     Strategies,
     Upgradeable,
     ReentrancyGuardUpgradeable,
-    PausableUpgradeable,
     OnlyProxyDelegate,
     Utils
 {
@@ -30,6 +29,10 @@ contract CarbonController is
     bytes32 private constant ROLE_FEES_MANAGER = keccak256("ROLE_FEES_MANAGER");
 
     uint16 private constant CONTROLLER_TYPE = 1;
+
+    // deprecated parent storage vars
+    bool private deprecated;
+    uint256[49] private __deprecated;
 
     // the voucher contract
     IVoucher private immutable _voucher;
@@ -69,7 +72,6 @@ contract CarbonController is
         __Strategies_init();
         __Upgradeable_init();
         __ReentrancyGuard_init();
-        __Pausable_init();
 
         __CarbonController_init_unchained();
     }
