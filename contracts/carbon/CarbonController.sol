@@ -30,7 +30,7 @@ contract CarbonController is
     uint16 private constant CONTROLLER_TYPE = 1;
 
     // deprecated parent storage vars
-    bool private deprecated;
+    bool private _deprecated;
     uint256[49] private __deprecated;
 
     // the voucher contract
