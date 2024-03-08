@@ -99,7 +99,7 @@ const TestNamedAccounts = {
         ...getAddress(mantle, '0xa6b12425F236EE85c6E0E60df9c422C9e603cf80')
     },
     bntWhale: {
-        ...getAddress(mainnet, '0x221A0e3C9AcEa6B3f1CC9DfC7063509c89bE7BC3'),
+        ...getAddress(mainnet, '0x6cC5F688a315f3dC28A7781717a9A798a59fDA7b'),
         ...getAddress(mantle, ZERO_ADDRESS)
     },
     linkWhale: {
