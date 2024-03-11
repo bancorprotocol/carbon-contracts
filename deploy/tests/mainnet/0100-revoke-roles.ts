@@ -31,8 +31,6 @@ describeDeployment(
             expect(await voucher.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
             expect(await carbonVortex.hasRole(Roles.Upgradeable.ROLE_ADMIN, deployer)).to.be.false;
 
-            // expect deployer not to have the emergency stopper role
-            expect(await carbon.hasRole(Roles.CarbonController.ROLE_EMERGENCY_STOPPER, deployer)).to.be.false;
             // expect deployer not to have the fee manager role
             expect(await carbon.hasRole(Roles.CarbonController.ROLE_FEES_MANAGER, deployer)).to.be.false;
         });

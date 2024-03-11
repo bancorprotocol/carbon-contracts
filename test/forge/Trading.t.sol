@@ -149,20 +149,6 @@ contract TradingTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test that trading reverts when the contract is paused
-    function testTradingRevertsWhenPaused(bool byTargetAmount) public {
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), user2);
-        vm.stopPrank();
-        vm.prank(user2);
-        carbonController.pause();
-
-        vm.startPrank(user1);
-        vm.expectRevert("Pausable: paused");
-        simpleTrade(token0, token1, byTargetAmount, 1, 1);
-        vm.stopPrank();
-    }
-
     /// @dev test that trading reverts if insufficient native token was sent
     function testTradingRevertsIfInsufficientNativeTokenWasSent(bool byTargetAmount) public {
         vm.startPrank(user1);

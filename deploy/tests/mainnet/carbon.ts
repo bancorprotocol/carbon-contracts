@@ -26,7 +26,13 @@ import {
     STRATEGY_UPDATE_REASON_TRADE,
     ZERO_ADDRESS
 } from '../../../utils/Constants';
-import { DeployedContracts, fundAccount, getNamedSigners, isLive, runPendingDeployments } from '../../../utils/Deploy';
+import {
+    DeployedContracts,
+    fundAccount,
+    getNamedSigners,
+    isTenderly,
+    runPendingDeployments
+} from '../../../utils/Deploy';
 import { NATIVE_TOKEN_ADDRESS, TokenData, TokenSymbol } from '../../../utils/TokenData';
 import { toWei } from '../../../utils/Types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -35,7 +41,7 @@ import Decimal from 'decimal.js';
 import { BigNumber, BigNumberish } from 'ethers';
 import { ethers, getNamedAccounts } from 'hardhat';
 
-(isLive() ? describe : describe.skip)('network', async () => {
+(isTenderly() ? describe : describe.skip)('network', async () => {
     let carbonController: CarbonController;
     let voucher: Voucher;
     let carbonVortex: CarbonVortex;

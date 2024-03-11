@@ -82,7 +82,7 @@ const TestNamedAccounts = {
         ...getAddress(mantle, '0xf89d7b9c864f589bbF53a82105107622B35EaA40')
     },
     daiWhale: {
-        ...getAddress(mainnet, '0x1B7BAa734C00298b9429b518D621753Bb0f6efF2'),
+        ...getAddress(mainnet, '0x66F62574ab04989737228D18C3624f7FC1edAe14'),
         ...getAddress(base, '0xe9b14a1Be94E70900EDdF1E22A4cB8c56aC9e10a'),
         ...getAddress(arbitrum, '0xd85E038593d7A098614721EaE955EC2022B9B91B'),
         ...getAddress(mantle, ZERO_ADDRESS)
@@ -99,7 +99,7 @@ const TestNamedAccounts = {
         ...getAddress(mantle, '0xa6b12425F236EE85c6E0E60df9c422C9e603cf80')
     },
     bntWhale: {
-        ...getAddress(mainnet, '0x221A0e3C9AcEa6B3f1CC9DfC7063509c89bE7BC3'),
+        ...getAddress(mainnet, '0x6cC5F688a315f3dC28A7781717a9A798a59fDA7b'),
         ...getAddress(mantle, ZERO_ADDRESS)
     },
     linkWhale: {
@@ -149,7 +149,7 @@ const TokenNamedAccounts = {
 };
 
 const BancorNamedAccounts = {
-    bancorNetworkV3: { 
+    bancorNetworkV3: {
         ...getAddress(mainnet, '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB')
     }
 };
@@ -172,7 +172,6 @@ export const NamedAccounts = {
     foundationMultisig: { ...getAddress(mainnet, '0xeBeD45Ca22fcF70AdCcAb7618C51A3Dbb06C8d83') },
     foundationMultisig2: { ...getAddress(mainnet, '0x0c333d48Af19c2b42577f3C8f4779F0347F8C819') },
     daoMultisig: { ...getAddress(mainnet, '0x7e3692a6d8c34a762079fa9057aed87be7e67cb8') },
-    daoPauserMultisig: { ...getAddress(mainnet, '0xc140c1CD2e587fC04DAa780d49b616F768476660') },
 
     ...TokenNamedAccounts,
     ...TestNamedAccounts,

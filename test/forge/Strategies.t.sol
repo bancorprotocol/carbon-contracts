@@ -435,18 +435,6 @@ contract StrategiesTest is TestFixture {
         vm.stopPrank();
     }
 
-    function testStrategyCreationRevertsWhenPaused() public {
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), user2);
-        vm.stopPrank();
-        vm.prank(user2);
-        carbonController.pause();
-
-        Order memory order = generateTestOrder();
-        vm.expectRevert("Pausable: paused");
-        carbonController.createStrategy(token0, token1, [order, order]);
-    }
-
     function testStrategyCreationRevertsWhenCapacityIsSmallerThanLiquidity(bool order0Insufficient) public {
         vm.startPrank(user1);
 
@@ -861,25 +849,6 @@ contract StrategiesTest is TestFixture {
         vm.stopPrank();
     }
 
-    function testStrategyUpdateRevertsWhenPaused() public {
-        vm.prank(user1);
-        Order memory order = generateTestOrder();
-        // create strategy
-        uint256 strategyId = carbonController.createStrategy(token0, token1, [order, order]);
-
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), user2);
-        vm.stopPrank();
-        vm.prank(user2);
-        carbonController.pause();
-
-        Order memory newOrder = generateTestOrder();
-        newOrder.y += 1000;
-
-        vm.expectRevert("Pausable: paused");
-        carbonController.updateStrategy(strategyId, [order, order], [newOrder, newOrder]);
-    }
-
     function testStrategyUpdateRevertsWhenTryingToUpdateANonExistingStrategyOnAnExistingPair() public {
         vm.startPrank(user1);
         Order memory order = generateTestOrder();
@@ -1206,22 +1175,6 @@ contract StrategiesTest is TestFixture {
         carbonController.deleteStrategy(strategyId);
 
         vm.stopPrank();
-    }
-
-    function testStrategyDeletionRevertsWhenPaused() public {
-        vm.prank(user1);
-        Order memory order = generateTestOrder();
-        // create strategy
-        uint256 strategyId = carbonController.createStrategy(token0, token1, [order, order]);
-
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), user2);
-        vm.stopPrank();
-        vm.prank(user2);
-        carbonController.pause();
-
-        vm.expectRevert("Pausable: paused");
-        carbonController.deleteStrategy(strategyId);
     }
 
     /**
@@ -1692,21 +1645,6 @@ contract StrategiesTest is TestFixture {
     /**
      * @dev withdraw fees tests
      */
-
-    function testFeeWithdrawalRevertsWhenPaused() public {
-        vm.startPrank(admin);
-        carbonController.grantRole(carbonController.roleEmergencyStopper(), user2);
-        vm.stopPrank();
-        vm.prank(user1);
-        Order memory order = generateTestOrder();
-        carbonController.createStrategy(token0, token1, [order, order]);
-        vm.prank(user2);
-        carbonController.pause();
-
-        vm.prank(admin);
-        vm.expectRevert("Pausable: paused");
-        carbonController.withdrawFees(token0, 1, admin);
-    }
 
     function testFeeWithdrawalRevertsWhenCallerIsMissingTheRequiredRole() public {
         vm.prank(user1);
