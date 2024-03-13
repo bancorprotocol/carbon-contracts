@@ -35,6 +35,7 @@
     "export:storage": "pnpm cleanbuild && hardhat run deployments/storage-layout.ts",
     "deploy:prepare": "rm -rf ./node_modules && rm pnpm-lock.yaml && pnpm install && pnpm cleanbuild",
     "deploy:network": "./deployments/run-network.sh hardhat deploy",
+    "deploy:mainnet": "HARDHAT_NETWORK=mainnet hardhat deploy",
     "verify:mainnet": "HARDHAT_NETWORK=mainnet hardhat etherscan-verify --license None --force-license",
     "verify:rinkeby": "HARDHAT_NETWORK=rinkeby hardhat etherscan-verify --license None --force-license",
     "setup:fork": "./deployments/run-fork.sh pnpm run:fork deployments/setup-fork.ts",
