@@ -71,7 +71,7 @@ describe('ExpDecayMath', () => {
         }
     });
 
-    describe('stress tests', () => {
+    describe('@stress tests', () => {
         for (const ethAmount of [
             40_000_000,
             400_000_000,
