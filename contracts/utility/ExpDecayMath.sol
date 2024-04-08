@@ -12,7 +12,7 @@ library ExpDecayMath {
      * @dev returns the amount required for a token after a given time period since trading has been enabled
      *
      * the returned value is calculated as `amount / 2 ^ (timeElapsed / halfLife)`
-     * note that the input value to this function is limited by `timeElapsed / halfLife <= 128`
+     * note that the input value to this function is limited by `timeElapsed / halfLife < 129`
      */
     function calcExpDecay(uint256 amount, uint32 timeElapsed, uint32 halfLife) internal pure returns (uint256) {
         uint256 integerPart = timeElapsed / halfLife;
