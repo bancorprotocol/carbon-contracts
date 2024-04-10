@@ -31,7 +31,7 @@ contract POLTestCaseParser is Test {
     /**
      * @dev helper function to get test cases by parsing test data json
      */
-    function getTestCases() public returns (TestCase[] memory testCases) {
+    function getTestCases() public view returns (TestCase[] memory testCases) {
         string memory path = "./test/helpers/data/polPricingTestData.json";
         string memory json = vm.readFile(path);
         testCases = parseTestCases(json, "testCase");
@@ -45,7 +45,7 @@ contract POLTestCaseParser is Test {
     function parseInitialPrice(
         string memory json,
         string memory initialParseString
-    ) private returns (ICarbonPOL.Price memory price) {
+    ) private pure returns (ICarbonPOL.Price memory price) {
         uint256 initialPriceSourceAmount = vm.parseJsonUint(
             json,
             string.concat(initialParseString, "].initialPriceSourceAmount")
@@ -66,7 +66,7 @@ contract POLTestCaseParser is Test {
     function parseTestCases(
         string memory json,
         string memory templateName
-    ) private returns (TestCase[] memory testCases) {
+    ) private pure returns (TestCase[] memory testCases) {
         string memory initialParseString = string.concat("$.", templateName);
 
         // read the test case length

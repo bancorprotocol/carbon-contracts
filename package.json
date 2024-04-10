@@ -28,6 +28,7 @@
     "test:hardhat": "NODE_OPTIONS='--max-old-space-size=8192' hardhat test",
     "test:coverage": "forge coverage",
     "test:coverage:nightly": "NIGHTLY=1 pnpm test:coverage",
+    "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage",
     "test:nightly": "NIGHTLY=1 CI=1 forge test",
     "test:deploy": "TEST_FORK=1 ./deployments/run-fork.sh HARDHAT_NETWORK=tenderly mocha --require hardhat/register --extension ts --recursive --exit --timeout 600000 --bail --no-exit 'deploy/tests/network/**/*.ts'",
     "test:deploy:mainnet": "TEST_FORK=1 ./deployments/run-fork.sh HARDHAT_NETWORK=tenderly mocha --require hardhat/register --extension ts --recursive --exit --timeout 600000 --bail --no-exit 'deploy/tests/mainnet/**/*.ts'",

@@ -105,6 +105,14 @@ describe('MathEx', () => {
                 testExp2({ n: n.floor().toNumber(), d }, new Decimal('0.000000000000000000000000000000000002'));
             }
         }
+
+        for (let d = 1; d < 1000; d++) {
+            testExp2({ n: 1, d }, new Decimal('0.00000000000000000000000000000000000002'));
+        }
+
+        for (let n = 1; n < 1000; n++) {
+            testExp2({ n, d: 1000 }, new Decimal('0.0000000000000000000000000000000000001'));
+        }
     });
 
     describe('@stress tests', () => {

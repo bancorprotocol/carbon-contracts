@@ -21,7 +21,11 @@ contract TestReenterCarbonVortex {
         _carbonVortex.execute(tokens);
     }
 
-    function tryReenterCarbonVortex(Token[] calldata tokens) external {
+    function tryReenterCarbonVortexExecute(Token[] calldata tokens) external {
         _carbonVortex.execute(tokens);
+    }
+
+    function tryReenterCarbonVortexTrade(Token token, uint128 targetAmount) external payable {
+        _carbonVortex.trade{ value: msg.value }(token, targetAmount);
     }
 }
