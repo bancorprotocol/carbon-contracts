@@ -381,15 +381,15 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         }
 
         // go through all tokens and start / reset dutch auction if necessary
-        for (uint256 i = 0; i < tokens.length; ++i) {
+        for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
             uint256 totalFeeAmount = feeAmounts[i];
-            // skip token if no fees have accumulated or token pair is disabled
-            if (totalFeeAmount == 0 || _disabledPairs[token]) {
-                continue;
-            }
             // skip the final target token
             if (token == _finalTargetToken) {
+                continue;
+            }
+            // skip token if no fees have accumulated or token pair is disabled
+            if (totalFeeAmount == 0 || _disabledPairs[token]) {
                 continue;
             }
             // get fee and reward amounts
@@ -412,10 +412,11 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
                     _resetTradingTarget(rewardAmount);
                 }
             } else {
+                uint128 tradingAmount = _amountAvailableForTrading(token);
                 if (
                     !_tradingEnabled(token) ||
-                    _amountAvailableForTrading(token) - feeAmount < _minTokenSaleAmounts[token] ||
-                    _amountAvailableForTrading(token) > _minTokenSaleAmountMultiplier * _minTokenSaleAmounts[token] ||
+                    tradingAmount - feeAmount < _minTokenSaleAmounts[token] ||
+                    tradingAmount > _minTokenSaleAmountMultiplier * _minTokenSaleAmounts[token] ||
                     _auctionPriceIsBelowMinimum(token)
                 ) {
                     // reset trading for token
@@ -432,12 +433,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @notice resets dutch auction for target token -> TKN trades and set the initial price to max possible
      */
     function _resetTrading(Token token, uint256 rewardAmount) private {
-        Price memory price = Price({
-            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
-            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
-        });
-        _tradingStartTimes[token] = uint32(block.timestamp);
-        _initialPrice[token] = price;
+        // reset the auction with the initial price
+        Price memory price = _resetAuction(token);
         // set min token sale amount
         _setMinTokenSaleAmount(token, (token.balanceOf(address(this)) - rewardAmount).toUint128() / 2);
         emit TradingReset({ token: token, price: price });
@@ -447,12 +444,9 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @notice resets dutch auction for finalTargetToken->targetToken trades and set the initial price to max possible
      */
     function _resetTradingTarget(uint256 rewardAmount) private {
-        Price memory price = Price({
-            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
-            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
-        });
-        _tradingStartTimes[_targetToken] = uint32(block.timestamp);
-        _initialPrice[_targetToken] = price;
+        // reset the auction with the initial price
+        Price memory price = _resetAuction(_targetToken);
+        // reset the current target token sale amount
         _targetTokenSaleAmount.current = Math
             .min(_targetToken.balanceOf(address(this)) - rewardAmount, _targetTokenSaleAmount.initial)
             .toUint128();
@@ -896,7 +890,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         if (token == _targetToken) {
             return _targetTokenSaleAmount.current;
         } else {
-            return uint128(token.balanceOf(address(this)));
+            return token.balanceOf(address(this)).toUint128();
         }
     }
 
@@ -962,6 +956,19 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             // safe due to nonReentrant modifier (forwards all available gas in case of ETH)
             token.unsafeTransfer(sender, rewardAmount);
         }
+    }
+
+    /**
+     * @dev helper function to reset the auction to the initial price
+     */
+    function _resetAuction(Token token) private returns (Price memory) {
+        Price memory price = Price({
+            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
+            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
+        });
+        _tradingStartTimes[token] = uint32(block.timestamp);
+        _initialPrice[token] = price;
+        return price;
     }
 
     function uncheckedInc(uint256 i) private pure returns (uint256 j) {

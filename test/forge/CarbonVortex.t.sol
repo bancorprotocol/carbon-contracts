@@ -85,7 +85,7 @@ contract CarbonVortexTest is TestFixture {
     /**
      * @dev triggered when tokens have been withdrawn by the admin
      */
-    event FundsWithdrawn(Token[] tokens, uint256[] amounts, address indexed caller, address indexed target);
+    event FundsWithdrawn(Token[] indexed tokens, address indexed caller, address indexed target, uint256[] amounts);
 
     /**
      * @dev triggered when tokens have been withdrawn from the vault (Vault event)
@@ -3326,7 +3326,7 @@ contract CarbonVortexTest is TestFixture {
         token1.safeTransfer(address(carbonVortex), withdrawAmounts[0]);
 
         vm.expectEmit();
-        emit FundsWithdrawn(tokens, withdrawAmounts, admin, user2);
+        emit FundsWithdrawn(tokens, admin, user2, withdrawAmounts);
         // withdraw token to user2
         carbonVortex.withdrawFunds(tokens, user2, withdrawAmounts);
 

@@ -3,11 +3,13 @@ pragma solidity 0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 import { stdJson } from "forge-std/StdJson.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract VortexTestCaseParser is Test {
     using stdJson for string;
+    using SafeCast for uint256;
 
     struct PriceAtTimestamp {
         uint128 sourceAmount;
@@ -90,9 +92,9 @@ contract VortexTestCaseParser is Test {
     ) private pure returns (PriceAtTimestamp memory priceAtTimestamp) {
         return
             PriceAtTimestamp({
-                timestamp: uint32(stringToUint(priceAtTimestampString.timestamp)),
-                sourceAmount: uint128(stringToUint(priceAtTimestampString.sourceAmount)),
-                targetAmount: uint128(stringToUint(priceAtTimestampString.targetAmount))
+                timestamp: stringToUint(priceAtTimestampString.timestamp).toUint32(),
+                sourceAmount: stringToUint(priceAtTimestampString.sourceAmount).toUint128(),
+                targetAmount: stringToUint(priceAtTimestampString.targetAmount).toUint128()
             });
     }
 

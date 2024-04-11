@@ -57,7 +57,7 @@ interface ICarbonVortex is IUpgradeable {
     /**
      * @dev triggered when tokens have been withdrawn by the admin
      */
-    event FundsWithdrawn(Token[] tokens, uint256[] amounts, address indexed caller, address indexed target);
+    event FundsWithdrawn(Token[] indexed tokens, address indexed caller, address indexed target, uint256[] amounts);
 
     /**
      * @notice triggered when the price reset multiplier is updated
@@ -163,18 +163,18 @@ interface ICarbonVortex is IUpgradeable {
     /**
      * @notice returns the target amount expected given a source amount
      */
-    function expectedTradeReturn(Token token, uint128 sourceAmount) external view returns (uint128 targetAmount);
+    function expectedTradeReturn(Token token, uint128 sourceAmount) external view returns (uint128);
 
     /**
      * @notice returns the source amount required given a target amount
      */
-    function expectedTradeInput(Token token, uint128 targetAmount) external view returns (uint128 sourceAmount);
+    function expectedTradeInput(Token token, uint128 targetAmount) external view returns (uint128);
 
     /**
      * @notice returns the current token price (targetToken / TKN)
      * @notice if token == targetToken, returns finalTargetToken / targetToken price
      */
-    function tokenPrice(Token token) external view returns (Price memory price);
+    function tokenPrice(Token token) external view returns (Price memory);
 
     /**
      * @dev returns the total available fees for the given token
