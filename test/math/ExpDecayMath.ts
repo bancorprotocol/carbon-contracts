@@ -12,7 +12,7 @@ describe('ExpDecayMath', () => {
     let expDecayMath: TestExpDecayMath;
     const ONE = new Decimal(1);
     const TWO = new Decimal(2);
-    const MAX = new Decimal(128);
+    const MAX = new Decimal(129);
 
     before(async () => {
         expDecayMath = await Contracts.TestExpDecayMath.deploy();
@@ -21,7 +21,7 @@ describe('ExpDecayMath', () => {
     const calcExpDecay = (ethAmount: BigNumberish, timeElapsed: number, halfLife: number) => {
         it(`calcExpDecay(${ethAmount}, ${timeElapsed}, ${halfLife})`, async () => {
             const f = new Decimal(timeElapsed).div(halfLife);
-            if (f.lte(MAX)) {
+            if (f.lt(MAX)) {
                 const f = new Decimal(timeElapsed).div(halfLife);
                 // actual amount calculated in solidity
                 const actual = await expDecayMath.calcExpDecay(ethAmount, timeElapsed, halfLife);
@@ -68,6 +68,11 @@ describe('ExpDecayMath', () => {
                     calcExpDecay(ethAmount, timeElapsed, halfLife);
                 }
             }
+        }
+
+        for (const halfLife of [seconds(1), minutes(2), hours(3), days(2), years(1)]) {
+            calcExpDecay(1_000_000, MAX.toNumber() * halfLife - 1, halfLife); // should pass
+            calcExpDecay(1_000_000, MAX.toNumber() * halfLife - 0, halfLife); // should fail
         }
     });
 
