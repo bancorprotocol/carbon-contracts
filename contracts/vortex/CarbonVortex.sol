@@ -138,9 +138,9 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // set target token price decay half-life to 10 days
         _setTargetTokenPriceDecayHalfLifeOnReset(10 days);
         // set initial target token sale amount to 100 eth
-        _setMaxTargetTokenSaleAmount(100 ether);
+        _setMaxTargetTokenSaleAmount(uint128(100) * uint128(10) ** _targetToken.decimals());
         // set min target token sale amount to 10 eth
-        _setMinTokenSaleAmount(_targetToken, 10 ether);
+        _setMinTokenSaleAmount(_targetToken, uint128(10) * uint128(10) ** _targetToken.decimals());
     }
 
     /**
