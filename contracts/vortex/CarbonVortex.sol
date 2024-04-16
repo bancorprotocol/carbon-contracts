@@ -18,7 +18,7 @@ import { ExpDecayMath } from "../utility/ExpDecayMath.sol";
 import { PPM_RESOLUTION, MAX_GAP } from "../utility/Constants.sol";
 
 /**
- * @dev CarbonVortex contract
+ * @notice CarbonVortex contract
  */
 contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;
@@ -125,7 +125,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @dev performs contract-specific initialization
      */
     function __CarbonVortex_init_unchained() internal onlyInitializing {
-        // set rewards ppm to 5000
+        // set rewards PPM to 5000
         _setRewardsPPM(5000);
         // set price reset multiplier to 2x
         _setPriceResetMultiplier(2);
@@ -144,7 +144,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
-     * @dev authorize the contract to receive the native token
+     * @notice authorize the contract to receive the native token
      */
     receive() external payable {}
 
@@ -280,8 +280,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      *
      * - the caller must be the admin of the contract
      */
-    function disablePair(Token token) external onlyAdmin {
-        _setPairDisabled(token);
+    function disablePair(Token token, bool disabled) external onlyAdmin {
+        _setPairDisabled(token, disabled);
     }
 
     /**
@@ -352,22 +352,27 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // cache rewardsPPM to save gas
         uint256 rewardsPPMValue = _rewardsPPM;
 
+        // cache address checks to save gas
+        bool carbonControllerIsNotZero = address(_carbonController) != address(0);
+        bool vaultIsNotZero = address(_vault) != address(0);
+        bool oldVortexIsNotZero = address(_oldVortex) != address(0);
+
         // withdraw fees from carbon, vault and old vortex
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
             // withdraw token fees
             uint256 totalFeeAmount = 0;
-            if (address(_carbonController) != address(0)) {
+            if (carbonControllerIsNotZero) {
                 totalFeeAmount += _carbonController.withdrawFees(token, type(uint256).max, address(this));
             }
-            if (address(_vault) != address(0)) {
+            if (vaultIsNotZero) {
                 // get vault token balance
                 uint256 vaultBalance = token.balanceOf(address(_vault));
                 // withdraw vault token balance
                 _vault.withdrawFunds(token, payable(address(this)), vaultBalance);
                 totalFeeAmount += vaultBalance;
             }
-            if (address(_oldVortex) != address(0)) {
+            if (oldVortexIsNotZero) {
                 // get old vortex token balance
                 uint256 oldVortexBalance = token.balanceOf(address(_oldVortex));
                 // withdraw old vortex token balance
@@ -430,7 +435,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
-     * @notice resets dutch auction for target token -> TKN trades and set the initial price to max possible
+     * @dev resets dutch auction for target token -> TKN trades and set the initial price to max possible
      */
     function _resetTrading(Token token, uint256 rewardAmount) private {
         // reset the auction with the initial price
@@ -441,7 +446,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
-     * @notice resets dutch auction for finalTargetToken->targetToken trades and set the initial price to max possible
+     * @dev resets dutch auction for finalTargetToken->targetToken trades and set the initial price to max possible
      */
     function _resetTradingTarget(uint256 rewardAmount) private {
         // reset the auction with the initial price
@@ -615,10 +620,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // check enough target token (if target token is native) has been sent for the trade
         if (_targetToken == NATIVE_TOKEN && msg.value < sourceAmount) {
             revert InsufficientNativeTokenSent();
-        } else {
-            // if target token is not native, transfer the tokens to the contract
-            _targetToken.safeTransferFrom(msg.sender, address(this), sourceAmount);
         }
+        _targetToken.safeTransferFrom(msg.sender, address(this), sourceAmount);
         // transfer the tokens to caller
         token.safeTransfer(msg.sender, targetAmount);
 
@@ -654,10 +657,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         if (_finalTargetToken == NATIVE_TOKEN) {
             if (msg.value < sourceAmount) {
                 revert InsufficientNativeTokenSent();
-            } else {
-                // transfer the tokens to the _transferAddress
-                payable(_transferAddress).sendValue(sourceAmount);
             }
+            payable(_transferAddress).sendValue(sourceAmount);
         } else {
             // transfer the tokens from the user to the _transferAddress
             _finalTargetToken.safeTransferFrom(msg.sender, _transferAddress, sourceAmount);
@@ -775,7 +776,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
-     * @dev Set target token price decay half-life on price reset helper.
+     * @dev set target token price decay half-life on price reset helper
      */
     function _setTargetTokenPriceDecayHalfLifeOnReset(uint32 newPriceDecayHalfLife) private {
         uint32 prevPriceDecayHalfLife = _targetTokenPriceDecayHalfLifeOnReset;
@@ -852,12 +853,17 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         emit RewardsUpdated({ prevRewardsPPM: prevRewardsPPM, newRewardsPPM: newRewardsPPM });
     }
 
-    function _setPairDisabled(Token token) private {
+    function _setPairDisabled(Token token, bool disabled) private {
         bool prevPairStatus = _disabledPairs[token];
 
-        _disabledPairs[token] = !prevPairStatus;
+        // return if the pair status is the same
+        if (prevPairStatus == disabled) {
+            return;
+        }
 
-        emit PairDisabledStatusUpdated(token, prevPairStatus, !prevPairStatus);
+        _disabledPairs[token] = disabled;
+
+        emit PairDisabledStatusUpdated(token, prevPairStatus, disabled);
     }
 
     /**
@@ -876,11 +882,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // get the halflife for the token
         uint32 currentPriceDecayHalfLife = token == _targetToken ? _targetTokenPriceDecayHalfLife : _priceDecayHalfLife;
         // check if the maximum amount of halflifes have been reached
-        if (timeElapsed / currentPriceDecayHalfLife >= 128) {
-            return true;
-        } else {
-            return false;
-        }
+        return timeElapsed / currentPriceDecayHalfLife >= 128;
     }
 
     /**

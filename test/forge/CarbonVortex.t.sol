@@ -1111,7 +1111,7 @@ contract CarbonVortexTest is TestFixture {
         token0.safeTransfer(address(carbonController), accumulatedFees);
 
         // disable token1
-        carbonVortex.disablePair(tokens[1]);
+        carbonVortex.disablePair(tokens[1], true);
 
         vm.stopPrank();
 
@@ -2061,7 +2061,7 @@ contract CarbonVortexTest is TestFixture {
 
         vm.stopPrank();
         vm.prank(admin);
-        carbonVortex.disablePair(token);
+        carbonVortex.disablePair(token, true);
 
         vm.startPrank(user1);
         uint128 tradeAmount = 1e18;
@@ -2087,7 +2087,7 @@ contract CarbonVortexTest is TestFixture {
 
         vm.stopPrank();
         vm.prank(admin);
-        carbonVortex.disablePair(token);
+        carbonVortex.disablePair(token, true);
 
         vm.startPrank(user1);
         // expect revert with pair disabled on attempt to get input / return
@@ -3352,6 +3352,20 @@ contract CarbonVortexTest is TestFixture {
         vm.stopPrank();
     }
 
+    /// @dev test withdrawing funds with zero token length should revert
+    function testShouldRevertOnWithdrawFundsWithZeroTokenLength() public {
+        Token[] memory tokens = new Token[](0);
+        uint256[] memory withdrawAmounts = new uint256[](0);
+
+        vm.startPrank(admin);
+
+        // withdraw token to user2
+        vm.expectRevert(ICarbonVortex.InvalidTokenLength.selector);
+        carbonVortex.withdrawFunds(tokens, user2, withdrawAmounts);
+
+        vm.stopPrank();
+    }
+
     /**
      * @dev admin pair disable test
      */
@@ -3361,7 +3375,7 @@ contract CarbonVortexTest is TestFixture {
         Token token = token1;
         vm.expectEmit();
         emit PairDisabledStatusUpdated(token, false, true);
-        carbonVortex.disablePair(token);
+        carbonVortex.disablePair(token, true);
 
         bool pairDisabled = carbonVortex.pairDisabled(token);
         assertTrue(pairDisabled);
@@ -3384,7 +3398,7 @@ contract CarbonVortexTest is TestFixture {
     function testAdminShouldBeAbleToEnableTokenPairs() public {
         vm.startPrank(admin);
         Token token = token1;
-        carbonVortex.disablePair(token);
+        carbonVortex.disablePair(token, true);
 
         uint256 accumulatedFees = 100e18;
         carbonController.testSetAccumulatedFees(token, accumulatedFees);
@@ -3407,7 +3421,7 @@ contract CarbonVortexTest is TestFixture {
         vm.startPrank(admin);
         vm.expectEmit();
         emit PairDisabledStatusUpdated(token, true, false);
-        carbonVortex.disablePair(token);
+        carbonVortex.disablePair(token, false);
 
         bool pairDisabled = carbonVortex.pairDisabled(token);
         assertFalse(pairDisabled);

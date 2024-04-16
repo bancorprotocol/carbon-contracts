@@ -5,7 +5,7 @@ import { IUpgradeable } from "../../utility/interfaces/IUpgradeable.sol";
 import { Token } from "../../token/Token.sol";
 
 /**
- * @dev CarbonVortex interface
+ * @notice CarbonVortex interface
  */
 interface ICarbonVortex is IUpgradeable {
     error DuplicateToken();
@@ -40,7 +40,7 @@ interface ICarbonVortex is IUpgradeable {
     event TokenTraded(address indexed caller, Token indexed token, uint128 sourceAmount, uint128 targetAmount);
 
     /**
-     * @dev triggered when the rewards ppm are updated
+     * @notice triggered when the rewards ppm are updated
      */
     event RewardsUpdated(uint32 prevRewardsPPM, uint32 newRewardsPPM);
 
@@ -55,7 +55,7 @@ interface ICarbonVortex is IUpgradeable {
     event PriceUpdated(Token indexed token, Price price);
 
     /**
-     * @dev triggered when tokens have been withdrawn by the admin
+     * @notice triggered when tokens have been withdrawn by the admin
      */
     event FundsWithdrawn(Token[] indexed tokens, address indexed caller, address indexed target, uint256[] amounts);
 
@@ -95,7 +95,7 @@ interface ICarbonVortex is IUpgradeable {
     event MinTokenSaleAmountUpdated(Token indexed token, uint128 prevMinTokenSaleAmount, uint128 newMinTokenSaleAmount);
 
     /**
-     * @dev returns the rewards ppm
+     * @notice returns the rewards ppm
      */
     function rewardsPPM() external view returns (uint32);
     
@@ -126,7 +126,7 @@ interface ICarbonVortex is IUpgradeable {
     function targetTokenPriceDecayHalfLifeOnReset() external view returns (uint32);
 
     /**
-     * @dev returns the total target (if no final target token has been defined) or final target tokens collected 
+     * @notice returns the total target (if no final target token has been defined) or final target tokens collected 
      */
     function totalCollected() external view returns (uint256);
 
@@ -177,7 +177,7 @@ interface ICarbonVortex is IUpgradeable {
     function tokenPrice(Token token) external view returns (Price memory);
 
     /**
-     * @dev returns the total available fees for the given token
+     * @notice returns the total available fees for the given token
      */
     function availableTokens(Token token) external view returns (uint256);
 
@@ -189,8 +189,8 @@ interface ICarbonVortex is IUpgradeable {
     function trade(Token token, uint128 targetAmount) external payable;
 
     /**
-     * @dev withdraws the fees of the provided token from Carbon and
-     * @dev enables trading for the token if not already enabled
+     * @notice withdraws the fees of the provided token from Carbon and
+     * @notice enables trading for the token if not already enabled
      */
     function execute(Token[] calldata tokens) external;
 }
