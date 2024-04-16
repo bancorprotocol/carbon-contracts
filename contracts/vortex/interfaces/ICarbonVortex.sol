@@ -95,7 +95,7 @@ interface ICarbonVortex is IUpgradeable {
     event MinTokenSaleAmountUpdated(Token indexed token, uint128 prevMinTokenSaleAmount, uint128 newMinTokenSaleAmount);
 
     /**
-     * @dev returns the rewards percentage ppm
+     * @dev returns the rewards ppm
      */
     function rewardsPPM() external view returns (uint32);
     

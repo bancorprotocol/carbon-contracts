@@ -43,7 +43,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     // total target (if no finalTarget token is defined) / finalTarget tokens collected in transferAddress
     uint256 private _totalCollected;
 
-    // rewards percentage
+    // rewards ppm (points per million) - used to calculate rewards for the caller
     uint32 private _rewardsPPM;
 
     // price reset multiplier - used to reset the price after a trade in special cases
@@ -350,7 +350,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // allocate array for the reward amounts for caller
         uint256[] memory rewardAmounts = new uint256[](len);
         // cache rewardsPPM to save gas
-        uint256 rewardsPercentage = _rewardsPPM;
+        uint256 rewardsPPMValue = _rewardsPPM;
 
         // withdraw fees from carbon, vault and old vortex
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
@@ -377,7 +377,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             feeAmounts[i] = totalFeeAmount;
 
             // get reward amount for token
-            rewardAmounts[i] = MathEx.mulDivF(totalFeeAmount, rewardsPercentage, PPM_RESOLUTION);
+            rewardAmounts[i] = MathEx.mulDivF(totalFeeAmount, rewardsPPMValue, PPM_RESOLUTION);
         }
 
         // go through all tokens and start / reset dutch auction if necessary
@@ -842,7 +842,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     function _setRewardsPPM(uint32 newRewardsPPM) private {
         uint32 prevRewardsPPM = _rewardsPPM;
 
-        // return if the rewards percentage PPM is the same
+        // return if the rewards PPM is the same
         if (prevRewardsPPM == newRewardsPPM) {
             return;
         }
