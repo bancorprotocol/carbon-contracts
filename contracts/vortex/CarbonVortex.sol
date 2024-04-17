@@ -687,7 +687,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
                 .toUint128();
             // reset the price to price * priceResetMultiplier and restart trading
             Price memory price = tokenPrice(_targetToken);
-            price.sourceAmount = price.sourceAmount * _priceResetMultiplier;
+            price.sourceAmount *= _priceResetMultiplier;
             _initialPrice[_targetToken] = price;
             _tradingStartTimes[_targetToken] = uint32(block.timestamp);
             // slow down halflife to `targetTokenPriceDecayHalfLifeOnReset`
