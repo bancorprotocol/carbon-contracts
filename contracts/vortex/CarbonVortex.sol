@@ -604,14 +604,14 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     ) external payable nonReentrant validToken(token) greaterThanZero(targetAmount) {
         uint128 sourceAmount;
         if (token == _targetToken) {
-            sourceAmount = _sellFinalTargetForTarget(targetAmount);
+            sourceAmount = _sellTargetForFinalTarget(targetAmount);
         } else {
-            sourceAmount = _sellTargetTokenForToken(token, targetAmount);
+            sourceAmount = _sellTokenForTargetToken(token, targetAmount);
         }
         emit TokenTraded({ caller: msg.sender, token: token, sourceAmount: sourceAmount, targetAmount: targetAmount });
     }
 
-    function _sellTargetTokenForToken(Token token, uint128 targetAmount) private returns (uint128) {
+    function _sellTokenForTargetToken(Token token, uint128 targetAmount) private returns (uint128) {
         uint128 sourceAmount = expectedTradeInput(token, targetAmount);
         // revert if trade requires 0 target token
         if (sourceAmount == 0) {
@@ -646,7 +646,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         return sourceAmount;
     }
 
-    function _sellFinalTargetForTarget(uint128 targetAmount) private returns (uint128) {
+    function _sellTargetForFinalTarget(uint128 targetAmount) private returns (uint128) {
         uint128 sourceAmount = expectedTradeInput(_targetToken, targetAmount);
         // revert if trade requires 0 finalTarget tokens
         if (sourceAmount == 0) {
