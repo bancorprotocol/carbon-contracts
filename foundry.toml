@@ -12,3 +12,5 @@ remappings = [
 fs_permissions = [{ access = "read", path = "./"}]
 optimizer = true
 optimizer_runs = 2000
+## remove comment below for faster testing (skips carbonPOL and carbonVortex pricing accuracy tests)
+# no_match_test = "testPricesAtTimestamps"

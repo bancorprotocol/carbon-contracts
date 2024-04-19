@@ -464,10 +464,6 @@ const config: HardhatUserConfig = {
         }
     },
 
-    paths: {
-        deploy: ['deploy/scripts']
-    },
-
     tenderly: {
         forkNetwork: chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds].toString(),
         project: TENDERLY_PROJECT || TENDERLY_TEST_PROJECT,
@@ -494,6 +490,10 @@ const config: HardhatUserConfig = {
                 }
             }
         ]
+    },
+
+    paths: {
+        deploy: ['deploy/scripts']
     },
 
     dependencyCompiler: {

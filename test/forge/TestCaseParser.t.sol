@@ -209,7 +209,7 @@ contract TestCaseParser is Test {
     function parseSourceAndTargetAmounts(
         string memory json,
         string memory templateName
-    ) private returns (uint256 sourceAmount, uint256 targetAmount) {
+    ) private pure returns (uint256 sourceAmount, uint256 targetAmount) {
         string memory initialParseString = string.concat("$.", templateName);
         sourceAmount = vm.parseJsonUint(json, string.concat(initialParseString, ".sourceAmount"));
         targetAmount = vm.parseJsonUint(json, string.concat(initialParseString, ".targetAmount"));
@@ -221,7 +221,7 @@ contract TestCaseParser is Test {
     function parseStrategies(
         string memory json,
         string memory templateName
-    ) private returns (TestStrategy[] memory strategies) {
+    ) private pure returns (TestStrategy[] memory strategies) {
         string memory initialParseString = string.concat("$.", templateName);
         initialParseString = string.concat(initialParseString, ".strategies");
 
@@ -261,7 +261,7 @@ contract TestCaseParser is Test {
     function parseTradeActions(
         string memory json,
         string memory templateName
-    ) private returns (TradeAction[] memory tradeActions) {
+    ) private pure returns (TradeAction[] memory tradeActions) {
         string memory initialParseString = string.concat("$.", templateName);
         initialParseString = string.concat(initialParseString, ".tradeActions");
 

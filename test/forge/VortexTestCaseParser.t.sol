@@ -3,13 +3,13 @@ pragma solidity 0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 import { stdJson } from "forge-std/StdJson.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-import { ICarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
-
-contract POLTestCaseParser is Test {
+contract VortexTestCaseParser is Test {
     using stdJson for string;
+    using SafeCast for uint256;
 
     struct PriceAtTimestamp {
         uint128 sourceAmount;
@@ -24,49 +24,27 @@ contract POLTestCaseParser is Test {
     }
 
     struct TestCase {
-        ICarbonPOL.Price initialPrice;
         PriceAtTimestamp[] pricesAtTimestamp;
     }
 
     /**
      * @dev helper function to get test cases by parsing test data json
      */
-    function getTestCases() public view returns (TestCase[] memory testCases) {
-        string memory path = "./test/helpers/data/polPricingTestData.json";
+    function getTestCase() public view returns (TestCase memory testCase) {
+        string memory path = "./test/helpers/data/vortexPricingTestData.json";
         string memory json = vm.readFile(path);
-        testCases = parseTestCases(json, "testCase");
+        testCase = parseTestCase(json, "testCase");
 
-        return testCases;
+        return testCase;
     }
 
     /**
-     * @dev helper function to parse test data source and target amounts
+     * @dev helper function to parse test data json object to TestCase struct
      */
-    function parseInitialPrice(
-        string memory json,
-        string memory initialParseString
-    ) private pure returns (ICarbonPOL.Price memory price) {
-        uint256 initialPriceSourceAmount = vm.parseJsonUint(
-            json,
-            string.concat(initialParseString, "].initialPriceSourceAmount")
-        );
-        uint256 initialPriceTargetAmount = vm.parseJsonUint(
-            json,
-            string.concat(initialParseString, "].initialPriceTargetAmount")
-        );
-        price = ICarbonPOL.Price({
-            sourceAmount: uint128(initialPriceSourceAmount),
-            targetAmount: uint128(initialPriceTargetAmount)
-        });
-    }
-
-    /**
-     * @dev helper function to parse test data json object to TestCase[] struct
-     */
-    function parseTestCases(
+    function parseTestCase(
         string memory json,
         string memory templateName
-    ) private pure returns (TestCase[] memory testCases) {
+    ) private pure returns (TestCase memory testCases) {
         string memory initialParseString = string.concat("$.", templateName);
 
         // read the test case length
@@ -75,15 +53,9 @@ contract POLTestCaseParser is Test {
 
         initialParseString = string.concat(initialParseString, "[");
 
-        // initialize test cases array
-        testCases = new TestCase[](testCaseLength);
-
         for (uint256 i = 0; i < testCaseLength; ++i) {
             // get the correct testCase index to parse
             string memory parseString = string.concat(initialParseString, Strings.toString(i));
-
-            // Decode the initial price
-            testCases[i].initialPrice = parseInitialPrice(json, parseString);
 
             // Decode the different prices at each timestamp
 
@@ -109,7 +81,7 @@ contract POLTestCaseParser is Test {
                 );
             }
 
-            testCases[i].pricesAtTimestamp = pricesAtTimestamp;
+            testCases.pricesAtTimestamp = pricesAtTimestamp;
         }
         return testCases;
     }
@@ -120,9 +92,9 @@ contract POLTestCaseParser is Test {
     ) private pure returns (PriceAtTimestamp memory priceAtTimestamp) {
         return
             PriceAtTimestamp({
-                timestamp: uint32(stringToUint(priceAtTimestampString.timestamp)),
-                sourceAmount: uint128(stringToUint(priceAtTimestampString.sourceAmount)),
-                targetAmount: uint128(stringToUint(priceAtTimestampString.targetAmount))
+                timestamp: stringToUint(priceAtTimestampString.timestamp).toUint32(),
+                sourceAmount: stringToUint(priceAtTimestampString.sourceAmount).toUint128(),
+                targetAmount: stringToUint(priceAtTimestampString.targetAmount).toUint128()
             });
     }
 
