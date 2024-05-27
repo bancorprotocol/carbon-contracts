@@ -16,7 +16,8 @@ cache_forge
 
 contracts/hardhat-dependency-compiler
 
-deployments/mainnet/solcInputs/*
+deployments/**/solcInputs/*
+deployments/**/types/*
 deployments/hardhat/*
 deployments/tenderly/*
 deployments/tenderly-testnet/*
