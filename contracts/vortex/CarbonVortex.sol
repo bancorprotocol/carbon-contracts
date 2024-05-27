@@ -568,7 +568,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // revert if current price is not valid
         _validPrice(currentPrice);
         // calculate the trade input based on the current price
-        return MathEx.mulDivF(currentPrice.sourceAmount, targetAmount, currentPrice.targetAmount).toUint128();
+        return MathEx.mulDivC(currentPrice.sourceAmount, targetAmount, currentPrice.targetAmount).toUint128();
     }
 
     /**
@@ -625,11 +625,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // transfer the tokens to caller
         token.safeTransfer(msg.sender, targetAmount);
 
-        // if the target token is native, refund any excess native token to caller
-        if (_targetToken == NATIVE_TOKEN && msg.value > sourceAmount) {
-            payable(msg.sender).sendValue(msg.value - sourceAmount);
-        }
-
         // if no final target token is defined, transfer the target token to `transferAddress`
         if (Token.unwrap(_finalTargetToken) == address(0)) {
             // safe due to nonreenrant modifier (forwards all available gas if token is native)
@@ -641,6 +636,11 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // if remaining balance is below the min token sale amount, reset the auction
         if (_amountAvailableForTrading(token) < _minTokenSaleAmounts[token]) {
             _resetTrading(token, 0);
+        }
+
+        // if the target token is native, refund any excess native token to caller
+        if (_targetToken == NATIVE_TOKEN && msg.value > sourceAmount) {
+            payable(msg.sender).sendValue(msg.value - sourceAmount);
         }
 
         return sourceAmount;
