@@ -29,5 +29,5 @@
     "scroll": "https://rpc.scroll.io",
     "sepolia": "https://rpc.sepolia.ethpandaops.io",
     "aurora": "https://mainnet.aurora.dev",
-    "sei": "https://sei-apis.com"
+    "sei": "https://evm-rpc.sei-apis.com"
 }
