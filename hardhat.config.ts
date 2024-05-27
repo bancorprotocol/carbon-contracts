@@ -434,6 +434,22 @@ const config: HardhatUserConfig = {
                 }
             }
         },
+        [DeploymentNetwork.Sei]: {
+            chainId: chainIds[DeploymentNetwork.Sei],
+            url: rpcUrls[DeploymentNetwork.Sei],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Sei}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            },
+            httpHeaders: { 
+                'x-apikey': process.env.SEI_RPC_API_KEY || ''
+            }
+        },
         [DeploymentNetwork.Sepolia]: {
             chainId: chainIds[DeploymentNetwork.Sepolia],
             url: rpcUrls[DeploymentNetwork.Sepolia],
