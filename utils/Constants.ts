@@ -35,7 +35,8 @@ export enum MainnetNetwork {
     Rootstock = 'rootstock',
     Scroll = 'scroll',
     Telos = 'telos',
-    ZkSync = 'zksync'
+    ZkSync = 'zksync',
+    Sei = 'sei'
 }
 
 export enum TestnetNetwork {
