@@ -28,5 +28,6 @@
     "linea": "https://linea.decubate.com",
     "scroll": "https://rpc.scroll.io",
     "sepolia": "https://rpc.sepolia.ethpandaops.io",
-    "aurora": "https://mainnet.aurora.dev"
+    "aurora": "https://mainnet.aurora.dev",
+    "sei": "https://evm-rpc.sei-apis.com"
 }
