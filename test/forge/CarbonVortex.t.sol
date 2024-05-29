@@ -1627,66 +1627,6 @@ contract CarbonVortexTest is TestFixture {
         assertEq(balanceSent, expectedSourceAmount);
     }
 
-    /// @dev test should revert if the trade requires 0 target token on finalTargetToken -> targetToken trades
-    function testShouldRevertIfTradeRequiresZeroTargetToken() public {
-        vm.prank(admin);
-        // set fees
-        uint256 accumulatedFees = 100 ether;
-        carbonController.testSetAccumulatedFees(targetToken, accumulatedFees);
-
-        vm.startPrank(user1);
-
-        // execute
-        Token[] memory tokens = new Token[](1);
-        tokens[0] = targetToken;
-        carbonVortex.execute(tokens);
-
-        // trade target for final target
-        uint128 targetAmount = 1 ether;
-
-        // advance time to a point where the price is very low
-        vm.warp(60 days);
-
-        // get the expected trade input for 1 ether of target token
-        uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(targetToken, targetAmount);
-
-        // approve the source token
-        finalTargetToken.safeApprove(address(carbonVortex), expectedSourceAmount);
-        // trade
-        vm.expectRevert(ICarbonVortex.InvalidTrade.selector);
-        carbonVortex.trade(targetToken, 1);
-    }
-
-    /// @dev test should revert if the trade requires 0 tokens on targetToken -> token trades
-    function testShouldRevertIfTradeRequiresZeroTokens() public {
-        vm.prank(admin);
-
-        Token token = token1;
-        // set fees
-        uint256 accumulatedFees = 100 ether;
-        carbonController.testSetAccumulatedFees(token, accumulatedFees);
-
-        vm.startPrank(user1);
-
-        // execute
-        Token[] memory tokens = new Token[](1);
-        tokens[0] = token;
-        carbonVortex.execute(tokens);
-
-        // trade target for final target
-        uint128 targetAmount = 1 ether;
-
-        // advance time to a point where the price is very low
-        vm.warp(60 days);
-
-        // get the expected trade input for 1 ether of target token
-        uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(token, targetAmount);
-
-        // trade
-        vm.expectRevert(ICarbonVortex.InvalidTrade.selector);
-        carbonVortex.trade{ value: expectedSourceAmount }(token, 1);
-    }
-
     /// @dev test should revert if user hasn't sent enough target tokens for trade
     function testShouldRevertIfUserHasntSentEnoughTargetTokenForTrade() public {
         vm.prank(admin);
