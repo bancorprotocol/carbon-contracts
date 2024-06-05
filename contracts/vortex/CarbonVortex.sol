@@ -325,6 +325,20 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @inheritdoc ICarbonVortex
      */
+    function targetToken() external view returns (Token) {
+        return _targetToken;
+    }
+
+    /**
+     * @inheritdoc ICarbonVortex
+     */
+    function finalTargetToken() external view returns (Token) {
+        return _finalTargetToken;
+    }
+
+    /**
+     * @inheritdoc ICarbonVortex
+     */
     function availableTokens(Token token) external view returns (uint256) {
         uint256 totalFees = 0;
         if (address(_carbonController) != address(0)) {

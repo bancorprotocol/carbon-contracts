@@ -2244,6 +2244,16 @@ contract CarbonVortexTest is TestFixture {
         assertEq(targetAmount, 1 ether);
     }
 
+    /// @dev test should return the target token
+    function testShouldReturnTheTargetToken() public {
+        assertEq(Token.unwrap(carbonVortex.targetToken()), Token.unwrap(targetToken));
+    }
+
+    /// @dev test should return the final target token
+    function testShouldReturnTheFinalTargetToken() public {
+        assertEq(Token.unwrap(carbonVortex.finalTargetToken()), Token.unwrap(finalTargetToken));
+    }
+
     /// @dev test should revert on expected trade input if the target amount is larger than the available balance
     function testShouldRevertOnExpectedTradeInputIfTheTargetAmountIsLargerThanTheAvailableBalance() public {
         vm.prank(admin);
