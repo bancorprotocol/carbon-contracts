@@ -88,17 +88,17 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         IVault vault,
         IVault oldVortex,
         address payable transferAddress,
-        Token targetToken,
-        Token finalTargetToken
-    ) validAddress(transferAddress) validAddress(Token.unwrap(targetToken)) {
+        Token targetTokenInit,
+        Token finalTargetTokenInit
+    ) validAddress(transferAddress) validAddress(Token.unwrap(targetTokenInit)) {
         _carbonController = carbonController;
         _vault = vault;
         _oldVortex = oldVortex;
 
         _transferAddress = transferAddress;
 
-        _targetToken = targetToken;
-        _finalTargetToken = finalTargetToken;
+        _targetToken = targetTokenInit;
+        _finalTargetToken = finalTargetTokenInit;
         initialize();
     }
 
@@ -320,6 +320,20 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      */
     function totalCollected() external view returns (uint256) {
         return _totalCollected;
+    }
+
+    /**
+     * @inheritdoc ICarbonVortex
+     */
+    function targetToken() external view returns (Token) {
+        return _targetToken;
+    }
+
+    /**
+     * @inheritdoc ICarbonVortex
+     */
+    function finalTargetToken() external view returns (Token) {
+        return _finalTargetToken;
     }
 
     /**

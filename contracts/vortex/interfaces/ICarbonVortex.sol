@@ -182,6 +182,16 @@ interface ICarbonVortex is IUpgradeable {
     function availableTokens(Token token) external view returns (uint256);
 
     /**
+     * @notice returns the target token
+     */
+    function targetToken() external view returns (Token);
+
+    /**
+     * @notice returns the final target token
+     */
+    function finalTargetToken() external view returns (Token);
+
+    /**
      * @notice trades *targetToken* for *targetAmount* of *token* based on the current token price (trade by target amount)
      * @notice if token == *targetToken*, trades *finalTargetToken* for amount of *targetToken* and also
      * @notice resets the current token sale amount if it's below the min amount after a trade
