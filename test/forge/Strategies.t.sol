@@ -31,7 +31,7 @@ contract StrategiesTest is TestFixture {
     uint8 private constant STRATEGY_UPDATE_REASON_EDIT = 0;
     uint8 private constant STRATEGY_UPDATE_REASON_TRADE = 1;
 
-    uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000;
+    uint32 private constant DEFAULT_TRADING_FEE_PPM = 4000;
     uint32 private constant NEW_TRADING_FEE_PPM = 300_000;
 
     uint256 private constant FETCH_AMOUNT = 5;
@@ -1266,7 +1266,7 @@ contract StrategiesTest is TestFixture {
         carbonController.pairTradingFeePPM(token0, token1);
     }
 
-    function testSetsTheDefaultOnInitialization() public {
+    function testSetsTheDefaultOnInitialization() public view {
         uint32 tradingFee = carbonController.tradingFeePPM();
         assertEq(tradingFee, DEFAULT_TRADING_FEE_PPM);
     }

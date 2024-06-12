@@ -18,7 +18,7 @@ contract CarbonControllerTest is TestFixture {
     using Address for address payable;
 
     uint16 private constant CONTROLLER_TYPE = 1;
-    uint32 private constant TRADING_FEE_PPM = 2000;
+    uint32 private constant TRADING_FEE_PPM = 4000;
 
     /// @dev function to set up state before tests
     function setUp() public virtual {
@@ -32,7 +32,7 @@ contract CarbonControllerTest is TestFixture {
      * @dev construction tests
      */
 
-    function testShouldBeInitializedProperly() public {
+    function testShouldBeInitializedProperly() public view {
         uint256 version = carbonController.version();
         assertEq(version, 2);
 

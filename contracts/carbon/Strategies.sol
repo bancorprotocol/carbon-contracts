@@ -161,7 +161,7 @@ abstract contract Strategies is Initializable {
 
     uint256 private constant ORDERS_INVERTED_FLAG = 1 << 255;
 
-    uint32 private constant DEFAULT_TRADING_FEE_PPM = 2000; // 0.2%
+    uint32 private constant DEFAULT_TRADING_FEE_PPM = 4000; // 0.4%
 
     // total number of strategies
     uint128 private _strategyCounter;
