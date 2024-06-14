@@ -652,6 +652,15 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             _resetTrading(token, 0);
         }
 
+        // if available target token trading amount is below the min target token sale amount, reset the target token auction
+        if (
+            Token.unwrap(_finalTargetToken) != address(0) &&
+            _amountAvailableForTrading(_targetToken) <
+            _minTokenSaleAmounts[_targetToken] / _minTokenSaleAmountMultiplier
+        ) {
+            _resetTradingTarget(0);
+        }
+
         // if the target token is native, refund any excess native token to caller
         if (_targetToken == NATIVE_TOKEN && msg.value > sourceAmount) {
             payable(msg.sender).sendValue(msg.value - sourceAmount);
