@@ -1429,6 +1429,74 @@ contract CarbonVortexTest is TestFixture {
         assertEq(price.targetAmount, initialPrice.targetAmount);
     }
 
+    /// @dev test that on target -> token trade the target token auction is reset:
+    /// @dev if the target token amount available for trading is below the min sale amount / minTokenSaleAmountMultiplier
+    /// @dev before the trade, regardless of the token amount traded (top ups for target token don't affect the behavior)
+    function testTradingTargetTokenForTokenShouldResetTheTargetTokenAuctionIfBelowTheMinSaleAmount() public {
+        vm.prank(admin);
+        Token token = token1;
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(token, accumulatedFees);
+        carbonController.testSetAccumulatedFees(targetToken, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        Token[] memory tokens = new Token[](2);
+        tokens[0] = token;
+        tokens[1] = targetToken;
+        // execute so that the vortex has tokens
+        carbonVortex.execute(tokens);
+
+        // increase timestamp so that the token is tradeable
+        vm.warp(46 days);
+
+        uint128 minSaleAmount = carbonVortex.minTokenSaleAmount(targetToken);
+
+        uint128 amountAvailableForTrading = carbonVortex.amountAvailableForTrading(targetToken);
+
+        uint128 minTokenSaleAmount = carbonVortex.minTokenSaleAmount(targetToken);
+        uint32 minTokenSaleAmountMultiplier = carbonVortex.minTokenSaleAmountMultiplier();
+
+        // we need to sell at least minSaleAmount / minTokenSaleAmountMultiplier
+        uint128 tradeAmountToResetTheMinSale = amountAvailableForTrading +
+            1e18 -
+            minSaleAmount /
+            minTokenSaleAmountMultiplier;
+
+        // get source amount for final target -> target trade
+        uint128 sourceAmountFirstTrade = carbonVortex.expectedTradeInput(targetToken, tradeAmountToResetTheMinSale);
+
+        // approve final target token
+        finalTargetToken.safeApprove(address(carbonVortex), sourceAmountFirstTrade);
+        carbonVortex.trade(targetToken, tradeAmountToResetTheMinSale);
+
+        uint128 availableTargetTokenForTrading = carbonVortex.amountAvailableForTrading(targetToken);
+        // assert target token left is less than min sale amount / multiplier
+        assertLt(availableTargetTokenForTrading, minTokenSaleAmount / minTokenSaleAmountMultiplier);
+
+        // perform a target -> token trade to reset the target token auction
+
+        // get target amount
+        uint128 tradeAmount = 10 ether;
+        uint128 sourceAmount = carbonVortex.expectedTradeInput(token, tradeAmount);
+
+        ICarbonVortex.Price memory initialPrice = ICarbonVortex.Price({
+            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
+            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
+        });
+
+        // expect trading reset for the target token event to be emitted
+        vm.expectEmit();
+        emit TradingReset(targetToken, initialPrice);
+        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount);
+
+        // check price has been reset to initial
+        ICarbonVortex.Price memory price = carbonVortex.tokenPrice(targetToken);
+
+        assertEq(price.sourceAmount, initialPrice.sourceAmount);
+        assertEq(price.targetAmount, initialPrice.targetAmount);
+    }
+
     /// @dev test trading target token for token should refund any excess native token sent to the user
     function testTradingTargetTokenForTokenShouldRefundExcessNativeTokenSentToUser() public {
         vm.prank(admin);
@@ -2245,12 +2313,12 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test should return the target token
-    function testShouldReturnTheTargetToken() public {
+    function testShouldReturnTheTargetToken() public view {
         assertEq(Token.unwrap(carbonVortex.targetToken()), Token.unwrap(targetToken));
     }
 
     /// @dev test should return the final target token
-    function testShouldReturnTheFinalTargetToken() public {
+    function testShouldReturnTheFinalTargetToken() public view {
         assertEq(Token.unwrap(carbonVortex.finalTargetToken()), Token.unwrap(finalTargetToken));
     }
 
