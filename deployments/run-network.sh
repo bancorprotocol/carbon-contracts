@@ -23,9 +23,8 @@ if [ -z "$network_id" ] || [ "$network_id" == "null" ]; then
     network_id=${TENDERLY_NETWORK_ID:-"1"}
 fi
 
-# Create a new dir for the deploy script files and copy them there
-mkdir -p ./deploy/scripts/${network_name}
-cp -r ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+# Create a new dir for the deploy script files and copy them there)
+rsync -a --delete ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
 
 # Create a new dir for the deployment files
 mkdir -p ./deployments/${network_name}

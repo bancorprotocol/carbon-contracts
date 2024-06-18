@@ -59,8 +59,7 @@ fi
 
 # if deploy/scripts/${network_name} doesn't exist, create it and copy the network scripts
 if [ ! -d "./deploy/scripts/${network_name}" ]; then
-    mkdir -p ./deploy/scripts/${network_name}
-    cp -r ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+    rsync -a --delete ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
 fi
 
 # Create a new dir for the deploy script files and copy them there
