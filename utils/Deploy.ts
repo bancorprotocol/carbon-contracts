@@ -80,10 +80,8 @@ export const DeployedContracts = {
     ...DeployedNewContracts
 };
 
-export const isTenderlyFork = () => getNetworkName() === DeploymentNetwork.Tenderly;
-export const isTenderlyTestnet = () => getNetworkName() === DeploymentNetwork.TenderlyTestnet;
+export const isTenderly = () => getNetworkName() === DeploymentNetwork.Tenderly;
 export const isLive = () => !isTenderly();
-export const isTenderly = () => isTenderlyFork() || isTenderlyTestnet();
 
 const TEST_MINIMUM_BALANCE = toWei(10);
 const TEST_FUNDING = toWei(10);
@@ -512,40 +510,29 @@ export const save = async (deployment: Deployment) => {
     }
 };
 
-interface ContractData {
-    name: string;
-    address: Address;
-}
-
 const verifyTenderlyFork = async (deployment: Deployment) => {
     // verify contracts on Tenderly only for mainnet or tenderly mainnet forks deployments
-    if ((!isTenderlyFork() || isTestFork) && !isTenderlyTestnet()) {
+    if (!isTenderly()) {
         return;
     }
-
     const { name, contract, address, proxy, implementation } = deployment;
-
-    const contracts: ContractData[] = [];
     let contractAddress = address;
-
+    let contracts = [];
     if (proxy) {
         contracts.push({
             name: PROXY_CONTRACT,
             address
         });
-
         contractAddress = implementation!;
     }
-
     contracts.push({
         name: contract ?? name,
         address: contractAddress
     });
-
     for (const contract of contracts) {
         Logger.log('  verifying on tenderly', contract.name, 'at', contract.address);
 
-        await tenderlyNetwork.verify(contract);
+        await tenderly.verify(contract);
     }
 };
 

@@ -464,14 +464,6 @@ const config: HardhatUserConfig = {
         },
         [DeploymentNetwork.Tenderly]: {
             chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
-            url: `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}`,
-            autoImpersonate: true,
-            saveDeployments: true,
-            live: true,
-            deploy: [`deploy/scripts/${TENDERLY_NETWORK_NAME}`]
-        },
-        [DeploymentNetwork.TenderlyTestnet]: {
-            chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
             url: TENDERLY_TESTNET_PROVIDER_URL,
             autoImpersonate: true,
             saveDeployments: true,

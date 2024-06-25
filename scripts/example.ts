@@ -1,5 +1,5 @@
 import Contracts from '../components/Contracts';
-import { DeployedContracts, getNamedSigners, isTenderlyFork } from '../utils/Deploy';
+import { DeployedContracts, getNamedSigners, isTenderly } from '../utils/Deploy';
 import Logger from '../utils/Logger';
 import '@nomiclabs/hardhat-ethers';
 import '@typechain/hardhat';
@@ -7,7 +7,7 @@ import { getNamedAccounts } from 'hardhat';
 import 'hardhat-deploy';
 
 const main = async () => {
-    if (!isTenderlyFork()) {
+    if (!isTenderly()) {
         throw new Error('Invalid network');
     }
 

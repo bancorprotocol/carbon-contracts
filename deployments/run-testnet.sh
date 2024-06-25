@@ -83,7 +83,7 @@ if [ ! -d "./deploy/scripts/${network_name}" ]; then
 fi
 
 # Create a new dir for the deploy script files and copy them there
-rm -rf deployments/tenderly-testnet && cp -rf deployments/${network_name}/. deployments/tenderly-testnet
+rm -rf deployments/tenderly && cp -rf deployments/${network_name}/. deployments/tenderly
 
 command="TENDERLY_TESTNET_ID=${testnet_id} TENDERLY_TESTNET_PROVIDER_URL=${provider_url} ${@:1}"
 
