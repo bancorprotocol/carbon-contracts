@@ -13,6 +13,9 @@ importers:
 
   .:
     dependencies:
+      '@nomicfoundation/hardhat-verify':
+        specifier: ^2.0.8
+        version: 2.0.8(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))
       hardhat:
         specifier: 2.15.0
         version: 2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10)
@@ -32,9 +35,6 @@ importers:
       '@nomiclabs/hardhat-ethers':
         specifier: npm:hardhat-deploy-ethers@0.3.0-beta.13
         version: hardhat-deploy-ethers@0.3.0-beta.13(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))
-      '@nomiclabs/hardhat-etherscan':
-        specifier: ^3.1.6
-        version: 3.1.8(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))
       '@nomiclabs/hardhat-solhint':
         specifier: ^3.0.1
         version: 3.0.1(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))(typescript@5.4.2)
@@ -614,6 +614,11 @@ packages:
     resolution: {integrity: sha512-rArhyn0jPsS/D+ApFsz3yVJMQ29+pVzNZ0VJgkzAZ+7FqXSRtThl1C1prhmlVr3YNUlfpZ69Ak+RUT4g7VoOuQ==}
     engines: {node: '>=14'}
 
+  '@nomicfoundation/hardhat-verify@2.0.8':
+    resolution: {integrity: sha512-x/OYya7A2Kcz+3W/J78dyDHxr0ezU23DKTrRKfy5wDPCnePqnr79vm8EXqX3gYps6IjPBYyGPZ9K6E5BnrWx5Q==}
+    peerDependencies:
+      hardhat: ^2.0.4
+
   '@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.1':
     resolution: {integrity: sha512-KcTodaQw8ivDZyF+D76FokN/HdpgGpfjc/gFCImdLUyqB6eSWVaZPazMbeAjmfhx3R0zm/NYVzxwAokFKgrc0w==}
     engines: {node: '>= 10'}
@@ -677,12 +682,6 @@ packages:
   '@nomicfoundation/solidity-analyzer@0.1.1':
     resolution: {integrity: sha512-1LMtXj1puAxyFusBgUIy5pZk3073cNXYnXUpuNKFghHbIit/xZgbk0AokpUADbNm3gyD6bFWl3LRFh3dhVdREg==}
     engines: {node: '>= 12'}
-
-  '@nomiclabs/hardhat-etherscan@3.1.8':
-    resolution: {integrity: sha512-v5F6IzQhrsjHh6kQz4uNrym49brK9K5bYCq2zQZ729RYRaifI9hHbtmK+KkIVevfhut7huQFEQ77JLRMAzWYjQ==}
-    deprecated: The @nomiclabs/hardhat-etherscan package is deprecated, please use @nomicfoundation/hardhat-verify instead
-    peerDependencies:
-      hardhat: ^2.0.4
 
   '@nomiclabs/hardhat-solhint@3.0.1':
     resolution: {integrity: sha512-GqDoStxL1aA9hZul9HRdk+3eEZ/XLBwvIlz3/EJUusUsoadNYEnio9aYOsBeNeZWo+B/Fd3EgMXgbf9wWQLyRA==}
@@ -3599,6 +3598,9 @@ packages:
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
 
+  lodash.clonedeep@4.5.0:
+    resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
+
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
@@ -6425,6 +6427,21 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  '@nomicfoundation/hardhat-verify@2.0.8(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/address': 5.7.0
+      cbor: 8.1.0
+      chalk: 2.4.2
+      debug: 4.3.4(supports-color@8.1.1)
+      hardhat: 2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10)
+      lodash.clonedeep: 4.5.0
+      semver: 6.3.1
+      table: 6.8.1
+      undici: 5.28.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.1':
     optional: true
 
@@ -6467,22 +6484,6 @@ snapshots:
       '@nomicfoundation/solidity-analyzer-win32-arm64-msvc': 0.1.1
       '@nomicfoundation/solidity-analyzer-win32-ia32-msvc': 0.1.1
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.1
-
-  '@nomiclabs/hardhat-etherscan@3.1.8(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@ethersproject/abi': 5.7.0
-      '@ethersproject/address': 5.7.0
-      cbor: 8.1.0
-      chalk: 2.4.2
-      debug: 4.3.4(supports-color@8.1.1)
-      fs-extra: 7.0.1
-      hardhat: 2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10)
-      lodash: 4.17.21
-      semver: 6.3.1
-      table: 6.8.1
-      undici: 5.28.3
-    transitivePeerDependencies:
-      - supports-color
 
   '@nomiclabs/hardhat-solhint@3.0.1(hardhat@2.15.0(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.4.2))(typescript@5.4.2)(utf-8-validate@5.0.10))(typescript@5.4.2)':
     dependencies:
@@ -10460,6 +10461,8 @@ snapshots:
   lodash.assign@4.2.0: {}
 
   lodash.camelcase@4.3.0: {}
+
+  lodash.clonedeep@4.5.0: {}
 
   lodash.merge@4.6.2: {}
 

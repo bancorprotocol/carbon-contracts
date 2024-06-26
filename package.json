@@ -60,6 +60,7 @@
     "clean": "rm -rf artifacts cache coverage typechain-types"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-verify": "^2.0.8",
     "hardhat": "2.15.0"
   },
   "devDependencies": {
@@ -68,7 +69,6 @@
     "@ethersproject/providers": "^5.7.2",
     "@metamask/eth-sig-util": "^5.0.2",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@0.3.0-beta.13",
-    "@nomiclabs/hardhat-etherscan": "^3.1.6",
     "@nomiclabs/hardhat-solhint": "^3.0.1",
     "@nomiclabs/hardhat-waffle": "2.0.4",
     "@openzeppelin/contracts": "4.9.2",

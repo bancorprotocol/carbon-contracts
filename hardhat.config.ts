@@ -2,10 +2,10 @@ import { NamedAccounts } from './data/named-accounts';
 import { DeploymentNetwork } from './utils/Constants';
 import './test/Setup';
 import '@nomiclabs/hardhat-ethers';
-import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-solhint';
 import '@nomiclabs/hardhat-waffle';
-import '@tenderly/hardhat-tenderly';
+import '@nomicfoundation/hardhat-verify';
+import * as tenderly from '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 import 'dotenv/config';
 import 'hardhat-contract-sizer';
@@ -19,6 +19,8 @@ import 'solidity-coverage';
 import chainIds from './utils/chainIds.json';
 import rpcUrls from './utils/rpcUrls.json';
 
+tenderly.setup();
+
 interface EnvOptions {
     TENDERLY_TESTNET_PROVIDER_URL?: string;
     GAS_PRICE?: number | 'auto';
@@ -29,6 +31,7 @@ interface EnvOptions {
     TENDERLY_PROJECT?: string;
     TENDERLY_TEST_PROJECT?: string;
     TENDERLY_USERNAME?: string;
+    TENDERLY_ACCESS_KEY?: string;
     TENDERLY_NETWORK_NAME?: string;
 }
 
@@ -40,6 +43,7 @@ const {
     TENDERLY_PROJECT = '',
     TENDERLY_TEST_PROJECT = '',
     TENDERLY_USERNAME = '',
+    TENDERLY_ACCESS_KEY = '',
     TENDERLY_NETWORK_NAME = DeploymentNetwork.Mainnet
 }: EnvOptions = process.env as any as EnvOptions;
 
@@ -475,7 +479,9 @@ const config: HardhatUserConfig = {
     tenderly: {
         forkNetwork: chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds].toString(),
         project: TENDERLY_PROJECT || TENDERLY_TEST_PROJECT,
-        username: TENDERLY_USERNAME
+        username: TENDERLY_USERNAME,
+        accessKey: TENDERLY_ACCESS_KEY,
+        privateVerification: true
     },
 
     solidity: {

@@ -187,7 +187,7 @@ interface DeployOptions extends BaseDeployOptions {
     proxy?: ProxyOptions;
 }
 
-const PROXY_CONTRACT = 'OptimizedTransparentProxy';
+const PROXY_CONTRACT = 'OptimizedTransparentUpgradeableProxy';
 const INITIALIZE = 'initialize';
 const POST_UPGRADE = 'postUpgrade';
 
