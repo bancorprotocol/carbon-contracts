@@ -36,14 +36,12 @@ interface Options {
 
 const { AbiCoder } = utils;
 
-const tenderlyNetwork = tenderly.network();
-
 interface EnvOptions {
     TEST_FORK?: boolean;
     TENDERLY_NETWORK_NAME?: string;
 }
 
-const { TEST_FORK: isTestFork, TENDERLY_NETWORK_NAME = 'mainnet' }: EnvOptions = process.env as any as EnvOptions;
+const { TENDERLY_NETWORK_NAME = 'mainnet' }: EnvOptions = process.env as any as EnvOptions;
 
 const networkId = chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds];
 
@@ -80,10 +78,8 @@ export const DeployedContracts = {
     ...DeployedNewContracts
 };
 
-export const isTenderlyFork = () => getNetworkName() === DeploymentNetwork.Tenderly;
-export const isTenderlyTestnet = () => getNetworkName() === DeploymentNetwork.TenderlyTestnet;
+export const isTenderly = () => getNetworkName() === DeploymentNetwork.Tenderly;
 export const isLive = () => !isTenderly();
-export const isTenderly = () => isTenderlyFork() || isTenderlyTestnet();
 
 const TEST_MINIMUM_BALANCE = toWei(10);
 const TEST_FUNDING = toWei(10);
@@ -189,7 +185,7 @@ interface DeployOptions extends BaseDeployOptions {
     proxy?: ProxyOptions;
 }
 
-const PROXY_CONTRACT = 'OptimizedTransparentProxy';
+const PROXY_CONTRACT = 'OptimizedTransparentUpgradeableProxy';
 const INITIALIZE = 'initialize';
 const POST_UPGRADE = 'postUpgrade';
 
@@ -298,7 +294,7 @@ export const deploy = async (options: DeployOptions) => {
 
         await saveTypes(data);
 
-        await verifyTenderlyFork({
+        await verifyTenderly({
             address: res.address,
             proxy: isProxy,
             implementation: isProxy ? res.implementation : undefined,
@@ -386,7 +382,7 @@ export const upgradeProxy = async (options: UpgradeProxyOptions) => {
 
     Logger.log(`  upgraded proxy ${contractName} V${prevVersion} to V${newVersion}`);
 
-    await verifyTenderlyFork({
+    await verifyTenderly({
         name,
         contract: contractName,
         address: res.address,
@@ -506,46 +502,35 @@ export const save = async (deployment: Deployment) => {
         await saveContract(`${name}_Proxy`, { abi, address });
     }
 
-    // publish the contract to a Tenderly fork
+    // publish the contract to a tenderly fork / testnet
     if (!skipVerification) {
-        await verifyTenderlyFork(deployment);
+        await verifyTenderly(deployment);
     }
 };
 
-interface ContractData {
-    name: string;
-    address: Address;
-}
-
-const verifyTenderlyFork = async (deployment: Deployment) => {
-    // verify contracts on Tenderly only for mainnet or tenderly mainnet forks deployments
-    if ((!isTenderlyFork() || isTestFork) && !isTenderlyTestnet()) {
+const verifyTenderly = async (deployment: Deployment) => {
+    // verify contracts only on tenderly
+    if (!isTenderly()) {
         return;
     }
-
     const { name, contract, address, proxy, implementation } = deployment;
-
-    const contracts: ContractData[] = [];
     let contractAddress = address;
-
+    const contracts = [];
     if (proxy) {
         contracts.push({
             name: PROXY_CONTRACT,
             address
         });
-
         contractAddress = implementation!;
     }
-
     contracts.push({
         name: contract ?? name,
         address: contractAddress
     });
-
     for (const contract of contracts) {
         Logger.log('  verifying on tenderly', contract.name, 'at', contract.address);
 
-        await tenderlyNetwork.verify(contract);
+        await tenderly.verify(contract);
     }
 };
 

@@ -2,10 +2,10 @@ import { NamedAccounts } from './data/named-accounts';
 import { DeploymentNetwork } from './utils/Constants';
 import './test/Setup';
 import '@nomiclabs/hardhat-ethers';
-import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-solhint';
 import '@nomiclabs/hardhat-waffle';
-import '@tenderly/hardhat-tenderly';
+import '@nomicfoundation/hardhat-verify';
+import * as tenderly from '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 import 'dotenv/config';
 import 'hardhat-contract-sizer';
@@ -19,12 +19,15 @@ import 'solidity-coverage';
 import chainIds from './utils/chainIds.json';
 import rpcUrls from './utils/rpcUrls.json';
 
+tenderly.setup();
+
 interface EnvOptions {
     TENDERLY_TESTNET_PROVIDER_URL?: string;
     GAS_PRICE?: number | 'auto';
     NIGHTLY?: boolean;
     PROFILE?: boolean;
     VERIFY_API_KEY?: string;
+    TENDERLY_IS_FORK?: boolean;
     TENDERLY_FORK_ID?: string;
     TENDERLY_PROJECT?: string;
     TENDERLY_TEST_PROJECT?: string;
@@ -36,6 +39,7 @@ const {
     TENDERLY_TESTNET_PROVIDER_URL = '',
     VERIFY_API_KEY = '',
     GAS_PRICE: gasPrice = 'auto',
+    TENDERLY_IS_FORK = false,
     TENDERLY_FORK_ID = '',
     TENDERLY_PROJECT = '',
     TENDERLY_TEST_PROJECT = '',
@@ -464,15 +468,7 @@ const config: HardhatUserConfig = {
         },
         [DeploymentNetwork.Tenderly]: {
             chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
-            url: `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}`,
-            autoImpersonate: true,
-            saveDeployments: true,
-            live: true,
-            deploy: [`deploy/scripts/${TENDERLY_NETWORK_NAME}`]
-        },
-        [DeploymentNetwork.TenderlyTestnet]: {
-            chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
-            url: TENDERLY_TESTNET_PROVIDER_URL,
+            url: TENDERLY_IS_FORK ? `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}` : TENDERLY_TESTNET_PROVIDER_URL,
             autoImpersonate: true,
             saveDeployments: true,
             live: true,
@@ -483,7 +479,8 @@ const config: HardhatUserConfig = {
     tenderly: {
         forkNetwork: chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds].toString(),
         project: TENDERLY_PROJECT || TENDERLY_TEST_PROJECT,
-        username: TENDERLY_USERNAME
+        username: TENDERLY_USERNAME,
+        privateVerification: true
     },
 
     solidity: {

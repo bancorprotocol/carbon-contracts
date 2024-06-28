@@ -65,7 +65,7 @@ fi
 # Create a new dir for the deploy script files and copy them there
 rm -rf deployments/tenderly && cp -rf deployments/${network_name}/. deployments/tenderly
 
-command="TENDERLY_FORK_ID=${fork_id} TENDERLY_NETWORK_NAME=${network_name} ${@:1}"
+command="TENDERLY_IS_FORK=true TENDERLY_FORK_ID=${fork_id} TENDERLY_NETWORK_NAME=${network_name} ${@:1}"
 
 echo "Running:"
 echo
