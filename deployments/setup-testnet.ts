@@ -1,5 +1,5 @@
 import Contracts from '../components/Contracts';
-import { getNamedSigners, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
+import { getNamedSigners, isTenderly, runPendingDeployments } from '../utils/Deploy';
 import Logger from '../utils/Logger';
 import { NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from '../utils/Constants';
 import { toWei } from '../utils/Types';
@@ -159,7 +159,7 @@ const runDeployments = async () => {
 const archiveArtifacts = async () => {
     const zip = new AdmZip();
 
-    const srcDir = path.resolve(path.join(__dirname, './tenderly-testnet'));
+    const srcDir = path.resolve(path.join(__dirname, './tenderly'));
     const dest = path.resolve(path.join(__dirname, '..', 'testnets', `testnet-${testnetId}.zip`));
 
     zip.addLocalFolder(srcDir);
@@ -170,7 +170,7 @@ const archiveArtifacts = async () => {
 };
 
 const main = async () => {
-    if (!isTenderlyTestnet()) {
+    if (!isTenderly()) {
         throw new Error('Invalid network');
     }
 

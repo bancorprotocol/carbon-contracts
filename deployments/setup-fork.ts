@@ -1,5 +1,5 @@
 import Contracts from '../components/Contracts';
-import { getNamedSigners, isTenderly, isTenderlyFork, isTenderlyTestnet, runPendingDeployments } from '../utils/Deploy';
+import { getNamedSigners, isTenderly, runPendingDeployments } from '../utils/Deploy';
 import Logger from '../utils/Logger';
 import { NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from '../utils/Constants';
 import { toWei } from '../utils/Types';
@@ -59,6 +59,12 @@ const fundAccount = async (account: string, fundingRequests: FundingRequest[]) =
         }
 
         const tokenContract = await Contracts.ERC20.attach(fundingRequest.token);
+        // check if whale has enough balance
+        const whaleBalance = await tokenContract.balanceOf(whale.address);
+        if (whaleBalance.lt(fundingRequest.amount)) {
+            Logger.error(`Whale ${whale.address} has insufficient balance for ${fundingRequest.tokenName}`);
+            continue;
+        }
         await tokenContract.connect(whale).transfer(account, fundingRequest.amount);
     }
 };
