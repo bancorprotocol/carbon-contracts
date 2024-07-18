@@ -631,6 +631,10 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         if (sourceAmount == 0) {
             revert InvalidTrade();
         }
+        // revert if unnecessary native token is received
+        if (_targetToken != NATIVE_TOKEN && msg.value > 0) {
+            revert UnnecessaryNativeTokenReceived();
+        }
         // check enough target token (if target token is native) has been sent for the trade
         if (_targetToken == NATIVE_TOKEN && msg.value < sourceAmount) {
             revert InsufficientNativeTokenSent();
@@ -674,6 +678,10 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // revert if trade requires 0 finalTarget tokens
         if (sourceAmount == 0) {
             revert InvalidTrade();
+        }
+        // revert if unnecessary native token is received
+        if (_finalTargetToken != NATIVE_TOKEN && msg.value > 0) {
+            revert UnnecessaryNativeTokenReceived();
         }
 
         // check enough final target token (if final target token is native) has been sent for the trade

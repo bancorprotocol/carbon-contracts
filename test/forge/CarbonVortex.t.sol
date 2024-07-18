@@ -1574,6 +1574,64 @@ contract CarbonVortexTest is TestFixture {
         assertEq(balanceGain, sourceAmount);
     }
 
+    /// @dev test that sending any ETH with the transaction
+    /// @dev on target -> token trades should revert if targetToken != NATIVE_TOKEN
+    function testShouldRevertIfUnnecessaryNativeTokenSentOnTargetToFinalTargetTrades() public {
+        targetToken = bnt;
+        finalTargetToken = NATIVE_TOKEN;
+        Token token = token1;
+        // Deploy new Carbon Vortex with the target token set to a token different than native token
+        deployCarbonVortex(address(carbonController), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        vm.prank(admin);
+        // set fees
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(token, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        // execute
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = token;
+        carbonVortex.execute(tokens);
+
+        // trade target for final target
+        uint128 targetAmount = 1 ether;
+
+        // advance time
+        vm.warp(45 days);
+
+        // trade
+        vm.expectRevert(ICarbonVortex.UnnecessaryNativeTokenReceived.selector);
+        carbonVortex.trade{ value: 1 }(token, targetAmount);
+    }
+
+    /// @dev test that sending any ETH with the transaction
+    /// @dev on final target -> target token trades should revert if finalTargetToken != NATIVE_TOKEN
+    function testShouldRevertIfUnnecessaryNativeTokenSentOnFinalTargetToTargetTrades() public {
+        Token token = targetToken;
+        vm.prank(admin);
+        // set fees
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(token, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        // execute
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = token;
+        carbonVortex.execute(tokens);
+
+        // trade target for final target
+        uint128 targetAmount = 1 ether;
+
+        // advance time
+        vm.warp(45 days);
+
+        // trade
+        vm.expectRevert(ICarbonVortex.UnnecessaryNativeTokenReceived.selector);
+        carbonVortex.trade{ value: 1 }(token, targetAmount);
+    }
+
     /// @dev test that sending less than the sourceAmount of ETH with the transaction
     /// @dev on final target -> target token trades should revert if finalTarget == NATIVE_TOKEN
     function testShouldRevertIfInsufficientNativeTokenSentOnFinalTargetToTargetTokenTrade() public {
