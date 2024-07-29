@@ -18,6 +18,7 @@ import { TestVault } from "../../contracts/helpers/TestVault.sol";
 import { CarbonVortex } from "../../contracts/vortex/CarbonVortex.sol";
 import { CarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
 import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
+import { TestGradientController } from "../../contracts/helpers/TestGradientController.sol";
 
 import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
 import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonController.sol";
@@ -40,9 +41,11 @@ contract TestFixture is Test {
     Token internal feeOnTransferToken;
 
     TestVoucher internal voucher;
+    TestVoucher internal gradientVoucher;
     CarbonPOL internal carbonPOL;
     CarbonVortex internal carbonVortex;
     TestCarbonController internal carbonController;
+    TestGradientController internal gradientController;
 
     ProxyAdmin internal proxyAdmin;
 
@@ -113,6 +116,36 @@ contract TestFixture is Test {
 
         // Set controller address on voucher
         voucher.setController(address(carbonController));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev deploys gradient controller and voucher
+     */
+    function setupGradientController() internal {
+        // Deploy Voucher
+        gradientVoucher = deployVoucher();
+
+        // Deploy Gradient Controller
+        gradientController = deployGradientController(gradientVoucher);
+
+        // setup contracts from admin
+        vm.startPrank(admin);
+
+        // Deploy new Gradient Controller to set proxy address in constructor
+        address gradientControllerImpl = address(
+            new TestGradientController(IVoucher(address(gradientVoucher)), address(gradientController))
+        );
+
+        // Upgrade Gradient Controller to set proxy address in constructor
+        proxyAdmin.upgrade(ITransparentUpgradeableProxy(address(gradientController)), gradientControllerImpl);
+
+        // Set Gradient Controller address
+        gradientController = TestGradientController(payable(address(gradientController)));
+
+        // Set controller address on voucher
+        gradientVoucher.setController(address(gradientController));
 
         vm.stopPrank();
     }
@@ -190,6 +223,30 @@ contract TestFixture is Test {
             )
         );
         controller = TestCarbonController(payable(carbonControllerProxy));
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev deploys a new instance of the gradient controller
+     */
+    function deployGradientController(TestVoucher _voucher) internal returns (TestGradientController controller) {
+        // deploy contracts from admin
+        vm.startPrank(admin);
+        // Deploy Gradient Controller
+        TestGradientController newGradientController = new TestGradientController(
+            IVoucher(address(_voucher)),
+            address(0)
+        );
+        bytes memory carbonInitData = abi.encodeWithSelector(gradientController.initialize.selector);
+        // Deploy Carbon proxy
+        address gradientControllerProxy = address(
+            new OptimizedTransparentUpgradeableProxy(
+                address(newGradientController),
+                payable(address(proxyAdmin)),
+                carbonInitData
+            )
+        );
+        controller = TestGradientController(payable(gradientControllerProxy));
         vm.stopPrank();
     }
 
