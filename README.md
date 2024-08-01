@@ -27,7 +27,7 @@ The security policy is available [here](./SECURITY.md).
 ### Security Audits
 
 -   [PeckShield - Carbon - May 29, 2024](docs/audits/PeckShield-Audit-Report-Bancor-Carbon-v1.0.pdf)
--   [PeckShield - CarbonVortex - July 21, 2024](docs/audits/PeckShield-Audit-Report-Bancor-CarbonVortex-v1.0.1.pdf)
+-   [PeckShield - CarbonVortex - July 31, 2024](docs/audits/PeckShield-Audit-Report-Bancor-CarbonVortex-v1.0.1.pdf)
 -   [ChainSecurity](docs/audits/ChainSecurity_Carbon_Audit_Report.pdf)
 -   [PeckShield](docs/audits/PeckShield-Audit-Report-Carbon-v1.0.pdf)
 
