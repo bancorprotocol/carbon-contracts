@@ -60,7 +60,7 @@ describe('Gradient strategies accuracy stress test', () => {
         for (let initialRate = new Decimal(10); initialRate.lt(100); initialRate = initialRate.add(10.1)) {
             for (let multiFactor = new Decimal(0.001); multiFactor.lt(0.01); multiFactor = multiFactor.add(0.0011)) {
                 for (let timeElapsed = new Decimal(10); timeElapsed.lt(100); timeElapsed = timeElapsed.add(10)) {
-                    it(`gradientType = ${gradientType}, initialRate = ${initialRate}, multiFactor = ${multiFactor}, timeElapsed = ${timeElapsed}`, async () => {
+                    it(`gradientType, initialRate, multiFactor, timeElapsed = ${[gradientType, initialRate, multiFactor, timeElapsed]}`, async () => {
                         let expected = new Decimal(0);
                         switch (gradientType) {
                             case 0: expected = initialRate.mul(multiFactor.mul(timeElapsed).add(1)); break;
