@@ -7,7 +7,7 @@ library Trade {
     error ExpOverflow();
 
     uint256 private constant R_RES = 1 << 48;
-    uint256 private constant M_RES = 1 << 32;
+    uint256 private constant M_RES = 1 << 24;
 
     uint256 private constant FIXED_1 = 0x080000000000000000000000000000000;
     uint256 private constant MAX_VAL = 0x800000000000000000000000000000000;
@@ -48,7 +48,7 @@ library Trade {
         uint32 timeElapsed
     ) internal pure returns (uint256, uint256) { unchecked {
         uint256 r = (initialRate % R_RES) << (initialRate / R_RES);
-        uint256 m = multiFactor;
+        uint256 m = (multiFactor % M_RES) << (multiFactor / M_RES);
         uint256 t = timeElapsed;
         if (gradientType == GradientType.LINEAR_INCREASE) {
             return (r * (m * t + M_RES), M_RES * R_RES);

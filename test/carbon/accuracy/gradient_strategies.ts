@@ -7,10 +7,7 @@ import { BigNumber } from 'ethers';
 Decimal.set({precision: 100, rounding: Decimal.ROUND_HALF_DOWN});
 
 const R_SHIFT = 48;
-const M_SHIFT = 32;
-
-const R_RES = new Decimal(2).pow(R_SHIFT);
-const M_RES = new Decimal(2).pow(M_SHIFT);
+const M_SHIFT = 24;
 
 const BnToDec = (x: BigNumber) => new Decimal(x.toString());
 const DecToBn = (x: Decimal) => BigNumber.from(x.toFixed());
@@ -19,20 +16,14 @@ const bitLength = (value: BigNumber) => {
     return value.gt(0) ? Decimal.log2(value.toString()).add(1).floor().toNumber() : 0;
 };
 
-const encodeRate = (value: Decimal) => {
-    const data = DecToBn(value.mul(R_RES).floor());
-    const length = bitLength(data.shr(R_SHIFT));
-    return data.shr(length).shl(length);
-};
-
-const encodeFloat = (value: BigNumber) => {
-    const exponent = bitLength(value.shr(R_SHIFT));
-    const mantissa = value.shr(exponent);
-    return BigNumber.from(exponent).shl(R_SHIFT).or(mantissa);
-};
-
-const encodeFactor = (value: Decimal) => {
-    return DecToBn(value.mul(M_RES).floor());
+const encode = (value: Decimal, shift: number) => {
+    const factor = new Decimal(2).pow(shift);
+    const data = DecToBn(value.mul(factor).floor());
+    const length = bitLength(data.shr(shift));
+    const integer = data.shr(length).shl(length);
+    const exponent = bitLength(integer.shr(shift));
+    const mantissa = integer.shr(exponent);
+    return BigNumber.from(exponent).shl(shift).or(mantissa);
 };
 
 function assertAlmostEqual(actual: Decimal, expected: Decimal, maxAbsoluteError: string, maxRelativeError: string) {
@@ -68,16 +59,16 @@ describe('Gradient strategies accuracy stress test', () => {
                             case 2: expected = initialRate.mul(multiFactor.mul(timeElapsed).exp()); break;
                             case 3: expected = initialRate.div(multiFactor.mul(timeElapsed).exp()); break;
                         }
-                        const r = encodeFloat(encodeRate(initialRate));
-                        const m = encodeFactor(multiFactor);
+                        const r = encode(initialRate, R_SHIFT);
+                        const m = encode(multiFactor, M_SHIFT);
                         const t = DecToBn(timeElapsed);
                         const x = await contract.calcCurrentRate(gradientType, r, m, t);
                         const actual = BnToDec(x[0]).div(BnToDec(x[1]));
                         switch (gradientType) {
-                            case 0: assertAlmostEqual(actual, expected, "0", "0.00000001"); break;
-                            case 1: assertAlmostEqual(actual, expected, "0", "0.00000001"); break;
-                            case 2: assertAlmostEqual(actual, expected, "0", "0.00000002"); break;
-                            case 3: assertAlmostEqual(actual, expected, "0", "0.00000002"); break;
+                            case 0: assertAlmostEqual(actual, expected, "0", "0"); break;
+                            case 1: assertAlmostEqual(actual, expected, "0", "0"); break;
+                            case 2: assertAlmostEqual(actual, expected, "0", "0"); break;
+                            case 3: assertAlmostEqual(actual, expected, "0", "0"); break;
                         }
                     });
                 }
