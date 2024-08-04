@@ -6,9 +6,6 @@ import { BigNumber } from 'ethers';
 
 Decimal.set({precision: 100, rounding: Decimal.ROUND_HALF_DOWN});
 
-const R_SHIFT = 48;
-const M_SHIFT = 24;
-
 const BnToDec = (x: BigNumber) => new Decimal(x.toString());
 const DecToBn = (x: Decimal) => BigNumber.from(x.toFixed());
 
@@ -24,6 +21,14 @@ const encode = (value: Decimal, shift: number) => {
     const exponent = bitLength(integer.shr(shift));
     const mantissa = integer.shr(exponent);
     return BigNumber.from(exponent).shl(shift).or(mantissa);
+};
+
+const initialRateEncode = (value: Decimal) => {
+    return encode(value.sqrt(), 48);
+};
+
+const multiFactorEncode = (value: Decimal) => {
+    return encode(value, 24);
 };
 
 function assertAlmostEqual(actual: Decimal, expected: Decimal, maxAbsoluteError: string, maxRelativeError: string) {
@@ -59,8 +64,8 @@ describe('Gradient strategies accuracy stress test', () => {
                             case 2: expected = initialRate.mul(multiFactor.mul(timeElapsed).exp()); break;
                             case 3: expected = initialRate.div(multiFactor.mul(timeElapsed).exp()); break;
                         }
-                        const r = encode(initialRate, R_SHIFT);
-                        const m = encode(multiFactor, M_SHIFT);
+                        const r = initialRateEncode(initialRate);
+                        const m = multiFactorEncode(multiFactor);
                         const t = DecToBn(timeElapsed);
                         const x = await contract.calcCurrentRate(gradientType, r, m, t);
                         const actual = BnToDec(x[0]).div(BnToDec(x[1]));
