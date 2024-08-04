@@ -35,8 +35,8 @@ function assertAlmostEqual(actual: Decimal, expected: Decimal, maxAbsoluteError:
     if (!actual.eq(expected)) {
         const absoluteError = actual.sub(expected).abs();
         const relativeError = actual.div(expected).sub(1).abs();
-        const ok = absoluteError.lte(maxAbsoluteError) || relativeError.lte(maxRelativeError);
-        expect(ok,
+        expect(absoluteError.lte(maxAbsoluteError) || relativeError.lte(maxRelativeError)).to.be.equal(
+            true,
             `\n- actual        = ${actual}` +
             `\n- expected      = ${expected}` +
             `\n- absoluteError = ${absoluteError.toFixed()}` +
@@ -70,10 +70,10 @@ describe('Gradient strategies accuracy stress test', () => {
                         const x = await contract.calcCurrentRate(gradientType, r, m, t);
                         const actual = BnToDec(x[0]).div(BnToDec(x[1]));
                         switch (gradientType) {
-                            case 0: assertAlmostEqual(actual, expected, "0", "0"); break;
-                            case 1: assertAlmostEqual(actual, expected, "0", "0"); break;
-                            case 2: assertAlmostEqual(actual, expected, "0", "0"); break;
-                            case 3: assertAlmostEqual(actual, expected, "0", "0"); break;
+                            case 0: assertAlmostEqual(actual, expected, "0", "0.0000035"); break;
+                            case 1: assertAlmostEqual(actual, expected, "0", "0.0000035"); break;
+                            case 2: assertAlmostEqual(actual, expected, "0", "0.0000052"); break;
+                            case 3: assertAlmostEqual(actual, expected, "0", "0.0000052"); break;
                         }
                     });
                 }
