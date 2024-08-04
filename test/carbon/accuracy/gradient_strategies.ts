@@ -28,7 +28,7 @@ const initialRateEncode = (value: Decimal) => {
 };
 
 const multiFactorEncode = (value: Decimal) => {
-    return encode(value, 24);
+    return encode(value.mul(new Decimal(2).pow(24)), 24);
 };
 
 function assertAlmostEqual(actual: Decimal, expected: Decimal, maxAbsoluteError: string, maxRelativeError: string) {
@@ -70,10 +70,10 @@ describe('Gradient strategies accuracy stress test', () => {
                         const x = await contract.calcCurrentRate(gradientType, r, m, t);
                         const actual = BnToDec(x[0]).div(BnToDec(x[1]));
                         switch (gradientType) {
-                            case 0: assertAlmostEqual(actual, expected, "0", "0.0000035"); break;
-                            case 1: assertAlmostEqual(actual, expected, "0", "0.0000035"); break;
-                            case 2: assertAlmostEqual(actual, expected, "0", "0.0000052"); break;
-                            case 3: assertAlmostEqual(actual, expected, "0", "0.0000052"); break;
+                            case 0: assertAlmostEqual(actual, expected, "0", "0.000000041"); break;
+                            case 1: assertAlmostEqual(actual, expected, "0", "0.000000041"); break;
+                            case 2: assertAlmostEqual(actual, expected, "0", "0.000000074"); break;
+                            case 3: assertAlmostEqual(actual, expected, "0", "0.000000074"); break;
                         }
                     });
                 }

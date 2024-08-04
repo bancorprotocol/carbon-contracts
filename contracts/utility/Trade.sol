@@ -51,16 +51,16 @@ library Trade {
         uint256 m = (multiFactor % M_RES) << (multiFactor / M_RES);
         uint256 t = timeElapsed;
         if (gradientType == GradientType.LINEAR_INCREASE) {
-            return (r * r * (m * t + M_RES), M_RES * R_RES * R_RES);
+            return (r * r * (m * t + M_RES * M_RES), M_RES * M_RES * R_RES * R_RES);
         }
         if (gradientType == GradientType.LINEAR_DECREASE) {
-            return (r * r * M_RES, (m * t + M_RES) * R_RES * R_RES);
+            return (r * r * M_RES * M_RES, (m * t + M_RES * M_RES) * R_RES * R_RES);
         }
         if (gradientType == GradientType.EXPONENTIAL_INCREASE) {
-            return (r * r * exp(m * t * FIXED_1 / M_RES), FIXED_1 * R_RES * R_RES);
+            return (r * r * exp(m * t * FIXED_1 / (M_RES * M_RES)), FIXED_1 * R_RES * R_RES);
         }
         if (gradientType == GradientType.EXPONENTIAL_DECREASE) {
-            return (r * r * FIXED_1, exp(m * t * FIXED_1 / M_RES) * R_RES * R_RES);
+            return (r * r * FIXED_1, exp(m * t * FIXED_1 / (M_RES * M_RES)) * R_RES * R_RES);
         }
         return (0, 0);
     }
