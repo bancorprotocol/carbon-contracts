@@ -48,26 +48,38 @@ library Trade {
         uint64 initialRate,
         uint32 multiFactor,
         uint32 timeElapsed
-    ) internal pure returns (uint256, uint256) {
+    ) internal pure returns (uint256, uint256) { unchecked {
         if ((R_ONE >> (initialRate / R_ONE)) == 0) {revert InvalidInitialRate();}
         if ((M_ONE >> (multiFactor / M_ONE)) == 0) {revert InvalidMultiFactor();}
-        uint256 r = uint256(initialRate % R_ONE) << (initialRate / R_ONE);
-        uint256 m = uint256(multiFactor % M_ONE) << (multiFactor / M_ONE);
+        uint256 r = uint256(initialRate % R_ONE) << (initialRate / R_ONE); // < 2 ^ 96
+        uint256 m = uint256(multiFactor % M_ONE) << (multiFactor / M_ONE); // < 2 ^ 48
         uint256 t = uint256(timeElapsed);
         if (gradientType == GradientType.LINEAR_INCREASE) {
-            return (r * r * (m * t + M_ONE * M_ONE), M_ONE * M_ONE * R_ONE * R_ONE);
+            uint256 temp1 = r * r * (m * t + M_ONE * M_ONE);
+            uint256 temp2 = M_ONE * M_ONE * R_ONE * R_ONE;
+            return (temp1, temp2);
         }
         if (gradientType == GradientType.LINEAR_DECREASE) {
-            return (r * r * M_ONE * M_ONE, (m * t + M_ONE * M_ONE) * R_ONE * R_ONE);
+            uint256 temp1 = r * r * M_ONE * M_ONE;
+            uint256 temp2 = (m * t + M_ONE * M_ONE) * R_ONE * R_ONE;
+            return (temp1, temp2);
         }
         if (gradientType == GradientType.EXPONENTIAL_INCREASE) {
-            return (r * r * exp(m * t * EXP_ONE / (M_ONE * M_ONE)), EXP_ONE * R_ONE * R_ONE);
+            uint256 temp1 = r * r;
+            uint256 temp2 = exp(m * t * EXP_ONE / (M_ONE * M_ONE));
+            uint256 temp3 = MathEx.minFactor(temp1, temp2);
+            uint256 temp4 = EXP_ONE * R_ONE * R_ONE;
+            return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3);
         }
         if (gradientType == GradientType.EXPONENTIAL_DECREASE) {
-            return (r * r * EXP_ONE, exp(m * t * EXP_ONE / (M_ONE * M_ONE)) * R_ONE * R_ONE);
+            uint256 temp1 = r * r;
+            uint256 temp2 = EXP_ONE;
+            uint256 temp3 = MathEx.minFactor(temp1, temp2);
+            uint256 temp4 = exp(m * t * EXP_ONE / (M_ONE * M_ONE)) * R_ONE * R_ONE;
+            return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3);
         }
         return (0, 0);
-    }
+    }}
 
     /**
       * @dev Compute e ^ (x / EXP_ONE) * EXP_ONE
