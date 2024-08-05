@@ -73,27 +73,29 @@ describe('Gradient strategies accuracy stress test', () => {
         contract = await Contracts.TestTrade.deploy();
     });
 
-    for (let initialRate = new Decimal(10); initialRate.lt(100); initialRate = initialRate.add(10.1)) {
-        for (let multiFactor = new Decimal(0.001); multiFactor.lt(0.01); multiFactor = multiFactor.add(0.0011)) {
-            for (let timeElapsed = new Decimal(10); timeElapsed.lt(100); timeElapsed = timeElapsed.add(10)) {
-                test(0, initialRate, multiFactor, timeElapsed, "0", "0.000000041");
-                test(1, initialRate, multiFactor, timeElapsed, "0", "0.000000041");
-                test(2, initialRate, multiFactor, timeElapsed, "0", "0.000000074");
-                test(3, initialRate, multiFactor, timeElapsed, "0", "0.000000074");
+    for (let a = 1; a <= 10; a++) {
+        for (let b = 1; b <= 10; b++) {
+            for (let c = 1; c <= 10; c++) {
+                const initialRate = new Decimal(a).mul(1234.5678);
+                const multiFactor = new Decimal(b).mul(0.00001234);
+                const timeElapsed = new Decimal(c).mul(3600);
+                test(0, initialRate, multiFactor, timeElapsed, "0", "0.000000052");
+                test(1, initialRate, multiFactor, timeElapsed, "0", "0.000000052");
+                test(2, initialRate, multiFactor, timeElapsed, "0", "0.000000225");
+                test(3, initialRate, multiFactor, timeElapsed, "0", "0.000000225");
             }
         }
     }
 
     for (let a = -25; a <= 25; a++) {
-        const initialRate = new Decimal(10).pow(a);
         for (let b = -12; b <= -2; b++) {
-            const multiFactor = new Decimal(10).pow(b);
-            const timeElapsedMax = Decimal.min(
-                new Decimal(16).div(multiFactor).sub(1).ceil(),
-                new Decimal(2).pow(25).sub(1)
-            );
             for (let c = 1; c <= 10; c++) {
-                const timeElapsed = timeElapsedMax.mul(c).div(10).ceil();
+                const initialRate = new Decimal(10).pow(a);
+                const multiFactor = new Decimal(10).pow(b);
+                const timeElapsed = Decimal.min(
+                    new Decimal(16).div(multiFactor).sub(1).ceil(),
+                    new Decimal(2).pow(25).sub(1)
+                ).mul(c).div(10).ceil();
                 test(0, initialRate, multiFactor, timeElapsed, "0.00000000000000000001", "0.00000012");
                 test(1, initialRate, multiFactor, timeElapsed, "0.00000000000000000001", "0.00000012");
                 test(2, initialRate, multiFactor, timeElapsed, "0.00000000000000007140", "0.00000165");
