@@ -68,7 +68,7 @@ function test(
     });
 }
 
-describe.only('Gradient strategies accuracy stress test', () => {
+describe('Gradient strategies accuracy stress test', () => {
     before(async () => {
         contract = await Contracts.TestTrade.deploy();
     });
