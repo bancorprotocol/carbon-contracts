@@ -14,14 +14,14 @@ library Trade {
     uint256 private constant EXP_ONE = 1 << 127;
     uint256 private constant MAX_VAL = 1 << 131;
 
-    uint256 private constant RR = R_ONE * R_ONE;
-    uint256 private constant MM = M_ONE * M_ONE;
+    uint256 private constant RR = R_ONE * R_ONE; // = 2 ^ 96
+    uint256 private constant MM = M_ONE * M_ONE; // = 2 ^ 48
 
-    uint256 private constant RR_MM = RR * MM;
+    uint256 private constant RR_MUL_MM = RR * MM; // = 2 ^ 144
 
-    uint256 private constant EXP_ONE_MUL_RR = EXP_ONE * RR;
-    uint256 private constant EXP_ONE_DIV_RR = EXP_ONE / RR;
-    uint256 private constant EXP_ONE_DIV_MM = EXP_ONE / MM;
+    uint256 private constant EXP_ONE_MUL_RR = EXP_ONE * RR; // = 2 ^ 223
+    uint256 private constant EXP_ONE_DIV_RR = EXP_ONE / RR; // = 2 ^ 31
+    uint256 private constant EXP_ONE_DIV_MM = EXP_ONE / MM; // = 2 ^ 79
 
     enum GradientType {
         LINEAR_INCREASE,
@@ -70,21 +70,21 @@ library Trade {
             uint256 temp1 = r * r;      // < 2 ^ 192
             uint256 temp2 = m * t + MM; // < 2 ^ 81
             uint256 temp3 = MathEx.minFactor(temp1, temp2);
-            uint256 temp4 = RR_MM;
+            uint256 temp4 = RR_MUL_MM;
             return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3);
         }
 
         if (gradientType == GradientType.LINEAR_DECREASE) {
             // initial_rate / (multi_factor * time_elapsed + 1)
-            uint256 temp1 = r * r * MM;         // < 2 ^ 240
-            uint256 temp2 = m * t * RR + RR_MM; // < 2 ^ 177
+            uint256 temp1 = r * r * MM;             // < 2 ^ 240
+            uint256 temp2 = m * t * RR + RR_MUL_MM; // < 2 ^ 177
             return (temp1, temp2);
         }
 
         if (gradientType == GradientType.EXPONENTIAL_INCREASE) {
             // initial_rate * e ^ (multi_factor * time_elapsed)
-            uint256 temp1 = r * r;                          // < 2 ^ 192
-            uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM);    // < 2 ^ 159 (internal expression)
+            uint256 temp1 = r * r;                       // < 2 ^ 192
+            uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM); // < 2 ^ 159 (inner expression)
             uint256 temp3 = MathEx.minFactor(temp1, temp2);
             uint256 temp4 = EXP_ONE_MUL_RR;
             return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3);
@@ -93,7 +93,7 @@ library Trade {
         if (gradientType == GradientType.EXPONENTIAL_DECREASE) {
             // initial_rate / e ^ (multi_factor * time_elapsed)
             uint256 temp1 = r * r * EXP_ONE_DIV_RR;      // < 2 ^ 223
-            uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM); // < 2 ^ 159 (internal expression)
+            uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM); // < 2 ^ 159 (inner expression)
             return (temp1, temp2);
         }
 
