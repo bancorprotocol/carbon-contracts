@@ -87,8 +87,8 @@ describe('Gradient strategies accuracy stress test', () => {
         }
     }
 
-    for (let a = -25; a <= 25; a++) {
-        for (let b = -12; b <= -2; b++) {
+    for (let a = -27; a <= 27; a++) {
+        for (let b = -14; b <= -1; b++) {
             for (let c = 1; c <= 10; c++) {
                 const initialRate = new Decimal(10).pow(a);
                 const multiFactor = new Decimal(10).pow(b);

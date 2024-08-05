@@ -14,6 +14,15 @@ library Trade {
     uint256 private constant EXP_ONE = 1 << 127;
     uint256 private constant MAX_VAL = 1 << 131;
 
+    uint256 private constant RR = R_ONE * R_ONE;
+    uint256 private constant MM = M_ONE * M_ONE;
+
+    uint256 private constant RR_MM = RR * MM;
+
+    uint256 private constant EXP_ONE_MUL_RR = EXP_ONE * RR;
+    uint256 private constant EXP_ONE_DIV_RR = EXP_ONE / RR;
+    uint256 private constant EXP_ONE_DIV_MM = EXP_ONE / MM;
+
     enum GradientType {
         LINEAR_INCREASE,
         LINEAR_DECREASE,
@@ -51,33 +60,41 @@ library Trade {
     ) internal pure returns (uint256, uint256) { unchecked {
         if ((R_ONE >> (initialRate / R_ONE)) == 0) {revert InvalidInitialRate();}
         if ((M_ONE >> (multiFactor / M_ONE)) == 0) {revert InvalidMultiFactor();}
-        uint256 r = uint256(initialRate % R_ONE) << (initialRate / R_ONE); // < 2 ^ 96
-        uint256 m = uint256(multiFactor % M_ONE) << (multiFactor / M_ONE); // < 2 ^ 48
+
+        uint256 r = uint256(initialRate % R_ONE) << (initialRate / R_ONE); // floor(square_root(initial_rate) * 2 ^ 48) < 2 ^ 96
+        uint256 m = uint256(multiFactor % M_ONE) << (multiFactor / M_ONE); // floor(multi_factor * 2 ^ 24 * 2 ^ 24)     < 2 ^ 48
         uint256 t = uint256(timeElapsed);
+
         if (gradientType == GradientType.LINEAR_INCREASE) {
-            uint256 temp1 = r * r * (m * t + M_ONE * M_ONE);
-            uint256 temp2 = M_ONE * M_ONE * R_ONE * R_ONE;
+            // initial_rate * (multi_factor * time_elapsed + 1)
+            uint256 temp1 = r * r * (m * t + MM);
+            uint256 temp2 = RR_MM;
             return (temp1, temp2);
         }
+
         if (gradientType == GradientType.LINEAR_DECREASE) {
-            uint256 temp1 = r * r * M_ONE * M_ONE;
-            uint256 temp2 = (m * t + M_ONE * M_ONE) * R_ONE * R_ONE;
+            // initial_rate / (multi_factor * time_elapsed + 1)
+            uint256 temp1 = r * r * MM;
+            uint256 temp2 = m * t * RR + RR_MM;
             return (temp1, temp2);
         }
+
         if (gradientType == GradientType.EXPONENTIAL_INCREASE) {
+            // initial_rate * e ^ (multi_factor * time_elapsed)
             uint256 temp1 = r * r;
-            uint256 temp2 = exp(m * t * EXP_ONE / (M_ONE * M_ONE));
+            uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM);
             uint256 temp3 = MathEx.minFactor(temp1, temp2);
-            uint256 temp4 = EXP_ONE * R_ONE * R_ONE;
+            uint256 temp4 = EXP_ONE_MUL_RR;
             return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3);
         }
+
         if (gradientType == GradientType.EXPONENTIAL_DECREASE) {
-            uint256 temp1 = r * r;
-            uint256 temp2 = EXP_ONE;
-            uint256 temp3 = MathEx.minFactor(temp1, temp2);
-            uint256 temp4 = exp(m * t * EXP_ONE / (M_ONE * M_ONE)) * R_ONE * R_ONE;
-            return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3);
+            // initial_rate / e ^ (multi_factor * time_elapsed)
+            uint256 temp1 = r * r * EXP_ONE_DIV_RR;
+            uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM);
+            return (temp1, temp2);
         }
+
         return (0, 0);
     }}
 
