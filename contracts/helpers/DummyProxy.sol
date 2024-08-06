@@ -9,4 +9,5 @@ import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin
  * @dev https://docs.tenderly.co/contract-verification/hardhat-proxy-contracts#load-the-proxy-contracts
  */
 abstract contract OptimizedTransparentUpgradeableProxyAccess is OptimizedTransparentUpgradeableProxy {}
+
 abstract contract ProxyAdminAccess is ProxyAdmin {}
