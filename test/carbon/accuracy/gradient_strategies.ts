@@ -31,7 +31,7 @@ function decode(value: BigNumber, shift: number) {
     const exponent = value.shr(shift).toNumber();
     const data = BnToDec(mantissa.shl(exponent));
     const factor = new Decimal(2).pow(shift);
-    return data.div(factor)
+    return data.div(factor);
 }
 
 function initialRateEncoded(value: Decimal) {
@@ -82,7 +82,7 @@ function testCurrentRate(
     timeElapsed: Decimal,
     maxError: string
 ) {
-    it(`testCurrentRate: gradientType, initialRate, multiFactor, timeElapsed = ${[gradientType, initialRate, multiFactor, timeElapsed]}`, async () => {
+    it(`testCurrentRate: gradientType,initialRate,multiFactor,timeElapsed = ${[gradientType, initialRate, multiFactor, timeElapsed]}`, async () => {
         const rEncoded = initialRateEncoded(initialRate);
         const mEncoded = multiFactorEncoded(multiFactor);
         const rDecoded = initialRateDecoded(rEncoded);
