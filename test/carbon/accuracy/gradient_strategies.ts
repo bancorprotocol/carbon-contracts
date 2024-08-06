@@ -184,6 +184,6 @@ describe('Gradient strategies accuracy stress test', () => {
 
     for (let b = -14; b <= -1; b++) {
         const multiFactor = new Decimal(10).pow(b);
-        testConfiguration("multiFactor", multiFactor, multiFactorEncoded, multiFactorDecoded, "0.000000000000004", "0.0000002");
+        testConfiguration("multiFactor", multiFactor, multiFactorEncoded, multiFactorDecoded, "0.000000000000004", "0.00000007");
     }
 });
