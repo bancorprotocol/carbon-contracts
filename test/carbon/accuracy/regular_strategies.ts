@@ -10,7 +10,7 @@ import { BigNumber } from 'ethers';
 
 const tests = [...ArbitraryTrade, ...EthUsdcTrade, ...ExtremeSrcTrade, ...ExtremeTrgTrade];
 
-describe('Accuracy stress test', () => {
+describe('Regular strategies accuracy stress test', () => {
     let contract: TestStrategies;
 
     before(async () => {
