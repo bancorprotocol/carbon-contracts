@@ -86,7 +86,7 @@ function testCurrentRate(
         const funcCall = contract.calcCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
         if (expected.isFinite() && expected.isPositive()) {
             const retVal = await funcCall;
-            const actual = BnToDec(retVal[0]).div(BnToDec(retVal[1]))
+            const actual = BnToDec(retVal[0]).div(BnToDec(retVal[1]));
             if (!actual.eq(expected)) {
                 const error = actual.div(expected).sub(1).abs();
                 expect(error.lte(maxError)).to.be.equal(
