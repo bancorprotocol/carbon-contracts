@@ -141,7 +141,7 @@ function testConfiguration(
     });
 }
 
-describe.only('Gradient strategies accuracy stress test', () => {
+describe('Gradient strategies accuracy stress test', () => {
     before(async () => {
         contract = await Contracts.TestTrade.deploy();
     });
@@ -152,12 +152,12 @@ describe.only('Gradient strategies accuracy stress test', () => {
                 const initialRate = new Decimal(a).mul(1234.5678);
                 const multiFactor = new Decimal(b).mul(0.00001234);
                 const timeElapsed = new Decimal(c).mul(3600);
-                testCurrentRate(0, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(1, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(4, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
-                testCurrentRate(5, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
+                testCurrentRate(0, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(1, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.00000000000000000000000000000000000002');
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.00000000000000000000000000000000000002');
             }
         }
     }
@@ -171,33 +171,33 @@ describe.only('Gradient strategies accuracy stress test', () => {
                     TWO.pow(4).div(multiFactor).sub(1).ceil(),
                     TWO.pow(25).sub(1)
                 ).mul(c).div(10).ceil();
-                testCurrentRate(0, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(1, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(4, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
-                testCurrentRate(5, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
+                testCurrentRate(0, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(1, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
             }
         }
     }
 
     for (let a = 1; a <= 100; a++) {
         const initialRate = new Decimal(a).mul(1234.5678);
-        testConfiguration("initialRate", initialRate, initialRateEncoded, initialRateDecoded, "0", "0.00000000000002");
+        testConfiguration('initialRate', initialRate, initialRateEncoded, initialRateDecoded, '0', '0.00000000000002');
     }
 
     for (let b = 1; b <= 100; b++) {
         const multiFactor = new Decimal(b).mul(0.00001234);
-        testConfiguration("multiFactor", multiFactor, multiFactorEncoded, multiFactorDecoded, "0", "0.0000002");
+        testConfiguration('multiFactor', multiFactor, multiFactorEncoded, multiFactorDecoded, '0', '0.0000002');
     }
 
     for (let a = -28; a <= 28; a++) {
         const initialRate = new Decimal(10).pow(a);
-        testConfiguration("initialRate", initialRate, initialRateEncoded, initialRateDecoded, "0.0000000000000005", "0.00000000000002");
+        testConfiguration('initialRate', initialRate, initialRateEncoded, initialRateDecoded, '0.0000000000000005', '0.00000000000002');
     }
 
     for (let b = -14; b <= -1; b++) {
         const multiFactor = new Decimal(10).pow(b);
-        testConfiguration("multiFactor", multiFactor, multiFactorEncoded, multiFactorDecoded, "0.000000000000004", "0.00000007");
+        testConfiguration('multiFactor', multiFactor, multiFactorEncoded, multiFactorDecoded, '0.000000000000004', '0.00000007');
     }
 });
