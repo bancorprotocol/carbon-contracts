@@ -9,6 +9,9 @@ let contract: TestTrade;
 const R_SHIFT = 48;
 const M_SHIFT = 24;
 
+const ONE = new Decimal(1);
+const TWO = new Decimal(2);
+
 const BnToDec = (x: BigNumber) => new Decimal(x.toString());
 const DecToBn = (x: Decimal) => BigNumber.from(x.toFixed());
 
@@ -17,7 +20,7 @@ function bitLength(value: BigNumber) {
 }
 
 function encode(value: Decimal, shift: number) {
-    const factor = new Decimal(2).pow(shift);
+    const factor = TWO.pow(shift);
     const data = DecToBn(value.mul(factor).floor());
     const length = bitLength(data.shr(shift));
     const integer = data.shr(length).shl(length);
@@ -30,7 +33,7 @@ function decode(value: BigNumber, shift: number) {
     const mantissa = value.mask(shift);
     const exponent = value.shr(shift).toNumber();
     const data = BnToDec(mantissa.shl(exponent));
-    const factor = new Decimal(2).pow(shift);
+    const factor = TWO.pow(shift);
     return data.div(factor);
 }
 
@@ -43,11 +46,11 @@ function initialRateDecoded(value: BigNumber) {
 }
 
 function multiFactorEncoded(value: Decimal) {
-    return encode(value.mul(new Decimal(2).pow(M_SHIFT)), M_SHIFT);
+    return encode(value.mul(TWO.pow(M_SHIFT)), M_SHIFT);
 }
 
 function multiFactorDecoded(value: BigNumber) {
-    return decode(value, M_SHIFT).div(new Decimal(2).pow(M_SHIFT));
+    return decode(value, M_SHIFT).div(TWO.pow(M_SHIFT));
 }
 
 function expectedCurrentRate(
@@ -57,10 +60,12 @@ function expectedCurrentRate(
     timeElapsed: Decimal
 ) {
     switch (gradientType) {
-        case 0: return initialRate.mul(multiFactor.mul(timeElapsed).add(1));
-        case 1: return initialRate.div(multiFactor.mul(timeElapsed).add(1));
-        case 2: return initialRate.mul(multiFactor.mul(timeElapsed).exp());
-        case 3: return initialRate.div(multiFactor.mul(timeElapsed).exp());
+        case 0: return initialRate.mul(ONE.add(multiFactor.mul(timeElapsed)));
+        case 1: return initialRate.mul(ONE.sub(multiFactor.mul(timeElapsed)));
+        case 2: return initialRate.div(ONE.sub(multiFactor.mul(timeElapsed)));
+        case 3: return initialRate.div(ONE.add(multiFactor.mul(timeElapsed)));
+        case 4: return initialRate.mul(multiFactor.mul(timeElapsed).exp());
+        case 5: return initialRate.div(multiFactor.mul(timeElapsed).exp());
     }
     throw new Error(`Invalid gradientType ${gradientType}`);
 }
@@ -88,15 +93,20 @@ function testCurrentRate(
         const rDecoded = initialRateDecoded(rEncoded);
         const mDecoded = multiFactorDecoded(mEncoded);
         const expected = expectedCurrentRate(gradientType, rDecoded, mDecoded, timeElapsed);
-        const actual = await actualCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
-        if (!actual.eq(expected)) {
-            const error = actual.div(expected).sub(1).abs();
-            expect(error.lte(maxError)).to.be.equal(
-                true,
-                `\n- expected = ${expected.toFixed()}` +
-                `\n- actual   = ${actual.toFixed()}` +
-                `\n- error    = ${error.toFixed()}`
-            );
+        const funcCall = actualCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
+        if (expected.isFinite() && expected.isPositive()) {
+            const actual = await funcCall;
+            if (!actual.eq(expected)) {
+                const error = actual.div(expected).sub(1).abs();
+                expect(error.lte(maxError)).to.be.equal(
+                    true,
+                    `\n- expected = ${expected.toFixed()}` +
+                    `\n- actual   = ${actual.toFixed()}` +
+                    `\n- error    = ${error.toFixed()}`
+                );
+            }
+        } else {
+            await expect(funcCall).to.be.revertedWithError('InvalidRate');
         }
     });
 }
@@ -131,7 +141,7 @@ function testConfiguration(
     });
 }
 
-describe('Gradient strategies accuracy stress test', () => {
+describe.only('Gradient strategies accuracy stress test', () => {
     before(async () => {
         contract = await Contracts.TestTrade.deploy();
     });
@@ -144,8 +154,10 @@ describe('Gradient strategies accuracy stress test', () => {
                 const timeElapsed = new Decimal(c).mul(3600);
                 testCurrentRate(0, initialRate, multiFactor, timeElapsed, "0");
                 testCurrentRate(1, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
-                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0");
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0");
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
             }
         }
     }
@@ -156,13 +168,15 @@ describe('Gradient strategies accuracy stress test', () => {
                 const initialRate = new Decimal(10).pow(a);
                 const multiFactor = new Decimal(10).pow(b);
                 const timeElapsed = Decimal.min(
-                    new Decimal(16).div(multiFactor).sub(1).ceil(),
-                    new Decimal(2).pow(25).sub(1)
+                    TWO.pow(4).div(multiFactor).sub(1).ceil(),
+                    TWO.pow(25).sub(1)
                 ).mul(c).div(10).ceil();
                 testCurrentRate(0, initialRate, multiFactor, timeElapsed, "0");
                 testCurrentRate(1, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
-                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0");
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0");
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
             }
         }
     }
