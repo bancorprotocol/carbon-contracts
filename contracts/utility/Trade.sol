@@ -3,6 +3,22 @@ pragma solidity 0.8.19;
 
 import { MathEx } from "./MathEx.sol";
 
+/**
+ * @dev:
+ *
+ * This library implements the current-rate calculation for each one of the following gradients:
+ * +----------------+-----------+-----------------+----------------------------------------------+
+ * | type           | direction | formula         | restriction                                  |
+ * +----------------+-----------+-----------------+----------------------------------------------+
+ * | linear         | increase  | r * (1 + m * t) |                                              |
+ * | linear         | decrease  | r * (1 - m * t) | m * t < 1 (ensure a finite-positive rate)    |
+ * | linear-inverse | increase  | r / (1 - m * t) | m * t < 1 (ensure a finite-positive rate)    |
+ * | linear-inverse | decrease  | r / (1 + m * t) |                                              |
+ * | exponential    | increase  | r * e ^ (m * t) | m * t < 16 (due to computational limitation) |
+ * | exponential    | decrease  | r / e ^ (m * t) | m * t < 16 (due to computational limitation) |
+ * +----------------+-----------+-----------------+----------------------------------------------+
+ */
+
 library Trade {
     error ExpOverflow();
     error InvalidRate();
