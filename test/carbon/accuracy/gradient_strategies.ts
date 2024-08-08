@@ -70,16 +70,6 @@ function expectedCurrentRate(
     throw new Error(`Invalid gradientType ${gradientType}`);
 }
 
-async function actualCurrentRate(
-    gradientType: number,
-    initialRate: BigNumber,
-    multiFactor: BigNumber,
-    timeElapsed: BigNumber
-) {
-    const currentRate = await contract.calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
-    return BnToDec(currentRate[0]).div(BnToDec(currentRate[1]));
-}
-
 function testCurrentRate(
     gradientType: number,
     initialRate: Decimal,
@@ -93,9 +83,10 @@ function testCurrentRate(
         const rDecoded = initialRateDecoded(rEncoded);
         const mDecoded = multiFactorDecoded(mEncoded);
         const expected = expectedCurrentRate(gradientType, rDecoded, mDecoded, timeElapsed);
-        const funcCall = actualCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
+        const funcCall = contract.calcCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
         if (expected.isFinite() && expected.isPositive()) {
-            const actual = await funcCall;
+            const retVal = await funcCall;
+            const actual = BnToDec(retVal[0]).div(BnToDec(retVal[1]))
             if (!actual.eq(expected)) {
                 const error = actual.div(expected).sub(1).abs();
                 expect(error.lte(maxError)).to.be.equal(
