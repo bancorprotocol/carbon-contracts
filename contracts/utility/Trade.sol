@@ -19,6 +19,7 @@ library Trade {
     uint256 private constant MM = M_ONE * M_ONE; // = 2 ^ 48
 
     uint256 private constant RR_MUL_MM = RR * MM; // = 2 ^ 144
+    uint256 private constant RR_DIV_MM = RR / MM; // = 2 ^ 48
 
     uint256 private constant EXP_ONE_MUL_RR = EXP_ONE * RR; // = 2 ^ 223
     uint256 private constant EXP_ONE_DIV_RR = EXP_ONE / RR; // = 2 ^ 31
@@ -113,15 +114,15 @@ library Trade {
 
             if (gradientType == GradientType.LINEAR_INV_INCREASE) {
                 // initial_rate / (1 - multi_factor * time_elapsed)
-                uint256 temp1 = rr * MM; ////////////////// < 2 ^ 240
-                uint256 temp2 = sub(RR_MUL_MM, mt * RR); // < 2 ^ 176 (inner expression)
+                uint256 temp1 = rr;
+                uint256 temp2 = sub(RR, mt * RR_DIV_MM); // < 2 ^ 128 (inner expression)
                 return (temp1, temp2);
             }
 
             if (gradientType == GradientType.LINEAR_INV_DECREASE) {
                 // initial_rate / (1 + multi_factor * time_elapsed)
-                uint256 temp1 = rr * MM; ////////////// < 2 ^ 240
-                uint256 temp2 = RR_MUL_MM + mt * RR; // < 2 ^ 177
+                uint256 temp1 = rr;
+                uint256 temp2 = RR + mt * RR_DIV_MM; // < 2 ^ 129
                 return (temp1, temp2);
             }
 
