@@ -56,7 +56,12 @@ library Trade {
     }
 
     /**
-     * @dev Calculate the current rate for each one of the following gradients:
+     * @dev Given the following parameters:
+     * r - the gradient's initial exchange rate
+     * m - the gradient's multiplication factor
+     * t - the time elapsed since strategy creation
+     *
+     * Calculate the current exchange rate for each one of the following gradients:
      * +----------------+-----------+-----------------+----------------------------------------------+
      * | type           | direction | formula         | restriction                                  |
      * +----------------+-----------+-----------------+----------------------------------------------+
@@ -70,9 +75,9 @@ library Trade {
      */
     function calcCurrentRate(
         GradientType gradientType,
-        uint64 initialRate,
-        uint32 multiFactor,
-        uint32 timeElapsed
+        uint64 initialRate, // the 48-bit-mantissa-6-bit-exponent encoding of the initial exchange rate square root
+        uint32 multiFactor, // the 24-bit-mantissa-5-bit-exponent encoding of the multiplication factor times 2 ^ 24
+        uint32 timeElapsed /// the time elapsed since strategy creation
     ) internal pure returns (uint256, uint256) {
         unchecked {
             if ((R_ONE >> (initialRate / R_ONE)) == 0) {
