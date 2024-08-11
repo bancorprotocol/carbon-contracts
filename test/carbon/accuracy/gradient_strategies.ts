@@ -136,7 +136,7 @@ function testConfiguration(
 }
 
 function testExp(n: number, d: number, maxError: string) {
-    it(`exp(${n} / ${d})`, async () => {
+    it(`testExp(${n} / ${d})`, async () => {
         const f = new Decimal(n).div(d);
         const funcCall = contract.exp(DecToBn(f.mul(EXP_ONE).floor()));
         if (f.lt(MAX_VAL.div(EXP_ONE))) {
