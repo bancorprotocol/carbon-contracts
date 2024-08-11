@@ -146,7 +146,7 @@ library Trade {
         }
     }
 
-    function sub(uint256 one, uint256 mt) private pure returns (uint256) {
+    function sub(uint256 one, uint256 mt) internal pure returns (uint256) {
         unchecked {
             if (one <= mt) {
                 revert InvalidRate();
@@ -165,7 +165,7 @@ library Trade {
      * - The exponentiation of the input is calculated by multiplying the intermediate results above
      * - For example: e^5.521692859 = e^(4 + 1 + 0.5 + 0.021692859) = e^4 * e^1 * e^0.5 * e^0.021692859
      */
-    function exp(uint256 x) private pure returns (uint256) {
+    function exp(uint256 x) internal pure returns (uint256) {
         // prettier-ignore
         unchecked {
             if (x >= MAX_VAL) {

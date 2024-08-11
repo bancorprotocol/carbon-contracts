@@ -32,4 +32,8 @@ contract TestTrade {
     ) external pure returns (uint256, uint256) {
         return Trade.calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
     }
+
+    function exp(uint256 x) external pure returns (uint256) {
+        return Trade.exp(x);
+    }
 }
