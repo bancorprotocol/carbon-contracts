@@ -5,6 +5,7 @@ import { MathEx } from "./MathEx.sol";
 
 library Trade {
     error ExpOverflow();
+    error InvalidRate();
     error InitialRateTooHigh();
     error MultiFactorTooHigh();
 
@@ -18,6 +19,7 @@ library Trade {
     uint256 private constant MM = M_ONE * M_ONE; // = 2 ^ 48
 
     uint256 private constant RR_MUL_MM = RR * MM; // = 2 ^ 144
+    uint256 private constant RR_DIV_MM = RR / MM; // = 2 ^ 48
 
     uint256 private constant EXP_ONE_MUL_RR = EXP_ONE * RR; // = 2 ^ 223
     uint256 private constant EXP_ONE_DIV_RR = EXP_ONE / RR; // = 2 ^ 31
@@ -26,6 +28,8 @@ library Trade {
     enum GradientType {
         LINEAR_INCREASE,
         LINEAR_DECREASE,
+        LINEAR_INV_INCREASE,
+        LINEAR_INV_DECREASE,
         EXPONENTIAL_INCREASE,
         EXPONENTIAL_DECREASE
     }
@@ -48,15 +52,33 @@ library Trade {
         uint32 timeElapsed,
         uint256 targetAmount
     ) internal pure returns (uint256) {
-        (uint256 d, uint256 n) = calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
+        (uint256 n, uint256 d) = calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
         return MathEx.mulDivC(targetAmount, d, n);
     }
 
+    /**
+     * @dev Given the following parameters:
+     * r - the gradient's initial exchange rate
+     * m - the gradient's multiplication factor
+     * t - the time elapsed since strategy creation
+     *
+     * Calculate the current exchange rate for each one of the following gradients:
+     * +----------------+-----------+-----------------+----------------------------------------------+
+     * | type           | direction | formula         | restriction                                  |
+     * +----------------+-----------+-----------------+----------------------------------------------+
+     * | linear         | increase  | r * (1 + m * t) |                                              |
+     * | linear         | decrease  | r * (1 - m * t) | m * t < 1 (ensure a finite-positive rate)    |
+     * | linear-inverse | increase  | r / (1 - m * t) | m * t < 1 (ensure a finite-positive rate)    |
+     * | linear-inverse | decrease  | r / (1 + m * t) |                                              |
+     * | exponential    | increase  | r * e ^ (m * t) | m * t < 16 (due to computational limitation) |
+     * | exponential    | decrease  | r / e ^ (m * t) | m * t < 16 (due to computational limitation) |
+     * +----------------+-----------+-----------------+----------------------------------------------+
+     */
     function calcCurrentRate(
         GradientType gradientType,
-        uint64 initialRate,
-        uint32 multiFactor,
-        uint32 timeElapsed
+        uint64 initialRate, // the 48-bit-mantissa-6-bit-exponent encoding of the initial exchange rate square root
+        uint32 multiFactor, // the 24-bit-mantissa-5-bit-exponent encoding of the multiplication factor times 2 ^ 24
+        uint32 timeElapsed /// the time elapsed since strategy creation
     ) internal pure returns (uint256, uint256) {
         unchecked {
             if ((R_ONE >> (initialRate / R_ONE)) == 0) {
@@ -67,30 +89,47 @@ library Trade {
                 revert MultiFactorTooHigh();
             }
 
-            uint256 r = uint256(initialRate % R_ONE) << (initialRate / R_ONE); // floor(sqrt(initial_rate) * 2 ^ 48)    < 2 ^ 96
-            uint256 m = uint256(multiFactor % M_ONE) << (multiFactor / M_ONE); // floor(multi_factor * 2 ^ 24 * 2 ^ 24) < 2 ^ 48
+            uint256 r = uint256(initialRate % R_ONE) << (initialRate / R_ONE); // = floor(sqrt(initial_rate) * 2 ^ 48)    < 2 ^ 96
+            uint256 m = uint256(multiFactor % M_ONE) << (multiFactor / M_ONE); // = floor(multi_factor * 2 ^ 24 * 2 ^ 24) < 2 ^ 48
             uint256 t = uint256(timeElapsed);
 
+            uint256 rr = r * r; // < 2 ^ 192
+            uint256 mt = m * t; // < 2 ^ 80
+
             if (gradientType == GradientType.LINEAR_INCREASE) {
-                // initial_rate * (multi_factor * time_elapsed + 1)
-                uint256 temp1 = r * r; /////// < 2 ^ 192
-                uint256 temp2 = m * t + MM; // < 2 ^ 81
+                // initial_rate * (1 + multi_factor * time_elapsed)
+                uint256 temp1 = rr; /////// < 2 ^ 192
+                uint256 temp2 = MM + mt; // < 2 ^ 81
                 uint256 temp3 = MathEx.minFactor(temp1, temp2);
                 uint256 temp4 = RR_MUL_MM;
                 return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3); // not ideal
             }
 
             if (gradientType == GradientType.LINEAR_DECREASE) {
-                // initial_rate / (multi_factor * time_elapsed + 1)
-                uint256 temp1 = r * r * MM; ////////////// < 2 ^ 240
-                uint256 temp2 = m * t * RR + RR_MUL_MM; // < 2 ^ 177
+                // initial_rate * (1 - multi_factor * time_elapsed)
+                uint256 temp1 = rr * sub(MM, mt); // < 2 ^ 240
+                uint256 temp2 = RR_MUL_MM;
+                return (temp1, temp2);
+            }
+
+            if (gradientType == GradientType.LINEAR_INV_INCREASE) {
+                // initial_rate / (1 - multi_factor * time_elapsed)
+                uint256 temp1 = rr;
+                uint256 temp2 = sub(RR, mt * RR_DIV_MM); // < 2 ^ 128 (inner expression)
+                return (temp1, temp2);
+            }
+
+            if (gradientType == GradientType.LINEAR_INV_DECREASE) {
+                // initial_rate / (1 + multi_factor * time_elapsed)
+                uint256 temp1 = rr;
+                uint256 temp2 = RR + mt * RR_DIV_MM; // < 2 ^ 129
                 return (temp1, temp2);
             }
 
             if (gradientType == GradientType.EXPONENTIAL_INCREASE) {
                 // initial_rate * e ^ (multi_factor * time_elapsed)
-                uint256 temp1 = r * r; //////////////////////// < 2 ^ 192
-                uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM); // < 2 ^ 159 (inner expression)
+                uint256 temp1 = rr; //////////////////////// < 2 ^ 192
+                uint256 temp2 = exp(mt * EXP_ONE_DIV_MM); // < 2 ^ 159 (inner expression)
                 uint256 temp3 = MathEx.minFactor(temp1, temp2);
                 uint256 temp4 = EXP_ONE_MUL_RR;
                 return (MathEx.mulDivF(temp1, temp2, temp3), temp4 / temp3); // not ideal
@@ -98,12 +137,21 @@ library Trade {
 
             if (gradientType == GradientType.EXPONENTIAL_DECREASE) {
                 // initial_rate / e ^ (multi_factor * time_elapsed)
-                uint256 temp1 = r * r * EXP_ONE_DIV_RR; /////// < 2 ^ 223
-                uint256 temp2 = exp(m * t * EXP_ONE_DIV_MM); // < 2 ^ 159 (inner expression)
+                uint256 temp1 = rr * EXP_ONE_DIV_RR; /////// < 2 ^ 223
+                uint256 temp2 = exp(mt * EXP_ONE_DIV_MM); // < 2 ^ 159 (inner expression)
                 return (temp1, temp2);
             }
 
             return (0, 0);
+        }
+    }
+
+    function sub(uint256 one, uint256 mt) internal pure returns (uint256) {
+        unchecked {
+            if (one <= mt) {
+                revert InvalidRate();
+            }
+            return one - mt;
         }
     }
 
@@ -117,7 +165,7 @@ library Trade {
      * - The exponentiation of the input is calculated by multiplying the intermediate results above
      * - For example: e^5.521692859 = e^(4 + 1 + 0.5 + 0.021692859) = e^4 * e^1 * e^0.5 * e^0.021692859
      */
-    function exp(uint256 x) private pure returns (uint256) {
+    function exp(uint256 x) internal pure returns (uint256) {
         // prettier-ignore
         unchecked {
             if (x >= MAX_VAL) {
