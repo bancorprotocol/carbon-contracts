@@ -151,7 +151,7 @@ pnpm deploy:prepare && pnpm deploy:network
 
 The deployment artifacts are going to be in `deployments/{network_name}`.
 
-If deploying a licensed deployment on a network, it's recommended to fork the carbon-contracts repo and push the deployment artifacts after deployment.
+If deploying a licensed deployment on a network, it's recommended to fork the carbon-contracts repo and push the deployment artifacts into the fork after deployment.
 
 If you want to verify the contracts after deployment, please set up the `VERIFY_API_KEY` environmental variable to the etherscan api key.
 
