@@ -52,7 +52,7 @@ library Trade {
         uint32 timeElapsed,
         uint256 targetAmount
     ) internal pure returns (uint256) {
-        (uint256 d, uint256 n) = calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
+        (uint256 n, uint256 d) = calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
         return MathEx.mulDivC(targetAmount, d, n);
     }
 
