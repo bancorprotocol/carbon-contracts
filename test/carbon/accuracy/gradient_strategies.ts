@@ -9,6 +9,12 @@ let contract: TestTrade;
 const R_SHIFT = 48;
 const M_SHIFT = 24;
 
+const ONE = new Decimal(1);
+const TWO = new Decimal(2);
+
+const EXP_ONE = new Decimal(2).pow(127);
+const MAX_VAL = new Decimal(2).pow(131);
+
 const BnToDec = (x: BigNumber) => new Decimal(x.toString());
 const DecToBn = (x: Decimal) => BigNumber.from(x.toFixed());
 
@@ -17,7 +23,7 @@ function bitLength(value: BigNumber) {
 }
 
 function encode(value: Decimal, shift: number) {
-    const factor = new Decimal(2).pow(shift);
+    const factor = TWO.pow(shift);
     const data = DecToBn(value.mul(factor).floor());
     const length = bitLength(data.shr(shift));
     const integer = data.shr(length).shl(length);
@@ -30,7 +36,7 @@ function decode(value: BigNumber, shift: number) {
     const mantissa = value.mask(shift);
     const exponent = value.shr(shift).toNumber();
     const data = BnToDec(mantissa.shl(exponent));
-    const factor = new Decimal(2).pow(shift);
+    const factor = TWO.pow(shift);
     return data.div(factor);
 }
 
@@ -43,11 +49,11 @@ function initialRateDecoded(value: BigNumber) {
 }
 
 function multiFactorEncoded(value: Decimal) {
-    return encode(value.mul(new Decimal(2).pow(M_SHIFT)), M_SHIFT);
+    return encode(value.mul(TWO.pow(M_SHIFT)), M_SHIFT);
 }
 
 function multiFactorDecoded(value: BigNumber) {
-    return decode(value, M_SHIFT).div(new Decimal(2).pow(M_SHIFT));
+    return decode(value, M_SHIFT).div(TWO.pow(M_SHIFT));
 }
 
 function expectedCurrentRate(
@@ -57,22 +63,14 @@ function expectedCurrentRate(
     timeElapsed: Decimal
 ) {
     switch (gradientType) {
-        case 0: return initialRate.mul(multiFactor.mul(timeElapsed).add(1));
-        case 1: return initialRate.div(multiFactor.mul(timeElapsed).add(1));
-        case 2: return initialRate.mul(multiFactor.mul(timeElapsed).exp());
-        case 3: return initialRate.div(multiFactor.mul(timeElapsed).exp());
+        case 0: return initialRate.mul(ONE.add(multiFactor.mul(timeElapsed)));
+        case 1: return initialRate.mul(ONE.sub(multiFactor.mul(timeElapsed)));
+        case 2: return initialRate.div(ONE.sub(multiFactor.mul(timeElapsed)));
+        case 3: return initialRate.div(ONE.add(multiFactor.mul(timeElapsed)));
+        case 4: return initialRate.mul(multiFactor.mul(timeElapsed).exp());
+        case 5: return initialRate.div(multiFactor.mul(timeElapsed).exp());
     }
     throw new Error(`Invalid gradientType ${gradientType}`);
-}
-
-async function actualCurrentRate(
-    gradientType: number,
-    initialRate: BigNumber,
-    multiFactor: BigNumber,
-    timeElapsed: BigNumber
-) {
-    const currentRate = await contract.calcCurrentRate(gradientType, initialRate, multiFactor, timeElapsed);
-    return BnToDec(currentRate[0]).div(BnToDec(currentRate[1]));
 }
 
 function testCurrentRate(
@@ -88,15 +86,21 @@ function testCurrentRate(
         const rDecoded = initialRateDecoded(rEncoded);
         const mDecoded = multiFactorDecoded(mEncoded);
         const expected = expectedCurrentRate(gradientType, rDecoded, mDecoded, timeElapsed);
-        const actual = await actualCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
-        if (!actual.eq(expected)) {
-            const error = actual.div(expected).sub(1).abs();
-            expect(error.lte(maxError)).to.be.equal(
-                true,
-                `\n- expected = ${expected.toFixed()}` +
-                `\n- actual   = ${actual.toFixed()}` +
-                `\n- error    = ${error.toFixed()}`
-            );
+        const funcCall = contract.calcCurrentRate(gradientType, rEncoded, mEncoded, DecToBn(timeElapsed));
+        if (expected.isFinite() && expected.isPositive()) {
+            const retVal = await funcCall;
+            const actual = BnToDec(retVal[0]).div(BnToDec(retVal[1]));
+            if (!actual.eq(expected)) {
+                const error = actual.div(expected).sub(1).abs();
+                expect(error.lte(maxError)).to.be.equal(
+                    true,
+                    `\n- expected = ${expected.toFixed()}` +
+                    `\n- actual   = ${actual.toFixed()}` +
+                    `\n- error    = ${error.toFixed()}`
+                );
+            }
+        } else {
+            await expect(funcCall).to.be.revertedWithError('InvalidRate');
         }
     });
 }
@@ -131,6 +135,33 @@ function testConfiguration(
     });
 }
 
+function testExp(n: number, d: number, maxError: string) {
+    it(`testExp(${n} / ${d})`, async () => {
+        const f = new Decimal(n).div(d);
+        const funcCall = contract.exp(DecToBn(f.mul(EXP_ONE).floor()));
+        if (f.lt(MAX_VAL.div(EXP_ONE))) {
+            const actual = BnToDec(await funcCall);
+            const expected = f.exp().mul(EXP_ONE);
+            if (!actual.eq(expected)) {
+                expect(actual.lt(expected)).to.be.equal(
+                    true,
+                    `\n- expected = ${expected.toFixed()}` +
+                    `\n- actual   = ${actual.toFixed()}`
+                );
+                const error = actual.div(expected).sub(1).abs();
+                expect(error.lte(maxError)).to.be.equal(
+                    true,
+                    `\n- expected = ${expected.toFixed()}` +
+                    `\n- actual   = ${actual.toFixed()}` +
+                    `\n- error    = ${error.toFixed()}`
+                );
+            }
+        } else {
+            await expect(funcCall).to.revertedWithError('ExpOverflow');
+        }
+    });
+}
+
 describe('Gradient strategies accuracy stress test', () => {
     before(async () => {
         contract = await Contracts.TestTrade.deploy();
@@ -142,10 +173,12 @@ describe('Gradient strategies accuracy stress test', () => {
                 const initialRate = new Decimal(a).mul(1234.5678);
                 const multiFactor = new Decimal(b).mul(0.00001234);
                 const timeElapsed = new Decimal(c).mul(3600);
-                testCurrentRate(0, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(1, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
-                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0.00000000000000000000000000000000000002");
+                testCurrentRate(0, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(1, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.00000000000000000000000000000000000002');
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.00000000000000000000000000000000000002');
             }
         }
     }
@@ -156,34 +189,56 @@ describe('Gradient strategies accuracy stress test', () => {
                 const initialRate = new Decimal(10).pow(a);
                 const multiFactor = new Decimal(10).pow(b);
                 const timeElapsed = Decimal.min(
-                    new Decimal(16).div(multiFactor).sub(1).ceil(),
-                    new Decimal(2).pow(25).sub(1)
+                    MAX_VAL.div(EXP_ONE).div(multiFactor).sub(1).ceil(),
+                    TWO.pow(25).sub(1)
                 ).mul(c).div(10).ceil();
-                testCurrentRate(0, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(1, initialRate, multiFactor, timeElapsed, "0");
-                testCurrentRate(2, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
-                testCurrentRate(3, initialRate, multiFactor, timeElapsed, "0.000000000000000000000000000000000002");
+                testCurrentRate(0, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(1, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
             }
         }
     }
 
     for (let a = 1; a <= 100; a++) {
         const initialRate = new Decimal(a).mul(1234.5678);
-        testConfiguration("initialRate", initialRate, initialRateEncoded, initialRateDecoded, "0", "0.00000000000002");
+        testConfiguration('initialRate', initialRate, initialRateEncoded, initialRateDecoded, '0', '0.00000000000002');
     }
 
     for (let b = 1; b <= 100; b++) {
         const multiFactor = new Decimal(b).mul(0.00001234);
-        testConfiguration("multiFactor", multiFactor, multiFactorEncoded, multiFactorDecoded, "0", "0.0000002");
+        testConfiguration('multiFactor', multiFactor, multiFactorEncoded, multiFactorDecoded, '0', '0.0000002');
     }
 
     for (let a = -28; a <= 28; a++) {
         const initialRate = new Decimal(10).pow(a);
-        testConfiguration("initialRate", initialRate, initialRateEncoded, initialRateDecoded, "0.0000000000000005", "0.00000000000002");
+        testConfiguration('initialRate', initialRate, initialRateEncoded, initialRateDecoded, '0.0000000000000005', '0.00000000000002');
     }
 
     for (let b = -14; b <= -1; b++) {
         const multiFactor = new Decimal(10).pow(b);
-        testConfiguration("multiFactor", multiFactor, multiFactorEncoded, multiFactorDecoded, "0.000000000000004", "0.00000007");
+        testConfiguration('multiFactor', multiFactor, multiFactorEncoded, multiFactorDecoded, '0.000000000000004', '0.00000007');
+    }
+
+    for (let n = 1; n <= 25; n++) {
+        for (let d = 1; d <= 25; d++) {
+            testExp(n, d, '0.000000000000000000000000000000000002');
+        }
+    }
+
+    for (let d = 1000; d <= 1000000000; d *= 10) {
+        for (let n = d - 10; n <= d + 10; n++) {
+            testExp(n, d, '0.00000000000000000000000000000000000003');
+        }
+    }
+
+    for (let n = 1; n < 1000; n++) {
+        testExp(n, 1000, '0.00000000000000000000000000000000000003');
+    }
+
+    for (let d = 1; d < 1000; d++) {
+        testExp(1, d, '0.00000000000000000000000000000000000002');
     }
 });
