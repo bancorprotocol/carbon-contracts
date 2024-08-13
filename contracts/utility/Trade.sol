@@ -9,11 +9,13 @@ library Trade {
     error InitialRateTooHigh();
     error MultiFactorTooHigh();
 
+    uint256 private constant EXP_LN2 = 0x0058b90bfbe8e7bcd5e4f1d9cc01f97b58; // ceil(ln2)
+    uint256 private constant EXP_ONE = 0x0080000000000000000000000000000000; // 1
+    uint256 private constant EXP_MID = 0x0800000000000000000000000000000000; // 16
+    uint256 private constant EXP_MAX = 0x2cb53f09f05cc627c85ddebfccfeb72758; // ceil(ln2) * 129
+
     uint256 private constant R_ONE = 1 << 48; // = 2 ^ 48
     uint256 private constant M_ONE = 1 << 24; // = 2 ^ 24
-
-    uint256 private constant EXP_ONE = 1 << 127; // = 2 ^ 127
-    uint256 private constant MAX_VAL = 1 << 131; // = 2 ^ 131
 
     uint256 private constant RR = R_ONE * R_ONE; // = 2 ^ 96
     uint256 private constant MM = M_ONE * M_ONE; // = 2 ^ 48
@@ -70,8 +72,8 @@ library Trade {
      * | linear         | decrease  | r * (1 - m * t) | m * t < 1 (ensure a finite-positive rate)    |
      * | linear-inverse | increase  | r / (1 - m * t) | m * t < 1 (ensure a finite-positive rate)    |
      * | linear-inverse | decrease  | r / (1 + m * t) |                                              |
-     * | exponential    | increase  | r * e ^ (m * t) | m * t < 16 (due to computational limitation) |
-     * | exponential    | decrease  | r / e ^ (m * t) | m * t < 16 (due to computational limitation) |
+     * | exponential    | increase  | r * e ^ (m * t) | m * t < 129 * ln2 (computational limitation) |
+     * | exponential    | decrease  | r / e ^ (m * t) | m * t < 129 * ln2 (computational limitation) |
      * +----------------+-----------+-----------------+----------------------------------------------+
      */
     function calcCurrentRate(
@@ -157,7 +159,34 @@ library Trade {
 
     /**
      * @dev Compute e ^ (x / EXP_ONE) * EXP_ONE
-     * Input range: 0 <= x <= MAX_VAL - 1
+     * Input range: 0 <= x <= EXP_MAX - 1
+     * Detailed description:
+     * - For x < EXP_MID, this function computes e ^ x
+     * - For x < EXP_MAX, this function computes e ^ mod(x, ln2) * 2 ^ div(x, ln2)
+     * - The latter relies on the following identity:
+     *   e ^ x =
+     *   e ^ x * 2 ^ k / 2 ^ k =
+     *   e ^ x * 2 ^ k / e ^ (k * ln2) =
+     *   e ^ x / e ^ (k * ln2) * 2 ^ k =
+     *   e ^ (x - k * ln2) * 2 ^ k
+     * - Replacing k with div(x, ln2) gives the solution above
+     * - The value of ln2 is represented as ceil(ln2 * EXP_ONE)
+     */
+    function exp(uint256 x) internal pure returns (uint256) {
+        unchecked {
+            if (x < EXP_MID) {
+                return _exp(x);
+            }
+            if (x < EXP_MAX) {
+                return _exp(x % EXP_LN2) << (x / EXP_LN2);
+            }
+            revert ExpOverflow();
+        }
+    }
+
+    /**
+     * @dev Compute e ^ (x / EXP_ONE) * EXP_ONE
+     * Input range: 0 <= x <= EXP_MID - 1
      * Detailed description:
      * - Rewrite the input as a sum of binary exponents and a single residual r, as small as possible
      * - The exponentiation of each binary exponent is given (pre-calculated)
@@ -165,13 +194,9 @@ library Trade {
      * - The exponentiation of the input is calculated by multiplying the intermediate results above
      * - For example: e^5.521692859 = e^(4 + 1 + 0.5 + 0.021692859) = e^4 * e^1 * e^0.5 * e^0.021692859
      */
-    function exp(uint256 x) internal pure returns (uint256) {
+    function _exp(uint256 x) private pure returns (uint256) {
         // prettier-ignore
         unchecked {
-            if (x >= MAX_VAL) {
-                revert ExpOverflow();
-            }
-
             uint256 res = 0;
 
             uint256 y;
