@@ -222,6 +222,20 @@ describe('Gradient strategies accuracy stress test', () => {
         }
     }
 
+    for (const a of [-27, -10, 0, 10, 27]) {
+        for (const b of [-14, -9, -6, -1]) {
+            for (const c of [19, 24, 29]) {
+                const initialRate = new Decimal(10).pow(a);
+                const multiFactor = new Decimal(10).pow(b);
+                const timeElapsed = new Decimal(2).pow(c).sub(1);
+                testCurrentRate(0, initialRate, multiFactor, timeElapsed, '0.0000000000000000000000000000000000000000003');
+                testCurrentRate(1, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
+                testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
+            }
+        }
+    }
+
     for (let a = 1; a <= 100; a++) {
         const initialRate = new Decimal(a).mul(1234.5678);
         testConfiguration('initialRate', initialRate, initialRateEncoded, initialRateDecoded, '0', '0.00000000000002');
