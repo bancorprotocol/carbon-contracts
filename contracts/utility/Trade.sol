@@ -175,7 +175,7 @@ library Trade {
     function exp(uint256 x) internal pure returns (uint256) {
         unchecked {
             if (x < EXP_MID) {
-                return _exp(x);
+                return _exp(x); // slightly more accurate
             }
             if (x < EXP_MAX) {
                 return _exp(x % EXP_LN2) << (x / EXP_LN2);
