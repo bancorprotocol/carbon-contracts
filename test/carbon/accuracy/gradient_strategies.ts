@@ -135,30 +135,40 @@ function testConfiguration(
     });
 }
 
-function testExp(n: number, d: number, maxError: string) {
-    it(`testExp(${n} / ${d})`, async () => {
+function testExpNative(n: number, d: number, maxError: string) {
+    it(`testExpNative(${n} / ${d})`, async () => {
         const x = EXP_ONE.mul(n).div(d).floor();
-        if (x.lt(EXP_MAX)) {
-            const actual = BnToDec(await contract.exp(DecToBn(x)));
-            const expected = x.div(EXP_ONE).exp().mul(EXP_ONE);
-            if (!actual.eq(expected)) {
-                expect(actual.lt(expected)).to.be.equal(
-                    true,
-                    `\n- expected = ${expected.toFixed()}` +
-                    `\n- actual   = ${actual.toFixed()}`
-                );
-                const error = actual.div(expected).sub(1).abs();
-                expect(error.lte(maxError)).to.be.equal(
-                    true,
-                    `\n- expected = ${expected.toFixed()}` +
-                    `\n- actual   = ${actual.toFixed()}` +
-                    `\n- error    = ${error.toFixed()}`
-                );
-            }
-        } else {
-            await expect(contract.exp(DecToBn(x))).to.revertedWithError('ExpOverflow');
-        }
+        await testExp(x, maxError);
     });
+}
+
+function testExpScaled(x: Decimal, maxError: string) {
+    it(`testExpScaled(${x.toHex()})`, async () => {
+        await testExp(x, maxError);
+    });
+}
+
+async function testExp(x: Decimal, maxError: string) {
+    if (x.lt(EXP_MAX)) {
+        const actual = BnToDec(await contract.exp(DecToBn(x)));
+        const expected = x.div(EXP_ONE).exp().mul(EXP_ONE);
+        if (!actual.eq(expected)) {
+            expect(actual.lt(expected)).to.be.equal(
+                true,
+                `\n- expected = ${expected.toFixed()}` +
+                `\n- actual   = ${actual.toFixed()}`
+            );
+            const error = actual.div(expected).sub(1).abs();
+            expect(error.lte(maxError)).to.be.equal(
+                true,
+                `\n- expected = ${expected.toFixed()}` +
+                `\n- actual   = ${actual.toFixed()}` +
+                `\n- error    = ${error.toFixed()}`
+            );
+        }
+    } else {
+        await expect(contract.exp(DecToBn(x))).to.revertedWithError('ExpOverflow');
+    }
 }
 
 describe('Gradient strategies accuracy stress test', () => {
@@ -256,21 +266,43 @@ describe('Gradient strategies accuracy stress test', () => {
 
     for (let n = 1; n <= 100; n++) {
         for (let d = 1; d <= 100; d++) {
-            testExp(n, d, '0.0000000000000000000000000000000000003');
+            testExpNative(n, d, '0.0000000000000000000000000000000000003');
         }
     }
 
     for (let d = 1000; d <= 1000000000; d *= 10) {
         for (let n = d - 10; n <= d + 10; n++) {
-            testExp(n, d, '0.00000000000000000000000000000000000002');
+            testExpNative(n, d, '0.00000000000000000000000000000000000002');
         }
     }
 
     for (let n = 1; n < 1000; n++) {
-        testExp(n, 1000, '0.00000000000000000000000000000000000002');
+        testExpNative(n, 1000, '0.00000000000000000000000000000000000002');
     }
 
     for (let d = 1; d < 1000; d++) {
-        testExp(1, d, '0.00000000000000000000000000000000000002');
+        testExpNative(1, d, '0.00000000000000000000000000000000000002');
+    }
+
+    for (let i = 0; i < 10; i++) {
+        for (const j of [-1, 0, +1]) {
+            testExpScaled(EXP_ONE.mul(TWO.pow(i + 1).ln()).floor().add(j), '0.00000000000000000000000000000000000003');
+        }
+    }
+
+    for (let i = 0; i < 10; i++) {
+        for (const j of [-1, 0, +1]) {
+            testExpScaled(EXP_ONE.mul(TWO.ln().pow(i + 2)).floor().add(j), '0.00000000000000000000000000000000000002');
+        }
+    }
+
+    for (let i = 0; i < 10; i++) {
+        for (const j of [-1, 0, +1]) {
+            testExpScaled(EXP_ONE.mul(TWO.pow(i - 3)).add(j), '0.0000000000000000000000000000000000003');
+        }
+    }
+
+    for (let i = 0; i < 10; i++) {
+        testExpScaled(EXP_MAX.add(i - 10), '0.0000000000000000000000000000000000003');
     }
 });
