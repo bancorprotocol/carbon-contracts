@@ -13,7 +13,6 @@ const ONE = new Decimal(1);
 const TWO = new Decimal(2);
 
 const EXP_ONE = TWO.pow(127);
-const EXP_MID = EXP_ONE.mul(16);
 const EXP_MAX = EXP_ONE.mul(TWO.ln()).ceil().mul(129);
 
 const BnToDec = (x: BigNumber) => new Decimal(x.toString());
@@ -138,11 +137,10 @@ function testConfiguration(
 
 function testExp(n: number, d: number, maxError: string) {
     it(`testExp(${n} / ${d})`, async () => {
-        const f = new Decimal(n).div(d);
-        const x = f.mul(EXP_ONE).floor();
+        const x = EXP_ONE.mul(n).div(d).floor();
         if (x.lt(EXP_MAX)) {
             const actual = BnToDec(await contract.exp(DecToBn(x)));
-            const expected = f.exp().mul(EXP_ONE);
+            const expected = x.div(EXP_ONE).exp().mul(EXP_ONE);
             if (!actual.eq(expected)) {
                 expect(actual.lt(expected)).to.be.equal(
                     true,
@@ -190,15 +188,15 @@ describe('Gradient strategies accuracy stress test', () => {
                 const initialRate = new Decimal(10).pow(a);
                 const multiFactor = new Decimal(10).pow(b);
                 const timeElapsed = Decimal.min(
-                    EXP_MID.div(EXP_ONE).div(multiFactor).sub(1).ceil(),
+                    TWO.pow(4).div(multiFactor).sub(1).ceil(),
                     TWO.pow(25).sub(1)
                 ).mul(c).div(10).ceil();
                 testCurrentRate(0, initialRate, multiFactor, timeElapsed, '0');
                 testCurrentRate(1, initialRate, multiFactor, timeElapsed, '0');
                 testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
                 testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
-                testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
-                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
+                testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.00000000000000000000000000000000000006');
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.00000000000000000000000000000000000006');
             }
         }
     }
@@ -217,7 +215,7 @@ describe('Gradient strategies accuracy stress test', () => {
                 testCurrentRate(2, initialRate, multiFactor, timeElapsed, '0');
                 testCurrentRate(3, initialRate, multiFactor, timeElapsed, '0');
                 testCurrentRate(4, initialRate, multiFactor, timeElapsed, '0.000000000004');
-                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.000000000000000000000000000000000002');
+                testCurrentRate(5, initialRate, multiFactor, timeElapsed, '0.0000000000000000000000000000000000003');
             }
         }
     }
@@ -258,18 +256,18 @@ describe('Gradient strategies accuracy stress test', () => {
 
     for (let n = 1; n <= 100; n++) {
         for (let d = 1; d <= 100; d++) {
-            testExp(n, d, '0.000000000000000000000000000000000002');
+            testExp(n, d, '0.0000000000000000000000000000000000003');
         }
     }
 
     for (let d = 1000; d <= 1000000000; d *= 10) {
         for (let n = d - 10; n <= d + 10; n++) {
-            testExp(n, d, '0.00000000000000000000000000000000000003');
+            testExp(n, d, '0.00000000000000000000000000000000000002');
         }
     }
 
     for (let n = 1; n < 1000; n++) {
-        testExp(n, 1000, '0.00000000000000000000000000000000000003');
+        testExp(n, 1000, '0.00000000000000000000000000000000000002');
     }
 
     for (let d = 1; d < 1000; d++) {

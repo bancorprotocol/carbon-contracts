@@ -9,10 +9,10 @@ library Trade {
     error InitialRateTooHigh();
     error MultiFactorTooHigh();
 
-    uint256 private constant EXP_LN2 = 0x0058b90bfbe8e7bcd5e4f1d9cc01f97b58; // ceil(ln2)
     uint256 private constant EXP_ONE = 0x0080000000000000000000000000000000; // 1
-    uint256 private constant EXP_MID = 0x0800000000000000000000000000000000; // 16
+    uint256 private constant EXP_MID = 0x0400000000000000000000000000000000; // 8
     uint256 private constant EXP_MAX = 0x2cb53f09f05cc627c85ddebfccfeb72758; // ceil(ln2) * 129
+    uint256 private constant EXP_LN2 = 0x0058b90bfbe8e7bcd5e4f1d9cc01f97b58; // ceil(ln2)
 
     uint256 private constant R_ONE = 1 << 48; // = 2 ^ 48
     uint256 private constant M_ONE = 1 << 24; // = 2 ^ 24
@@ -148,11 +148,16 @@ library Trade {
         }
     }
 
+    /**
+     * @dev Ensure a finite positive rate
+     */
     function sub(uint256 one, uint256 mt) internal pure returns (uint256) {
         unchecked {
             if (one <= mt) {
+                // non-finite or non-positive
                 revert InvalidRate();
             }
+            // finite and positive
             return one - mt;
         }
     }
@@ -186,7 +191,7 @@ library Trade {
 
     /**
      * @dev Compute e ^ (x / EXP_ONE) * EXP_ONE
-     * Input range: 0 <= x <= EXP_MID - 1
+     * Input range: 0 <= x <= EXP_ONE * 16 - 1
      * Detailed description:
      * - Rewrite the input as a sum of binary exponents and a single residual r, as small as possible
      * - The exponentiation of each binary exponent is given (pre-calculated)
