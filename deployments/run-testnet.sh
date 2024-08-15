@@ -27,11 +27,16 @@ if [ -z "$network_id" ] || [ "$network_id" == "null" ]; then
     network_id=${TENDERLY_NETWORK_ID:-"1"}
 fi
 
+# Ensure network_id is a number
+network_id=$((network_id + 0))
+
 echo "Creating a $network_name Tenderly Testnet with Chain Id $network_id... "
 echo
 
 # API Endpoint for creating a testnet
-TENDERLY_TESTNET_API="https://api.tenderly.co/api/v1/account/${username}/project/${project}/testnet/container"
+TENDERLY_TESTNET_API="https://api.tenderly.co/api/v1/account/${username}/project/${project}/vnets"
+# Get the current timestamp to use as a unique testnet slug
+timestamp=$(date +"%s")
 
 # Setup cleanup function
 cleanup() {
@@ -50,23 +55,24 @@ trap cleanup TERM EXIT
 response=$(curl -sX POST "$TENDERLY_TESTNET_API" \
     -H "Content-Type: application/json" -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}" \
     -d '{
-        "displayName": "Carbon Contracts Testnet",
-        "description": "",
-        "visibility": "TEAM",
-        "tags": {
-            "purpose": "development"
+        "slug": "carbon-contracts-testnet-'${timestamp}'",
+        "display_name": "Carbon Contracts Testnet",
+        "fork_config": {
+            "network_id": '"${network_id}"',
+            "block_number": "latest"
         },
-        "networkConfig": {
-            "networkId": "'${network_id}'",
-            "blockNumber": "latest",
-            "baseFeePerGas": "1"
+        "virtual_network_config": {
+            "chain_config": {
+                "chain_id": '"${network_id}"'
+            }
         },
-        "private": true,
-        "syncState": false
+        "sync_state_config": {
+            "enabled": false
+        }
     }')
 
-testnet_id=$(echo "$response" | jq -r '.container.id')
-provider_url=$(echo "$response" | jq -r '.container.connectivityConfig.endpoints[0].uri')
+testnet_id=$(echo "$response" | jq -r '.id')
+provider_url=$(echo "$response" | jq -r '.rpcs[0].url')
 
 echo "Created Tenderly Testnet ${testnet_id} at ${username}/${project}..."
 echo
