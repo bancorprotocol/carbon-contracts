@@ -16,6 +16,7 @@ interface ICarbonVortex is IUpgradeable {
     error InvalidTrade();
     error TradingDisabled();
     error PairDisabled();
+    error GreaterThanMaxInput();
     error InsufficientNativeTokenSent();
     error InsufficientAmountForTrading();
     error UnnecessaryNativeTokenReceived();
@@ -197,7 +198,7 @@ interface ICarbonVortex is IUpgradeable {
      * @notice if token == *targetToken*, trades *finalTargetToken* for amount of *targetToken* and also
      * @notice resets the current token sale amount if it's below the min amount after a trade
      */
-    function trade(Token token, uint128 targetAmount) external payable;
+    function trade(Token token, uint128 targetAmount, uint128 maxInput) external payable;
 
     /**
      * @notice withdraws the fees of the provided token from Carbon and
