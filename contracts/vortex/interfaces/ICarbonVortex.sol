@@ -197,6 +197,7 @@ interface ICarbonVortex is IUpgradeable {
      * @notice trades *targetToken* for *targetAmount* of *token* based on the current token price (trade by target amount)
      * @notice if token == *targetToken*, trades *finalTargetToken* for amount of *targetToken* and also
      * @notice resets the current token sale amount if it's below the min amount after a trade
+     * @notice reverts if source amount required is greater than maxInput
      */
     function trade(Token token, uint128 targetAmount, uint128 maxInput) external payable;
 
