@@ -1269,7 +1269,7 @@ contract CarbonVortexTest is TestFixture {
         // approve the source token
         finalTargetToken.safeApprove(address(carbonVortex), expectedSourceAmount);
         // trade
-        carbonVortex.trade(targetToken, targetAmount);
+        carbonVortex.trade(targetToken, targetAmount, expectedSourceAmount);
 
         uint256 targetBalanceAfterVortex = targetToken.balanceOf(address(carbonVortex));
         uint256 targetBalanceAfterUser = targetToken.balanceOf(user1);
@@ -1315,7 +1315,7 @@ contract CarbonVortexTest is TestFixture {
         // approve the source token
         finalTargetToken.safeApprove(address(carbonVortex), expectedSourceAmount);
         // trade
-        carbonVortex.trade(targetToken, targetAmount);
+        carbonVortex.trade(targetToken, targetAmount, expectedSourceAmount);
 
         uint256 finalTargetBalanceAfter = finalTargetToken.balanceOf(transferAddress);
 
@@ -1347,7 +1347,7 @@ contract CarbonVortexTest is TestFixture {
         uint128 sourceAmount = carbonVortex.expectedTradeInput(token, targetAmount);
 
         // trade (send sourceAmount of native token because the target token is native)
-        carbonVortex.trade{ value: sourceAmount }(token, targetAmount);
+        carbonVortex.trade{ value: sourceAmount }(token, targetAmount, sourceAmount);
 
         uint256 balanceAfter = token.balanceOf(user1);
 
@@ -1378,7 +1378,7 @@ contract CarbonVortexTest is TestFixture {
         uint128 sourceAmount = carbonVortex.expectedTradeInput(token, targetAmount);
 
         // trade (send sourceAmount of native token because the target token is native)
-        carbonVortex.trade{ value: sourceAmount }(token, targetAmount);
+        carbonVortex.trade{ value: sourceAmount }(token, targetAmount, sourceAmount);
 
         uint256 balanceAfter = targetToken.balanceOf(address(carbonVortex));
 
@@ -1420,7 +1420,7 @@ contract CarbonVortexTest is TestFixture {
         // expect trading reset event to be emitted
         vm.expectEmit();
         emit TradingReset(token, initialPrice);
-        carbonVortex.trade{ value: sourceAmount }(token, tradeAmountToResetTheMinSale);
+        carbonVortex.trade{ value: sourceAmount }(token, tradeAmountToResetTheMinSale, sourceAmount);
 
         // check price has been reset to initial
         ICarbonVortex.Price memory price = carbonVortex.tokenPrice(token);
@@ -1468,7 +1468,7 @@ contract CarbonVortexTest is TestFixture {
 
         // approve final target token
         finalTargetToken.safeApprove(address(carbonVortex), sourceAmountFirstTrade);
-        carbonVortex.trade(targetToken, tradeAmountToResetTheMinSale);
+        carbonVortex.trade(targetToken, tradeAmountToResetTheMinSale, sourceAmountFirstTrade);
 
         uint128 availableTargetTokenForTrading = carbonVortex.amountAvailableForTrading(targetToken);
         // assert target token left is less than min sale amount / multiplier
@@ -1488,7 +1488,7 @@ contract CarbonVortexTest is TestFixture {
         // expect trading reset for the target token event to be emitted
         vm.expectEmit();
         emit TradingReset(targetToken, initialPrice);
-        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount);
+        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount, sourceAmount);
 
         // check price has been reset to initial
         ICarbonVortex.Price memory price = carbonVortex.tokenPrice(targetToken);
@@ -1520,7 +1520,7 @@ contract CarbonVortexTest is TestFixture {
         uint256 balanceBefore = address(user1).balance;
 
         // trade (send sourceAmount of native token because the target token is native)
-        carbonVortex.trade{ value: sourceAmount + 1 }(token, targetAmount);
+        carbonVortex.trade{ value: sourceAmount + 1 }(token, targetAmount, sourceAmount);
 
         uint256 balanceAfter = address(user1).balance;
 
@@ -1565,7 +1565,7 @@ contract CarbonVortexTest is TestFixture {
         uint256 balanceBefore = targetToken.balanceOf(transferAddress);
 
         // trade (send sourceAmount of native token because the target token is native)
-        carbonVortex.trade{ value: sourceAmount }(token1, targetAmount);
+        carbonVortex.trade{ value: sourceAmount }(token1, targetAmount, sourceAmount);
 
         uint256 balanceAfter = targetToken.balanceOf(transferAddress);
 
@@ -1595,14 +1595,15 @@ contract CarbonVortexTest is TestFixture {
         carbonVortex.execute(tokens);
 
         // trade target for final target
-        uint128 targetAmount = 1 ether;
+        uint128 targetAmount = 1;
+        uint128 sourceAmount = carbonVortex.expectedTradeInput(token, targetAmount);
 
         // advance time
         vm.warp(45 days);
 
         // trade
         vm.expectRevert(ICarbonVortex.UnnecessaryNativeTokenReceived.selector);
-        carbonVortex.trade{ value: 1 }(token, targetAmount);
+        carbonVortex.trade{ value: 1 }(token, targetAmount, sourceAmount);
     }
 
     /// @dev test that sending any ETH with the transaction
@@ -1622,14 +1623,15 @@ contract CarbonVortexTest is TestFixture {
         carbonVortex.execute(tokens);
 
         // trade target for final target
-        uint128 targetAmount = 1 ether;
+        uint128 targetAmount = 1;
+        uint128 sourceAmount = carbonVortex.expectedTradeInput(token, targetAmount);
 
         // advance time
         vm.warp(45 days);
 
         // trade
         vm.expectRevert(ICarbonVortex.UnnecessaryNativeTokenReceived.selector);
-        carbonVortex.trade{ value: 1 }(token, targetAmount);
+        carbonVortex.trade{ value: 1 }(token, targetAmount, sourceAmount);
     }
 
     /// @dev test that sending less than the sourceAmount of ETH with the transaction
@@ -1662,7 +1664,7 @@ contract CarbonVortexTest is TestFixture {
 
         // trade
         vm.expectRevert(ICarbonVortex.InsufficientNativeTokenSent.selector);
-        carbonVortex.trade{ value: expectedSourceAmount - 1 }(bnt, targetAmount);
+        carbonVortex.trade{ value: expectedSourceAmount - 1 }(bnt, targetAmount, expectedSourceAmount);
     }
 
     /// @dev test that if the final target token is the native token,
@@ -1697,7 +1699,7 @@ contract CarbonVortexTest is TestFixture {
         uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(targetToken, targetAmount);
 
         // trade
-        carbonVortex.trade{ value: expectedSourceAmount }(targetToken, targetAmount);
+        carbonVortex.trade{ value: expectedSourceAmount }(targetToken, targetAmount, expectedSourceAmount);
 
         // get transfer address balance after
         uint256 balanceAfter = transferAddress.balance;
@@ -1741,7 +1743,7 @@ contract CarbonVortexTest is TestFixture {
         uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(targetToken, targetAmount);
 
         // trade
-        carbonVortex.trade{ value: expectedSourceAmount + 1 }(targetToken, targetAmount);
+        carbonVortex.trade{ value: expectedSourceAmount + 1 }(targetToken, targetAmount, expectedSourceAmount);
 
         // get transfer address balance after
         uint256 balanceAfter = address(user1).balance;
@@ -1778,7 +1780,67 @@ contract CarbonVortexTest is TestFixture {
 
         // trade
         vm.expectRevert(ICarbonVortex.InsufficientNativeTokenSent.selector);
-        carbonVortex.trade{ value: expectedSourceAmount - 1 }(token1, targetAmount);
+        carbonVortex.trade{ value: expectedSourceAmount - 1 }(token1, targetAmount, expectedSourceAmount);
+    }
+
+    /// @dev test should revert if source amount exceeds max input on token to target token trades
+    function testShouldRevertIfSourceAmountExceedsMaxInputOnTokenToTargetTokenTrades() public {
+        vm.prank(admin);
+        // set fees
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(token1, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        // execute
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = token1;
+        carbonVortex.execute(tokens);
+
+        // trade target token for token1
+        uint128 targetAmount = 1 ether;
+
+        // advance time to a point where the token is tradeable at a reasonable price
+        vm.warp(40 days);
+
+        // get the expected trade input for 1 ether of target token
+        uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(token1, targetAmount);
+        // set max input to less than the expected source amount
+        uint128 maxInput = expectedSourceAmount - 1;
+
+        // trade
+        vm.expectRevert(ICarbonVortex.GreaterThanMaxInput.selector);
+        carbonVortex.trade{ value: expectedSourceAmount }(token1, targetAmount, maxInput);
+    }
+
+    /// @dev test should revert if source amount exceeds max input on target token to final target token trades
+    function testShouldRevertIfSourceAmountExceedsMaxInputOnTargetTokenToFinalTargetTokenTrades() public {
+        vm.prank(admin);
+        // set fees
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(targetToken, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        // execute
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = targetToken;
+        carbonVortex.execute(tokens);
+
+        // trade target token for final target token
+        uint128 targetAmount = 1 ether;
+
+        // advance time to a point where the token is tradeable at a reasonable price
+        vm.warp(40 days);
+
+        // get the expected trade input for 1 ether of target token
+        uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(targetToken, targetAmount);
+        // set max input to less than the expected source amount
+        uint128 maxInput = expectedSourceAmount - 1;
+
+        // trade
+        vm.expectRevert(ICarbonVortex.GreaterThanMaxInput.selector);
+        carbonVortex.trade(targetToken, targetAmount, maxInput);
     }
 
     /// @dev test should properly return price for the target token after a big sale
@@ -1833,9 +1895,11 @@ contract CarbonVortexTest is TestFixture {
         // trade 95% of the target token sale amount
         uint128 currentTargetTokenSaleAmount = uint128(carbonVortex.targetTokenSaleAmount().initial);
         uint128 tradeAmount = (currentTargetTokenSaleAmount * 95) / 100;
+        // get expected input
+        uint128 expectedInput = carbonVortex.expectedTradeInput(token, tradeAmount);
         vm.expectEmit();
         emit PriceUpdated(token, expectedNewPrice);
-        carbonVortex.trade(token, tradeAmount);
+        carbonVortex.trade(token, tradeAmount, expectedInput);
 
         // price has been reset at this point
 
@@ -1865,8 +1929,10 @@ contract CarbonVortexTest is TestFixture {
 
         // --- repeat flow to make sure it works correctly ---
 
+        // get expected input
+        expectedInput = carbonVortex.expectedTradeInput(token, tradeAmount);
         // trade 95% of the target token sale amount
-        carbonVortex.trade(token, tradeAmount);
+        carbonVortex.trade(token, tradeAmount, expectedInput);
 
         // price has been reset at this point
 
@@ -1926,7 +1992,8 @@ contract CarbonVortexTest is TestFixture {
         // trade 95% of the target token sale amount
         uint128 currentTargetTokenSaleAmount = uint128(carbonVortex.targetTokenSaleAmount().initial);
         uint128 tradeAmount = (currentTargetTokenSaleAmount * 95) / 100;
-        carbonVortex.trade(token, tradeAmount);
+        uint128 expectedInput = carbonVortex.expectedTradeInput(token, tradeAmount);
+        carbonVortex.trade(token, tradeAmount, expectedInput);
 
         // increase timestamp by 10 days (half-life time)
         vm.warp(timeIncrease + 10 days + 1);
@@ -1987,7 +2054,7 @@ contract CarbonVortexTest is TestFixture {
         uint128 sourceAmount = carbonVortex.expectedTradeInput(token, tradeAmount);
         vm.expectEmit();
         emit TradingReset(token, initialPrice);
-        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount);
+        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount, sourceAmount);
 
         // price has been reset at this point
 
@@ -2043,7 +2110,7 @@ contract CarbonVortexTest is TestFixture {
         uint128 sourceAmount = carbonVortex.expectedTradeInput(token, tradeAmount);
         vm.expectEmit();
         emit TradingReset(token, initialPrice);
-        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount);
+        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount, sourceAmount);
     }
 
     /// @dev test should emit min token sale amount updated for token after a big sale
@@ -2093,7 +2160,7 @@ contract CarbonVortexTest is TestFixture {
 
         vm.expectEmit();
         emit MinTokenSaleAmountUpdated(token, minSaleAmount, expectedTokenSaleAmount);
-        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount);
+        carbonVortex.trade{ value: sourceAmount }(token, tradeAmount, sourceAmount);
     }
 
     function testAttemptToTradeOnATokenForWhichTradingIsNotEnabledWillRevertWithTradingDisabled() public {
@@ -2104,10 +2171,10 @@ contract CarbonVortexTest is TestFixture {
         carbonController.testSetAccumulatedFees(token, accumulatedFees);
 
         vm.startPrank(user1);
-        uint128 tradeAmount = 1e18;
+        uint128 tradeAmount = 1;
         // expect revert with pair disabled on attempt to get input / return
         vm.expectRevert(ICarbonVortex.TradingDisabled.selector);
-        carbonVortex.trade(token, tradeAmount);
+        carbonVortex.trade(token, tradeAmount, 1e18);
     }
 
     function testAttemptToTradeOnADisabledTokenWillRevertWithPairDisabled() public {
@@ -2126,14 +2193,16 @@ contract CarbonVortexTest is TestFixture {
         carbonVortex.execute(tokens);
 
         vm.stopPrank();
-        vm.prank(admin);
+        vm.startPrank(admin);
+        uint128 tradeAmount = 1;
+        uint128 expectedInput = carbonVortex.expectedTradeInput(token, tradeAmount);
         carbonVortex.disablePair(token, true);
+        vm.stopPrank();
 
         vm.startPrank(user1);
-        uint128 tradeAmount = 1e18;
         // expect revert with pair disabled on attempt to get input / return
         vm.expectRevert(ICarbonVortex.PairDisabled.selector);
-        carbonVortex.trade(token, tradeAmount);
+        carbonVortex.trade(token, tradeAmount, expectedInput);
     }
 
     function testAttemptToGetInputOrReturnForDisabledTokenWillRevertWithPairDisabled() public {
@@ -2529,7 +2598,7 @@ contract CarbonVortexTest is TestFixture {
         // expect price is invalid - 0 source amount
         vm.expectRevert(ICarbonVortex.InvalidPrice.selector);
         // trade
-        carbonVortex.trade{ value: 1 }(token, 1);
+        carbonVortex.trade{ value: 1 }(token, 1, 1e18);
 
         // assert price source amount is 0
         ICarbonVortex.Price memory price = carbonVortex.tokenPrice(token);
@@ -2569,7 +2638,7 @@ contract CarbonVortexTest is TestFixture {
         // expect price is invalid on trade - 0 source amount
         vm.expectRevert(ICarbonVortex.InvalidPrice.selector);
         // trade
-        carbonVortex.trade{ value: 1 }(token, 1);
+        carbonVortex.trade{ value: 1 }(token, 1, 1e18);
 
         // assert price source amount is 0
         ICarbonVortex.Price memory price = carbonVortex.tokenPrice(token);
@@ -3575,7 +3644,7 @@ contract CarbonVortexTest is TestFixture {
         // expect execute to revert
         // reverts in "sendValue" in _allocateRewards in carbonVortex
         vm.expectRevert("Address: unable to send value, recipient may have reverted");
-        testReentrancy.tryReenterCarbonVortexTrade{ value: 1e18 }(tokens[0], 1);
+        testReentrancy.tryReenterCarbonVortexTrade{ value: 1e18 }(tokens[0], 1, 1e18);
         vm.stopPrank();
     }
 }

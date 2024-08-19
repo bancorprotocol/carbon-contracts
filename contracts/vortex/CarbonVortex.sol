@@ -614,22 +614,27 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      */
     function trade(
         Token token,
-        uint128 targetAmount
+        uint128 targetAmount,
+        uint128 maxInput
     ) external payable nonReentrant validToken(token) greaterThanZero(targetAmount) {
         uint128 sourceAmount;
         if (token == _targetToken) {
-            sourceAmount = _sellTargetForFinalTarget(targetAmount);
+            sourceAmount = _sellTargetForFinalTarget(targetAmount, maxInput);
         } else {
-            sourceAmount = _sellTokenForTargetToken(token, targetAmount);
+            sourceAmount = _sellTokenForTargetToken(token, targetAmount, maxInput);
         }
         emit TokenTraded({ caller: msg.sender, token: token, sourceAmount: sourceAmount, targetAmount: targetAmount });
     }
 
-    function _sellTokenForTargetToken(Token token, uint128 targetAmount) private returns (uint128) {
+    function _sellTokenForTargetToken(Token token, uint128 targetAmount, uint128 maxInput) private returns (uint128) {
         uint128 sourceAmount = expectedTradeInput(token, targetAmount);
         // revert if trade requires 0 target token
         if (sourceAmount == 0) {
             revert InvalidTrade();
+        }
+        // revert if trade requires more than maxInput
+        if (sourceAmount > maxInput) {
+            revert GreaterThanMaxInput();
         }
         // revert if unnecessary native token is received
         if (_targetToken != NATIVE_TOKEN && msg.value > 0) {
@@ -673,11 +678,15 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         return sourceAmount;
     }
 
-    function _sellTargetForFinalTarget(uint128 targetAmount) private returns (uint128) {
+    function _sellTargetForFinalTarget(uint128 targetAmount, uint128 maxInput) private returns (uint128) {
         uint128 sourceAmount = expectedTradeInput(_targetToken, targetAmount);
         // revert if trade requires 0 finalTarget tokens
         if (sourceAmount == 0) {
             revert InvalidTrade();
+        }
+        // revert if trade requires more than maxInput
+        if (sourceAmount > maxInput) {
+            revert GreaterThanMaxInput();
         }
 
         // check enough final target token (if final target token is native) has been sent for the trade
