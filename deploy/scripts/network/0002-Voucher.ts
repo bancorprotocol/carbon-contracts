@@ -1,4 +1,4 @@
-import { deployProxy, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
+import { deployProxy, execute, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
 import { VOUCHER_URI } from '../../../utils/Constants';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
@@ -15,6 +15,14 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
             args: [true, VOUCHER_URI, '']
         }
     );
+
+    // Call post upgrade (required once per deployment)
+    await execute({
+        name: InstanceName.Voucher,
+        methodName: 'postUpgrade',
+        args: ["0x"],
+        from: deployer
+    });
 
     return true;
 };

@@ -47,16 +47,18 @@ import { ethers, getNamedAccounts } from 'hardhat';
     let carbonVortex: CarbonVortex;
 
     let daoMultisig: SignerWithAddress;
+    let oldVortex: string;
 
     shouldHaveGap('CarbonController');
     shouldHaveGap('Pairs', '_lastPairId');
     shouldHaveGap('Strategies', '_strategyCounter');
     shouldHaveGap('Voucher', '_useGlobalURI');
-    shouldHaveGap('CarbonVortex', '_totalBurned');
+    shouldHaveGap('CarbonVortex', '_totalCollected');
     shouldHaveGap('CarbonPOL', '_marketPriceMultiply');
 
     before(async () => {
         ({ daoMultisig } = await getNamedSigners());
+        ({ oldVortex } = await getNamedAccounts());
     });
 
     beforeEach(async () => {
@@ -74,8 +76,8 @@ import { ethers, getNamedAccounts } from 'hardhat';
             await expectRoleMembers(voucher, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
             await expectRoleMembers(carbonVortex, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
 
-            // expect fee burner to have fee manager role in Carbon
-            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [carbonVortex.address]);
+            // expect carbon vortex to have fee manager role in Carbon
+            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [oldVortex, carbonVortex.address]);
 
             // expect carbonController to have minter role in voucher
             await expectRoleMembers(voucher, Roles.Voucher.ROLE_MINTER, [carbonController.address]);

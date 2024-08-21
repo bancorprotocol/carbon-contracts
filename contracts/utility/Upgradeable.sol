@@ -83,6 +83,9 @@ abstract contract Upgradeable is IUpgradeable, AccessControlEnumerableUpgradeabl
      */
     function postUpgrade(bytes calldata data) external {
         uint16 initializations = _initializations + 1;
+        if (initializations < version()) {
+            initializations = version();
+        }
         if (initializations != version()) {
             revert AlreadyInitialized();
         }

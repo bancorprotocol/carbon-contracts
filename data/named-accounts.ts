@@ -82,7 +82,7 @@ const TestNamedAccounts = {
         ...getAddress(mantle, '0xf89d7b9c864f589bbF53a82105107622B35EaA40')
     },
     daiWhale: {
-        ...getAddress(mainnet, '0x66F62574ab04989737228D18C3624f7FC1edAe14'),
+        ...getAddress(mainnet, '0xD1668fB5F690C59Ab4B0CAbAd0f8C1617895052B'),
         ...getAddress(base, '0xe9b14a1Be94E70900EDdF1E22A4cB8c56aC9e10a'),
         ...getAddress(arbitrum, '0xd85E038593d7A098614721EaE955EC2022B9B91B'),
         ...getAddress(mantle, ZERO_ADDRESS)
