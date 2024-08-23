@@ -16,14 +16,6 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         }
     );
 
-    // Call post upgrade (required once per deployment)
-    await execute({
-        name: InstanceName.Voucher,
-        methodName: 'postUpgrade',
-        args: ['0x'],
-        from: deployer
-    });
-
     return true;
 };
 
