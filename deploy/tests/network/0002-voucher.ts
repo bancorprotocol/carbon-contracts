@@ -27,7 +27,7 @@ describeDeployment(__filename, () => {
 
     it('cannot call postUpgrade on voucher', async () => {
         // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
-        const tx = await voucher.postUpgrade("0x", { gasLimit: 6000000 });
+        const tx = await voucher.postUpgrade('0x', { gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
     });
 });

@@ -20,7 +20,7 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     await execute({
         name: InstanceName.Voucher,
         methodName: 'postUpgrade',
-        args: ["0x"],
+        args: ['0x'],
         from: deployer
     });
 

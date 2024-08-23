@@ -30,7 +30,7 @@ describeDeployment(__filename, () => {
 
     it('cannot call postUpgrade on carbon controller', async () => {
         // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
-        const tx = await carbonController.postUpgrade("0x", { gasLimit: 6000000 });
+        const tx = await carbonController.postUpgrade('0x', { gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
     });
 });

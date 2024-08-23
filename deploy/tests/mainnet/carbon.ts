@@ -77,7 +77,10 @@ import { ethers, getNamedAccounts } from 'hardhat';
             await expectRoleMembers(carbonVortex, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
 
             // expect carbon vortex to have fee manager role in Carbon
-            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [oldVortex, carbonVortex.address]);
+            await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [
+                oldVortex,
+                carbonVortex.address
+            ]);
 
             // expect carbonController to have minter role in voucher
             await expectRoleMembers(voucher, Roles.Voucher.ROLE_MINTER, [carbonController.address]);

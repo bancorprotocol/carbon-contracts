@@ -329,6 +329,7 @@ export const deployProxy = async (options: DeployOptions, proxy: ProxyOptions = 
 // ]
 interface UpgradeProxyOptions extends DeployOptions {
     postUpgradeArgs?: TypedParam[];
+    checkVersion?: boolean;
 }
 
 export const upgradeProxy = async (options: UpgradeProxyOptions) => {
@@ -351,16 +352,17 @@ export const upgradeProxy = async (options: UpgradeProxyOptions) => {
         const values = postUpgradeArgs.map(({ value }) => value);
         const abiCoder = new AbiCoder();
 
-        upgradeCallData = [abiCoder.encode(types, values)];
+        upgradeCallData = abiCoder.encode(types, values);
     } else {
-        upgradeCallData = [ZERO_BYTES];
+        upgradeCallData = ZERO_BYTES;
     }
+    const checkVersion = options.checkVersion ?? true;
 
     const proxyOptions = {
         proxyContract: PROXY_CONTRACT,
         owner: await proxyAdmin.owner(),
         viaAdminContract: InstanceName.ProxyAdmin,
-        execute: { onUpgrade: { methodName: POST_UPGRADE, args: upgradeCallData } }
+        execute: { onUpgrade: { methodName: POST_UPGRADE, args: [checkVersion, upgradeCallData] } }
     };
 
     Logger.log(`  upgrading proxy ${contractName} V${prevVersion}`);
