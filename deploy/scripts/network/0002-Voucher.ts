@@ -1,4 +1,4 @@
-import { deployProxy, execute, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
+import { deployProxy, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
 import { VOUCHER_URI } from '../../../utils/Constants';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
