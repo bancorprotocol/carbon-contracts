@@ -25,7 +25,8 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     await upgradeProxy({
         name: InstanceName.CarbonController,
         from: deployer,
-        args: [voucher.address, carbonController.address]
+        args: [voucher.address, carbonController.address],
+        checkVersion: false
     });
 
     // Set the carbon controller address in the voucher contract
