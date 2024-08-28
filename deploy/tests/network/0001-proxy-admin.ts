@@ -16,6 +16,6 @@ describeDeployment(__filename, () => {
     });
 
     it('should deploy and configure the proxy admin contract', async () => {
-        await expect(await proxyAdmin.owner()).to.equal(deployer);
+        expect(await proxyAdmin.owner()).to.equal(deployer);
     });
 });

@@ -24,4 +24,10 @@ describeDeployment(__filename, () => {
         const tx = await voucherImpl.initialize(true, '1', '1', { gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
     });
+
+    it('cannot call postUpgrade on voucher', async () => {
+        // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
+        const tx = await voucher.postUpgrade(true, '0x', { gasLimit: 6000000 });
+        await expect(tx.wait()).to.be.reverted;
+    });
 });

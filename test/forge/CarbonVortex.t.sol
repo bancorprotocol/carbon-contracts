@@ -188,7 +188,7 @@ contract CarbonVortexTest is TestFixture {
 
     function testShouldBeInitialized() public view {
         uint16 version = carbonVortex.version();
-        assertEq(version, 1);
+        assertEq(version, 2);
     }
 
     function testShouldntBeAbleToReinitialize() public {

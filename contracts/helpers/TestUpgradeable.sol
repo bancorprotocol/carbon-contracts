@@ -13,9 +13,8 @@ contract TestUpgradeable is Upgradeable {
     // solhint-disable func-name-mixedcase
 
     function __TestUpgradeable_init() internal onlyInitializing {
-        __Upgradeable_init();
-
         __TestUpgradeable_init_unchained();
+        __Upgradeable_init();
     }
 
     function __TestUpgradeable_init_unchained() internal onlyInitializing {
