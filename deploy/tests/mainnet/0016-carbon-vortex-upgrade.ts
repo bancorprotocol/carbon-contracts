@@ -19,10 +19,7 @@ describeDeployment(__filename, () => {
 
     it('carbon vortex implementation should be initialized', async () => {
         const implementationAddress = await proxyAdmin.getProxyImplementation(carbonVortex.address);
-        const carbonControllerImpl: CarbonVortex = await ethers.getContractAt(
-            'CarbonVortex',
-            implementationAddress
-        );
+        const carbonControllerImpl: CarbonVortex = await ethers.getContractAt('CarbonVortex', implementationAddress);
         // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
         const tx = await carbonControllerImpl.initialize({ gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
@@ -30,7 +27,7 @@ describeDeployment(__filename, () => {
 
     it('cannot call postUpgrade on carbon vortex', async () => {
         // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
-        const tx = await carbonVortex.postUpgrade(true, "0x", { gasLimit: 6000000 });
+        const tx = await carbonVortex.postUpgrade(true, '0x', { gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
     });
 });

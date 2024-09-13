@@ -19,6 +19,16 @@ import { PPM_RESOLUTION, MAX_GAP } from "../utility/Constants.sol";
 
 /**
  * @notice CarbonVortex contract
+ *
+ * @dev
+ *
+ * collects fees and allows users to trade tokens in a dutch auction style
+ * configurable parameters include the target token, final target token and the halflife
+ * auctions are initiated by calling the execute function
+ * all auctions start with an initial price of 2^128 - 1
+ * half-life parameter sets the price decay rate -
+ * - this is the time in seconds it takes for the price to halve
+ * - this parameter can be configured so that tokens reach the market rate faster or slower
  */
 contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;
