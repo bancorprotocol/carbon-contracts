@@ -374,7 +374,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         bool carbonControllerIsNotZero = address(_carbonController) != address(0);
         bool vaultIsNotZero = address(_vault) != address(0);
 
-        // withdraw fees from carbon, vault and old vortex
+        // withdraw fees from carbon vault
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
             // withdraw token fees
