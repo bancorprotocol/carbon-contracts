@@ -155,9 +155,6 @@ const BancorNamedAccounts = {
     vault: {
         ...getAddress(mainnet, ZERO_ADDRESS),
         ...getAddress(base, '0xD2b2D272c30d9a0ff3DbaFe848DA7e2f194f697F')
-    },
-    oldVortex: {
-        ...getAddress(mainnet, '0xba7d1581Db6248DC9177466a328BF457703c8f84')
     }
 };
 

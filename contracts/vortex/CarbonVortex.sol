@@ -39,7 +39,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
 
     // addresses for token withdrawal
     ICarbonController private immutable _carbonController;
-    IVault private immutable _oldVortex;
     IVault private immutable _vault;
 
     // address for token collection - collects all swapped target/final target tokens
@@ -96,14 +95,12 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     constructor(
         ICarbonController carbonController,
         IVault vault,
-        IVault oldVortex,
         address payable transferAddress,
         Token targetTokenInit,
         Token finalTargetTokenInit
     ) validAddress(transferAddress) validAddress(Token.unwrap(targetTokenInit)) {
         _carbonController = carbonController;
         _vault = vault;
-        _oldVortex = oldVortex;
 
         _transferAddress = transferAddress;
 
@@ -178,7 +175,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @inheritdoc Upgradeable
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
-        return 2;
+        return 3;
     }
 
     /**
@@ -357,9 +354,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         if (address(_vault) != address(0)) {
             totalFees += token.balanceOf(address(_vault));
         }
-        if (address(_oldVortex) != address(0)) {
-            totalFees += token.balanceOf(address(_oldVortex));
-        }
         return totalFees + token.balanceOf(address(this));
     }
 
@@ -379,7 +373,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // cache address checks to save gas
         bool carbonControllerIsNotZero = address(_carbonController) != address(0);
         bool vaultIsNotZero = address(_vault) != address(0);
-        bool oldVortexIsNotZero = address(_oldVortex) != address(0);
 
         // withdraw fees from carbon, vault and old vortex
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
@@ -395,13 +388,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
                 // withdraw vault token balance
                 _vault.withdrawFunds(token, payable(address(this)), vaultBalance);
                 totalFeeAmount += vaultBalance;
-            }
-            if (oldVortexIsNotZero) {
-                // get old vortex token balance
-                uint256 oldVortexBalance = token.balanceOf(address(_oldVortex));
-                // withdraw old vortex token balance
-                _oldVortex.withdrawFunds(token, payable(address(this)), oldVortexBalance);
-                totalFeeAmount += oldVortexBalance;
             }
             feeAmounts[i] = totalFeeAmount;
 
