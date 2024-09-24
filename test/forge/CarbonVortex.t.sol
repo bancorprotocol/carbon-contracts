@@ -173,13 +173,7 @@ contract CarbonVortexTest is TestFixture {
 
     function testShouldRevertWhenDeployingWithInvalidTargetToken() public {
         vm.expectRevert(InvalidAddress.selector);
-        new CarbonVortex(
-            carbonController,
-            IVault(vault),
-            transferAddress,
-            Token.wrap(address(0)),
-            bnt
-        );
+        new CarbonVortex(carbonController, IVault(vault), transferAddress, Token.wrap(address(0)), bnt);
     }
 
     function testShouldBeInitialized() public view {
@@ -233,10 +227,7 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test should distribute rewards to caller on execute from vault
-    function testShouldDistributeRewardsToCallerOnExecuteFromVault(
-        uint256 i,
-        uint256 feesAccumulatedVault
-    ) public {
+    function testShouldDistributeRewardsToCallerOnExecuteFromVault(uint256 i, uint256 feesAccumulatedVault) public {
         vm.startPrank(admin);
 
         // token index
@@ -468,24 +459,16 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokens = new Token[](1);
         tokens[0] = token;
         // call execute for the target token
-        // expect two withdraw emits from vault
-        for (uint256 i = 0; i < 2; ++i) {
-            vm.expectEmit();
-            emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
-        }
+        // expect one withdraw emit from vault
+        vm.expectEmit();
+        emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
         carbonVortex.execute(tokens);
     }
 
     /// @dev test that vortex can be deployed with vault set to 0x0 address and it will be skipped on execute
     function testExecuteShouldSkipVaultWithZeroAddress() public {
         // deploy vortex with a vault with 0x0 address
-        deployCarbonVortex(
-            address(carbonController),
-            address(0),
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
+        deployCarbonVortex(address(carbonController), address(0), transferAddress, targetToken, finalTargetToken);
 
         vm.startPrank(admin);
 
@@ -505,11 +488,9 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokens = new Token[](1);
         tokens[0] = token;
         // call execute for the target token
-        // expect two withdraw emits from carbon controller and vortex
+        // expect two withdraw emits from carbon controller
         vm.expectEmit();
         emit FeesWithdrawn(token, address(carbonVortex), accumulatedFees, address(carbonVortex));
-        vm.expectEmit();
-        emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
         // execute
         carbonVortex.execute(tokens);
     }
@@ -567,7 +548,7 @@ contract CarbonVortexTest is TestFixture {
         ];
 
         // assert full carbon controller and vault fees are withdrawn
-        for (uint256 i = 0; i < 3; ++i) {
+        for (uint256 i = 0; i < 2; ++i) {
             assertEq(balancesBefore[i] - balancesAfter[i], feesAccumulated[i]);
         }
 
@@ -665,13 +646,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test execute shouldnt emit a trade reset event for the target token if the final target token is zero
     function testShouldTransferTokensDirectlyToTheTransferAddressOnExecuteIfFinalTargetTokenIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
 
@@ -707,13 +682,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test execute should increment total collected on execute for the target token if the final target token is zero
     function testShouldIncrementTotalCollectedOnExecuteIfFinalTargetTokenAddressIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
 
@@ -1040,13 +1009,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test execute shouldnt emit a trade reset event for the target token if the final target token is zero
     function testFailShouldntEmitTradeResetForTheTargetTokenIfTheFinalTargetTokenIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
 
@@ -1443,13 +1406,7 @@ contract CarbonVortexTest is TestFixture {
         public
     {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.prank(admin);
         // set fees
@@ -2180,18 +2137,14 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test that there isn't an incorrect reading of the 0x0 address balance
     function testShouldReturnTotalFeesAvailableCorrectlyIfTheVaultIsTheZeroAddress() public {
         // deploy new vortex with the vault set to 0x0
-        deployCarbonVortex(
-            address(carbonController),
-            address(0),
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
+        deployCarbonVortex(address(carbonController), address(0), transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
         // increment fees in the carbon controller
         carbonController.testSetAccumulatedFees(token1, accumulatedFees);
+        // transfer fees to vortex
+        token1.safeTransfer(address(carbonVortex), accumulatedFees);
 
         vm.startPrank(user1);
 
@@ -2205,13 +2158,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test that there isn't an incorrect reading of the fees
     function testShouldReturnTotalFeesAvailableCorrectly() public {
         // deploy new vortex
-        deployCarbonVortex(
-            address(carbonController),
-            address(vault),
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
+        deployCarbonVortex(address(carbonController), address(vault), transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
