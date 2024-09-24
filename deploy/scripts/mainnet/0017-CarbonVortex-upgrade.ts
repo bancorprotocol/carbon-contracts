@@ -5,8 +5,7 @@ import { NATIVE_TOKEN_ADDRESS } from '../../../utils/Constants';
 
 /**
  * upgrade carbon vortex 2.0 to v3:
- * add maxInput to trade function
- * fix upgradeable contract
+ * remove the old vortex dependency
  */
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
     const { deployer, bnt, vault } = await getNamedAccounts();
