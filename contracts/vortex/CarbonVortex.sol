@@ -31,6 +31,7 @@ import { PPM_RESOLUTION, MAX_GAP } from "../utility/Constants.sol";
  * - this parameter can be configured so that tokens reach the market rate faster or slower
  * target token is the token to which all other tokens are traded to (can be native token for example)
  * final target token is an additional token to which the target token is traded to (optional)
+ * transferAddress is the address to which all target / final target tokens are sent to
  */
 contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;

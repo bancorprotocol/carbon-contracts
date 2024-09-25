@@ -10,6 +10,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
  * 1. target token is *targetToken* - set address in named-accounts VortexNamedAccounts for the chain
  * 2. final target token is *finalTargetToken* - set address in named-accounts VortexNamedAccounts for the chain (can be zero address)
  * 3. transferAddress is *transferAddress* - set address in named-accounts VortexNamedAccounts for the chain
+ *    --- this is the address that will receive the target / final target tokens after trade
  * 4. CarbonController is set as withdraw address (on execute, tokens will be withdrawn from it
  * 5. For licensed deployments, vault should be address 0 (already configured)
  */
