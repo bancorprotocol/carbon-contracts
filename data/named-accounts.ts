@@ -246,19 +246,13 @@ const BancorNamedAccounts = {
 
 const VortexNamedAccounts = {
     targetToken: {
-        ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS),
-        ...getAddress(sei, NATIVE_TOKEN_ADDRESS),
-        ...getAddress(fantom, NATIVE_TOKEN_ADDRESS)
+        ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS)
     },
     finalTargetToken: {
-        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
-        ...getAddress(sei, ZERO_ADDRESS),
-        ...getAddress(fantom, ZERO_ADDRESS)
+        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
     },
     transferAddress: {
-        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
-        ...getAddress(sei, '0xE1aB22cd03377db66aeb15687E881Eab9e1a26C1'),
-        ...getAddress(fantom, '0xE1aB22cd03377db66aeb15687E881Eab9e1a26C1'),
+        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
     }
 }
 
