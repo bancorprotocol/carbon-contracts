@@ -13,6 +13,7 @@ export enum MainnetNetwork {
     Avalanche = 'avalanche',
     Base = 'base',
     BSC = 'bsc',
+    Blast = 'blast',
     Canto = 'canto',
     Celo = 'celo',
     Cronos = 'cronos',

@@ -29,6 +29,8 @@ import { PPM_RESOLUTION, MAX_GAP } from "../utility/Constants.sol";
  * half-life parameter sets the price decay rate -
  * - this is the time in seconds it takes for the price to halve
  * - this parameter can be configured so that tokens reach the market rate faster or slower
+ * target token is the token to which all other tokens are traded to (can be native token for example)
+ * final target token is an additional token to which the target token is traded to (optional)
  */
 contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;
