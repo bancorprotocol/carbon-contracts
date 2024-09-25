@@ -123,7 +123,6 @@ contract TestFixture is Test {
     function deployCarbonVortex(
         address _carbonController,
         address _vault,
-        address _oldVortex,
         address _fundReceiver,
         Token _targetToken,
         Token _finalTargetToken
@@ -135,7 +134,6 @@ contract TestFixture is Test {
         carbonVortex = new CarbonVortex(
             ICarbonController(_carbonController),
             IVault(_vault),
-            IVault(_oldVortex),
             payable(_fundReceiver),
             _targetToken,
             _finalTargetToken
@@ -159,14 +157,6 @@ contract TestFixture is Test {
         // grant asset manager role on vault to carbon vortex
         if (_vault != address(0)) {
             TestVault(payable(_vault)).grantRole(TestVault(payable(_vault)).roleAssetManager(), address(carbonVortex));
-        }
-
-        // grant asset manager role on old vortex to carbon vortex
-        if (_oldVortex != address(0)) {
-            TestVault(payable(_oldVortex)).grantRole(
-                TestVault(payable(_oldVortex)).roleAssetManager(),
-                address(carbonVortex)
-            );
         }
 
         vm.stopPrank();

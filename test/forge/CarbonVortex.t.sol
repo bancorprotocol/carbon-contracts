@@ -21,7 +21,6 @@ contract CarbonVortexTest is TestFixture {
     using Address for address payable;
 
     address private vault;
-    address private oldVortex;
     address payable private transferAddress;
 
     Token private targetToken;
@@ -149,8 +148,6 @@ contract CarbonVortexTest is TestFixture {
         setupCarbonController();
         // Deploy Vault
         vault = deployVault();
-        // Deploy Old Vortex
-        oldVortex = deployVault();
         // set up target token
         targetToken = NATIVE_TOKEN;
         // set up final target token
@@ -158,7 +155,7 @@ contract CarbonVortexTest is TestFixture {
         // set up transfer address
         transferAddress = payable(user2);
         // Deploy Carbon Vortex
-        deployCarbonVortex(address(carbonController), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, finalTargetToken);
         // Transfer tokens to Carbon Controller
         transferTokensToCarbonController();
         // Deploy test case parser
@@ -171,24 +168,17 @@ contract CarbonVortexTest is TestFixture {
 
     function testShouldRevertWhenDeployingWithInvalidTransferAddress() public {
         vm.expectRevert(InvalidAddress.selector);
-        new CarbonVortex(carbonController, IVault(vault), IVault(oldVortex), payable(address(0)), NATIVE_TOKEN, bnt);
+        new CarbonVortex(carbonController, IVault(vault), payable(address(0)), NATIVE_TOKEN, bnt);
     }
 
     function testShouldRevertWhenDeployingWithInvalidTargetToken() public {
         vm.expectRevert(InvalidAddress.selector);
-        new CarbonVortex(
-            carbonController,
-            IVault(vault),
-            IVault(oldVortex),
-            transferAddress,
-            Token.wrap(address(0)),
-            bnt
-        );
+        new CarbonVortex(carbonController, IVault(vault), transferAddress, Token.wrap(address(0)), bnt);
     }
 
     function testShouldBeInitialized() public view {
         uint16 version = carbonVortex.version();
-        assertEq(version, 2);
+        assertEq(version, 3);
     }
 
     function testShouldntBeAbleToReinitialize() public {
@@ -236,12 +226,8 @@ contract CarbonVortexTest is TestFixture {
         assertEq(balanceAfter - balanceBefore, expectedUserRewards[0]);
     }
 
-    /// @dev test should distribute rewards to caller on execute from vault and old vortex
-    function testShouldDistributeRewardsToCallerOnExecuteFromVaultAndOldVortex(
-        uint256 i,
-        uint256 feesAccumulatedVault,
-        uint256 feesAccumulatedOldVortex
-    ) public {
+    /// @dev test should distribute rewards to caller on execute from vault
+    function testShouldDistributeRewardsToCallerOnExecuteFromVault(uint256 i, uint256 feesAccumulatedVault) public {
         vm.startPrank(admin);
 
         // token index
@@ -252,20 +238,15 @@ contract CarbonVortexTest is TestFixture {
         Token token = tokens[i];
 
         feesAccumulatedVault = bound(feesAccumulatedVault, 0, MAX_WITHDRAW_AMOUNT);
-        feesAccumulatedOldVortex = bound(feesAccumulatedOldVortex, 0, MAX_WITHDRAW_AMOUNT);
-        // transfer tokens to vault and old vortex
+        // transfer tokens to vault
         if (token == NATIVE_TOKEN) {
             vm.deal(address(vault), feesAccumulatedVault);
-            vm.deal(address(oldVortex), feesAccumulatedOldVortex);
         } else {
             token.safeTransfer(address(vault), feesAccumulatedVault);
-            token.safeTransfer(address(oldVortex), feesAccumulatedOldVortex);
         }
 
-        // check combined token balance of both vault and old vortex
+        // check token balance of the vault
         uint256 balanceOfVault = token.balanceOf(address(vault));
-        uint256 balanceOfOldVortex = token.balanceOf(address(oldVortex));
-        uint256 combinedBalance = balanceOfVault + balanceOfOldVortex;
 
         vm.stopPrank();
 
@@ -278,7 +259,7 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokensArr = new Token[](1);
         tokensArr[0] = token;
         // calculate expected rewards
-        uint256 expectedUserRewards = (combinedBalance * rewards) / PPM_RESOLUTION;
+        uint256 expectedUserRewards = (balanceOfVault * rewards) / PPM_RESOLUTION;
         carbonVortex.execute(tokensArr);
 
         uint256 balanceAfter = token.balanceOf(user1);
@@ -328,41 +309,26 @@ contract CarbonVortexTest is TestFixture {
         assertEq(balancesAfter[2] - balancesBefore[2], expectedRewards);
     }
 
-    function testShouldDistributeRewardsToCallerOnExecuteFromOldVortexAndVaultForMultipleTokens(
-        uint256 feesAccumulatedVault,
-        uint256 feesAccumulatedOldVortex
+    function testShouldDistributeRewardsToCallerOnExecuteFromVaultForMultipleTokens(
+        uint256 feesAccumulatedVault
     ) public {
         vm.startPrank(admin);
         feesAccumulatedVault = bound(feesAccumulatedVault, 0, MAX_WITHDRAW_AMOUNT);
-        feesAccumulatedOldVortex = bound(feesAccumulatedOldVortex, 0, MAX_WITHDRAW_AMOUNT);
         Token[] memory tokens = new Token[](3);
         tokens[0] = token1;
         tokens[1] = token2;
         tokens[2] = targetToken;
-        // transfer tokens to vault and old vortex
+        // transfer tokens to vault
         tokens[0].safeTransfer(address(vault), feesAccumulatedVault);
-        tokens[0].safeTransfer(address(oldVortex), feesAccumulatedOldVortex);
 
         tokens[1].safeTransfer(address(vault), feesAccumulatedVault);
-        tokens[1].safeTransfer(address(oldVortex), feesAccumulatedOldVortex);
 
         vm.deal(address(vault), feesAccumulatedVault);
-        vm.deal(address(oldVortex), feesAccumulatedVault);
 
         uint256[3] memory balancesOfVault = [
             tokens[0].balanceOf(address(vault)),
             tokens[1].balanceOf(address(vault)),
             tokens[2].balanceOf(address(vault))
-        ];
-        uint256[3] memory balancesOfOldVortex = [
-            tokens[0].balanceOf(address(oldVortex)),
-            tokens[1].balanceOf(address(oldVortex)),
-            tokens[2].balanceOf(address(oldVortex))
-        ];
-        uint256[3] memory combinedBalances = [
-            balancesOfVault[0] + balancesOfOldVortex[0],
-            balancesOfVault[1] + balancesOfOldVortex[1],
-            balancesOfVault[2] + balancesOfOldVortex[2]
         ];
 
         vm.stopPrank();
@@ -380,7 +346,7 @@ contract CarbonVortexTest is TestFixture {
         // calculate expected rewards
         uint256[] memory expectedUserRewards = new uint256[](3);
         for (uint256 i = 0; i < 3; ++i) {
-            expectedUserRewards[i] = (combinedBalances[i] * rewards) / PPM_RESOLUTION;
+            expectedUserRewards[i] = (balancesOfVault[i] * rewards) / PPM_RESOLUTION;
         }
 
         // execute
@@ -442,7 +408,7 @@ contract CarbonVortexTest is TestFixture {
         }
     }
 
-    /// @dev test should withdraw fees from CarbonController, Vault and OldVortex on calling execute
+    /// @dev test should withdraw fees from CarbonController and Vault on calling execute
     function testShouldWithdrawFeesOnExecute() public {
         vm.startPrank(admin);
         uint256[] memory tokenAmounts = new uint256[](4);
@@ -459,16 +425,12 @@ contract CarbonVortexTest is TestFixture {
         for (uint256 i = 0; i < 4; ++i) {
             carbonController.testSetAccumulatedFees(tokens[i], tokenAmounts[i]);
             tokens[i].safeTransfer(address(vault), tokenAmounts[i]);
-            tokens[i].safeTransfer(address(oldVortex), tokenAmounts[i]);
 
             vm.expectEmit();
             // carbon controller fees event
             emit FeesWithdrawn(tokens[i], address(carbonVortex), tokenAmounts[i], address(carbonVortex));
             vm.expectEmit();
             // vault fees event
-            emit FundsWithdrawn(tokens[i], address(carbonVortex), address(carbonVortex), tokenAmounts[i]);
-            vm.expectEmit();
-            // old vortex fees event
             emit FundsWithdrawn(tokens[i], address(carbonVortex), address(carbonVortex), tokenAmounts[i]);
             carbonVortex.execute(tokens);
         }
@@ -478,7 +440,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test that vortex can be deployed with carbon controller set to 0x0 address and it will be skipped on execute
     function testExecuteShouldSkipCarbonControllerDeployedWithZeroAddress() public {
         // deploy new vortex with carbon controller set to 0x0
-        deployCarbonVortex(address(0), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(0), vault, transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
 
         // test with the target token
@@ -488,8 +450,6 @@ contract CarbonVortexTest is TestFixture {
 
         // send fees to vault
         token.safeTransfer(address(vault), accumulatedFees);
-        // send tokens to old vortex
-        token.safeTransfer(address(oldVortex), accumulatedFees);
 
         vm.stopPrank();
 
@@ -499,25 +459,16 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokens = new Token[](1);
         tokens[0] = token;
         // call execute for the target token
-        // expect two withdraw emits from vault and old vortex
-        for (uint256 i = 0; i < 2; ++i) {
-            vm.expectEmit();
-            emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
-        }
+        // expect one withdraw emit from vault
+        vm.expectEmit();
+        emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
         carbonVortex.execute(tokens);
     }
 
     /// @dev test that vortex can be deployed with vault set to 0x0 address and it will be skipped on execute
     function testExecuteShouldSkipVaultWithZeroAddress() public {
         // deploy vortex with a vault with 0x0 address
-        deployCarbonVortex(
-            address(carbonController),
-            address(0),
-            oldVortex,
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
+        deployCarbonVortex(address(carbonController), address(0), transferAddress, targetToken, finalTargetToken);
 
         vm.startPrank(admin);
 
@@ -525,9 +476,6 @@ contract CarbonVortexTest is TestFixture {
         Token token = targetToken;
 
         uint256 accumulatedFees = 100 ether;
-
-        // send fees to old vortex
-        token.safeTransfer(address(oldVortex), accumulatedFees);
 
         // accumulate fees in carbon controller
         carbonController.testSetAccumulatedFees(token, accumulatedFees);
@@ -540,53 +488,9 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokens = new Token[](1);
         tokens[0] = token;
         // call execute for the target token
-        // expect two withdraw emits from carbon controller and old vortex
+        // expect two withdraw emits from carbon controller
         vm.expectEmit();
         emit FeesWithdrawn(token, address(carbonVortex), accumulatedFees, address(carbonVortex));
-        vm.expectEmit();
-        emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
-        // execute
-        carbonVortex.execute(tokens);
-    }
-
-    /// @dev test that vortex can be deployed with old vortex set to 0x0 address and it will be skipped on execute
-    function testExecuteShouldSkipOldVortexWithZeroAddress() public {
-        // deploy vortex with a old vortex with 0x0 address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            address(0),
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
-
-        vm.startPrank(admin);
-
-        // test with the target token
-        Token token = targetToken;
-
-        uint256 accumulatedFees = 100 ether;
-
-        // send fees to vault
-        token.safeTransfer(address(vault), accumulatedFees);
-
-        // accumulate fees in carbon controller
-        carbonController.testSetAccumulatedFees(token, accumulatedFees);
-
-        vm.stopPrank();
-
-        vm.startPrank(user1);
-
-        // create token array
-        Token[] memory tokens = new Token[](1);
-        tokens[0] = token;
-        // call execute for the target token
-        // expect two withdraw emits from carbon controller and old vortex
-        vm.expectEmit();
-        emit FeesWithdrawn(token, address(carbonVortex), accumulatedFees, address(carbonVortex));
-        vm.expectEmit();
-        emit FundsWithdrawn(token, address(carbonVortex), address(carbonVortex), accumulatedFees);
         // execute
         carbonVortex.execute(tokens);
     }
@@ -597,8 +501,8 @@ contract CarbonVortexTest is TestFixture {
 
     /// @dev test should properly transfer out fees from the vaults and send fees to the vortex
     /// @param idx: token index
-    /// @param feesAccumulated: fees accumulated in the carbon controller, vault and old vortex
-    function testShouldProperlyTransferAmountsOnExecuteForToken(uint256 idx, uint256[3] memory feesAccumulated) public {
+    /// @param feesAccumulated: fees accumulated in the carbon controller and vault
+    function testShouldProperlyTransferAmountsOnExecuteForToken(uint256 idx, uint256[2] memory feesAccumulated) public {
         vm.startPrank(admin);
 
         // token index
@@ -609,30 +513,27 @@ contract CarbonVortexTest is TestFixture {
         Token token = tokens[idx];
 
         // set fee amounts
-        for (uint256 i = 0; i < 3; ++i) {
+        for (uint256 i = 0; i < 2; ++i) {
             feesAccumulated[i] = bound(feesAccumulated[i], 0, MAX_WITHDRAW_AMOUNT);
         }
 
         // set token fees in the carbon controller
         carbonController.testSetAccumulatedFees(token, feesAccumulated[0]);
 
-        // transfer tokens to vault and old vortex
+        // transfer tokens to vault
         if (token == NATIVE_TOKEN) {
             vm.deal(address(vault), feesAccumulated[1]);
-            vm.deal(address(oldVortex), feesAccumulated[2]);
         } else {
             token.safeTransfer(address(vault), feesAccumulated[1]);
-            token.safeTransfer(address(oldVortex), feesAccumulated[2]);
         }
 
         vm.stopPrank();
 
         vm.startPrank(user1);
 
-        uint256[4] memory balancesBefore = [
+        uint256[3] memory balancesBefore = [
             token.balanceOf(address(carbonController)),
             token.balanceOf(address(vault)),
-            token.balanceOf(address(oldVortex)),
             token.balanceOf(address(carbonVortex))
         ];
 
@@ -640,33 +541,32 @@ contract CarbonVortexTest is TestFixture {
         tokensArr[0] = token;
         carbonVortex.execute(tokensArr);
 
-        uint256[4] memory balancesAfter = [
+        uint256[3] memory balancesAfter = [
             token.balanceOf(address(carbonController)),
             token.balanceOf(address(vault)),
-            token.balanceOf(address(oldVortex)),
             token.balanceOf(address(carbonVortex))
         ];
 
-        // assert full carbon controller, vault and old vortex fees are withdrawn
-        for (uint256 i = 0; i < 3; ++i) {
+        // assert full carbon controller and vault fees are withdrawn
+        for (uint256 i = 0; i < 2; ++i) {
             assertEq(balancesBefore[i] - balancesAfter[i], feesAccumulated[i]);
         }
 
         // assert full fees are transferred to the vortex
-        uint256 totalFeesAccumulated = feesAccumulated[0] + feesAccumulated[1] + feesAccumulated[2];
+        uint256 totalFeesAccumulated = feesAccumulated[0] + feesAccumulated[1];
         uint256 expectedRewards = (totalFeesAccumulated * carbonVortex.rewardsPPM()) / PPM_RESOLUTION;
-        assertEq(balancesAfter[3] - balancesBefore[3], totalFeesAccumulated - expectedRewards);
+        assertEq(balancesAfter[2] - balancesBefore[2], totalFeesAccumulated - expectedRewards);
     }
 
     /// @dev test should properly transfer out fees from the vaults and send fees to the vortex for multiple tokens
-    function testShouldProperlyTransferAmountsOnExecuteForMultipleTokens(uint256[3] memory feesAccumulated) public {
+    function testShouldProperlyTransferAmountsOnExecuteForMultipleTokens(uint256[2] memory feesAccumulated) public {
         vm.startPrank(admin);
 
         // test with these 3 tokens
         Token[3] memory tokens = [token1, token2, targetToken];
 
         // set fee amounts
-        for (uint256 i = 0; i < 3; ++i) {
+        for (uint256 i = 0; i < 2; ++i) {
             feesAccumulated[i] = bound(feesAccumulated[i], 0, MAX_WITHDRAW_AMOUNT);
         }
 
@@ -675,35 +575,30 @@ contract CarbonVortexTest is TestFixture {
             carbonController.testSetAccumulatedFees(tokens[i], feesAccumulated[0]);
         }
 
-        // transfer tokens to vault and old vortex
+        // transfer tokens to vault
         vm.deal(address(vault), feesAccumulated[1]);
-        vm.deal(address(oldVortex), feesAccumulated[2]);
         for (uint256 i = 0; i < 2; ++i) {
             tokens[i].safeTransfer(address(vault), feesAccumulated[1]);
-            tokens[i].safeTransfer(address(oldVortex), feesAccumulated[2]);
         }
 
         vm.stopPrank();
 
         vm.startPrank(user1);
 
-        uint256[4][3] memory balancesBefore = [
+        uint256[3][3] memory balancesBefore = [
             [
                 tokens[0].balanceOf(address(carbonController)),
                 tokens[0].balanceOf(address(vault)),
-                tokens[0].balanceOf(address(oldVortex)),
                 tokens[0].balanceOf(address(carbonVortex))
             ],
             [
                 tokens[1].balanceOf(address(carbonController)),
                 tokens[1].balanceOf(address(vault)),
-                tokens[1].balanceOf(address(oldVortex)),
                 tokens[1].balanceOf(address(carbonVortex))
             ],
             [
                 tokens[2].balanceOf(address(carbonController)),
                 tokens[2].balanceOf(address(vault)),
-                tokens[2].balanceOf(address(oldVortex)),
                 tokens[2].balanceOf(address(carbonVortex))
             ]
         ];
@@ -715,53 +610,43 @@ contract CarbonVortexTest is TestFixture {
 
         carbonVortex.execute(tokensArr);
 
-        uint256[4][3] memory balancesAfter = [
+        uint256[3][3] memory balancesAfter = [
             [
                 tokens[0].balanceOf(address(carbonController)),
                 tokens[0].balanceOf(address(vault)),
-                tokens[0].balanceOf(address(oldVortex)),
                 tokens[0].balanceOf(address(carbonVortex))
             ],
             [
                 tokens[1].balanceOf(address(carbonController)),
                 tokens[1].balanceOf(address(vault)),
-                tokens[1].balanceOf(address(oldVortex)),
                 tokens[1].balanceOf(address(carbonVortex))
             ],
             [
                 tokens[2].balanceOf(address(carbonController)),
                 tokens[2].balanceOf(address(vault)),
-                tokens[2].balanceOf(address(oldVortex)),
                 tokens[2].balanceOf(address(carbonVortex))
             ]
         ];
 
-        // assert full carbon controller, vault and old vortex fees are withdrawn
+        // assert full carbon controller and vault fees are withdrawn
         for (uint256 i = 0; i < 3; ++i) {
-            for (uint256 j = 0; j < 3; ++j) {
+            for (uint256 j = 0; j < 2; ++j) {
                 assertEq(balancesBefore[i][j] - balancesAfter[i][j], feesAccumulated[j]);
             }
         }
 
         // assert full fees are transferred to the vortex
-        uint256 totalFeesAccumulated = feesAccumulated[0] + feesAccumulated[1] + feesAccumulated[2];
+        uint256 totalFeesAccumulated = feesAccumulated[0] + feesAccumulated[1];
         uint256 expectedRewards = (totalFeesAccumulated * carbonVortex.rewardsPPM()) / PPM_RESOLUTION;
         for (uint256 i = 0; i < 3; ++i) {
-            assertEq(balancesAfter[i][3] - balancesBefore[i][3], totalFeesAccumulated - expectedRewards);
+            assertEq(balancesAfter[i][2] - balancesBefore[i][2], totalFeesAccumulated - expectedRewards);
         }
     }
 
     /// @dev test execute shouldnt emit a trade reset event for the target token if the final target token is zero
     function testShouldTransferTokensDirectlyToTheTransferAddressOnExecuteIfFinalTargetTokenIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            oldVortex,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
 
@@ -797,14 +682,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test execute should increment total collected on execute for the target token if the final target token is zero
     function testShouldIncrementTotalCollectedOnExecuteIfFinalTargetTokenAddressIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            oldVortex,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
 
@@ -1131,14 +1009,7 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test execute shouldnt emit a trade reset event for the target token if the final target token is zero
     function testFailShouldntEmitTradeResetForTheTargetTokenIfTheFinalTargetTokenIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            oldVortex,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
 
@@ -1535,14 +1406,7 @@ contract CarbonVortexTest is TestFixture {
         public
     {
         // Deploy new Carbon Vortex with the final target token set to the zero address
-        deployCarbonVortex(
-            address(carbonController),
-            vault,
-            oldVortex,
-            transferAddress,
-            targetToken,
-            Token.wrap(address(0))
-        );
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.prank(admin);
         // set fees
@@ -1581,7 +1445,7 @@ contract CarbonVortexTest is TestFixture {
         finalTargetToken = NATIVE_TOKEN;
         Token token = token1;
         // Deploy new Carbon Vortex with the target token set to a token different than native token
-        deployCarbonVortex(address(carbonController), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, finalTargetToken);
         vm.prank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
@@ -1640,7 +1504,7 @@ contract CarbonVortexTest is TestFixture {
         targetToken = bnt;
         finalTargetToken = NATIVE_TOKEN;
         // Deploy new Carbon Vortex with the final target token set to the native token
-        deployCarbonVortex(address(carbonController), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, finalTargetToken);
         vm.prank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
@@ -1673,7 +1537,7 @@ contract CarbonVortexTest is TestFixture {
         targetToken = bnt;
         finalTargetToken = NATIVE_TOKEN;
         // Deploy new Carbon Vortex with the final target token set to the native token
-        deployCarbonVortex(address(carbonController), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, finalTargetToken);
         vm.prank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
@@ -1717,7 +1581,7 @@ contract CarbonVortexTest is TestFixture {
         targetToken = bnt;
         finalTargetToken = NATIVE_TOKEN;
         // Deploy new Carbon Vortex with the final target token set to the native token
-        deployCarbonVortex(address(carbonController), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, finalTargetToken);
         vm.prank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
@@ -2237,7 +2101,7 @@ contract CarbonVortexTest is TestFixture {
         // set fees
         uint256 accumulatedFees = 100 ether;
         carbonController.testSetAccumulatedFees(token1, accumulatedFees);
-        // transfer fees to vault and old vortex
+        // transfer fees to vortex and vault
         token1.safeTransfer(address(carbonVortex), accumulatedFees);
         token1.safeTransfer(address(vault), accumulatedFees);
 
@@ -2253,11 +2117,11 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test that there isn't an incorrect reading of the 0x0 address balance
     function testShouldReturnTotalFeesAvailableCorrectlyIfCarbonControllerIsTheZeroAddress() public {
         // deploy new vortex with carbon controller set to 0x0
-        deployCarbonVortex(address(0), vault, oldVortex, transferAddress, targetToken, finalTargetToken);
+        deployCarbonVortex(address(0), vault, transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
-        // transfer fees to vault and old vortex
+        // transfer fees to vortex and vault
         token1.safeTransfer(address(carbonVortex), accumulatedFees);
         token1.safeTransfer(address(vault), accumulatedFees);
 
@@ -2273,21 +2137,14 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test that there isn't an incorrect reading of the 0x0 address balance
     function testShouldReturnTotalFeesAvailableCorrectlyIfTheVaultIsTheZeroAddress() public {
         // deploy new vortex with the vault set to 0x0
-        deployCarbonVortex(
-            address(carbonController),
-            address(0),
-            oldVortex,
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
+        deployCarbonVortex(address(carbonController), address(0), transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
         // increment fees in the carbon controller
         carbonController.testSetAccumulatedFees(token1, accumulatedFees);
-        // transfer fees to vault and old vortex
-        token1.safeTransfer(address(oldVortex), accumulatedFees);
+        // transfer fees to vortex
+        token1.safeTransfer(address(carbonVortex), accumulatedFees);
 
         vm.startPrank(user1);
 
@@ -2298,24 +2155,15 @@ contract CarbonVortexTest is TestFixture {
         assertEq(totalFees, accumulatedFees * 2);
     }
 
-    /// @dev test that there isn't an incorrect reading of the 0x0 address balance
-    function testShouldReturnTotalFeesAvailableCorrectlyIfTheOldVortexIsTheZeroAddress() public {
-        // deploy new vortex with the vault set to 0x0
-        deployCarbonVortex(
-            address(carbonController),
-            address(vault),
-            address(0),
-            transferAddress,
-            targetToken,
-            finalTargetToken
-        );
+    /// @dev test that there isn't an incorrect reading of the fees
+    function testShouldReturnTotalFeesAvailableCorrectly() public {
+        // deploy new vortex
+        deployCarbonVortex(address(carbonController), address(vault), transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
         // increment fees in the carbon controller
         carbonController.testSetAccumulatedFees(token1, accumulatedFees);
-        // transfer fees to vault and old vortex
-        token1.safeTransfer(address(oldVortex), accumulatedFees);
         token1.safeTransfer(address(vault), accumulatedFees);
 
         vm.startPrank(user1);
