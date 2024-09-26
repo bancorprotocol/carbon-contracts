@@ -1,3 +1,4 @@
+import { NATIVE_TOKEN_ADDRESS } from '../utils/TokenData';
 import { DeploymentNetwork, ZERO_ADDRESS } from '../utils/Constants';
 import chainIds from '../utils/chainIds.json';
 
@@ -73,6 +74,84 @@ const mantle = (address: string) => {
         [DeploymentNetwork.Mantle]: address
     };
 };
+
+const blast = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Blast]) {
+        return {
+            [DeploymentNetwork.Blast]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Blast]: address
+    };
+}
+
+const celo = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Celo]) {
+        return {
+            [DeploymentNetwork.Celo]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Celo]: address
+    };
+}
+
+const sei = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Sei]) {
+        return {
+            [DeploymentNetwork.Sei]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Sei]: address
+    };
+}
+
+const fantom = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Fantom]) {
+        return {
+            [DeploymentNetwork.Fantom]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Fantom]: address
+    };
+}
+
+const linea = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Linea]) {
+        return {
+            [DeploymentNetwork.Linea]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Linea]: address
+    };
+}
+
+const telos = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Telos]) {
+        return {
+            [DeploymentNetwork.Telos]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Telos]: address
+    };
+}
 
 const TestNamedAccounts = {
     ethWhale: {
@@ -154,9 +233,28 @@ const BancorNamedAccounts = {
     },
     vault: {
         ...getAddress(mainnet, ZERO_ADDRESS),
-        ...getAddress(base, '0xD2b2D272c30d9a0ff3DbaFe848DA7e2f194f697F')
+        ...getAddress(base, '0xD2b2D272c30d9a0ff3DbaFe848DA7e2f194f697F'),
+        ...getAddress(blast, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
+        ...getAddress(celo, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
+        ...getAddress(fantom, '0x4E017822E77e34842b71b8A24b09e6E490FACA13'),
+        ...getAddress(mantle, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
+        ...getAddress(linea, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
+        ...getAddress(sei, '0x773B75CfB146bd5d1095fa9d6d45637f02B05119'),
+        ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749')
     }
 };
+
+const VortexNamedAccounts = {
+    targetToken: {
+        ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS)
+    },
+    finalTargetToken: {
+        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
+    },
+    transferAddress: {
+        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
+    }
+}
 
 function getAddress(func: (arg: string) => object | undefined, arg: string): object {
     const result = func(arg);
@@ -179,5 +277,6 @@ export const NamedAccounts = {
 
     ...TokenNamedAccounts,
     ...TestNamedAccounts,
-    ...BancorNamedAccounts
+    ...BancorNamedAccounts,
+    ...VortexNamedAccounts
 };
