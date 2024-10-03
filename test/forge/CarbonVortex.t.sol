@@ -29,7 +29,7 @@ contract CarbonVortexTest is TestFixture {
     // Test case parser helper
     VortexTestCaseParser private testCaseParser;
 
-    uint32 private constant REWARDS_PPM_DEFAULT = 5000;
+    uint32 private constant REWARDS_PPM_DEFAULT = 1000;
     uint32 private constant REWARDS_PPM_UPDATED = 7000;
 
     uint32 private constant PRICE_RESET_MULTIPLIER_DEFAULT = 2;

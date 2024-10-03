@@ -135,8 +135,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @dev performs contract-specific initialization
      */
     function __CarbonVortex_init_unchained() internal onlyInitializing {
-        // set rewards PPM to 5000
-        _setRewardsPPM(5000);
+        // set rewards PPM to 1000
+        _setRewardsPPM(1000);
         // set price reset multiplier to 2x
         _setPriceResetMultiplier(2);
         // set min token sale amount multiplier to 4x

@@ -11,6 +11,10 @@ export const Roles = {
         ROLE_FEES_MANAGER: id('ROLE_FEES_MANAGER')
     },
 
+    Vault: {
+        ROLE_ASSET_MANAGER: id('ROLE_ASSET_MANAGER')
+    },
+
     Voucher: {
         ROLE_MINTER: id('ROLE_MINTER')
     }
