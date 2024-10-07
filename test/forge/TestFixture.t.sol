@@ -134,11 +134,10 @@ contract TestFixture is Test {
         carbonVortex = new CarbonVortex(
             ICarbonController(_carbonController),
             IVault(_vault),
-            payable(_fundReceiver),
             _targetToken,
             _finalTargetToken
         );
-        bytes memory vortexInitData = abi.encodeWithSelector(carbonVortex.initialize.selector);
+        bytes memory vortexInitData = abi.encodeWithSelector(carbonVortex.initialize.selector, payable(_fundReceiver));
         // Deploy Carbon Vortex proxy
         address carbonVortexProxy = address(
             new OptimizedTransparentUpgradeableProxy(

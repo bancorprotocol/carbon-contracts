@@ -50,6 +50,8 @@ contract CarbonVortexTest is TestFixture {
     uint128 private constant MIN_TARGET_TOKEN_SALE_AMOUNT_DEFAULT = 10 ether;
     uint128 private constant MIN_TARGET_TOKEN_SALE_AMOUNT_UPDATED = 15 ether;
 
+    address payable private constant TRANSFER_ADDRESS_UPDATED = payable(0);
+
     uint128 private constant INITIAL_PRICE_SOURCE_AMOUNT = type(uint128).max;
     uint128 private constant INITIAL_PRICE_TARGET_AMOUNT = 1e12;
 
@@ -130,6 +132,11 @@ contract CarbonVortexTest is TestFixture {
     event MinTokenSaleAmountUpdated(Token indexed token, uint128 prevMinTokenSaleAmount, uint128 newMinTokenSaleAmount);
 
     /**
+     * @notice triggered when the transfer address is updated
+     */
+    event TransferAddressUpdated(address indexed prevTransferAddress, address indexed newTransferAddress);
+
+    /**
      * @dev triggered when fees are withdrawn (CarbonController event)
      */
     event FeesWithdrawn(Token indexed token, address indexed recipient, uint256 indexed amount, address sender);
@@ -166,24 +173,19 @@ contract CarbonVortexTest is TestFixture {
      * @dev construction tests
      */
 
-    function testShouldRevertWhenDeployingWithInvalidTransferAddress() public {
-        vm.expectRevert(InvalidAddress.selector);
-        new CarbonVortex(carbonController, IVault(vault), payable(address(0)), NATIVE_TOKEN, bnt);
-    }
-
     function testShouldRevertWhenDeployingWithInvalidTargetToken() public {
         vm.expectRevert(InvalidAddress.selector);
-        new CarbonVortex(carbonController, IVault(vault), transferAddress, Token.wrap(address(0)), bnt);
+        new CarbonVortex(carbonController, IVault(vault), Token.wrap(address(0)), bnt);
     }
 
     function testShouldBeInitialized() public view {
         uint16 version = carbonVortex.version();
-        assertEq(version, 3);
+        assertEq(version, 4);
     }
 
     function testShouldntBeAbleToReinitialize() public {
         vm.expectRevert("Initializable: contract is already initialized");
-        carbonVortex.initialize();
+        carbonVortex.initialize(payable(0));
     }
 
     /**
@@ -643,7 +645,76 @@ contract CarbonVortexTest is TestFixture {
         }
     }
 
-    /// @dev test execute shouldnt emit a trade reset event for the target token if the final target token is zero
+    /// @dev test execute should transfer tokens directly to the transfer address on execute for the final target token
+    function testShouldTransferTokensDirectlyToTheTransferAddressOnExecuteIfCalledWithFinalTargetToken() public {
+        vm.startPrank(admin);
+
+        // test with the target token
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = finalTargetToken;
+
+        uint256 accumulatedFees = 100 ether;
+
+        // set fees in carbon controller
+        carbonController.testSetAccumulatedFees(tokens[0], accumulatedFees);
+
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+
+        // get transfer address balance before
+        uint256 balanceBefore = finalTargetToken.balanceOf(transferAddress);
+
+        // call execute for the target token
+        carbonVortex.execute(tokens);
+
+        // get transfer address balance after
+        uint256 balanceAfter = finalTargetToken.balanceOf(transferAddress);
+
+        // calculate reward amount
+        uint256 rewardAmount = (accumulatedFees * carbonVortex.rewardsPPM()) / PPM_RESOLUTION;
+
+        // assert receiver address received the fees
+        assertEq(balanceAfter - balanceBefore, accumulatedFees - rewardAmount);
+    }
+
+    /// @dev test execute should transfer tokens directly to the transfer address on execute for the final target token
+    function testShouldLeaveTokensInTheVortexIfTheTransferAddressIsZeroOnExecuteIfCalledWithFinalTargetToken() public {
+        // Deploy new Carbon Vortex with the transfer address set to the zero address
+        deployCarbonVortex(address(carbonController), vault, address(0), targetToken, finalTargetToken);
+
+        vm.startPrank(admin);
+
+        // test with the target token
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = finalTargetToken;
+
+        uint256 accumulatedFees = 100 ether;
+
+        // set fees in carbon controller
+        carbonController.testSetAccumulatedFees(tokens[0], accumulatedFees);
+
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+
+        // get vortex balance before
+        uint256 balanceBefore = finalTargetToken.balanceOf(address(carbonVortex));
+
+        // call execute for the target token
+        carbonVortex.execute(tokens);
+
+        // get vortex balance after
+        uint256 balanceAfter = finalTargetToken.balanceOf(address(carbonVortex));
+
+        // calculate reward amount
+        uint256 rewardAmount = (accumulatedFees * carbonVortex.rewardsPPM()) / PPM_RESOLUTION;
+
+        // assert receiver address received the fees
+        assertEq(balanceAfter - balanceBefore, accumulatedFees - rewardAmount);
+    }
+
+    /// @dev test execute should transfer tokens directly to the transfer address if the final target token is zero
     function testShouldTransferTokensDirectlyToTheTransferAddressOnExecuteIfFinalTargetTokenIsZero() public {
         // Deploy new Carbon Vortex with the final target token set to the zero address
         deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
@@ -712,6 +783,50 @@ contract CarbonVortexTest is TestFixture {
         uint256 rewardAmount = (accumulatedFees * carbonVortex.rewardsPPM()) / PPM_RESOLUTION;
 
         // assert receiver address received the fees
+        assertEq(totalCollectedAfter - totalCollectedBefore, accumulatedFees - rewardAmount);
+    }
+
+    /// @dev test execute should transfer tokens directly to the transfer address if the final target token is zero
+    function testShouldLeaveTokensInTheVortexIfTheTransferAddressIsZeroOnExecuteIfFinalTargetTokenIsZero() public {
+        // Deploy new Carbon Vortex with the transfer address and final target token set to the zero address
+        deployCarbonVortex(address(carbonController), vault, address(0), targetToken, Token.wrap(address(0)));
+
+        vm.startPrank(admin);
+
+        // test with the target token
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = targetToken;
+
+        uint256 accumulatedFees = 100 ether;
+
+        // set fees in carbon controller
+        carbonController.testSetAccumulatedFees(tokens[0], accumulatedFees);
+
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+
+        // get transfer address balance before
+        uint256 balanceBefore = targetToken.balanceOf(address(carbonVortex));
+
+        // get total collected before
+        uint256 totalCollectedBefore = carbonVortex.totalCollected();
+
+        // call execute for the target token
+        carbonVortex.execute(tokens);
+
+        // get transfer address balance after
+        uint256 balanceAfter = targetToken.balanceOf(address(carbonVortex));
+
+        // get total collected after
+        uint256 totalCollectedAfter = carbonVortex.totalCollected();
+
+        // calculate reward amount
+        uint256 rewardAmount = (accumulatedFees * carbonVortex.rewardsPPM()) / PPM_RESOLUTION;
+
+        // assert receiver address received the fees
+        assertEq(balanceAfter - balanceBefore, accumulatedFees - rewardAmount);
+        // assert total collected is updated
         assertEq(totalCollectedAfter - totalCollectedBefore, accumulatedFees - rewardAmount);
     }
 
@@ -1196,6 +1311,46 @@ contract CarbonVortexTest is TestFixture {
         assertEq(balanceGain, expectedSourceAmount);
     }
 
+    function testShouldLeaveFundsInTheVortexIfTransferAddressIsZeroAtEndOfFinalTargetToTargetTokenTrade() public {
+        // deploy new carbon vortex with transfer address set to zero
+        deployCarbonVortex(address(carbonController), vault, address(0), targetToken, finalTargetToken);
+        vm.prank(admin);
+        // set fees
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(targetToken, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        // execute
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = targetToken;
+        carbonVortex.execute(tokens);
+
+        // trade target for final target
+        uint128 targetAmount = 1 ether;
+
+        uint256 finalTargetBalanceBefore = finalTargetToken.balanceOf(address(carbonVortex));
+
+        // advance time so that the price decays and gets to market price
+        // market price = 4000 BNT per 1 ETH - 38.5 days
+        vm.warp(39 days);
+
+        // get the expected trade input for 1 ether of target token
+        uint128 expectedSourceAmount = carbonVortex.expectedTradeInput(targetToken, targetAmount);
+
+        // approve the source token
+        finalTargetToken.safeApprove(address(carbonVortex), expectedSourceAmount);
+        // trade
+        carbonVortex.trade(targetToken, targetAmount, expectedSourceAmount);
+
+        uint256 finalTargetBalanceAfter = finalTargetToken.balanceOf(address(carbonVortex));
+
+        uint256 balanceGain = finalTargetBalanceAfter - finalTargetBalanceBefore;
+
+        // assert that `transferAddress` received the final target token
+        assertEq(balanceGain, expectedSourceAmount);
+    }
+
     function testTradingTargetTokenForTokenShouldSendTokenBalanceToTheUser() public {
         vm.prank(admin);
         Token token = token1;
@@ -1432,6 +1587,44 @@ contract CarbonVortexTest is TestFixture {
         carbonVortex.trade{ value: sourceAmount }(token1, targetAmount, sourceAmount);
 
         uint256 balanceAfter = targetToken.balanceOf(transferAddress);
+
+        uint256 balanceGain = balanceAfter - balanceBefore;
+
+        assertEq(balanceGain, sourceAmount);
+    }
+
+    /// @dev test trading target token for token should transfer target tokens to
+    /// @dev transfer address if the final target token is zero
+    function testTradingTargetTokenForTokenShouldLeaveTargetTokensInContractIfTransferAddressAndFinalTargetTokenAreZero()
+        public
+    {
+        // Deploy new Carbon Vortex with the transfer address and final target token set to the zero address
+        deployCarbonVortex(address(carbonController), vault, address(0), targetToken, Token.wrap(address(0)));
+
+        vm.prank(admin);
+        // set fees
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(token1, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        Token[] memory tokens = new Token[](1);
+        tokens[0] = token1;
+        // execute so that the vortex has tokens
+        carbonVortex.execute(tokens);
+
+        // increase timestamp so that the token is tradeable
+        vm.warp(46 days);
+
+        uint128 targetAmount = 1 ether;
+        uint128 sourceAmount = carbonVortex.expectedTradeInput(token1, targetAmount);
+
+        uint256 balanceBefore = targetToken.balanceOf(address(carbonVortex));
+
+        // trade (send sourceAmount of native token because the target token is native)
+        carbonVortex.trade{ value: sourceAmount }(token1, targetAmount, sourceAmount);
+
+        uint256 balanceAfter = targetToken.balanceOf(address(carbonVortex));
 
         uint256 balanceGain = balanceAfter - balanceBefore;
 
@@ -3060,6 +3253,52 @@ contract CarbonVortexTest is TestFixture {
 
         targetTokenPriceDecayHalfLife = carbonVortex.targetTokenPriceDecayHalfLifeOnReset();
         assertEq(targetTokenPriceDecayHalfLife, TARGET_TOKEN_PRICE_DECAY_HALFLIFE_UPDATED);
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev transferAddress tests
+     */
+
+    /// @dev test that setTransferAddress should revert when a non admin calls it
+    function testShouldRevertWhenNonAdminAttemptsToSetTheTransferAddress() public {
+        vm.prank(user1);
+        vm.expectRevert(AccessDenied.selector);
+        carbonVortex.setTransferAddress(TRANSFER_ADDRESS_UPDATED);
+    }
+
+    /// @dev test that setTransferAddress with the same address should be ignored
+    function testShouldIgnoreSettingTheSameTransferAddress() public {
+        // get transfer address before
+        address transferAddressBefore = carbonVortex.transferAddress();
+        vm.prank(admin);
+        carbonVortex.setTransferAddress(transferAddressBefore);
+        // get transfer address after
+        address transferAddressAfter = carbonVortex.transferAddress();
+        // assert that the transfer address has not changed
+        assertEq(transferAddressBefore, transferAddressAfter);
+    }
+
+    /// @dev test that setTransferAddress with the same address should be ignored (using fail test)
+    function testFailShouldIgnoreSettingTheSameTransferAddress() public {
+        vm.prank(admin);
+        vm.expectEmit(false, false, false, false);
+        emit TransferAddressUpdated(transferAddress, transferAddress);
+        carbonVortex.setTransferAddress(transferAddress);
+    }
+
+    /// @dev test that admin should be able to update the transfer address
+    function testShouldBeAbleToSetAndUpdateTheTransferAddress() public {
+        vm.startPrank(admin);
+        address transferAddressBefore = carbonVortex.transferAddress();
+        assertEq(transferAddressBefore, transferAddress);
+
+        vm.expectEmit();
+        emit TransferAddressUpdated(transferAddress, TRANSFER_ADDRESS_UPDATED);
+        carbonVortex.setTransferAddress(TRANSFER_ADDRESS_UPDATED);
+
+        address transferAddressAfter = carbonVortex.transferAddress();
+        assertEq(transferAddressAfter, TRANSFER_ADDRESS_UPDATED);
         vm.stopPrank();
     }
 
