@@ -1,5 +1,6 @@
 import { CarbonVortex, ProxyAdmin } from '../../../components/Contracts';
 import { DeployedContracts, describeDeployment } from '../../../utils/Deploy';
+import { ZERO_ADDRESS } from '../../../utils/Constants';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
@@ -21,7 +22,7 @@ describeDeployment(__filename, () => {
         const implementationAddress = await proxyAdmin.getProxyImplementation(carbonVortex.address);
         const carbonControllerImpl: CarbonVortex = await ethers.getContractAt('CarbonVortex', implementationAddress);
         // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
-        const tx = await carbonControllerImpl.initialize({ gasLimit: 6000000 });
+        const tx = await carbonControllerImpl.initialize(ZERO_ADDRESS, { gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
     });
 
