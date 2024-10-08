@@ -44,9 +44,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     ICarbonController private immutable _carbonController;
     IVault private immutable _vault;
 
-    // address for token collection - collects all swapped target/final target tokens
-    address payable private immutable _transferAddress;
-
     // first token for swapping
     Token private immutable _targetToken;
     // second (optional) token for swapping
@@ -89,34 +86,34 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     // initial and current target token sale amount - for targetToken->finalTargetToken trades
     SaleAmount private _targetTokenSaleAmount;
 
+    // address for token collection - collects all swapped target/final target tokens
+    address payable private _transferAddress;
+
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 7] private __gap;
+    uint256[MAX_GAP - 8] private __gap;
 
     /**
-     * @dev used to set immutable state variables and initialize the implementation
+     * @dev used to set immutable state variables
      */
     constructor(
         ICarbonController carbonController,
         IVault vault,
-        address payable transferAddress,
         Token targetTokenInit,
         Token finalTargetTokenInit
-    ) validAddress(transferAddress) validAddress(Token.unwrap(targetTokenInit)) {
+    ) validAddress(Token.unwrap(targetTokenInit)) {
         _carbonController = carbonController;
         _vault = vault;
 
-        _transferAddress = transferAddress;
-
         _targetToken = targetTokenInit;
         _finalTargetToken = finalTargetTokenInit;
-        initialize();
+        _disableInitializers();
     }
 
     /**
      * @dev fully initializes the contract and its parents
      */
-    function initialize() public initializer {
-        __CarbonVortex_init();
+    function initialize(address payable transferAddressInit) public initializer {
+        __CarbonVortex_init(transferAddressInit);
     }
 
     // solhint-disable func-name-mixedcase
@@ -124,17 +121,17 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @dev initializes the contract and its parents
      */
-    function __CarbonVortex_init() internal onlyInitializing {
+    function __CarbonVortex_init(address payable transferAddressInit) internal onlyInitializing {
         __Upgradeable_init();
         __ReentrancyGuard_init();
 
-        __CarbonVortex_init_unchained();
+        __CarbonVortex_init_unchained(transferAddressInit);
     }
 
     /**
      * @dev performs contract-specific initialization
      */
-    function __CarbonVortex_init_unchained() internal onlyInitializing {
+    function __CarbonVortex_init_unchained(address payable transferAddressInit) internal onlyInitializing {
         // set rewards PPM to 1000
         _setRewardsPPM(1000);
         // set price reset multiplier to 2x
@@ -151,6 +148,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         _setMaxTargetTokenSaleAmount(uint128(100) * uint128(10) ** _targetToken.decimals());
         // set min target token sale amount to 10 eth
         _setMinTokenSaleAmount(_targetToken, uint128(10) * uint128(10) ** _targetToken.decimals());
+        // set transfer address
+        _setTransferAddress(transferAddressInit);
     }
 
     /**
@@ -178,7 +177,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @inheritdoc Upgradeable
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
-        return 3;
+        return 4;
     }
 
     /**
@@ -295,6 +294,17 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
+     * @notice sets the transfer address
+     *
+     * requirements:
+     *
+     * - the caller must be the current admin of the contract
+     */
+    function setTransferAddress(address newTransferAddress) external onlyAdmin {
+        _setTransferAddress(newTransferAddress);
+    }
+
+    /**
      * @dev withdraws funds held by the contract and sends them to an account
      *
      * requirements:
@@ -344,6 +354,13 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      */
     function finalTargetToken() external view returns (Token) {
         return _finalTargetToken;
+    }
+
+    /**
+     * @inheritdoc ICarbonVortex
+     */
+    function transferAddress() external view returns (address) {
+        return _transferAddress;
     }
 
     /**
@@ -402,25 +419,23 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
             uint256 totalFeeAmount = feeAmounts[i];
-            // skip the final target token
-            if (token == _finalTargetToken) {
-                continue;
-            }
+            // get fee and reward amounts
+            uint256 rewardAmount = rewardAmounts[i];
+            uint256 feeAmount = totalFeeAmount - rewardAmount;
             // skip token if no fees have accumulated or token pair is disabled
             if (totalFeeAmount == 0 || _disabledPairs[token]) {
                 continue;
             }
-            // get fee and reward amounts
-            uint256 rewardAmount = rewardAmounts[i];
-            uint256 feeAmount = totalFeeAmount - rewardAmount;
+            // transfer proceeds to the transfer address for the final target token
+            if (token == _finalTargetToken) {
+                _transferProceeds(token, feeAmount);
+                continue;
+            }
 
             if (token == _targetToken) {
                 // if _finalTargetToken is not set, directly transfer the fees to the transfer address
                 if (Token.unwrap(_finalTargetToken) == address(0)) {
-                    // safe due to nonReentrant modifier (forwards all gas fees in case of the native token)
-                    _targetToken.unsafeTransfer(_transferAddress, feeAmount);
-                    // increment totalCollected amount
-                    _totalCollected += feeAmount;
+                    _transferProceeds(_targetToken, feeAmount);
                 } else if (
                     !_tradingEnabled(token) ||
                     _amountAvailableForTrading(token) < _minTokenSaleAmounts[token] ||
@@ -649,10 +664,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
 
         // if no final target token is defined, transfer the target token to `transferAddress`
         if (Token.unwrap(_finalTargetToken) == address(0)) {
-            // safe due to nonreenrant modifier (forwards all available gas if token is native)
-            _targetToken.unsafeTransfer(_transferAddress, sourceAmount);
-            // increment total collected in `transferAddress`
-            _totalCollected += sourceAmount;
+            _transferProceeds(_targetToken, sourceAmount);
         }
 
         // if remaining balance is below the min token sale amount, reset the auction
@@ -687,33 +699,25 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         if (sourceAmount > maxInput) {
             revert GreaterThanMaxInput();
         }
-
-        // check enough final target token (if final target token is native) has been sent for the trade
-        if (_finalTargetToken == NATIVE_TOKEN) {
-            if (msg.value < sourceAmount) {
-                revert InsufficientNativeTokenSent();
-            }
-            payable(_transferAddress).sendValue(sourceAmount);
-        } else {
-            // revert if unnecessary native token is received
-            if (msg.value > 0) {
-                revert UnnecessaryNativeTokenReceived();
-            }
-            // transfer the tokens from the user to the _transferAddress
-            _finalTargetToken.safeTransferFrom(msg.sender, _transferAddress, sourceAmount);
+        // revert if unnecessary native token is received
+        if (_finalTargetToken != NATIVE_TOKEN && msg.value > 0) {
+            revert UnnecessaryNativeTokenReceived();
         }
-
+        // check enough final target token (if final target token is native) has been sent for the trade
+        if (_finalTargetToken == NATIVE_TOKEN && msg.value < sourceAmount) {
+            revert InsufficientNativeTokenSent();
+        }
+        _finalTargetToken.safeTransferFrom(msg.sender, address(this), sourceAmount);
         // transfer the _targetToken to the user
         // safe due to nonReentrant modifier (forwards all available gas if native)
         _targetToken.unsafeTransfer(msg.sender, targetAmount);
+
+        _transferProceeds(_finalTargetToken, sourceAmount);
 
         // if final target token is native, refund any excess native token to caller
         if (_finalTargetToken == NATIVE_TOKEN && msg.value > sourceAmount) {
             payable(msg.sender).sendValue(msg.value - sourceAmount);
         }
-
-        // increment total collected in _transferAddress
-        _totalCollected += sourceAmount;
 
         // update the available target token sale amount
         _targetTokenSaleAmount.current -= targetAmount;
@@ -905,6 +909,22 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         emit PairDisabledStatusUpdated(token, prevPairStatus, disabled);
     }
 
+    function _setTransferAddress(address newTransferAddress) private {
+        address prevTransferAddress = _transferAddress;
+
+        // return if the transfer address is the same
+        if (prevTransferAddress == newTransferAddress) {
+            return;
+        }
+
+        _transferAddress = payable(newTransferAddress);
+
+        emit TransferAddressUpdated({
+            prevTransferAddress: prevTransferAddress,
+            newTransferAddress: newTransferAddress
+        });
+    }
+
     /**
      * @dev returns true if the auction price is below or equal to the minimum possible price
      * @dev check if timeElapsed / priceDecayHalfLife >= 128
@@ -1010,6 +1030,17 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         _tradingStartTimes[token] = uint32(block.timestamp);
         _initialPrice[token] = price;
         return price;
+    }
+
+    function _transferProceeds(Token token, uint256 amount) private {
+        // increment totalCollected amount
+        _totalCollected += amount;
+        // if transfer address is 0, proceeds stay in the vortex
+        if (_transferAddress == address(0)) {
+            return;
+        }
+        // safe due to nonReentrant modifier (forwards all available gas in case of ETH)
+        token.unsafeTransfer(_transferAddress, amount);
     }
 
     function uncheckedInc(uint256 i) private pure returns (uint256 j) {

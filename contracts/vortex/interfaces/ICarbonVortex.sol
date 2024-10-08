@@ -97,6 +97,11 @@ interface ICarbonVortex is IUpgradeable {
     event MinTokenSaleAmountUpdated(Token indexed token, uint128 prevMinTokenSaleAmount, uint128 newMinTokenSaleAmount);
 
     /**
+     * @notice triggered when the transfer address is updated
+     */
+    event TransferAddressUpdated(address indexed prevTransferAddress, address indexed newTransferAddress);
+
+    /**
      * @notice returns the rewards ppm
      */
     function rewardsPPM() external view returns (uint32);
@@ -192,6 +197,11 @@ interface ICarbonVortex is IUpgradeable {
      * @notice returns the final target token
      */
     function finalTargetToken() external view returns (Token);
+
+    /**
+     * @notice returns the transfer address
+     */
+    function transferAddress() external view returns (address);
 
     /**
      * @notice trades *targetToken* for *targetAmount* of *token* based on the current token price (trade by target amount)

@@ -4,8 +4,10 @@ import { DeployedContracts, upgradeProxy, InstanceName, setDeploymentMetadata } 
 import { NATIVE_TOKEN_ADDRESS } from '../../../utils/Constants';
 
 /**
- * upgrade carbon vortex 2.0 to v3:
+ * upgrade carbon vortex 2.0 to v4:
  * remove the old vortex dependency
+ * fix final target token execute call to send funds to transfer address
+ * make transfer address a settable variable
  */
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
     const { deployer, bnt, vault } = await getNamedAccounts();
@@ -14,8 +16,11 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     await upgradeProxy({
         name: InstanceName.CarbonVortex,
         from: deployer,
-        args: [carbonController.address, vault, bnt, NATIVE_TOKEN_ADDRESS, bnt],
-        checkVersion: false
+        args: [carbonController.address, vault, NATIVE_TOKEN_ADDRESS, bnt],
+        checkVersion: false,
+        proxy: {
+            args: [bnt]
+        }
     });
 
     return true;
