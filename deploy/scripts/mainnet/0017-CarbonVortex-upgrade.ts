@@ -1,6 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployedContracts, upgradeProxy, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
+import { DeployedContracts, upgradeProxy, InstanceName, setDeploymentMetadata, execute } from '../../../utils/Deploy';
 import { NATIVE_TOKEN_ADDRESS } from '../../../utils/Constants';
 
 /**
@@ -21,6 +21,14 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         proxy: {
             args: [bnt]
         }
+    });
+
+    // Set the transfer address to BNT in the vortex contract
+    await execute({
+        name: InstanceName.CarbonVortex,
+        methodName: 'setTransferAddress',
+        args: [bnt],
+        from: deployer
     });
 
     return true;
