@@ -1,6 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployedContracts, upgradeProxy, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
+import { DeployedContracts, upgradeProxy, InstanceName, setDeploymentMetadata, execute } from '../../../utils/Deploy';
 import { NATIVE_TOKEN_ADDRESS } from '../../../utils/Constants';
 
 /**
@@ -10,17 +10,27 @@ import { NATIVE_TOKEN_ADDRESS } from '../../../utils/Constants';
  * make transfer address a settable variable
  */
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
-    const { deployer, bnt, vault } = await getNamedAccounts();
+    const { deployer, bnt } = await getNamedAccounts();
     const carbonController = await DeployedContracts.CarbonController.deployed();
+
+    const vault = await DeployedContracts.Vault.deployed();
 
     await upgradeProxy({
         name: InstanceName.CarbonVortex,
         from: deployer,
-        args: [carbonController.address, vault, NATIVE_TOKEN_ADDRESS, bnt],
+        args: [carbonController.address, vault.address, NATIVE_TOKEN_ADDRESS, bnt],
         checkVersion: false,
         proxy: {
             args: [bnt]
         }
+    });
+
+    // Set the transfer address to BNT in the vortex contract
+    await execute({
+        name: InstanceName.CarbonVortex,
+        methodName: 'setTransferAddress',
+        args: [bnt],
+        from: deployer
     });
 
     return true;

@@ -1,5 +1,13 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonController, CarbonPOL, CarbonVortex, IVersioned, ProxyAdmin, Voucher } from '../components/Contracts';
+import {
+    CarbonController,
+    CarbonPOL,
+    CarbonVortex,
+    IVersioned,
+    ProxyAdmin,
+    Vault,
+    Voucher
+} from '../components/Contracts';
 import Logger from '../utils/Logger';
 import { DeploymentNetwork, ZERO_BYTES } from './Constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -50,7 +58,8 @@ enum NewInstanceName {
     ProxyAdmin = 'ProxyAdmin',
     Voucher = 'Voucher',
     CarbonVortex = 'CarbonVortex',
-    CarbonPOL = 'CarbonPOL'
+    CarbonPOL = 'CarbonPOL',
+    Vault = 'Vault'
 }
 
 export const LegacyInstanceName = {};
@@ -71,7 +80,8 @@ const DeployedNewContracts = {
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin),
     Voucher: deployed<Voucher>(InstanceName.Voucher),
     CarbonVortex: deployed<CarbonVortex>(InstanceName.CarbonVortex),
-    CarbonPOL: deployed<CarbonPOL>(InstanceName.CarbonPOL)
+    CarbonPOL: deployed<CarbonPOL>(InstanceName.CarbonPOL),
+    Vault: deployed<Vault>(InstanceName.Vault)
 };
 
 export const DeployedContracts = {

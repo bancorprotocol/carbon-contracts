@@ -20,7 +20,8 @@ import {
     TestTokenType__factory,
     TestUpgradeable__factory,
     TestVoucher__factory,
-    Voucher__factory
+    Voucher__factory,
+    Vault__factory
 } from '../typechain-types';
 import { deployOrAttach } from './ContractBuilder';
 import { Signer } from 'ethers';
@@ -37,6 +38,7 @@ const getContracts = (signer?: Signer) => ({
     MockBancorNetworkV3: deployOrAttach('MockBancorNetworkV3', MockBancorNetworkV3__factory, signer),
     ProxyAdmin: deployOrAttach('ProxyAdmin', ProxyAdmin__factory, signer),
     Voucher: deployOrAttach('Voucher', Voucher__factory, signer),
+    Vault: deployOrAttach('Vault', Vault__factory, signer),
     TestERC20FeeOnTransfer: deployOrAttach('TestERC20FeeOnTransfer', TestERC20FeeOnTransfer__factory, signer),
     TestERC20Burnable: deployOrAttach('TestERC20Burnable', TestERC20Burnable__factory, signer),
     TestERC20Token: deployOrAttach('TestERC20Token', TestERC20Token__factory, signer),
