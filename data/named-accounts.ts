@@ -86,7 +86,7 @@ const blast = (address: string) => {
     return {
         [DeploymentNetwork.Blast]: address
     };
-}
+};
 
 const celo = (address: string) => {
     if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Celo]) {
@@ -99,7 +99,7 @@ const celo = (address: string) => {
     return {
         [DeploymentNetwork.Celo]: address
     };
-}
+};
 
 const sei = (address: string) => {
     if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Sei]) {
@@ -112,7 +112,7 @@ const sei = (address: string) => {
     return {
         [DeploymentNetwork.Sei]: address
     };
-}
+};
 
 const fantom = (address: string) => {
     if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Fantom]) {
@@ -125,7 +125,7 @@ const fantom = (address: string) => {
     return {
         [DeploymentNetwork.Fantom]: address
     };
-}
+};
 
 const linea = (address: string) => {
     if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Linea]) {
@@ -138,7 +138,7 @@ const linea = (address: string) => {
     return {
         [DeploymentNetwork.Linea]: address
     };
-}
+};
 
 const telos = (address: string) => {
     if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Telos]) {
@@ -151,7 +151,7 @@ const telos = (address: string) => {
     return {
         [DeploymentNetwork.Telos]: address
     };
-}
+};
 
 const TestNamedAccounts = {
     ethWhale: {
@@ -232,7 +232,7 @@ const BancorNamedAccounts = {
         ...getAddress(mainnet, '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB')
     },
     vault: {
-        ...getAddress(mainnet, ZERO_ADDRESS),
+        ...getAddress(mainnet, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
         ...getAddress(base, '0xD2b2D272c30d9a0ff3DbaFe848DA7e2f194f697F'),
         ...getAddress(blast, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
         ...getAddress(celo, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
@@ -254,7 +254,7 @@ const VortexNamedAccounts = {
     transferAddress: {
         ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
     }
-}
+};
 
 function getAddress(func: (arg: string) => object | undefined, arg: string): object {
     const result = func(arg);
