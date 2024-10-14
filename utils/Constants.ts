@@ -37,7 +37,8 @@ export enum MainnetNetwork {
     Scroll = 'scroll',
     Telos = 'telos',
     ZkSync = 'zksync',
-    Sei = 'sei'
+    Sei = 'sei',
+    Iota = 'iota'
 }
 
 export enum TestnetNetwork {

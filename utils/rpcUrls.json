@@ -30,5 +30,6 @@
     "scroll": "https://rpc.scroll.io",
     "sepolia": "https://rpc.sepolia.ethpandaops.io",
     "aurora": "https://mainnet.aurora.dev",
-    "sei": "https://evm-rpc.sei-apis.com"
+    "sei": "https://evm-rpc.sei-apis.com",
+    "iota": "https://iota-mainnet-evm.public.blastapi.io"
 }

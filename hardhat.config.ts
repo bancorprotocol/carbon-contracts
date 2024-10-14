@@ -467,6 +467,19 @@ const config: HardhatUserConfig = {
                 }
             }
         },
+        [DeploymentNetwork.Iota]: {
+            chainId: chainIds[DeploymentNetwork.Iota],
+            url: rpcUrls[DeploymentNetwork.Iota],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Iota}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
         [DeploymentNetwork.Sepolia]: {
             chainId: chainIds[DeploymentNetwork.Sepolia],
             url: rpcUrls[DeploymentNetwork.Sepolia],
@@ -529,6 +542,22 @@ const config: HardhatUserConfig = {
               urls: {
                 apiURL: "https://api.lineascan.build/api",
                 browserURL: "https:///lineascan.build"
+              }
+            },
+            {
+              network: DeploymentNetwork.Sei,
+              chainId: chainIds[DeploymentNetwork.Sei],
+              urls: {
+                apiURL: "https://seitrace.com/pacific-1/api",
+                browserURL: "https://seitrace.com/?chain=pacific-1"
+              }
+            },
+            {
+              network: DeploymentNetwork.Iota,
+              chainId: chainIds[DeploymentNetwork.Iota],
+              urls: {
+                apiURL: "https://explorer.evm.iota.org/api",
+                browserURL: "https://explorer.evm.iota.org"
               }
             }
           ]
