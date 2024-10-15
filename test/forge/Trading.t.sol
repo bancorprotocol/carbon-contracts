@@ -1168,7 +1168,7 @@ contract TradingTest is TestFixture {
         }
     }
 
-    /// @dev helper function to create multiple strategies based on a test case, overriden with inverse orders boolean
+    /// @dev helper function to create multiple strategies based on a test case, overridden with inverse orders boolean
     function createStrategies(
         TestCaseParser.TestCase memory testCase,
         bool inverseOrders
