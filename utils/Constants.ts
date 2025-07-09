@@ -47,6 +47,7 @@ export enum MainnetNetwork {
 export enum TestnetNetwork {
     Hardhat = 'hardhat',
     Sepolia = 'sepolia',
+    TacTestnet = 'tac-testnet',
     Tenderly = 'tenderly',
     TenderlyTestnet = 'tenderly-testnet'
 }

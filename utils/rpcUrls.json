@@ -34,5 +34,6 @@
     "iota": "https://iota-mainnet-evm.public.blastapi.io",
     "berachain": "https://rpc.berachain.com/",
     "coti": "https://mainnet.coti.io/rpc",
-    "tac": "https://rpc.ankr.com/tac"
+    "tac": "https://rpc.ankr.com/tac",
+    "tac-testnet": "https://spb.rpc.tac.build"
 }

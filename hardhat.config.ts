@@ -516,6 +516,18 @@ const config: HardhatUserConfig = {
                 }
             }
         },
+        [DeploymentNetwork.TacTestnet]: {
+            chainId: chainIds[DeploymentNetwork.TacTestnet],
+            url: rpcUrls[DeploymentNetwork.TacTestnet],
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.TacTestnet}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
         [DeploymentNetwork.Sepolia]: {
             chainId: chainIds[DeploymentNetwork.Sepolia],
             url: rpcUrls[DeploymentNetwork.Sepolia],
@@ -610,6 +622,14 @@ const config: HardhatUserConfig = {
               urls: {
                 apiURL: "https://explorer.tac.build/api",
                 browserURL: "https://explorer.tac.build"
+              }
+            },
+            {
+              network: DeploymentNetwork.TacTestnet,
+              chainId: chainIds[DeploymentNetwork.TacTestnet],
+              urls: {
+                apiURL: "https://spb.explorer.tac.build/api",
+                browserURL: "https://spb.explorer.tac.build"
               }
             }
           ]
