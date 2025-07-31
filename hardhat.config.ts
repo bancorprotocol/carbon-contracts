@@ -617,6 +617,14 @@ const config: HardhatUserConfig = {
               }
             },
             {
+              network: DeploymentNetwork.Coti,
+              chainId: chainIds[DeploymentNetwork.Coti],
+              urls: {
+                apiURL: "https://mainnet.cotiscan.io/api",
+                browserURL: "https://mainnet.cotiscan.io"
+              }
+            },
+            {
               network: DeploymentNetwork.Tac,
               chainId: chainIds[DeploymentNetwork.Tac],
               urls: {
