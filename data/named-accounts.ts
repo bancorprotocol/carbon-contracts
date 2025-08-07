@@ -156,13 +156,26 @@ const telos = (address: string) => {
 const berachain = (address: string) => {
     if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Berachain]) {
         return {
-            [DeploymentNetwork.Telos]: address,
+            [DeploymentNetwork.Berachain]: address,
             [DeploymentNetwork.Tenderly]: address,
             [DeploymentNetwork.TenderlyTestnet]: address
         };
     }
     return {
         [DeploymentNetwork.Berachain]: address
+    };
+};
+
+const coti = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Coti]) {
+        return {
+            [DeploymentNetwork.Coti]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Coti]: address
     };
 };
 
@@ -213,7 +226,8 @@ const TokenNamedAccounts = {
         ...getAddress(base, '0x4200000000000000000000000000000000000006'),
         ...getAddress(arbitrum, '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'),
         ...getAddress(mantle, '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111'),
-        ...getAddress(berachain, '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590') // stargate weth
+        ...getAddress(berachain, '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590'), // stargate weth
+        ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1') // hyperlane weth
     },
     usdc: {
         ...getAddress(mainnet, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
@@ -256,19 +270,22 @@ const BancorNamedAccounts = {
         ...getAddress(sei, '0x773B75CfB146bd5d1095fa9d6d45637f02B05119'),
         ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
         ...getAddress(berachain, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
+        ...getAddress(coti, '0x3F086F628678cF136C4fA7d2901ff5EBE2623435'),
         ...getAddress(arbitrum, '0x8cE318919438982514F9f479FDfB40D32C6ab749')
     }
 };
 
 const VortexNamedAccounts = {
     targetToken: {
-        ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS)
+        ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1') // weth
     },
     finalTargetToken: {
         ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
     },
     transferAddress: {
-        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
+        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
+        ...getAddress(coti, ZERO_ADDRESS)
     }
 };
 
@@ -282,7 +299,7 @@ export const NamedAccounts = {
         ...getAddress(mainnet, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
         ...getAddress(sepolia, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
         ...getAddress(base, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
-        ...getAddress(arbitrum, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(arbitrum, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
         ...getAddress(mantle, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
         default: 0
     },
