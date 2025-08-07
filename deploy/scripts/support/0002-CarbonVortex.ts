@@ -5,7 +5,6 @@ import { Roles } from '../../../utils/Roles';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-
 /**
  * deploy a new instance of carbon vortex v2.0 with the following configuration:
  *
@@ -19,10 +18,10 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
     let { deployer, vault, targetToken, finalTargetToken, transferAddress } = await getNamedAccounts();
 
-    if (finalTargetToken == undefined) {
+    if (finalTargetToken === undefined) {
         finalTargetToken = ZERO_ADDRESS;
     }
-    if (transferAddress == undefined) {
+    if (transferAddress === undefined) {
         transferAddress = ZERO_ADDRESS;
     }
 
@@ -38,7 +37,7 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
     );
 
     const carbonVortex = await DeployedContracts.CarbonVortex.deployed();
-    
+
     const deployerSigner = await ethers.getSigner(deployer);
     const vaultContract = await ethers.getContractAt('CarbonController', vault);
 
