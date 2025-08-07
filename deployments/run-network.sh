@@ -1,9 +1,37 @@
 #!/bin/bash
 
+# Load dotenv
 dotenv=$(dirname $0)/../.env
 if [ -f "${dotenv}" ]; then
     source ${dotenv}
 fi
+
+# --- Parse --type flag ---
+deployment_type="network"  # default
+remaining_args=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --type)
+            shift
+            if [[ "$1" == "support" || "$1" == "network" ]]; then
+                deployment_type="$1"
+                shift
+            else
+                echo "Error: --type must be either 'network' or 'support'"
+                exit 1
+            fi
+            ;;
+        --*) # reject --type=support and others
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+        *)  # all other args passed through
+            remaining_args+=("$1")
+            shift
+            ;;
+    esac
+done
 
 # Path to the chain ids JSON file
 chain_ids_json="./utils/chainIds.json"
@@ -31,10 +59,10 @@ fi
 
 # if deploy/scripts/${network_name} doesn't exist, create it and copy the network scripts
 if [ ! -d "./deploy/scripts/${network_name}" ]; then
-    rsync -a --delete ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+    rsync -a --delete ./deploy/scripts/${deployment_type}/ ./deploy/scripts/${network_name}/
 fi
 
-command="HARDHAT_NETWORK=${network_name} ${@:1}"
+command="HARDHAT_NETWORK=${network_name} ${remaining_args[@]}"
 
 echo "Running:"
 echo

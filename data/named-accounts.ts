@@ -255,7 +255,8 @@ const BancorNamedAccounts = {
         ...getAddress(linea, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
         ...getAddress(sei, '0x773B75CfB146bd5d1095fa9d6d45637f02B05119'),
         ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
-        ...getAddress(berachain, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8')
+        ...getAddress(berachain, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
+        ...getAddress(arbitrum, '0x8cE318919438982514F9f479FDfB40D32C6ab749')
     }
 };
 
@@ -281,7 +282,7 @@ export const NamedAccounts = {
         ...getAddress(mainnet, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
         ...getAddress(sepolia, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
         ...getAddress(base, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
-        ...getAddress(arbitrum, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
+        ...getAddress(arbitrum, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
         ...getAddress(mantle, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
         default: 0
     },

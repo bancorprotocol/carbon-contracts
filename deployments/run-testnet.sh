@@ -1,10 +1,39 @@
 #!/bin/bash
 
+# --- Load dotenv ---
 dotenv=$(dirname $0)/../.env
 if [ -f "${dotenv}" ]; then
     source ${dotenv}
 fi
 
+# --- Parse type flag ---
+deployment_type="network"  # default
+remaining_args=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --type)
+            shift
+            if [[ "$1" == "support" || "$1" == "network" ]]; then
+                deployment_type="$1"
+                shift
+            else
+                echo "Error: --type must be either 'network' or 'support'"
+                exit 1
+            fi
+            ;;
+        --*) # reject --type=support and others
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+        *)  # all other args passed through
+            remaining_args+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# --- Setup Tenderly project info ---
 username=${TENDERLY_USERNAME}
 if [ -n "${TEST_FORK}" ]; then
     project=${TENDERLY_TEST_PROJECT}
@@ -41,19 +70,19 @@ timestamp=$(date +"%s")
 # Setup cleanup function
 cleanup() {
     if [ -n "${testnet_id}" ] && [ -n "${TEST_FORK}" ]; then
-        echo "Deleting a testnet ${testnet_id} from ${username}/${project}..."
-        echo
-
+        echo "Deleting testnet ${testnet_id} from ${username}/${project}..."
         curl -sX DELETE "${TENDERLY_TESTNET_API}/${testnet_id}" \
-            -H "Content-Type: application/json" -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}"
+            -H "Content-Type: application/json" \
+            -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}"
+        echo
     fi
 }
-
 trap cleanup TERM EXIT
 
 # Create a testnet and extract testnet id and provider url
 response=$(curl -sX POST "$TENDERLY_TESTNET_API" \
-    -H "Content-Type: application/json" -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}" \
+    -H "Content-Type: application/json" \
+    -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}" \
     -d '{
         "slug": "carbon-contracts-testnet-'${timestamp}'",
         "display_name": "Carbon Contracts Testnet",
@@ -85,16 +114,17 @@ fi
 
 # if deploy/scripts/${network_name} doesn't exist, create it and copy the network scripts
 if [ ! -d "./deploy/scripts/${network_name}" ]; then
-    rsync -a --delete ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+    rsync -a --delete ./deploy/scripts/${deployment_type}/ ./deploy/scripts/${network_name}/
 fi
 
 # Create a new dir for the deploy script files and copy them there
 rm -rf deployments/tenderly && cp -rf deployments/${network_name}/. deployments/tenderly
 
-command="TENDERLY_TESTNET_ID=${testnet_id} TENDERLY_TESTNET_PROVIDER_URL=${provider_url} ${@:1}"
-
+# --- Execute remaining command ---
+command="TENDERLY_TESTNET_ID=${testnet_id} TENDERLY_TESTNET_PROVIDER_URL=${provider_url} ${remaining_args[@]}"
 echo "Running:"
 echo
-echo ${command}
+echo "$command"
+echo
 
-eval ${command}
+eval "$command"
