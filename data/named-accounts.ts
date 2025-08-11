@@ -270,7 +270,8 @@ const BancorNamedAccounts = {
         ...getAddress(sei, '0x773B75CfB146bd5d1095fa9d6d45637f02B05119'),
         ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
         ...getAddress(berachain, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
-        ...getAddress(coti, '0x3F086F628678cF136C4fA7d2901ff5EBE2623435')
+        ...getAddress(coti, '0x3F086F628678cF136C4fA7d2901ff5EBE2623435'),
+        ...getAddress(arbitrum, '0x8cE318919438982514F9f479FDfB40D32C6ab749')
     }
 };
 
