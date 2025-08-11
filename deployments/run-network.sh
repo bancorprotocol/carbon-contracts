@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # exit immediately on any unhandled error
 
 # Load dotenv
 dotenv=$(dirname $0)/../.env
