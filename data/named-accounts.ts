@@ -179,6 +179,19 @@ const coti = (address: string) => {
     };
 };
 
+const tac = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Tac]) {
+        return {
+            [DeploymentNetwork.Tac]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.Tac]: address
+    };
+};
+
 const TestNamedAccounts = {
     ethWhale: {
         ...getAddress(mainnet, '0xDA9dfA130Df4dE4673b89022EE50ff26f6EA73Cf'),
@@ -271,21 +284,25 @@ const BancorNamedAccounts = {
         ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
         ...getAddress(berachain, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
         ...getAddress(coti, '0x3F086F628678cF136C4fA7d2901ff5EBE2623435'),
-        ...getAddress(arbitrum, '0x8cE318919438982514F9f479FDfB40D32C6ab749')
+        ...getAddress(arbitrum, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
+        ...getAddress(tac, '0xBBAFF3Bf6eC4C15992c0Fb37F12491Fd62C5B496')
     }
 };
 
 const VortexNamedAccounts = {
     targetToken: {
         ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS),
-        ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1') // weth
+        ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'), // weth
+        ...getAddress(tac, NATIVE_TOKEN_ADDRESS) // tac
     },
     finalTargetToken: {
-        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C')
+        ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
+        ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945') // weth
     },
     transferAddress: {
         ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
-        ...getAddress(coti, ZERO_ADDRESS)
+        ...getAddress(coti, ZERO_ADDRESS),
+        ...getAddress(tac, ZERO_ADDRESS)
     }
 };
 
