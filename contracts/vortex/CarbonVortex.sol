@@ -2,6 +2,7 @@
 pragma solidity 0.8.19;
 
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { EnumerableSetUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -36,12 +37,12 @@ import { PPM_RESOLUTION, MAX_GAP } from "../utility/Constants.sol";
 contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable, Utils {
     using Address for address payable;
     using SafeCast for uint256;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     uint128 private constant INITIAL_PRICE_SOURCE_AMOUNT = type(uint128).max;
     uint128 private constant INITIAL_PRICE_TARGET_AMOUNT = 1e12;
 
-    // addresses for token withdrawal
-    ICarbonController private immutable _carbonController;
+    // immutable vault address for token withdrawal
     IVault private immutable _vault;
 
     // first token for swapping
@@ -89,19 +90,20 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     // address for token collection - collects all swapped target/final target tokens
     address payable private _transferAddress;
 
+    // set of controller addresses from which fees can be withdrawn
+    EnumerableSetUpgradeable.AddressSet private _controllers;
+
     // upgrade forward-compatibility storage gap
-    uint256[MAX_GAP - 8] private __gap;
+    uint256[MAX_GAP - 10] private __gap;
 
     /**
      * @dev used to set immutable state variables
      */
     constructor(
-        ICarbonController carbonController,
         IVault vault,
         Token targetTokenInit,
         Token finalTargetTokenInit
     ) validAddress(Token.unwrap(targetTokenInit)) {
-        _carbonController = carbonController;
         _vault = vault;
 
         _targetToken = targetTokenInit;
@@ -112,8 +114,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @dev fully initializes the contract and its parents
      */
-    function initialize(address payable transferAddressInit) public initializer {
-        __CarbonVortex_init(transferAddressInit);
+    function initialize(address payable transferAddressInit, address[] memory controllersInit) public initializer {
+        __CarbonVortex_init(transferAddressInit, controllersInit);
     }
 
     // solhint-disable func-name-mixedcase
@@ -121,17 +123,23 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @dev initializes the contract and its parents
      */
-    function __CarbonVortex_init(address payable transferAddressInit) internal onlyInitializing {
+    function __CarbonVortex_init(
+        address payable transferAddressInit,
+        address[] memory controllersInit
+    ) internal onlyInitializing {
         __Upgradeable_init();
         __ReentrancyGuard_init();
 
-        __CarbonVortex_init_unchained(transferAddressInit);
+        __CarbonVortex_init_unchained(transferAddressInit, controllersInit);
     }
 
     /**
      * @dev performs contract-specific initialization
      */
-    function __CarbonVortex_init_unchained(address payable transferAddressInit) internal onlyInitializing {
+    function __CarbonVortex_init_unchained(
+        address payable transferAddressInit,
+        address[] memory controllersInit
+    ) internal onlyInitializing {
         // set rewards PPM to 1000
         _setRewardsPPM(1000);
         // set price reset multiplier to 2x
@@ -150,6 +158,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         _setMinTokenSaleAmount(_targetToken, uint128(10) * uint128(10) ** _targetToken.decimals());
         // set transfer address
         _setTransferAddress(transferAddressInit);
+        // set controller addresses
+        _setControllerAddresses(controllersInit);
     }
 
     /**
@@ -305,6 +315,28 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     /**
+     * @notice add a controller address
+     *
+     * requirements:
+     *
+     * - the caller must be the current admin of the contract
+     */
+    function addController(address controller) external onlyAdmin {
+        _addController(controller);
+    }
+
+    /**
+     * @notice remove a controller address
+     *
+     * requirements:
+     *
+     * - the caller must be the current admin of the contract
+     */
+    function removeController(address controller) external onlyAdmin {
+        _removeController(controller);
+    }
+
+    /**
      * @dev withdraws funds held by the contract and sends them to an account
      *
      * requirements:
@@ -366,10 +398,22 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @inheritdoc ICarbonVortex
      */
+    function controllers() external view returns (address[] memory) {
+        return _controllers.values();
+    }
+
+    /**
+     * @inheritdoc ICarbonVortex
+     */
     function availableTokens(Token token) external view returns (uint256) {
         uint256 totalFees = 0;
-        if (address(_carbonController) != address(0)) {
-            totalFees += _carbonController.accumulatedFees(token);
+        uint256 controllersLength = _controllers.length();
+        if (controllersLength > 0) {
+            address[] memory __controllers = _controllers.values();
+            for (uint256 i = 0; i < controllersLength; i = uncheckedInc(i)) {
+                ICarbonController controller = ICarbonController(__controllers[i]);
+                totalFees += controller.accumulatedFees(token);
+            }
         }
         if (address(_vault) != address(0)) {
             totalFees += token.balanceOf(address(_vault));
@@ -389,18 +433,30 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         uint256[] memory rewardAmounts = new uint256[](len);
         // cache rewardsPPM to save gas
         uint256 rewardsPPMValue = _rewardsPPM;
+        // cache controllers length to save gas
+        uint256 controllersLength = _controllers.length();
+        address[] memory __controllers;
 
         // cache address checks to save gas
-        bool carbonControllerIsNotZero = address(_carbonController) != address(0);
+        bool controllersLengthIsNotZero = controllersLength != 0;
         bool vaultIsNotZero = address(_vault) != address(0);
+
+        // cache controllers to save gas
+        if (controllersLengthIsNotZero) {
+            __controllers = _controllers.values();
+        }
 
         // withdraw fees from carbon vault
         for (uint256 i = 0; i < len; i = uncheckedInc(i)) {
             Token token = tokens[i];
             // withdraw token fees
             uint256 totalFeeAmount = 0;
-            if (carbonControllerIsNotZero) {
-                totalFeeAmount += _carbonController.withdrawFees(token, type(uint256).max, address(this));
+            if (controllersLengthIsNotZero) {
+                // withdraw fees from all controllers
+                for (uint256 j = 0; j < controllersLength; j = uncheckedInc(j)) {
+                    ICarbonController controller = ICarbonController(__controllers[j]);
+                    totalFeeAmount += controller.withdrawFees(token, type(uint256).max, address(this));
+                }
             }
             if (vaultIsNotZero) {
                 // get vault token balance
@@ -923,6 +979,32 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             prevTransferAddress: prevTransferAddress,
             newTransferAddress: newTransferAddress
         });
+    }
+
+    function _addController(address controller) private {
+        // add the controller to the set ; return if it already exists
+        if (!_controllers.add(controller)) {
+            return;
+        }
+        // emit event for controller address added
+        emit ControllerAdded(controller);
+    }
+
+    function _removeController(address controller) private {
+        // remove the controller from the set ; return if it doesn't exist
+        if (!_controllers.remove(controller)) {
+            return;
+        }
+        // emit event for controller address removed
+        emit ControllerRemoved(controller);
+    }
+
+    function _setControllerAddresses(address[] memory __controllers) private {
+        // add the new controllers
+        uint256 length = __controllers.length;
+        for (uint256 i = 0; i < length; i = uncheckedInc(i)) {
+            _addController(__controllers[i]);
+        }
     }
 
     /**

@@ -102,6 +102,16 @@ interface ICarbonVortex is IUpgradeable {
     event TransferAddressUpdated(address indexed prevTransferAddress, address indexed newTransferAddress);
 
     /**
+     * @notice triggered when a controller address is added
+     */
+    event ControllerAdded(address indexed controller);
+
+    /**
+     * @notice triggered when a controller address is removed
+     */
+    event ControllerRemoved(address indexed controller);
+
+    /**
      * @notice returns the rewards ppm
      */
     function rewardsPPM() external view returns (uint32);
@@ -202,6 +212,11 @@ interface ICarbonVortex is IUpgradeable {
      * @notice returns the transfer address
      */
     function transferAddress() external view returns (address);
+
+    /**
+     * @notice returns the controller addresses
+     */
+    function controllers() external view returns (address[] memory);
 
     /**
      * @notice trades *targetToken* for *targetAmount* of *token* based on the current token price (trade by target amount)
