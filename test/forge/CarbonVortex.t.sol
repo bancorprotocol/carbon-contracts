@@ -12,6 +12,9 @@ import { VortexTestCaseParser } from "./VortexTestCaseParser.t.sol";
 import { AccessDenied, InvalidAddress, InvalidFee, ZeroValue } from "../../contracts/utility/Utils.sol";
 import { PPM_RESOLUTION } from "../../contracts/utility/Constants.sol";
 
+import { TestCarbonController } from "../../contracts/helpers/TestCarbonController.sol";
+import { TestVoucher } from "../../contracts/helpers/TestVoucher.sol";
+
 import { ICarbonVortex } from "../../contracts/vortex/interfaces/ICarbonVortex.sol";
 import { IVault } from "../../contracts/utility/interfaces/IVault.sol";
 
@@ -147,6 +150,16 @@ contract CarbonVortexTest is TestFixture {
      */
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
+    /**
+     * @notice triggered when a controller address is added
+     */
+    event ControllerAdded(address indexed controller);
+
+    /**
+     * @notice triggered when a controller address is removed
+     */
+    event ControllerRemoved(address indexed controller);
+
     /// @dev function to set up state before tests
     function setUp() public virtual {
         // Set up tokens and users
@@ -175,7 +188,7 @@ contract CarbonVortexTest is TestFixture {
 
     function testShouldRevertWhenDeployingWithInvalidTargetToken() public {
         vm.expectRevert(InvalidAddress.selector);
-        new CarbonVortex(carbonController, IVault(vault), Token.wrap(address(0)), bnt);
+        new CarbonVortex(IVault(vault), Token.wrap(address(0)), bnt);
     }
 
     function testShouldBeInitialized() public view {
@@ -185,7 +198,9 @@ contract CarbonVortexTest is TestFixture {
 
     function testShouldntBeAbleToReinitialize() public {
         vm.expectRevert("Initializable: contract is already initialized");
-        carbonVortex.initialize(payable(0));
+        // initialize empty controller address array
+        address[] memory emptyControllers = new address[](0);
+        carbonVortex.initialize(payable(0), emptyControllers);
     }
 
     /**
@@ -439,9 +454,52 @@ contract CarbonVortexTest is TestFixture {
         vm.stopPrank();
     }
 
-    /// @dev test that vortex can be deployed with carbon controller set to 0x0 address and it will be skipped on execute
-    function testExecuteShouldSkipCarbonControllerDeployedWithZeroAddress() public {
-        // deploy new vortex with carbon controller set to 0x0
+    /// @dev test should withdraw fees from multiple controllers and Vault on calling execute
+    function testShouldWithdrawFeesOnExecuteForMultipleControllersAndVault() public {
+        uint256[] memory tokenAmounts = new uint256[](4);
+        tokenAmounts[0] = 100 ether;
+        tokenAmounts[1] = 60 ether;
+        tokenAmounts[2] = 20 ether;
+        tokenAmounts[3] = 10 ether;
+        Token[] memory tokens = new Token[](4);
+        tokens[0] = token1;
+        tokens[1] = token2;
+        tokens[2] = targetToken;
+        tokens[3] = finalTargetToken;
+
+        // deploy new voucher
+        TestVoucher voucher2 = deployVoucher();
+        // deploy new carbon controller
+        TestCarbonController carbonController2 = deployCarbonController(voucher2);
+        vm.startPrank(admin);
+        // add new carbon controller to the vortex
+        carbonVortex.addController(address(carbonController2));
+        // grant fee manager role on carbonController to carbon vortex
+        carbonController2.grantRole(carbonController2.roleFeesManager(), address(carbonVortex));
+
+        for (uint256 i = 0; i < 4; ++i) {
+            carbonController.testSetAccumulatedFees(tokens[i], tokenAmounts[i]);
+            carbonController2.testSetAccumulatedFees(tokens[i], tokenAmounts[i]);
+            tokens[i].safeTransfer(address(vault), tokenAmounts[i]);
+            tokens[i].safeTransfer(address(carbonController2), tokenAmounts[i]);
+
+            vm.expectEmit();
+            // carbon controller fees event
+            emit FeesWithdrawn(tokens[i], address(carbonVortex), tokenAmounts[i], address(carbonVortex));
+            vm.expectEmit();
+            // carbon controller 2 fees event
+            emit FeesWithdrawn(tokens[i], address(carbonVortex), tokenAmounts[i], address(carbonVortex));
+            vm.expectEmit();
+            // vault fees event
+            emit FundsWithdrawn(tokens[i], address(carbonVortex), address(carbonVortex), tokenAmounts[i]);
+            carbonVortex.execute(tokens);
+        }
+        vm.stopPrank();
+    }
+
+    /// @dev test that vortex can be deployed with an empty controller set and it will skip the controller calls
+    function testShouldSkipEmptyControllerSet() public {
+        // deploy new vortex with no controllers in the initializer
         deployCarbonVortex(address(0), vault, transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
 
@@ -490,7 +548,7 @@ contract CarbonVortexTest is TestFixture {
         Token[] memory tokens = new Token[](1);
         tokens[0] = token;
         // call execute for the target token
-        // expect two withdraw emits from carbon controller
+        // expect one withdraw emit from carbon controller
         vm.expectEmit();
         emit FeesWithdrawn(token, address(carbonVortex), accumulatedFees, address(carbonVortex));
         // execute
@@ -2350,8 +2408,6 @@ contract CarbonVortexTest is TestFixture {
 
     /// @dev test that there isn't an incorrect reading of the fees
     function testShouldReturnTotalFeesAvailableCorrectly() public {
-        // deploy new vortex
-        deployCarbonVortex(address(carbonController), address(vault), transferAddress, targetToken, finalTargetToken);
         vm.startPrank(admin);
         // set fees
         uint256 accumulatedFees = 100 ether;
@@ -2366,6 +2422,32 @@ contract CarbonVortexTest is TestFixture {
 
         // assert total fees is correct
         assertEq(totalFees, accumulatedFees * 2);
+    }
+
+    /// @dev test that available tokens are correctly calculated up for multiple controllers
+    function testShouldReturnTotalFeesAvailableCorrectlyForMultipleControllers() public {
+        // deploy a second carbon controller
+        TestVoucher voucher2 = deployVoucher();
+        TestCarbonController carbonController2 = deployCarbonController(voucher2);
+
+        vm.startPrank(admin);
+        // add the second carbon controller to the carbon vortex
+        carbonVortex.addController(address(carbonController2));
+
+        uint256 accumulatedFees = 100 ether;
+        // increment fees in the carbon controller
+        carbonController.testSetAccumulatedFees(token1, accumulatedFees);
+        carbonController2.testSetAccumulatedFees(token1, accumulatedFees);
+        // transfer fees to vault
+        token1.safeTransfer(address(vault), accumulatedFees);
+
+        vm.startPrank(user1);
+
+        // get total fees
+        uint256 totalFees = carbonVortex.availableTokens(token1);
+
+        // assert total fees is correct
+        assertEq(totalFees, accumulatedFees * 3);
     }
 
     /// @dev test should return the correct amount available for trading for the target token
@@ -2488,6 +2570,27 @@ contract CarbonVortexTest is TestFixture {
     /// @dev test should return the final target token
     function testShouldReturnTheFinalTargetToken() public view {
         assertEq(Token.unwrap(carbonVortex.finalTargetToken()), Token.unwrap(finalTargetToken));
+    }
+
+    /// @dev test should return the controllers
+    function testShouldReturnTheControllers() public {
+        // assert that there is only one controller for the initial deployment
+        address[] memory controllers = carbonVortex.controllers();
+        assertEq(controllers.length, 1);
+        assertEq(controllers[0], address(carbonController));
+
+        // deploy a second carbon controller
+        TestVoucher voucher2 = deployVoucher();
+        TestCarbonController carbonController2 = deployCarbonController(voucher2);
+        vm.startPrank(admin);
+        // add the second carbon controller to the carbon vortex
+        carbonVortex.addController(address(carbonController2));
+        vm.stopPrank();
+        // assert that there are two controllers after adding the second one
+        controllers = carbonVortex.controllers();
+        assertEq(controllers.length, 2);
+        assertEq(controllers[0], address(carbonController));
+        assertEq(controllers[1], address(carbonController2));
     }
 
     /// @dev test should revert on expected trade input if the target amount is larger than the available balance
@@ -3671,6 +3774,53 @@ contract CarbonVortexTest is TestFixture {
         // assert price is not 0
         assertNotEq(price.sourceAmount, 0);
         assertNotEq(price.targetAmount, 0);
+    }
+
+    /**
+     * @dev admin controller add / remove tests
+     */
+
+    function testAdminShouldBeAbleToAddControllers() public {
+        vm.startPrank(admin);
+        // add controller
+        address controller1 = makeAddr("controller1");
+        vm.expectEmit();
+        emit ControllerAdded(controller1);
+        carbonVortex.addController(controller1);
+
+        // check if controller is added
+        address[] memory controllers = carbonVortex.controllers();
+        for (uint256 i = 0; i < controllers.length; ++i) {
+            if (controllers[i] == controller1) {
+                assertTrue(true);
+                return;
+            }
+        }
+        assertTrue(false);
+        vm.stopPrank();
+    }
+
+    function testAdminShouldBeAbleToRemoveControllers() public {
+        vm.startPrank(admin);
+        // add controller
+        address controller1 = makeAddr("controller1");
+        carbonVortex.addController(controller1);
+
+        // remove controller
+        vm.expectEmit();
+        emit ControllerRemoved(controller1);
+        carbonVortex.removeController(controller1);
+
+        // check if controller is removed
+        address[] memory controllers = carbonVortex.controllers();
+        for (uint256 i = 0; i < controllers.length; ++i) {
+            if (controllers[i] == controller1) {
+                assertTrue(false);
+                return;
+            }
+        }
+        assertTrue(true);
+        vm.stopPrank();
     }
 
     /**

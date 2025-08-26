@@ -21,7 +21,6 @@ import { TestCarbonController } from "../../contracts/helpers/TestCarbonControll
 import { CarbonBatcher } from "../../contracts/utility/CarbonBatcher.sol";
 
 import { IVoucher } from "../../contracts/voucher/interfaces/IVoucher.sol";
-import { ICarbonController } from "../../contracts/carbon/interfaces/ICarbonController.sol";
 import { IVault } from "../../contracts/utility/interfaces/IVault.sol";
 
 import { Token } from "../../contracts/token/Token.sol";
@@ -133,13 +132,20 @@ contract TestFixture is Test {
         vm.startPrank(admin);
 
         // Deploy Carbon Vortex
-        carbonVortex = new CarbonVortex(
-            ICarbonController(_carbonController),
-            IVault(_vault),
-            _targetToken,
-            _finalTargetToken
+        carbonVortex = new CarbonVortex(IVault(_vault), _targetToken, _finalTargetToken);
+        // set controllers array
+        address[] memory controllers = new address[](1);
+        controllers[0] = _carbonController;
+        if (_carbonController == address(0)) {
+            // if carbon controller is 0x0, set empty controllers array
+            controllers = new address[](0);
+        }
+        // set init data
+        bytes memory vortexInitData = abi.encodeWithSelector(
+            carbonVortex.initialize.selector,
+            payable(_fundReceiver),
+            controllers
         );
-        bytes memory vortexInitData = abi.encodeWithSelector(carbonVortex.initialize.selector, payable(_fundReceiver));
         // Deploy Carbon Vortex proxy
         address carbonVortexProxy = address(
             new OptimizedTransparentUpgradeableProxy(
