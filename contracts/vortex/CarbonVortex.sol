@@ -114,7 +114,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     /**
      * @dev fully initializes the contract and its parents
      */
-    function initialize(address payable transferAddressInit, address[] memory controllersInit) public initializer {
+    function initialize(address payable transferAddressInit, address[] calldata controllersInit) public initializer {
         __CarbonVortex_init(transferAddressInit, controllersInit);
     }
 
@@ -125,7 +125,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      */
     function __CarbonVortex_init(
         address payable transferAddressInit,
-        address[] memory controllersInit
+        address[] calldata controllersInit
     ) internal onlyInitializing {
         __Upgradeable_init();
         __ReentrancyGuard_init();
@@ -138,7 +138,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      */
     function __CarbonVortex_init_unchained(
         address payable transferAddressInit,
-        address[] memory controllersInit
+        address[] calldata controllersInit
     ) internal onlyInitializing {
         // set rewards PPM to 1000
         _setRewardsPPM(1000);
@@ -159,7 +159,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         // set transfer address
         _setTransferAddress(transferAddressInit);
         // set controller addresses
-        _setControllerAddresses(controllersInit);
+        _addControllerAddresses(controllersInit);
     }
 
     /**
@@ -409,9 +409,8 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         uint256 totalFees = 0;
         uint256 controllersLength = _controllers.length();
         if (controllersLength > 0) {
-            address[] memory __controllers = _controllers.values();
             for (uint256 i = 0; i < controllersLength; i = uncheckedInc(i)) {
-                ICarbonController controller = ICarbonController(__controllers[i]);
+                ICarbonController controller = ICarbonController(_controllers.at(i));
                 totalFees += controller.accumulatedFees(token);
             }
         }
@@ -438,11 +437,11 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
         address[] memory __controllers;
 
         // cache address checks to save gas
-        bool controllersLengthIsNotZero = controllersLength != 0;
+        bool controllersNotEmpty = controllersLength != 0;
         bool vaultIsNotZero = address(_vault) != address(0);
 
         // cache controllers to save gas
-        if (controllersLengthIsNotZero) {
+        if (controllersNotEmpty) {
             __controllers = _controllers.values();
         }
 
@@ -451,7 +450,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             Token token = tokens[i];
             // withdraw token fees
             uint256 totalFeeAmount = 0;
-            if (controllersLengthIsNotZero) {
+            if (controllersNotEmpty) {
                 // withdraw fees from all controllers
                 for (uint256 j = 0; j < controllersLength; j = uncheckedInc(j)) {
                     ICarbonController controller = ICarbonController(__controllers[j]);
@@ -982,24 +981,24 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
     }
 
     function _addController(address controller) private {
-        // add the controller to the set ; return if it already exists
+        // add the controller to the set ; revert if it already exists
         if (!_controllers.add(controller)) {
-            return;
+            revert ControllerAlreadyAdded();
         }
         // emit event for controller address added
         emit ControllerAdded(controller);
     }
 
     function _removeController(address controller) private {
-        // remove the controller from the set ; return if it doesn't exist
+        // remove the controller from the set ; revert if it doesn't exist
         if (!_controllers.remove(controller)) {
-            return;
+            revert ControllerDoesNotExist();
         }
         // emit event for controller address removed
         emit ControllerRemoved(controller);
     }
 
-    function _setControllerAddresses(address[] memory __controllers) private {
+    function _addControllerAddresses(address[] calldata __controllers) private {
         // add the new controllers
         uint256 length = __controllers.length;
         for (uint256 i = 0; i < length; i = uncheckedInc(i)) {

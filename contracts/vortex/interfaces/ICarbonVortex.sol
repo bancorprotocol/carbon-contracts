@@ -20,6 +20,8 @@ interface ICarbonVortex is IUpgradeable {
     error InsufficientNativeTokenSent();
     error InsufficientAmountForTrading();
     error UnnecessaryNativeTokenReceived();
+    error ControllerAlreadyAdded();
+    error ControllerDoesNotExist();
 
     struct Price {
         uint128 sourceAmount;

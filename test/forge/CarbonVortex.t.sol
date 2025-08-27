@@ -3823,6 +3823,27 @@ contract CarbonVortexTest is TestFixture {
         vm.stopPrank();
     }
 
+    function testShouldRevertIfAddingAnAlreadyExistingController() public {
+        vm.startPrank(admin);
+        // add controller
+        address controller1 = makeAddr("controller1");
+        carbonVortex.addController(controller1);
+
+        // expect revert when adding same controller again
+        vm.expectRevert(ICarbonVortex.ControllerAlreadyAdded.selector);
+        carbonVortex.addController(controller1);
+        vm.stopPrank();
+    }
+
+    function testShouldRevertIfRemovingNonExistentController() public {
+        vm.startPrank(admin);
+        address controller1 = makeAddr("controller1");
+        // expect revert when removing a nonexistent controller
+        vm.expectRevert(ICarbonVortex.ControllerDoesNotExist.selector);
+        carbonVortex.removeController(controller1);
+        vm.stopPrank();
+    }
+
     /**
      * @dev reentrancy tests
      */
