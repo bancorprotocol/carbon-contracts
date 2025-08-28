@@ -39,7 +39,7 @@ describeDeployment(__filename, () => {
         const implementationAddress = await proxyAdmin.getProxyImplementation(carbonVortex.address);
         const carbonVortexImpl: CarbonVortex = await ethers.getContractAt('CarbonVortex', implementationAddress);
         // hardcoding gas limit to avoid gas estimation attempts (which get rejected instead of reverted)
-        const tx = await carbonVortexImpl.initialize(ZERO_ADDRESS, { gasLimit: 6000000 });
+        const tx = await carbonVortexImpl.initialize(ZERO_ADDRESS, [], { gasLimit: 6000000 });
         await expect(tx.wait()).to.be.reverted;
     });
 });

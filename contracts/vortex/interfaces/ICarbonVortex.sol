@@ -20,6 +20,8 @@ interface ICarbonVortex is IUpgradeable {
     error InsufficientNativeTokenSent();
     error InsufficientAmountForTrading();
     error UnnecessaryNativeTokenReceived();
+    error ControllerAlreadyAdded();
+    error ControllerDoesNotExist();
 
     struct Price {
         uint128 sourceAmount;
@@ -100,6 +102,16 @@ interface ICarbonVortex is IUpgradeable {
      * @notice triggered when the transfer address is updated
      */
     event TransferAddressUpdated(address indexed prevTransferAddress, address indexed newTransferAddress);
+
+    /**
+     * @notice triggered when a controller address is added
+     */
+    event ControllerAdded(address indexed controller);
+
+    /**
+     * @notice triggered when a controller address is removed
+     */
+    event ControllerRemoved(address indexed controller);
 
     /**
      * @notice returns the rewards ppm
@@ -202,6 +214,11 @@ interface ICarbonVortex is IUpgradeable {
      * @notice returns the transfer address
      */
     function transferAddress() external view returns (address);
+
+    /**
+     * @notice returns the controller addresses
+     */
+    function controllers() external view returns (address[] memory);
 
     /**
      * @notice trades *targetToken* for *targetAmount* of *token* based on the current token price (trade by target amount)
