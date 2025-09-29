@@ -187,7 +187,7 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
      * @inheritdoc Upgradeable
      */
     function version() public pure override(IVersioned, Upgradeable) returns (uint16) {
-        return 4;
+        return 5;
     }
 
     /**
