@@ -1,0 +1,121 @@
+#!/bin/bash
+set -e
+
+dotenv=$(dirname $0)/../.env
+if [ -f "${dotenv}" ]; then
+    source ${dotenv}
+fi
+
+username=${TENDERLY_USERNAME}
+if [ -n "${TEST_FORK}" ]; then
+    project=${TENDERLY_TEST_PROJECT}
+else
+    project=${TENDERLY_PROJECT}
+fi
+
+# Path to the chain ids JSON file
+chain_ids_json="./utils/chainIds.json"
+
+# Read the network name from the environment variable, default to 'mainnet' if not set
+network_name=${TENDERLY_NETWORK_NAME:-'mainnet'}
+
+# Use jq to extract the network ID from the JSON file
+network_id=$(jq -r --arg name "$network_name" '.[$name]' "$chain_ids_json")
+
+# Check if network_id is null or empty
+if [ -z "$network_id" ] || [ "$network_id" == "null" ]; then
+    # Fallback to the default network ID
+    network_id=${TENDERLY_NETWORK_ID:-"1"}
+fi
+
+# Ensure network_id is a number
+network_id=$((network_id + 0))
+
+echo "Creating a $network_name Tenderly Testnet with Chain Id $network_id... "
+echo
+
+# API Endpoint for creating a testnet
+TENDERLY_TESTNET_API="https://api.tenderly.co/api/v1/account/${username}/project/${project}/vnets"
+# Get the current timestamp to use as a unique testnet slug
+timestamp=$(date +"%s")
+
+# Setup cleanup function
+cleanup() {
+    if [ -n "${testnet_id}" ] && [ -n "${TEST_FORK}" ]; then
+        echo "Deleting a testnet ${testnet_id} from ${username}/${project}..."
+        echo
+
+        curl -sX DELETE "${TENDERLY_TESTNET_API}/${testnet_id}" \
+            -H "Content-Type: application/json" -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}"
+    fi
+}
+
+trap cleanup TERM EXIT
+
+# Create a testnet and extract testnet id and provider url
+response=$(curl -sX POST "$TENDERLY_TESTNET_API" \
+    -H "Content-Type: application/json" -H "X-Access-Key: ${TENDERLY_ACCESS_KEY}" \
+    -d '{
+        "slug": "carbon-contracts-testnet-'${timestamp}'",
+        "display_name": "Carbon Contracts Testnet",
+        "fork_config": {
+            "network_id": '"${network_id}"',
+            "block_number": "latest"
+        },
+        "virtual_network_config": {
+            "chain_config": {
+                "chain_id": '"${network_id}"'
+            }
+        },
+        "sync_state_config": {
+            "enabled": false
+        }
+    }')
+
+testnet_id=$(echo "$response" | jq -r '.id')
+provider_url=$(echo "$response" | jq -r '.rpcs[0].url')
+
+echo "Created Tenderly Testnet ${testnet_id} at ${username}/${project}..."
+echo
+
+# if deployments/${network_name} doesn't exist, exit the script
+if [ ! -d "./deployments/${network_name}" ]; then
+    echo "Error: Deployments directory for ${network_name} does not exist."
+    exit 1
+fi
+
+### Copy the upgrade script to the current network's deploy scripts directory
+upgrade_file="./deploy/scripts/upgrade/000x-CarbonVortex-upgrade.ts"
+target_dir="./deploy/scripts/${network_name}"
+migrations_file="./deployments/${network_name}/.migrations.json"
+
+# Delete and recreate the target directory
+rm -rf "$target_dir"
+mkdir -p "$target_dir"
+
+# Get the highest migration number from the migrations file using jq
+highest_num="$(jq -r '
+  [ keys[]?                                   # collect all keys
+    | capture("^(?<n>\\d+)").n                # grab leading digits
+    | tonumber ]                              # to number
+  | (if length==0 then 0 else max end)
+' "$migrations_file")"
+
+# Get new migration number - highest+1 and pad it to 4 digits
+new_num=$((highest_num + 1))
+printf -v padded "%04d" "$new_num"
+
+# Copy and rename the template
+cp "$upgrade_file" "${target_dir}/${padded}-CarbonVortex-upgrade.ts"
+echo "Created: ${target_dir}/${padded}-CarbonVortex-upgrade.ts"
+
+# Create a new dir for the deploy script files and copy them there
+rm -rf deployments/tenderly && cp -rf deployments/${network_name}/. deployments/tenderly
+
+command="TENDERLY_TESTNET_ID=${testnet_id} TENDERLY_TESTNET_PROVIDER_URL=${provider_url} ${@:1}"
+
+echo "Running:"
+echo
+echo ${command}
+
+eval ${command}
