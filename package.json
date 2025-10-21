@@ -60,7 +60,7 @@
     "lint:sol": "solhint --max-warnings 0 contracts/**/*.sol test/**/*.sol",
     "lint:ts": "pnpm eslint components deploy test utils",
     "format": "NODE_OPTIONS='--max-old-space-size=8192' prettier --check --write components/**/*.ts contracts/**/*.sol test/**/*.sol deploy/**/*.ts scripts/**/*.ts test/**/*.ts test/**/*.json utils/**/*.ts  --config .prettierrc",
-    "prepare": "pnpm clean && pnpm build && tsc && copyfiles -u 1 \"typechain-types/**/*.d.ts\" dist/typechain-types",
+    "prepare": "pnpm clean && pnpm build && tsc && cpy \"**/*.d.ts\" \"dist/typechain-types\" --cwd=typechain-types --parents",
     "clean": "rm -rf artifacts cache coverage typechain-types"
   },
   "dependencies": {
@@ -97,7 +97,7 @@
     "chai": "^4.3.7",
     "chai-arrays": "^2.2.0",
     "coingecko-api-v3": "^0.0.29",
-    "copyfiles": "^2.4.1",
+    "cpy-cli": "^6.0.0",
     "decimal.js": "10.4.3",
     "dotenv": "^16.3.1",
     "eslint": "^8.43.0",
