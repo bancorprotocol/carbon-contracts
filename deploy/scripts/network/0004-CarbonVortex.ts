@@ -22,10 +22,10 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
         {
             name: InstanceName.CarbonVortex,
             from: deployer,
-            args: [carbonController.address, ZERO_ADDRESS, targetToken, finalTargetToken]
+            args: [ZERO_ADDRESS, targetToken, finalTargetToken]
         },
         {
-            args: [transferAddress]
+            args: [transferAddress, [carbonController.address]]
         }
     );
 
