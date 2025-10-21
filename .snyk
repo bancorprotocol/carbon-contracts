@@ -1,0 +1,10 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-UNDICI-10176064:
+    - '*':
+        reason: Hardhat 2.x requires legacy option; pinned to 5.28.5
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2025-10-20T00:00:00.000Z
+patch: {}

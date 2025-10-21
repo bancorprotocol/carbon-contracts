@@ -639,6 +639,14 @@ const config: HardhatUserConfig = {
                 apiURL: "https://spb.explorer.tac.build/api",
                 browserURL: "https://spb.explorer.tac.build"
               }
+            },
+            {
+              network: DeploymentNetwork.BSC,
+              chainId: chainIds[DeploymentNetwork.BSC],
+              urls: {
+                apiURL: "https://api.etherscan.io/v2/api?chainid=56",
+                browserURL: "https://bscscan.com"
+              }
             }
           ]
     },

@@ -60,7 +60,7 @@
     "lint:sol": "solhint --max-warnings 0 contracts/**/*.sol test/**/*.sol",
     "lint:ts": "pnpm eslint components deploy test utils",
     "format": "NODE_OPTIONS='--max-old-space-size=8192' prettier --check --write components/**/*.ts contracts/**/*.sol test/**/*.sol deploy/**/*.ts scripts/**/*.ts test/**/*.ts test/**/*.json utils/**/*.ts  --config .prettierrc",
-    "prepare": "pnpm clean && pnpm build && tsc && copyfiles -u 1 \"typechain-types/**/*.d.ts\" dist/typechain-types",
+    "prepare": "pnpm clean && pnpm build && tsc && cpy \"**/*.d.ts\" \"dist/typechain-types\" --cwd=typechain-types --parents",
     "clean": "rm -rf artifacts cache coverage typechain-types"
   },
   "dependencies": {
@@ -97,7 +97,7 @@
     "chai": "^4.3.7",
     "chai-arrays": "^2.2.0",
     "coingecko-api-v3": "^0.0.29",
-    "copyfiles": "^2.4.1",
+    "cpy-cli": "^6.0.0",
     "decimal.js": "10.4.3",
     "dotenv": "^16.3.1",
     "eslint": "^8.43.0",
@@ -136,6 +136,21 @@
   "resolutions": {
     "@tenderly/hardhat-tenderly>@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@0.3.0-beta.13",
     "solhint>@solidity-parser/parser": "0.16",
-    "solidity-coverage>@solidity-parser/parser": "0.16"
+    "solidity-coverage>@solidity-parser/parser": "0.16",
+    "serialize-javascript": "^6.0.2",
+    "elliptic": "npm:secp256k1@5.0.1",
+    "@metamask/eth-sig-util": "^8.2.0",
+    "pbkdf2": "^3.1.3",
+    "secp256k1": "^5.0.1",
+    "sha.js": "^2.4.12",
+    "undici": "5.28.5",
+    "ws": ">=7.5.10",
+    "adm-zip": ">=0.5.2",
+    "base-x": ">=3.0.11",
+    "cipher-base": ">=1.0.5",
+    "tmp": ">=0.2.0",
+    "brace-expansion": "2.0.2",
+    "cookie": ">=1.0.2",
+    "glob": "^10"
   }
 }

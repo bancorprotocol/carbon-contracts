@@ -4,7 +4,7 @@
     "cronos": "https://cronos-evm.publicnode.com",
     "rootstock": "https://public-node.rsk.co",
     "telos": "https://mainnet15.telos.net/evm",
-    "bsc": "https://binance.llamarpc.com",
+    "bsc": "https://bsc.drpc.org",
     "blast": "https://blast.drpc.org",
     "gnosis": "https://gnosis.publicnode.com",
     "polygon": "https://rpc.ankr.com/polygon",
