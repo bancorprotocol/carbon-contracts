@@ -312,7 +312,9 @@
       }
     ],
     "sourceAmount": "41040000000000000000",
-    "targetAmount": "51283291906"
+    "targetAmount": "51283291906",
+    "strategiesCount": 9,
+    "tradeActionsCount": 9
   },
   "testCaseTemplateByTargetAmount": {
     "byTargetAmount": true,
@@ -627,7 +629,9 @@
       }
     ],
     "sourceAmount": "205408041916",
-    "targetAmount": "164160000000000000000"
+    "targetAmount": "164160000000000000000",
+    "strategiesCount": 9,
+    "tradeActionsCount": 9
   },
   "testCaseTemplateBySourceAmountEqualHighestAndMarginalRate": {
     "byTargetAmount": false,
@@ -968,7 +972,9 @@
       }
     ],
     "sourceAmount": "36000",
-    "targetAmount": "239602"
+    "targetAmount": "239602",
+    "strategiesCount": 10,
+    "tradeActionsCount": 8
   },
   "testCaseTemplateByTargetAmountEqualHighestAndMarginalRate": {
     "byTargetAmount": true,
@@ -1305,6 +1311,8 @@
       }
     ],
     "sourceAmount": "21175",
-    "targetAmount": "28000"
+    "targetAmount": "28000",
+    "strategiesCount": 10,
+    "tradeActionsCount": 7
   }
 }

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
+import { Vm } from "forge-std/Vm.sol";
+
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
@@ -46,7 +48,7 @@ contract VoucherTest is TestFixture {
      */
 
     /// @dev test should be initialized properly
-    function testShouldBeInitializedProperly() public {
+    function testShouldBeInitializedProperly() public view {
         uint256 version = voucher.version();
         assertEq(version, 2);
 
@@ -62,7 +64,7 @@ contract VoucherTest is TestFixture {
     }
 
     /// @dev test should return the controller address
-    function testShouldReturnControllerAddress() public {
+    function testShouldReturnControllerAddress() public view {
         assertEq(address(carbonController), voucher.controller());
     }
 
@@ -131,18 +133,26 @@ contract VoucherTest is TestFixture {
         voucher.useGlobalURI(false);
     }
 
-    /// @dev test shouldn't emit UseGlobalURIUpdated if updated with the same value
-    function testFailDoesntEmitUseGlobalURIUpdatedIfAnUpdateWasAttemptedWithSameValue() public {
+    /// @dev shouldn't emit UseGlobalURIUpdated if updated with the same value
+    function testDoesntEmitUseGlobalURIUpdatedIfAnUpdateWasAttemptedWithSameValue() public {
         vm.startPrank(admin);
+
+        // initial set
         voucher.useGlobalURI(true);
-        vm.expectEmit();
-        emit UseGlobalURIUpdated(true);
+
+        // record logs for the redundant call
+        vm.recordLogs();
         voucher.useGlobalURI(true);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // no events expected
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
         vm.stopPrank();
     }
 
     /// @dev test should support erc721 interface
-    function testShouldSupportERC721Interface() public {
+    function testShouldSupportERC721Interface() public view {
         bytes4 erc721InterfaceId = 0x80ac58cd;
         assertTrue(voucher.supportsInterface(erc721InterfaceId));
     }

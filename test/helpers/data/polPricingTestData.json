@@ -54,7 +54,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -110,7 +111,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -166,7 +168,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -222,7 +225,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -278,7 +282,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -334,7 +339,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -390,7 +396,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -446,7 +453,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -502,7 +510,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -558,7 +567,8 @@
         }
       ],
       "initialPriceSourceAmount": "100",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -614,7 +624,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -670,7 +681,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -726,7 +738,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -782,7 +795,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -838,7 +852,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -894,7 +909,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -950,7 +966,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1006,7 +1023,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1062,7 +1080,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1118,7 +1137,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1174,7 +1194,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1230,7 +1251,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1286,7 +1308,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1342,7 +1365,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1398,7 +1422,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1454,7 +1479,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1510,7 +1536,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1566,7 +1593,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1622,7 +1650,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1678,7 +1707,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1734,7 +1764,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1790,7 +1821,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1846,7 +1878,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1902,7 +1935,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -1958,7 +1992,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2014,7 +2049,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2070,7 +2106,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2126,7 +2163,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2182,7 +2220,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2238,7 +2277,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2294,7 +2334,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2350,7 +2391,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2406,7 +2448,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2462,7 +2505,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2518,7 +2562,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2574,7 +2619,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2630,7 +2676,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2686,7 +2733,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2742,7 +2790,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2798,7 +2847,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2854,7 +2904,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2910,7 +2961,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -2966,7 +3018,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3022,7 +3075,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3078,7 +3132,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3134,7 +3189,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3190,7 +3246,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3246,7 +3303,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3302,7 +3360,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3358,7 +3417,8 @@
         }
       ],
       "initialPriceSourceAmount": "100000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3414,7 +3474,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3470,7 +3531,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3526,7 +3588,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3582,7 +3645,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3638,7 +3702,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3694,7 +3759,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3750,7 +3816,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3806,7 +3873,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3862,7 +3930,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3918,7 +3987,8 @@
         }
       ],
       "initialPriceSourceAmount": "500000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -3974,7 +4044,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4030,7 +4101,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4086,7 +4158,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4142,7 +4215,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4198,7 +4272,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4254,7 +4329,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4310,7 +4386,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4366,7 +4443,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4422,7 +4500,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4478,7 +4557,8 @@
         }
       ],
       "initialPriceSourceAmount": "1000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4534,7 +4614,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4590,7 +4671,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4646,7 +4728,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4702,7 +4785,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4758,7 +4842,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4814,7 +4899,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4870,7 +4956,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4926,7 +5013,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -4982,7 +5070,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5038,7 +5127,8 @@
         }
       ],
       "initialPriceSourceAmount": "5000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5094,7 +5184,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "100"
+      "initialPriceTargetAmount": "100",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5150,7 +5241,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5206,7 +5298,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5262,7 +5355,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5318,7 +5412,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5374,7 +5469,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "100000000000000000000000"
+      "initialPriceTargetAmount": "100000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5430,7 +5526,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "500000000000000000000000"
+      "initialPriceTargetAmount": "500000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5486,7 +5583,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "1000000000000000000000000"
+      "initialPriceTargetAmount": "1000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5542,7 +5640,8 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "5000000000000000000000000"
+      "initialPriceTargetAmount": "5000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     },
     {
       "tokenPriceAtTimestamps": [
@@ -5598,7 +5697,9 @@
         }
       ],
       "initialPriceSourceAmount": "10000000000000000000000000",
-      "initialPriceTargetAmount": "10000000000000000000000000"
+      "initialPriceTargetAmount": "10000000000000000000000000",
+      "tokenPriceAtTimestampsCount": 10
     }
-  ]
+  ],
+  "testCaseCount": 100
 }

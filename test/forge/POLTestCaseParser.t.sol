@@ -3,7 +3,6 @@ pragma solidity 0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 import { stdJson } from "forge-std/StdJson.sol";
-
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { ICarbonPOL } from "../../contracts/pol/CarbonPOL.sol";
@@ -35,7 +34,6 @@ contract POLTestCaseParser is Test {
         string memory path = "./test/helpers/data/polPricingTestData.json";
         string memory json = vm.readFile(path);
         testCases = parseTestCases(json, "testCase");
-
         return testCases;
     }
 
@@ -67,34 +65,28 @@ contract POLTestCaseParser is Test {
         string memory json,
         string memory templateName
     ) private pure returns (TestCase[] memory testCases) {
-        string memory initialParseString = string.concat("$.", templateName);
+        string memory base = string.concat("$.", templateName);
 
-        // read the test case length
-        string[] memory testCaseString = vm.parseJsonStringArray(json, initialParseString);
-        uint256 testCaseLength = testCaseString.length;
-
-        initialParseString = string.concat(initialParseString, "[");
+        // read the test case count
+        uint256 testCaseLength = vm.parseJsonUint(json, "$.testCaseCount");
 
         // initialize test cases array
         testCases = new TestCase[](testCaseLength);
 
+        // base for indexed lookups
+        string memory baseIdx = string.concat(base, "[");
+
         for (uint256 i = 0; i < testCaseLength; ++i) {
             // get the correct testCase index to parse
-            string memory parseString = string.concat(initialParseString, Strings.toString(i));
+            string memory parseString = string.concat(baseIdx, Strings.toString(i));
 
             // Decode the initial price
             testCases[i].initialPrice = parseInitialPrice(json, parseString);
 
             // Decode the different prices at each timestamp
+            uint256 tokenPriceLen = vm.parseJsonUint(json, string.concat(parseString, "].tokenPriceAtTimestampsCount"));
 
-            // read the timestamp case length
-            string[] memory tokenPriceString = vm.parseJsonStringArray(
-                json,
-                string.concat(parseString, "].tokenPriceAtTimestamps")
-            );
-            uint256 tokenPriceLen = tokenPriceString.length;
-
-            // initialize token price at timestamp string length
+            // initialize token price at timestamp array
             PriceAtTimestamp[] memory pricesAtTimestamp = new PriceAtTimestamp[](tokenPriceLen);
 
             // fill in the token price at timestamp
@@ -103,6 +95,8 @@ contract POLTestCaseParser is Test {
                 string memory fullParseString = string.concat(parseString, "].tokenPriceAtTimestamps[");
                 fullParseString = string.concat(fullParseString, Strings.toString(j));
                 fullParseString = string.concat(fullParseString, "]");
+
+                // Parse the element and decode into stringly struct, then convert to uint
                 bytes memory tokenPriceAtTimestampBytes = json.parseRaw(fullParseString);
                 pricesAtTimestamp[j] = convertPriceAtTimestampToUint(
                     abi.decode(tokenPriceAtTimestampBytes, (PriceAtTimestampString))
@@ -114,21 +108,21 @@ contract POLTestCaseParser is Test {
         return testCases;
     }
 
-    /// @dev convert a price at timestamp struct to uint256
+    /// @dev convert a price at timestamp struct to uints
     function convertPriceAtTimestampToUint(
-        PriceAtTimestampString memory priceAtTimestampString
-    ) private pure returns (PriceAtTimestamp memory priceAtTimestamp) {
+        PriceAtTimestampString memory s
+    ) private pure returns (PriceAtTimestamp memory r) {
         return
             PriceAtTimestamp({
-                timestamp: uint32(stringToUint(priceAtTimestampString.timestamp)),
-                sourceAmount: uint128(stringToUint(priceAtTimestampString.sourceAmount)),
-                targetAmount: uint128(stringToUint(priceAtTimestampString.targetAmount))
+                timestamp: uint32(stringToUint(s.timestamp)),
+                sourceAmount: uint128(stringToUint(s.sourceAmount)),
+                targetAmount: uint128(stringToUint(s.targetAmount))
             });
     }
 
     /// @dev helper function to convert a string to uint256
-    function stringToUint(string memory s) private pure returns (uint256 result) {
-        bytes memory b = bytes(s);
+    function stringToUint(string memory m) private pure returns (uint256 result) {
+        bytes memory b = bytes(m);
         result = 0;
         for (uint256 i = 0; i < b.length; i++) {
             uint256 c = uint256(uint8(b[i]));
