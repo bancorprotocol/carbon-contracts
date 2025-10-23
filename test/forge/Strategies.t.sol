@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
+import { Vm } from "forge-std/Vm.sol";
+
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
@@ -1193,12 +1195,20 @@ contract StrategiesTest is TestFixture {
         carbonController.setTradingFeePPM(PPM_RESOLUTION + 1);
     }
 
-    function testFailShouldIgnoreUpdatingToTheSameTradingFee() public {
+    function testShouldIgnoreUpdatingToTheSameTradingFee() public {
         uint32 tradingFee = carbonController.tradingFeePPM();
-        vm.prank(admin);
-        vm.expectEmit();
-        emit TradingFeePPMUpdated(tradingFee, tradingFee);
-        carbonController.setTradingFeePPM(NEW_TRADING_FEE_PPM);
+
+        vm.startPrank(admin);
+
+        // record logs for the redundant update
+        vm.recordLogs();
+        carbonController.setTradingFeePPM(tradingFee);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
+        vm.stopPrank();
     }
 
     function testShouldBeAbleToSetAndUpdateTheTradingFee() public {
@@ -1224,18 +1234,22 @@ contract StrategiesTest is TestFixture {
         carbonController.setPairTradingFeePPM(token0, token1, PPM_RESOLUTION + 1);
     }
 
-    function testFailShouldIgnoreUpdatingToTheSamePairTradingFee() public {
+    function testShouldIgnoreUpdatingToTheSamePairTradingFee() public {
         vm.prank(user1);
         // create pair to be able to update the custom trading fee
         carbonController.createPair(token0, token1);
+
         vm.startPrank(admin);
         carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
-        vm.expectEmit();
 
-        Token[2] memory sortedTokens = sortTokens(token0, token1);
-
-        emit PairTradingFeePPMUpdated(sortedTokens[0], sortedTokens[1], 0, NEW_TRADING_FEE_PPM);
+        // record logs for the redundant update
+        vm.recordLogs();
         carbonController.setPairTradingFeePPM(token0, token1, NEW_TRADING_FEE_PPM);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
         vm.stopPrank();
     }
 
@@ -1630,14 +1644,35 @@ contract StrategiesTest is TestFixture {
         vm.stopPrank();
     }
 
-    function testFailSkipsTransfersOfZeroAmount() public {
+    function testSkipsTransfersOfZeroAmount() public {
         vm.startPrank(user1);
 
         Order memory order = generateTestOrder();
         order.y = 0;
-        vm.expectEmit();
-        emit Transfer(user1, address(carbonController), 0);
+
+        vm.recordLogs();
         carbonController.createStrategy(token0, token1, [order, order]);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        bytes32 transferTopic = keccak256("Transfer(address,address,uint256)");
+        uint256 zeroErc20Transfers;
+
+        address t0 = Token.unwrap(token0);
+        address t1 = Token.unwrap(token1);
+
+        for (uint256 i = 0; i < logs.length; ++i) {
+            Vm.Log memory log = logs[i];
+
+            // Filter ERC20 Transfer only
+            if (log.topics.length == 3 && log.topics[0] == transferTopic && (log.emitter == t0 || log.emitter == t1)) {
+                uint256 amount = abi.decode(log.data, (uint256));
+                if (amount == 0) {
+                    zeroErc20Transfers++;
+                }
+            }
+        }
+
+        assertEq(zeroErc20Transfers, 0);
 
         vm.stopPrank();
     }
@@ -1693,14 +1728,20 @@ contract StrategiesTest is TestFixture {
         vm.stopPrank();
     }
 
-    function testFailEmitFeeWithdrawalIfAccumulatedFeeAmountIsZero() public {
+    /// @dev should not emit FeesWithdrawn if accumulated fee amount is zero
+    function testShouldNotEmitFeeWithdrawalIfAccumulatedFeeAmountIsZero() public {
         vm.startPrank(admin);
         carbonController.grantRole(carbonController.roleFeesManager(), admin);
 
         uint256 withdrawAmount = 10;
-        vm.expectEmit();
-        emit FeesWithdrawn(token0, admin, withdrawAmount, admin);
+
+        // record logs before attempting withdrawal
+        vm.recordLogs();
         carbonController.withdrawFees(token0, withdrawAmount, admin);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
 
         vm.stopPrank();
     }

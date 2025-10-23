@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
+import { Vm } from "forge-std/Vm.sol";
+
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { TestFixture } from "./TestFixture.t.sol";
@@ -88,7 +90,7 @@ contract CarbonPOLTest is TestFixture {
         testCaseParser = new POLTestCaseParser();
     }
 
-    function testShouldBeInitialized() public {
+    function testShouldBeInitialized() public view {
         uint16 version = carbonPOL.version();
         assertEq(version, 2);
     }
@@ -124,12 +126,22 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.setMarketPriceMultiply(0);
     }
 
-    /// @dev test that setMarketPriceMultiply with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameMarketPriceMultiply() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit MarketPriceMultiplyUpdated(MARKET_PRICE_MULTIPLY_DEFAULT, MARKET_PRICE_MULTIPLY_DEFAULT);
+    /// @dev should ignore setting the same MarketPriceMultiply (no events emitted)
+    function testShouldIgnoreSettingTheSameMarketPriceMultiply() public {
+        vm.startPrank(admin);
+
+        // first set establishes the default value
         carbonPOL.setMarketPriceMultiply(MARKET_PRICE_MULTIPLY_DEFAULT);
+
+        // record logs for the redundant call
+        vm.recordLogs();
+        carbonPOL.setMarketPriceMultiply(MARKET_PRICE_MULTIPLY_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the market price multiply
@@ -165,12 +177,22 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.setPriceDecayHalfLife(0);
     }
 
-    /// @dev test that setPriceDecayHalfLife with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSamePriceDecayHalfLife() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit PriceDecayHalfLifeUpdated(PRICE_DECAY_HALFLIFE_DEFAULT, PRICE_DECAY_HALFLIFE_DEFAULT);
+    /// @dev should ignore setting the same PriceDecayHalfLife (no events emitted)
+    function testShouldIgnoreSettingTheSamePriceDecayHalfLife() public {
+        vm.startPrank(admin);
+
+        // first set establishes the default value
         carbonPOL.setPriceDecayHalfLife(PRICE_DECAY_HALFLIFE_DEFAULT);
+
+        // record logs for the redundant call
+        vm.recordLogs();
+        carbonPOL.setPriceDecayHalfLife(PRICE_DECAY_HALFLIFE_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the price decay half-life
@@ -206,12 +228,22 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.setEthSaleAmount(0);
     }
 
-    /// @dev test that setEthSaleAmount with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameEthSaleAmount() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit EthSaleAmountUpdated(ETH_SALE_AMOUNT_DEFAULT, ETH_SALE_AMOUNT_DEFAULT);
+    /// @dev should ignore setting the same EthSaleAmount (no events emitted)
+    function testShouldIgnoreSettingTheSameEthSaleAmount() public {
+        vm.startPrank(admin);
+
+        // first set establishes the default value
         carbonPOL.setEthSaleAmount(ETH_SALE_AMOUNT_DEFAULT);
+
+        // record logs for the redundant call
+        vm.recordLogs();
+        carbonPOL.setEthSaleAmount(ETH_SALE_AMOUNT_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the eth sale amount
@@ -247,12 +279,22 @@ contract CarbonPOLTest is TestFixture {
         carbonPOL.setMinEthSaleAmount(0);
     }
 
-    /// @dev test that setMinEthSaleAmount with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameMinEthSaleAmount() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit MinEthSaleAmountUpdated(MIN_ETH_SALE_AMOUNT_DEFAULT, MIN_ETH_SALE_AMOUNT_DEFAULT);
+    /// @dev should ignore setting the same MinEthSaleAmount (no events emitted)
+    function testShouldIgnoreSettingTheSameMinEthSaleAmount() public {
+        vm.startPrank(admin);
+
+        // first set establishes the default value
         carbonPOL.setMinEthSaleAmount(MIN_ETH_SALE_AMOUNT_DEFAULT);
+
+        // record logs for the redundant call
+        vm.recordLogs();
+        carbonPOL.setMinEthSaleAmount(MIN_ETH_SALE_AMOUNT_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        // ensure no events were emitted
+        assertEq(logs.length, 0, "expected no events to be emitted");
+
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the min eth sale amount
@@ -300,7 +342,7 @@ contract CarbonPOLTest is TestFixture {
      */
 
     /// @dev test trading should be disabled initially for all tokens
-    function testTradingShouldBeDisabledInitially(uint256 i) public {
+    function testTradingShouldBeDisabledInitially(uint256 i) public view {
         // pick one of these tokens to test
         Token[4] memory tokens = [token1, token2, bnt, NATIVE_TOKEN];
         // pick a random number from 0 to 2 for the tokens

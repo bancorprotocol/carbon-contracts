@@ -1,6 +1,8 @@
 // // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
+import { Vm } from "forge-std/Vm.sol";
+
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -1109,8 +1111,8 @@ contract CarbonVortexTest is TestFixture {
         carbonVortex.execute(tokens);
     }
 
-    /// @dev test shouldn't emit a trade reset event on execute for tokens which have no fees accumulated
-    function testFailShouldntEmitTradeResetForTokensWhichHaveNoFeesAccumulated() public {
+    /// @dev shouldn't emit TradingReset for tokens which have no fees accumulated
+    function testShouldntEmitTradingResetForTokensWhichHaveNoFeesAccumulated() public {
         vm.startPrank(admin);
 
         // test with these three tokens
@@ -1124,26 +1126,36 @@ contract CarbonVortexTest is TestFixture {
         // set fees for token0 and token2 in the carbon controller
         carbonController.testSetAccumulatedFees(tokens[0], accumulatedFees);
         carbonController.testSetAccumulatedFees(tokens[2], accumulatedFees);
-        // transfer token0 fees to carbon
+
+        // transfer token0 fees to the carbon controller
         tokens[0].safeTransfer(address(carbonController), accumulatedFees);
 
         vm.stopPrank();
 
         vm.startPrank(user1);
-
-        ICarbonVortex.Price memory price = ICarbonVortex.Price({
-            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
-            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
-        });
-
-        // test shouldn't emit TradingReset event for token1
-        vm.expectEmit();
-        emit TradingReset(tokens[1], price);
+        vm.recordLogs();
         carbonVortex.execute(tokens);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        bytes32 sig = keccak256("TradingReset(address,(uint128,uint128))");
+        uint256 count = 0;
+
+        // check for any TradingReset events for token1
+        for (uint256 i = 0; i < logs.length; ++i) {
+            if (logs[i].topics.length >= 2 && logs[i].topics[0] == sig) {
+                address token = address(uint160(uint256(logs[i].topics[1])));
+                if (token == Token.unwrap(tokens[1])) {
+                    count++;
+                }
+            }
+        }
+
+        assertEq(count, 0);
+        vm.stopPrank();
     }
 
-    /// @dev test shouldn't emit a trade reset on execute for tokens which are disabled
-    function testFailShouldntEmitTradeResetForTokensWhichAreDisabled() public {
+    /// @dev shouldn't emit TradingReset for tokens which are disabled
+    function testShouldntEmitTradingResetForTokensWhichAreDisabled() public {
         vm.startPrank(admin);
 
         // test with these three tokens
@@ -1158,7 +1170,8 @@ contract CarbonVortexTest is TestFixture {
         for (uint256 i = 0; i < 3; ++i) {
             carbonController.testSetAccumulatedFees(tokens[i], accumulatedFees);
         }
-        // transfer token0 fees to carbon
+
+        // transfer token0 fees to the carbon controller
         token0.safeTransfer(address(carbonController), accumulatedFees);
 
         // disable token1
@@ -1167,47 +1180,59 @@ contract CarbonVortexTest is TestFixture {
         vm.stopPrank();
 
         vm.startPrank(user1);
-
-        ICarbonVortex.Price memory price = ICarbonVortex.Price({
-            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
-            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
-        });
-
-        // test shouldn't emit TradingReset event for token1
-        vm.expectEmit();
-        emit TradingReset(tokens[1], price);
+        vm.recordLogs();
         carbonVortex.execute(tokens);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        bytes32 sig = keccak256("TradingReset(address,(uint128,uint128))");
+        uint256 count = 0;
+
+        // check for any TradingReset events for token1
+        for (uint256 i = 0; i < logs.length; ++i) {
+            if (logs[i].topics.length >= 2 && logs[i].topics[0] == sig) {
+                address token = address(uint160(uint256(logs[i].topics[1])));
+                if (token == Token.unwrap(tokens[1])) {
+                    count++;
+                }
+            }
+        }
+
+        assertEq(count, 0);
+        vm.stopPrank();
     }
 
-    /// @dev test execute shouldnt emit a trade reset event for the target token if the final target token is zero
-    function testFailShouldntEmitTradeResetForTheTargetTokenIfTheFinalTargetTokenIsZero() public {
-        // Deploy new Carbon Vortex with the final target token set to the zero address
+    /// @dev shouldn't emit TradingReset for the target token if the final target token is zero
+    function testShouldntEmitTradingResetForTheTargetTokenIfTheFinalTargetTokenIsZero() public {
+        // Deploy new Carbon Vortex with final target token set to zero address
         deployCarbonVortex(address(carbonController), vault, transferAddress, targetToken, Token.wrap(address(0)));
 
         vm.startPrank(admin);
-
-        // test with the target token
         Token[] memory tokens = new Token[](1);
         tokens[0] = targetToken;
-
         uint256 accumulatedFees = 100 ether;
-
-        // set fees in carbon controller
         carbonController.testSetAccumulatedFees(tokens[0], accumulatedFees);
-
         vm.stopPrank();
 
         vm.startPrank(user1);
-
-        ICarbonVortex.Price memory price = ICarbonVortex.Price({
-            sourceAmount: INITIAL_PRICE_SOURCE_AMOUNT,
-            targetAmount: INITIAL_PRICE_TARGET_AMOUNT
-        });
-
-        // test shouldn't emit TradingReset event for the target token
-        vm.expectEmit();
-        emit TradingReset(targetToken, price);
+        vm.recordLogs();
         carbonVortex.execute(tokens);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        bytes32 sig = keccak256("TradingReset(address,(uint128,uint128))");
+        uint256 count = 0;
+
+        // check for any target token trading resets
+        for (uint256 i = 0; i < logs.length; ++i) {
+            if (logs[i].topics.length >= 2 && logs[i].topics[0] == sig) {
+                address token = address(uint160(uint256(logs[i].topics[1])));
+                if (token == Token.unwrap(targetToken)) {
+                    count++;
+                }
+            }
+        }
+
+        assertEq(count, 0);
+        vm.stopPrank();
     }
 
     function testShouldRevertOnExecuteIfNoTokensArePassed() public {
@@ -3065,11 +3090,16 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test that setRewardsPPM with the same rewards ppm should be ignored
-    function testFailShouldIgnoreSettingTheSameRewardsPPM() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit RewardsUpdated(REWARDS_PPM_DEFAULT, REWARDS_PPM_DEFAULT);
+    function testShouldIgnoreSettingTheSameRewardsPPM() public {
+        vm.startPrank(admin);
         carbonVortex.setRewardsPPM(REWARDS_PPM_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setRewardsPPM(REWARDS_PPM_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the rewards ppm
@@ -3118,11 +3148,16 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test that setPriceResetMultiplier with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSamePriceResetMultiplier() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit PriceResetMultiplierUpdated(PRICE_RESET_MULTIPLIER_DEFAULT, PRICE_RESET_MULTIPLIER_DEFAULT);
+    function testSettingTheSamePriceResetMultiplierShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setPriceResetMultiplier(PRICE_RESET_MULTIPLIER_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setPriceResetMultiplier(PRICE_RESET_MULTIPLIER_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the price reset multiplier
@@ -3171,14 +3206,16 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test that setMinTokenSaleAmountMultiplier with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameMinTokenSaleAmountMultiplier() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit MinTokenSaleAmountMultiplierUpdated(
-            MIN_TOKEN_SALE_AMOUNT_MULTIPLIER_DEFAULT,
-            MIN_TOKEN_SALE_AMOUNT_MULTIPLIER_DEFAULT
-        );
+    function testSettingTheSameMinTokenSaleAmountMultiplierShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setMinTokenSaleAmountMultiplier(MIN_TOKEN_SALE_AMOUNT_MULTIPLIER_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setMinTokenSaleAmountMultiplier(MIN_TOKEN_SALE_AMOUNT_MULTIPLIER_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the minimum token sale amount multiplier
@@ -3230,11 +3267,16 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test that setPriceDecayHalfLife with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSamePriceDecayHalfLife() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit PriceDecayHalfLifeUpdated(PRICE_DECAY_HALFLIFE_DEFAULT, PRICE_DECAY_HALFLIFE_DEFAULT);
+    function testSettingTheSamePriceDecayHalfLifeShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setPriceDecayHalfLife(PRICE_DECAY_HALFLIFE_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setPriceDecayHalfLife(PRICE_DECAY_HALFLIFE_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the price decay half-life
@@ -3281,12 +3323,17 @@ contract CarbonVortexTest is TestFixture {
         assertEq(targetTokenPriceDecayHalfLife, targetTokenPriceDecayHalfLifeAfter);
     }
 
-    /// @dev test that setTargetTokenPriceDecayHalfLife with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameTargetTokenPriceDecayHalfLife() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit TargetTokenPriceDecayHalfLifeUpdated(PRICE_DECAY_HALFLIFE_DEFAULT, PRICE_DECAY_HALFLIFE_DEFAULT);
+    /// @dev test that setTargetTokenPriceDecayHalfLife with the same value doesn't emit event
+    function testSettingTheSameTargetTokenPriceDecayHalfLifeDoesntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setTargetTokenPriceDecayHalfLife(PRICE_DECAY_HALFLIFE_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setTargetTokenPriceDecayHalfLife(PRICE_DECAY_HALFLIFE_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the target token price decay half-life
@@ -3330,15 +3377,17 @@ contract CarbonVortexTest is TestFixture {
         assertEq(targetTokenPriceDecayHalfLife, targetTokenPriceDecayHalfLifeAfter);
     }
 
-    /// @dev test that setTargetTokenPriceDecayHalfLifeOnReset with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameTargetTokenPriceDecayHalfLifeOnReset() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit TargetTokenPriceDecayHalfLifeUpdated(
-            TARGET_TOKEN_PRICE_DECAY_HALFLIFE_DEFAULT,
-            TARGET_TOKEN_PRICE_DECAY_HALFLIFE_DEFAULT
-        );
+    /// @dev test that setTargetTokenPriceDecayHalfLifeOnReset with the same value shouldn't emit event
+    function testSettingTheSameTargetTokenPriceDecayHalfLifeOnResetShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setTargetTokenPriceDecayHalfLifeOnReset(TARGET_TOKEN_PRICE_DECAY_HALFLIFE_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setTargetTokenPriceDecayHalfLifeOnReset(TARGET_TOKEN_PRICE_DECAY_HALFLIFE_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the target token price decay half-life on reset
@@ -3382,12 +3431,17 @@ contract CarbonVortexTest is TestFixture {
         assertEq(transferAddressBefore, transferAddressAfter);
     }
 
-    /// @dev test that setTransferAddress with the same address should be ignored (using fail test)
-    function testFailShouldIgnoreSettingTheSameTransferAddress() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit TransferAddressUpdated(transferAddress, transferAddress);
+    /// @dev test that setTransferAddress with the same address shouldn't emit event
+    function testSettingTheSameTransferAddressShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setTransferAddress(transferAddress);
+
+        vm.recordLogs();
+        carbonVortex.setTransferAddress(transferAddress);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the transfer address
@@ -3436,15 +3490,16 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test that setMinTargetTokenSaleAmount with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameMinTargetTokenSaleAmount() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit MinTokenSaleAmountUpdated(
-            targetToken,
-            MIN_TARGET_TOKEN_SALE_AMOUNT_DEFAULT,
-            MIN_TARGET_TOKEN_SALE_AMOUNT_UPDATED
-        );
+    function testSettingTheSameMinTargetTokenSaleAmountShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setMinTargetTokenSaleAmount(MIN_TARGET_TOKEN_SALE_AMOUNT_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setMinTargetTokenSaleAmount(MIN_TARGET_TOKEN_SALE_AMOUNT_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the min target token sale amount
@@ -3497,14 +3552,16 @@ contract CarbonVortexTest is TestFixture {
     }
 
     /// @dev test that setMaxTargetTokenSaleAmount with the same value should be ignored
-    function testFailShouldIgnoreSettingTheSameMaxTargetTokenSaleAmount() public {
-        vm.prank(admin);
-        vm.expectEmit(false, false, false, false);
-        emit MaxTargetTokenSaleAmountUpdated(
-            MAX_TARGET_TOKEN_SALE_AMOUNT_DEFAULT,
-            MAX_TARGET_TOKEN_SALE_AMOUNT_DEFAULT
-        );
+    function testSettingTheSameMaxTargetTokenSaleAmountShouldntEmitEvent() public {
+        vm.startPrank(admin);
         carbonVortex.setMaxTargetTokenSaleAmount(MAX_TARGET_TOKEN_SALE_AMOUNT_DEFAULT);
+
+        vm.recordLogs();
+        carbonVortex.setMaxTargetTokenSaleAmount(MAX_TARGET_TOKEN_SALE_AMOUNT_DEFAULT);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+
+        assertEq(logs.length, 0, "expected no events to be emitted");
+        vm.stopPrank();
     }
 
     /// @dev test that admin should be able to update the max target token sale amount

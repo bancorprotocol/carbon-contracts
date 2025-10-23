@@ -47,7 +47,7 @@ contract TestCaseParser is Test {
         string memory sourceSymbol,
         string memory targetSymbol,
         bool byTargetAmount
-    ) public returns (TestCase memory testCase) {
+    ) public view returns (TestCase memory testCase) {
         TestStrategy[] memory strategies;
         TradeAction[] memory tradeActions;
         uint256 sourceAmount;
@@ -82,7 +82,7 @@ contract TestCaseParser is Test {
         string memory targetSymbol,
         bool byTargetAmount,
         bool inverseOrders
-    ) public returns (TestCase memory testCase) {
+    ) public view returns (TestCase memory testCase) {
         TestStrategy[] memory strategies;
         TradeAction[] memory tradeActions;
         uint256 sourceAmount;
@@ -131,7 +131,7 @@ contract TestCaseParser is Test {
         bool byTargetAmount,
         bool equalHighestAndMarginalRate,
         bool inverseOrders
-    ) public returns (TestCase memory testCase) {
+    ) public view returns (TestCase memory testCase) {
         TestStrategy[] memory strategies;
         TradeAction[] memory tradeActions;
         uint256 sourceAmount;
@@ -189,6 +189,7 @@ contract TestCaseParser is Test {
         string memory templateName
     )
         public
+        view
         returns (
             TestStrategy[] memory strategies,
             TradeAction[] memory tradeActions,
@@ -222,33 +223,25 @@ contract TestCaseParser is Test {
         string memory json,
         string memory templateName
     ) private pure returns (TestStrategy[] memory strategies) {
-        string memory initialParseString = string.concat("$.", templateName);
-        initialParseString = string.concat(initialParseString, ".strategies");
+        string memory base = string.concat("$.", templateName);
+        uint256 strategiesLength = vm.parseJsonUint(json, string.concat(base, ".strategiesCount"));
 
-        // read the strategies length
-        string[] memory strategiesString = vm.parseJsonStringArray(json, initialParseString);
-        uint256 strategiesLength = strategiesString.length;
-
-        initialParseString = string.concat(initialParseString, "[");
-
-        // initialize strategies array
         strategies = new TestStrategy[](strategiesLength);
 
+        string memory prefix = string.concat(base, ".strategies[");
         for (uint256 i = 0; i < strategiesLength; ++i) {
-            // get the correct strategy index to parse
-            string memory parseString = string.concat(initialParseString, Strings.toString(i));
+            string memory idx = Strings.toString(i);
 
-            // Parse the orders field into a bytes array
-            bytes memory order0Bytes = json.parseRaw(string.concat(parseString, "].orders[0]"));
-            bytes memory order1Bytes = json.parseRaw(string.concat(parseString, "].orders[1]"));
-            bytes memory expectedOrder0Bytes = json.parseRaw(string.concat(parseString, "].expectedOrders[0]"));
-            bytes memory expectedOrder1Bytes = json.parseRaw(string.concat(parseString, "].expectedOrders[1]"));
+            bytes memory order0Bytes = json.parseRaw(string.concat(prefix, idx, "].orders[0]"));
+            bytes memory order1Bytes = json.parseRaw(string.concat(prefix, idx, "].orders[1]"));
+            bytes memory expectedOrder0Bytes = json.parseRaw(string.concat(prefix, idx, "].expectedOrders[0]"));
+            bytes memory expectedOrder1Bytes = json.parseRaw(string.concat(prefix, idx, "].expectedOrders[1]"));
 
-            // Decode the bytes array into an Order struct
             Order memory order0 = convertOrderStructToUint(abi.decode(order0Bytes, (OrderString)));
             Order memory order1 = convertOrderStructToUint(abi.decode(order1Bytes, (OrderString)));
             Order memory expectedOrder0 = convertOrderStructToUint(abi.decode(expectedOrder0Bytes, (OrderString)));
             Order memory expectedOrder1 = convertOrderStructToUint(abi.decode(expectedOrder1Bytes, (OrderString)));
+
             strategies[i].orders = [order0, order1];
             strategies[i].expectedOrders = [expectedOrder0, expectedOrder1];
         }
@@ -262,33 +255,20 @@ contract TestCaseParser is Test {
         string memory json,
         string memory templateName
     ) private pure returns (TradeAction[] memory tradeActions) {
-        string memory initialParseString = string.concat("$.", templateName);
-        initialParseString = string.concat(initialParseString, ".tradeActions");
+        string memory base = string.concat("$.", templateName);
+        uint256 tradeActionsLength = vm.parseJsonUint(json, string.concat(base, ".tradeActionsCount"));
 
-        // read the trade actions length
-        string[] memory tradeActionsString = vm.parseJsonStringArray(json, initialParseString);
-        uint256 tradeActionsLength = tradeActionsString.length;
-
-        initialParseString = string.concat(initialParseString, "[");
-
-        // initialize trade actions array
         tradeActions = new TradeAction[](tradeActionsLength);
 
+        string memory prefix = string.concat(base, ".tradeActions[");
         for (uint256 i = 0; i < tradeActionsLength; ++i) {
-            // get the correct trade action index to parse
-            string memory parseString = string.concat(initialParseString, Strings.toString(i));
+            string memory idx = Strings.toString(i);
+            bytes memory tradeActionBytes = json.parseRaw(string.concat(prefix, idx, "]"));
 
-            // Parse the trade actions field into bytes format
-            bytes memory tradeActionBytes = json.parseRaw(string.concat(parseString, "]"));
-            // Decode the bytes into an TradeActionIntermediate struct
-            TradeActionIntermediate memory tradeActionIntermediate = abi.decode(
-                tradeActionBytes,
-                (TradeActionIntermediate)
-            );
-            // Format the TradeAction struct properly
+            TradeActionIntermediate memory t = abi.decode(tradeActionBytes, (TradeActionIntermediate));
             tradeActions[i] = TradeAction({
-                strategyId: bytesToUint(tradeActionIntermediate.strategyId),
-                amount: uint128(stringToUint((tradeActionIntermediate.amount)))
+                strategyId: bytesToUint(t.strategyId),
+                amount: uint128(stringToUint(t.amount))
             });
         }
         return tradeActions;

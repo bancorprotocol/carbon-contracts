@@ -7682,7 +7682,9 @@
           "sourceAmount": "1",
           "targetAmount": "1000000000000"
         }
-      ]
+      ],
+      "tokenPriceAtTimestampsCount": 1536
     }
-  ]
+  ],
+  "testCaseCount": 1
 }
