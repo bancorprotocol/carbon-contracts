@@ -636,7 +636,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
                 const eff = base.add(BigNumber.from(tip).lt(cap.sub(base)) ? tip : cap.sub(base));
                 const gasPaidWei = receipt.gasUsed.mul(eff);
                 return gasPaidWei;
-            }
+            };
 
             /**
              * creates a test strategy, handles funding and approvals
