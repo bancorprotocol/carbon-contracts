@@ -610,21 +610,6 @@ import { ethers, getNamedAccounts } from 'hardhat';
                         const expectedOwnerAmountToken1 =
                             _token1.address === NATIVE_TOKEN_ADDRESS ? amounts[1].add(gasUsed) : amounts[1];
 
-                        if (_token0.address === NATIVE_TOKEN_ADDRESS) {
-                            console.log('token 0 is the native token address');
-                            console.log('amounts 0 balance:', amounts[0]);
-                            console.log('gas used:', gasUsed)
-                            console.log('total calculated:', amounts[0].add(gasUsed));
-                            console.log('actual after token0 balance of owner:', after.ownerToken0);
-                        } 
-                        if (_token1.address === NATIVE_TOKEN_ADDRESS) {
-                            console.log('token 1 is the native token address');
-                            console.log('amounts 1 balance:', amounts[1]);
-                            console.log('gas used:', gasUsed)
-                            console.log('total calculated:', amounts[1].add(gasUsed));
-                            console.log('actual after token1 balance of owner:', after.ownerToken1);
-                        }
-
                         // owner's balance should decrease y amount
                         expect(after.ownerToken0).to.eq(before.ownerToken0.sub(expectedOwnerAmountToken0));
                         expect(after.ownerToken1).to.eq(before.ownerToken1.sub(expectedOwnerAmountToken1));
