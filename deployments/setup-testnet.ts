@@ -120,7 +120,16 @@ const fundAccounts = async () => {
         }
     ];
 
+    if (DEV_ADDRESSES == undefined) {
+        Logger.log('no dev addresses provided');
+        return;
+    }
     const devAddresses = DEV_ADDRESSES.split(',');
+
+    if (devAddresses.length == 0) {
+        Logger.log('no dev addresses provided');
+        return;
+    }
 
     for(const fundingRequest of fundingRequests) {
         if(fundingRequest.token == ZERO_ADDRESS) {

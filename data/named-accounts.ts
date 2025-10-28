@@ -207,7 +207,7 @@ const bsc = (address: string) => {
 
 const TestNamedAccounts = {
     ethWhale: {
-        ...getAddress(mainnet, '0xDA9dfA130Df4dE4673b89022EE50ff26f6EA73Cf'),
+        ...getAddress(mainnet, '0xF977814e90dA44bFA03b6295A0616a897441aceC'),
         ...getAddress(base, '0xF977814e90dA44bFA03b6295A0616a897441aceC'),
         ...getAddress(arbitrum, '0xF977814e90dA44bFA03b6295A0616a897441aceC'),
         ...getAddress(mantle, '0xf89d7b9c864f589bbF53a82105107622B35EaA40')
@@ -225,12 +225,12 @@ const TestNamedAccounts = {
         ...getAddress(arbitrum, '0xd85E038593d7A098614721EaE955EC2022B9B91B')
     },
     wbtcWhale: {
-        ...getAddress(mainnet, '0x051d091B254EcdBBB4eB8E6311b7939829380b27'),
+        ...getAddress(mainnet, '0xCDaC4829485cF9d6A36E04b6B730eB1fdAfE8F0E'),
         ...getAddress(arbitrum, '0x489ee077994B6658eAfA855C308275EAd8097C4A'),
         ...getAddress(mantle, '0xa6b12425F236EE85c6E0E60df9c422C9e603cf80')
     },
     bntWhale: {
-        ...getAddress(mainnet, '0x6cC5F688a315f3dC28A7781717a9A798a59fDA7b'),
+        ...getAddress(mainnet, '0x02F649B5b57aE60058E33875937aC4D3deec1430'),
         ...getAddress(mantle, ZERO_ADDRESS)
     },
     linkWhale: {
