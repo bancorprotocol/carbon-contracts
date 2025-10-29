@@ -3,7 +3,7 @@ name: Health
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/30 * * * *' # every 30 minutes
+    - cron: '0 */2 * * *' # every 2 hours
 
 jobs:
   test:
@@ -13,14 +13,14 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with: 
-          version: 8
+          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,7 +34,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: v1.3.5 # stable version 09.09.2025
 
       - name: Install dependencies
         run: pnpm install

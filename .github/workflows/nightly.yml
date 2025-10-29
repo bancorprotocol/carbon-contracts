@@ -15,7 +15,7 @@ jobs:
       should-run: ${{ steps.should-run.outputs.should-run }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check the latest commit
         id: should-run
@@ -41,7 +41,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -59,7 +59,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: v1.3.5 # stable version 09.09.2025
 
       - name: Install dependencies
         run: pnpm install

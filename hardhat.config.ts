@@ -27,8 +27,6 @@ interface EnvOptions {
     NIGHTLY?: boolean;
     PROFILE?: boolean;
     VERIFY_API_KEY?: string;
-    TENDERLY_IS_FORK?: boolean;
-    TENDERLY_FORK_ID?: string;
     TENDERLY_PROJECT?: string;
     TENDERLY_TEST_PROJECT?: string;
     TENDERLY_USERNAME?: string;
@@ -39,8 +37,6 @@ const {
     TENDERLY_TESTNET_PROVIDER_URL = '',
     VERIFY_API_KEY = '',
     GAS_PRICE: gasPrice = 'auto',
-    TENDERLY_IS_FORK = false,
-    TENDERLY_FORK_ID = '',
     TENDERLY_PROJECT = '',
     TENDERLY_TEST_PROJECT = '',
     TENDERLY_USERNAME = '',
@@ -542,7 +538,7 @@ const config: HardhatUserConfig = {
         },
         [DeploymentNetwork.Tenderly]: {
             chainId: Number(chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds]),
-            url: TENDERLY_IS_FORK ? `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}` : TENDERLY_TESTNET_PROVIDER_URL,
+            url: TENDERLY_TESTNET_PROVIDER_URL,
             autoImpersonate: true,
             saveDeployments: true,
             live: true,

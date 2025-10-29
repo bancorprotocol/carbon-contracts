@@ -157,16 +157,10 @@ You can make changes to the deployment scripts by modifying them in `deploy/scri
 
 If you want to verify the contracts after deployment, please set up the `VERIFY_API_KEY` environmental variable to the etherscan api key.
 
-There’s also a special deployment mode which deploys the protocol to a tenderly fork. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
+There’s also a special deployment mode which deploys the protocol to a tenderly testnet. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
 
 ```sh
-pnpm deploy:fork
-```
-
-You can also deploy the protocol to a tenderly testnet. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
-
-```sh
-pnpm deploy:testnet
+pnpm setup:testnet
 ```
 
 ## Community

@@ -12,26 +12,31 @@ deployment_type="network"  # default
 remaining_args=()
 
 while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --type)
-            shift
-            if [[ "$1" == "support" || "$1" == "network" ]]; then
-                deployment_type="$1"
-                shift
-            else
-                echo "Error: --type must be either 'network' or 'support'"
-                exit 1
-            fi
-            ;;
-        --*) # reject --type=support and others
-            echo "Unknown option: $1"
-            exit 1
-            ;;
-        *)  # all other args passed through
-            remaining_args+=("$1")
-            shift
-            ;;
-    esac
+  case "$1" in
+    --type)
+      shift
+      if [[ "$1" == "support" || "$1" == "network" ]]; then
+        deployment_type="$1"
+        shift
+      else
+        echo "Error: --type must be either 'network' or 'support'"
+        exit 1
+      fi
+      ;;
+    --)  # standard end-of-options marker: pass the rest
+      shift
+      remaining_args+=("$@")
+      break
+      ;;
+    --*)  # forward all other --flags to the command (don't reject)
+      remaining_args+=("$1")
+      shift
+      ;;
+    *)    # positional args (e.g., HARDHAT_NETWORK=tenderly, mocha, path globs)
+      remaining_args+=("$1")
+      shift
+      ;;
+  esac
 done
 
 # --- Setup Tenderly project info ---
@@ -104,8 +109,10 @@ response=$(curl -sX POST "$TENDERLY_TESTNET_API" \
 testnet_id=$(echo "$response" | jq -r '.id')
 provider_url=$(echo "$response" | jq -r '.rpcs[0].url')
 
-echo "Created Tenderly Testnet ${testnet_id} at ${username}/${project}..."
-echo
+if [ "${TEST_FORK}" != "1" ]; then
+    echo "Created Tenderly Testnet ${testnet_id} at ${username}/${project}..."
+    echo
+fi
 
 # if deployments/${network_name} doesn't exist, create it and create a .chainId file
 if [ ! -d "./deployments/${network_name}" ]; then
@@ -123,9 +130,12 @@ rm -rf deployments/tenderly && cp -rf deployments/${network_name}/. deployments/
 
 # --- Execute remaining command ---
 command="TENDERLY_TESTNET_ID=${testnet_id} TENDERLY_TESTNET_PROVIDER_URL=${provider_url} ${remaining_args[@]}"
-echo "Running:"
-echo
-echo "$command"
-echo
+
+if [ "${TEST_FORK}" != "1" ]; then
+  echo "Running:"
+  echo
+  echo "$command"
+  echo
+fi
 
 eval "$command"

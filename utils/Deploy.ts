@@ -45,7 +45,6 @@ interface Options {
 const { AbiCoder } = utils;
 
 interface EnvOptions {
-    TEST_FORK?: boolean;
     TENDERLY_NETWORK_NAME?: string;
 }
 
