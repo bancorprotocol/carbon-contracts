@@ -7,4 +7,49 @@ ignore:
         reason: Hardhat 2.x requires legacy option; pinned to 5.28.5
         expires: 2026-10-20T00:00:00.000Z
         created: 2025-10-20T00:00:00.000Z
+  SNYK-JS-UNDICI-14943963:
+    - '*':
+        reason: Hardhat 2.x requires undici 5.x; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-UNDICI-15518061:
+    - '*':
+        reason: Hardhat 2.x requires undici 5.x; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-UNDICI-15518072:
+    - '*':
+        reason: Hardhat 2.x requires undici 5.x; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-UNDICI-15518068:
+    - '*':
+        reason: Hardhat 2.x requires undici 5.x; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-UNDICI-15518070:
+    - '*':
+        reason: Hardhat 2.x requires undici 5.x; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-LODASH-15053838:
+    - '*':
+        reason: No fixed lodash version published; dev-only transitive
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-LODASH-15869619:
+    - '*':
+        reason: No fixed lodash version published; dev-only transitive
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-LODASH-15869625:
+    - '*':
+        reason: No fixed lodash version published; dev-only transitive
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-BNJS-15274301:
+    - '*':
+        reason: bn.js 4.x/5.x coexist transitively; global override would break ethers v5 and ethereumjs-util paths
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-04-15T00:00:00.000Z
 patch: {}
