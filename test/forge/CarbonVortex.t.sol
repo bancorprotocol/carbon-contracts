@@ -1638,6 +1638,49 @@ contract CarbonVortexTest is TestFixture {
         assertEq(balanceSent, sourceAmount);
     }
 
+    /// @dev test trading target token for token with an overpay should not inflate the target token sale amount `current` value after the trade
+    function testTradingTargetTokenForTokenWithNativeOverpayShouldNotInflateTargetTokenSaleAmountCurrent() public {
+        vm.prank(admin);
+        Token token = token1;
+        uint256 accumulatedFees = 100 ether;
+        carbonController.testSetAccumulatedFees(token, accumulatedFees);
+        carbonController.testSetAccumulatedFees(targetToken, accumulatedFees);
+
+        vm.startPrank(user1);
+
+        Token[] memory tokens = new Token[](2);
+        tokens[0] = token;
+        tokens[1] = targetToken;
+        carbonVortex.execute(tokens);
+
+        vm.warp(46 days);
+
+        // position amountAvailableForTrading(targetToken) below minSaleAmount/multiplier
+        uint128 minSaleAmount = carbonVortex.minTokenSaleAmount(targetToken);
+        uint32 multiplier = carbonVortex.minTokenSaleAmountMultiplier();
+        uint128 amountAvailableForTrading = carbonVortex.amountAvailableForTrading(targetToken);
+        uint128 firstTradeAmount = amountAvailableForTrading + 1e18 - minSaleAmount / multiplier;
+        uint128 firstSourceAmount = carbonVortex.expectedTradeInput(targetToken, firstTradeAmount);
+        finalTargetToken.safeApprove(address(carbonVortex), firstSourceAmount);
+        carbonVortex.trade(targetToken, firstTradeAmount, firstSourceAmount);
+        assertLt(carbonVortex.amountAvailableForTrading(targetToken), minSaleAmount / multiplier);
+
+        // perform a token -> native trade with a deliberate overpay; the reset target path will fire
+        uint128 secondTradeAmount = 10 ether;
+        uint128 secondSourceAmount = carbonVortex.expectedTradeInput(token, secondTradeAmount);
+        uint128 overpay = 5 ether;
+        carbonVortex.trade{ value: secondSourceAmount + overpay }(token, secondTradeAmount, secondSourceAmount);
+
+        // invariant: `current` must never exceed the post-refund target-token balance
+        uint128 currentAfter = carbonVortex.targetTokenSaleAmount().current;
+        uint256 balanceAfter = targetToken.balanceOf(address(carbonVortex));
+        assertLe(currentAfter, balanceAfter);
+        // stricter: with the refund-first ordering, the reset reads the post-refund balance, so
+        // `current` matches `min(balance, initial)` exactly
+        uint128 initial = carbonVortex.targetTokenSaleAmount().initial;
+        assertEq(currentAfter, Math.min(balanceAfter, initial));
+    }
+
     /// @dev test trading target token for token should transfer target tokens to
     /// @dev transfer address if the final target token is zero
     function testTradingTargetTokenForTokenShouldTransferTargetTokensToTransferAddressIfFinalTargetTokenIsZero()
