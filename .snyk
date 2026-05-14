@@ -52,4 +52,9 @@ ignore:
         reason: bn.js 4.x/5.x coexist transitively; global override would break ethers v5 and ethereumjs-util paths
         expires: 2026-10-20T00:00:00.000Z
         created: 2026-04-15T00:00:00.000Z
+  SNYK-JS-UUID-16133035:
+    - '*':
+        reason: Hardhat 2.x pulls uuid@9 transitively via @metamask/eth-sig-util; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-05-14T00:00:00.000Z
 patch: {}
