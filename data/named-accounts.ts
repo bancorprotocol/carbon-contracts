@@ -47,6 +47,7 @@ const coti = createNetworkHelper(DeploymentNetwork.Coti);
 const tac = createNetworkHelper(DeploymentNetwork.Tac);
 const bsc = createNetworkHelper(DeploymentNetwork.BSC);
 const hedera = createNetworkHelper(DeploymentNetwork.Hedera);
+const iota = createNetworkHelper(DeploymentNetwork.Iota);
 
 const TestNamedAccounts = {
     ethWhale: {
@@ -143,13 +144,24 @@ const BancorNamedAccounts = {
         ...getAddress(arbitrum, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
         ...getAddress(tac, '0xBBAFF3Bf6eC4C15992c0Fb37F12491Fd62C5B496'),
         ...getAddress(bsc, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
-        ...getAddress(hedera, '0xb0d39990E1C38B50D0b7f6911525535Fbacb4C26')
+        ...getAddress(hedera, '0xb0d39990E1C38B50D0b7f6911525535Fbacb4C26'),
+        ...getAddress(iota, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8')
     }
 };
 
 const VortexNamedAccounts = {
     targetToken: {
         ...getAddress(mainnet, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(base, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(berachain, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(blast, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(celo, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(fantom, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(iota, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(mantle, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(linea, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(sei, NATIVE_TOKEN_ADDRESS),
+        ...getAddress(telos, NATIVE_TOKEN_ADDRESS),
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'), // weth
         ...getAddress(tac, NATIVE_TOKEN_ADDRESS), // tac
         ...getAddress(bsc, NATIVE_TOKEN_ADDRESS), // bnb
@@ -157,12 +169,34 @@ const VortexNamedAccounts = {
     },
     finalTargetToken: {
         ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
+        ...getAddress(base, ZERO_ADDRESS),
+        ...getAddress(berachain, '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590'), // stargate weth
+        ...getAddress(blast, '0x4300000000000000000000000000000000000004'), // weth
+        ...getAddress(celo, '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207'), // weth
+        ...getAddress(fantom, '0x695921034f0387eAc4e11620EE91b1b15A6A09fE'), // weth
+        ...getAddress(iota, '0x160345fC359604fC6e70E3c5fAcbdE5F7A9342d8'),
+        ...getAddress(mantle, '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111'),
+        ...getAddress(linea, ZERO_ADDRESS),
+        ...getAddress(sei, '0x160345fC359604fC6e70E3c5fAcbdE5F7A9342d8'),
+        ...getAddress(telos, '0xA0fB8cd450c8Fd3a11901876cD5f17eB47C6bc50'),
+        ...getAddress(coti, ZERO_ADDRESS),
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // weth
         ...getAddress(bsc, '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA'), // wormhole weth
         ...getAddress(hedera, '0xca367694cdac8f152e33683bb36cc9d6a73f1ef2') // stargate weth
     },
     transferAddress: {
+        // Only mainnet forwards proceeds (to BNT); all other chains keep proceeds in the vortex for later withdrawal
         ...getAddress(mainnet, '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C'),
+        ...getAddress(base, ZERO_ADDRESS),
+        ...getAddress(berachain, ZERO_ADDRESS),
+        ...getAddress(blast, ZERO_ADDRESS),
+        ...getAddress(celo, ZERO_ADDRESS),
+        ...getAddress(fantom, ZERO_ADDRESS),
+        ...getAddress(iota, ZERO_ADDRESS),
+        ...getAddress(mantle, ZERO_ADDRESS),
+        ...getAddress(linea, ZERO_ADDRESS),
+        ...getAddress(sei, ZERO_ADDRESS),
+        ...getAddress(telos, ZERO_ADDRESS),
         ...getAddress(coti, ZERO_ADDRESS),
         ...getAddress(tac, ZERO_ADDRESS),
         ...getAddress(bsc, ZERO_ADDRESS),
@@ -178,10 +212,14 @@ function getAddress(func: (arg: string) => object | undefined, arg: string): obj
 export const NamedAccounts = {
     deployer: {
         ...getAddress(mainnet, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
-        ...getAddress(sepolia, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
-        ...getAddress(base, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
-        ...getAddress(arbitrum, 'ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
-        ...getAddress(mantle, 'ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
+        ...getAddress(sepolia, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(base, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(arbitrum, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(mantle, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...(TENDERLY_NETWORK_NAME !== DeploymentNetwork.Mainnet && {
+            [DeploymentNetwork.Tenderly]: '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370',
+            [DeploymentNetwork.TenderlyTestnet]: '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'
+        }),
         default: 0
     },
     deployerV2: { ...getAddress(mainnet, '0xdfeE8DC240c6CadC2c7f7f9c257c259914dEa84E') },
