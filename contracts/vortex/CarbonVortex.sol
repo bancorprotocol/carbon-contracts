@@ -722,6 +722,11 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             _transferProceeds(_targetToken, sourceAmount);
         }
 
+        // if the target token is native, refund any excess native token to caller
+        if (_targetToken == NATIVE_TOKEN && msg.value > sourceAmount) {
+            payable(msg.sender).sendValue(msg.value - sourceAmount);
+        }
+
         // if remaining balance is below the min token sale amount, reset the auction
         if (_amountAvailableForTrading(token) < _minTokenSaleAmounts[token]) {
             _resetTrading(token, 0);
@@ -734,11 +739,6 @@ contract CarbonVortex is ICarbonVortex, Upgradeable, ReentrancyGuardUpgradeable,
             _minTokenSaleAmounts[_targetToken] / _minTokenSaleAmountMultiplier
         ) {
             _resetTradingTarget(0);
-        }
-
-        // if the target token is native, refund any excess native token to caller
-        if (_targetToken == NATIVE_TOKEN && msg.value > sourceAmount) {
-            payable(msg.sender).sendValue(msg.value - sourceAmount);
         }
 
         return sourceAmount;
