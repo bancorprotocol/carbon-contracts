@@ -57,4 +57,14 @@ ignore:
         reason: Hardhat 2.x pulls uuid@9 transitively via @metamask/eth-sig-util; cannot upgrade without moving to Hardhat 3
         expires: 2026-10-20T00:00:00.000Z
         created: 2026-05-14T00:00:00.000Z
+  SNYK-JS-WS-16722635:
+    - '*':
+        reason: Hardhat 2.x pulls ws@8.x transitively; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-06-08T00:00:00.000Z
+  SNYK-JS-TMP-16881240:
+    - '*':
+        reason: Hardhat 2.x's solc pulls tmp transitively; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-06-08T00:00:00.000Z
 patch: {}
