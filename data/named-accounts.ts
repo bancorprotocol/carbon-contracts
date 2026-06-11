@@ -172,7 +172,7 @@ const VortexNamedAccounts = {
         ...getAddress(base, ZERO_ADDRESS),
         ...getAddress(berachain, '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590'), // stargate weth
         ...getAddress(blast, '0x4300000000000000000000000000000000000004'), // weth
-        ...getAddress(celo, '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207'), // weth
+        ...getAddress(celo, '0xD221812de1BD094f35587EE8E174B07B6167D9Af'), // weth (celo native bridge l2 weth)
         ...getAddress(fantom, '0x695921034f0387eAc4e11620EE91b1b15A6A09fE'), // weth
         ...getAddress(iota, '0x160345fC359604fC6e70E3c5fAcbdE5F7A9342d8'),
         ...getAddress(mantle, '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111'),
@@ -181,7 +181,7 @@ const VortexNamedAccounts = {
         ...getAddress(telos, '0xA0fB8cd450c8Fd3a11901876cD5f17eB47C6bc50'),
         ...getAddress(coti, ZERO_ADDRESS),
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // weth
-        ...getAddress(bsc, '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA'), // wormhole weth
+        ...getAddress(bsc, '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'), // binance-peg eth
         ...getAddress(hedera, '0xca367694cdac8f152e33683bb36cc9d6a73f1ef2') // stargate weth
     },
     transferAddress: {
