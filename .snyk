@@ -67,4 +67,19 @@ ignore:
         reason: Hardhat 2.x's solc pulls tmp transitively; cannot upgrade without moving to Hardhat 3
         expires: 2026-10-20T00:00:00.000Z
         created: 2026-06-08T00:00:00.000Z
+  SNYK-JS-WS-17344547:
+    - '*':
+        reason: Hardhat 2.x pulls ws@8.x transitively (declares ws ^7.4.6); cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-06-16T00:00:00.000Z
+  SNYK-JS-TMP-17315641:
+    - '*':
+        reason: Hardhat 2.x's solc pulls tmp transitively; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-06-16T00:00:00.000Z
+  SNYK-JS-JSYAML-17342520:
+    - '*':
+        reason: Hardhat 2.x pulls js-yaml via mocha transitively; cannot upgrade without moving to Hardhat 3
+        expires: 2026-10-20T00:00:00.000Z
+        created: 2026-06-16T00:00:00.000Z
 patch: {}

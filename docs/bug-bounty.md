@@ -41,6 +41,7 @@ Low
 
 The following are not within the scope of the Program:
 
+-   The `CarbonPOL` contract (`contracts/pol/`). It is deprecated and no longer in active use (holds no meaningful funds), and is excluded while in this state. Should it be redeployed, re-funded, or otherwise returned to active use, this exclusion will be removed and the contract returned to scope.
 -   Bugs in any third party contract or platform that interacts with Carbon.
 -   Vulnerabilities already reported and/or discovered in contracts built by third parties on Carbon. We reserve the right to keep private previous bug disclosures.
 -   Any previously reported bugs.
