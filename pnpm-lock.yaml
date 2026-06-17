@@ -34,10 +34,6 @@ overrides:
 importers:
 
   .:
-    dependencies:
-      hardhat:
-        specifier: 2.22.8
-        version: 2.22.8(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.19.23)(typescript@5.9.3))(typescript@5.9.3)(utf-8-validate@5.0.10)
     devDependencies:
       '@anders-t/ethers-ledger':
         specifier: ^1.0.4
@@ -171,6 +167,9 @@ importers:
       glob:
         specifier: ^11.0.0
         version: 11.1.0
+      hardhat:
+        specifier: 2.22.8
+        version: 2.22.8(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.19.23)(typescript@5.9.3))(typescript@5.9.3)(utf-8-validate@5.0.10)
       hardhat-contract-sizer:
         specifier: ^2.10.0
         version: 2.10.1(hardhat@2.22.8(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@20.19.23)(typescript@5.9.3))(typescript@5.9.3)(utf-8-validate@5.0.10))
