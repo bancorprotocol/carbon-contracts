@@ -115,16 +115,9 @@ export const fundAccount = async (account: string | SignerWithAddress, amount?: 
         return;
     }
 
-    const { ethWhale } = await getNamedSigners();
-
-    if (!ethWhale) {
-        return;
-    }
-
-    return ethWhale.sendTransaction({
-        value: amount ?? TEST_FUNDING,
-        to: address
-    });
+    // set the balance directly on the tenderly fork
+    const target = BigNumber.from(amount ?? TEST_FUNDING);
+    await ethers.provider.send('tenderly_setBalance', [address, utils.hexValue(target)]);
 };
 
 interface SaveTypeOptions {

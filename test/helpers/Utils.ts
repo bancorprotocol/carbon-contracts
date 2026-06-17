@@ -51,6 +51,24 @@ export const setBalance = async (account: string | Addressable, amount: BigNumbe
     await network.provider.send('hardhat_setBalance', [account, amount.toHexString()]);
 };
 
+/**
+ * Set a token balance directly on a Tenderly fork via state override, instead of sourcing funds
+ * from live whale accounts (whose balances drift over time and make the tests unsustainable).
+ */
+export const setTokenBalance = async (token: TokenWithAddress, account: string | Addressable, amount: BigNumberish) => {
+    const accountAddress = toAddress(account);
+    const tokenAddress = token.address;
+    // the tenderly RPC expects a quantity-encoded amount (no leading zeros)
+    const value = ethers.utils.hexValue(BigNumber.from(amount));
+
+    if (tokenAddress === NATIVE_TOKEN_ADDRESS) {
+        await network.provider.send('tenderly_setBalance', [accountAddress, value]);
+        return;
+    }
+
+    await network.provider.send('tenderly_setErc20Balance', [tokenAddress, accountAddress, value]);
+};
+
 export const transfer = async (
     sourceAccount: SignerWithAddress,
     token: TokenWithAddress,
