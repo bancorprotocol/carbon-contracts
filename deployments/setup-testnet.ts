@@ -1,10 +1,9 @@
-import Contracts from '../components/Contracts';
-import { getNamedSigners, isTenderly, runPendingDeployments } from '../utils/Deploy';
+import { isTenderly, runPendingDeployments } from '../utils/Deploy';
 import Logger from '../utils/Logger';
 import { NATIVE_TOKEN_ADDRESS, ZERO_ADDRESS } from '../utils/Constants';
 import { toWei } from '../utils/Types';
+import { setTokenBalance } from '../test/helpers/Utils';
 import '@nomiclabs/hardhat-ethers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 import AdmZip from 'adm-zip';
@@ -38,7 +37,6 @@ interface FundingRequest {
     token: string;
     tokenName: string;
     amount: BigNumber;
-    whale: SignerWithAddress;
 }
 
 const fundAccount = async (account: string, fundingRequests: FundingRequest[]) => {
@@ -49,28 +47,9 @@ const fundAccount = async (account: string, fundingRequests: FundingRequest[]) =
         if (fundingRequest.token === ZERO_ADDRESS) {
             continue;
         }
-        const { whale } = fundingRequest;
-        if (!whale) {
-            continue;
-        }
-        if (fundingRequest.token === NATIVE_TOKEN_ADDRESS) {
-            await fundingRequest.whale.sendTransaction({
-                value: fundingRequest.amount,
-                to: account
-            });
 
-            continue;
-        }
-
-        const tokenContract = await Contracts.ERC20.attach(fundingRequest.token);
-
-        // check if whale has enough balance
-        const whaleBalance = await tokenContract.balanceOf(whale.address);
-        if (whaleBalance.lt(fundingRequest.amount)) {
-            Logger.error(`Whale ${whale.address} has insufficient balance for ${fundingRequest.tokenName}`);
-            continue;
-        }
-        await tokenContract.connect(whale).transfer(account, fundingRequest.amount);
+        // set the balance directly on the tenderly testnet instead of transferring from a whale
+        await setTokenBalance({ address: fundingRequest.token }, account, fundingRequest.amount);
     }
 };
 
@@ -79,44 +58,37 @@ const fundAccounts = async () => {
     Logger.log();
 
     const { dai, link, usdc, wbtc, bnt } = await getNamedAccounts();
-    const { ethWhale, bntWhale, daiWhale, linkWhale, usdcWhale, wbtcWhale } = await getNamedSigners();
 
-    const fundingRequests = [
+    const fundingRequests: FundingRequest[] = [
         {
             token: NATIVE_TOKEN_ADDRESS,
             tokenName: 'eth',
-            amount: toWei(1000),
-            whale: ethWhale
+            amount: toWei(1000)
         },
         {
             token: bnt,
             tokenName: 'bnt',
-            amount: toWei(10_000),
-            whale: bntWhale
+            amount: toWei(10_000)
         },
         {
             token: dai,
             tokenName: 'dai',
-            amount: toWei(20_000),
-            whale: daiWhale
+            amount: toWei(20_000)
         },
         {
             token: link,
             tokenName: 'link',
-            amount: toWei(10_000),
-            whale: linkWhale
+            amount: toWei(10_000)
         },
         {
             token: usdc,
             tokenName: 'usdc',
-            amount: toWei(100_000, 6),
-            whale: usdcWhale
+            amount: toWei(100_000, 6)
         },
         {
             token: wbtc,
             tokenName: 'wbtc',
-            amount: toWei(100, 8),
-            whale: wbtcWhale
+            amount: toWei(100, 8)
         }
     ];
 
@@ -129,24 +101,6 @@ const fundAccounts = async () => {
     if (devAddresses.length == 0) {
         Logger.log('no dev addresses provided');
         return;
-    }
-
-    for(const fundingRequest of fundingRequests) {
-        if(fundingRequest.token == ZERO_ADDRESS) {
-            Logger.log(`Skipping funding for ${fundingRequest.tokenName}`);
-        }
-        const { whale } = fundingRequest;
-        if (!whale) {
-            continue;
-        }
-        const whaleBalance = await whale.getBalance();
-        // transfer ETH to the funding account if it doesn't have ETH
-        if (whaleBalance.lt(toWei(1))) {
-            await fundingRequests[0].whale.sendTransaction({
-                value: toWei(1),
-                to: whale.address
-            });
-        }
     }
 
     for (const account of devAddresses) {

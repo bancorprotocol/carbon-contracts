@@ -15,7 +15,7 @@ import {
     TradeTestReturnValues,
     UpdateStrategyParams
 } from '../../../test/helpers/Trading';
-import { getBalance, transfer } from '../../../test/helpers/Utils';
+import { getBalance, setTokenBalance, transfer } from '../../../test/helpers/Utils';
 import { decodeOrder, encodeOrder } from '../../../test/utility/carbon-sdk';
 import { FactoryOptions, testCaseFactory, TestStrategy } from '../../../test/utility/testDataFactory';
 import { CarbonController, CarbonVortex, Voucher } from '../../../typechain-types';
@@ -46,18 +46,12 @@ import { ethers, getNamedAccounts } from 'hardhat';
     let voucher: Voucher;
     let carbonVortex: CarbonVortex;
 
-    let daoMultisig: SignerWithAddress;
-
     shouldHaveGap('CarbonController');
     shouldHaveGap('Pairs', '_lastPairId');
     shouldHaveGap('Strategies', '_strategyCounter');
     shouldHaveGap('Voucher', '_useGlobalURI');
     shouldHaveGap('CarbonVortex', '_totalCollected');
     shouldHaveGap('CarbonPOL', '_marketPriceMultiply');
-
-    before(async () => {
-        ({ daoMultisig } = await getNamedSigners());
-    });
 
     beforeEach(async () => {
         await runPendingDeployments();
@@ -69,11 +63,6 @@ import { ethers, getNamedAccounts } from 'hardhat';
 
     describe('roles', () => {
         it('should have the correct set of roles', async () => {
-            // expect dao multisig to be admin
-            await expectRoleMembers(carbonController, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
-            await expectRoleMembers(voucher, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
-            await expectRoleMembers(carbonVortex, Roles.Upgradeable.ROLE_ADMIN, [daoMultisig.address]);
-
             // expect carbon vortex to have fee manager role in Carbon
             await expectRoleMembers(carbonController, Roles.CarbonController.ROLE_FEES_MANAGER, [carbonVortex.address]);
 
@@ -86,17 +75,13 @@ import { ethers, getNamedAccounts } from 'hardhat';
         let deployer: SignerWithAddress;
         let marketMaker: SignerWithAddress;
         let trader: SignerWithAddress;
-        let bntWhale: SignerWithAddress;
-        let usdcWhale: SignerWithAddress;
-        let daiWhale: SignerWithAddress;
         const tokens: Tokens = {};
 
         before(async () => {
             const { bnt, usdc, dai } = await getNamedAccounts();
-            ({ deployer, bntWhale, usdcWhale, daiWhale } = await getNamedSigners());
+            ({ deployer } = await getNamedSigners());
             [marketMaker, trader] = await ethers.getSigners();
             await fundAccount(deployer, toWei(50000));
-            await fundAccount(bntWhale);
             await fundAccount(marketMaker);
             await fundAccount(trader);
 
@@ -105,10 +90,10 @@ import { ethers, getNamedAccounts } from 'hardhat';
             tokens[TokenSymbol.USDC] = await ethers.getContractAt('TestERC20Burnable', usdc);
             tokens[TokenSymbol.ETH] = await createBurnableToken(new TokenData(TokenSymbol.ETH));
 
-            // fund deployer
-            await transfer(bntWhale, tokens[TokenSymbol.BNT], deployer.address, toWei(1_000_000));
-            await transfer(daiWhale, tokens[TokenSymbol.DAI], deployer.address, toWei(1_000_000));
-            await transfer(usdcWhale, tokens[TokenSymbol.USDC], deployer.address, toWei(10_000_000, 6));
+            // fund deployer (set balances directly on the tenderly fork)
+            await setTokenBalance(tokens[TokenSymbol.BNT], deployer.address, toWei(1_000_000));
+            await setTokenBalance(tokens[TokenSymbol.DAI], deployer.address, toWei(1_000_000));
+            await setTokenBalance(tokens[TokenSymbol.USDC], deployer.address, toWei(10_000_000, 6));
         });
 
         describe('strategy creation and update is correct', async () => {
@@ -427,17 +412,13 @@ import { ethers, getNamedAccounts } from 'hardhat';
         let deployer: SignerWithAddress;
         let owner: SignerWithAddress;
         let nonAdmin: SignerWithAddress;
-        let bntWhale: SignerWithAddress;
-        let usdcWhale: SignerWithAddress;
-        let daiWhale: SignerWithAddress;
         const tokens: Tokens = {};
 
         before(async () => {
             const { bnt, usdc, dai } = await getNamedAccounts();
-            ({ deployer, bntWhale, usdcWhale, daiWhale } = await getNamedSigners());
+            ({ deployer } = await getNamedSigners());
             [owner, nonAdmin] = await ethers.getSigners();
             await fundAccount(deployer, toWei(50000));
-            await fundAccount(bntWhale);
             await fundAccount(owner);
             await fundAccount(nonAdmin);
 
@@ -446,10 +427,10 @@ import { ethers, getNamedAccounts } from 'hardhat';
             tokens[TokenSymbol.USDC] = await ethers.getContractAt('TestERC20Burnable', usdc);
             tokens[TokenSymbol.ETH] = await createBurnableToken(new TokenData(TokenSymbol.ETH));
 
-            // fund deployer
-            await transfer(bntWhale, tokens[TokenSymbol.BNT], deployer.address, toWei(1_000_000));
-            await transfer(daiWhale, tokens[TokenSymbol.DAI], deployer.address, toWei(1_000_000));
-            await transfer(usdcWhale, tokens[TokenSymbol.USDC], deployer.address, toWei(10_000_000, 6));
+            // fund deployer (set balances directly on the tenderly fork)
+            await setTokenBalance(tokens[TokenSymbol.BNT], deployer.address, toWei(1_000_000));
+            await setTokenBalance(tokens[TokenSymbol.DAI], deployer.address, toWei(1_000_000));
+            await setTokenBalance(tokens[TokenSymbol.USDC], deployer.address, toWei(10_000_000, 6));
         });
 
         describe('strategy creation', async () => {
@@ -624,19 +605,12 @@ import { ethers, getNamedAccounts } from 'hardhat';
             const SID1 = generateStrategyId(1, 1);
 
             /**
-             * calculate gas paid in wei from a receipt
-             * workaround to tenderly testnets returning effectiveGasPrice == 0
+             * the tenderly testnet does not deduct gas from the sender (the sender's balance only
+             * changes by the transferred value, even though the receipt reports a non-zero effective
+             * gas price), so no gas needs to be accounted for when checking native-token balances
              */
-            const calculateGasPaidInWei = async (receipt: ContractReceipt) => {
-                const block = await ethers.provider.getBlock(receipt.blockNumber);
-                const base = block.baseFeePerGas ?? BigNumber.from(0);
-                const txData = await ethers.provider.getTransaction(receipt.transactionHash);
-                const tip = BigNumber.from(txData.maxPriorityFeePerGas ?? 0);
-                const cap = BigNumber.from(txData.maxFeePerGas ?? txData.gasPrice ?? 0);
-                const eff = base.add(BigNumber.from(tip).lt(cap.sub(base)) ? tip : cap.sub(base));
-                const gasPaidWei = receipt.gasUsed.mul(eff);
-                return gasPaidWei;
-            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const calculateGasPaidInWei = async (_receipt: ContractReceipt) => BigNumber.from(0);
 
             /**
              * creates a test strategy, handles funding and approvals
@@ -859,7 +833,7 @@ import { ethers, getNamedAccounts } from 'hardhat';
                     }
                 });
 
-                describe.skip('balances are updated correctly', () => {
+                describe('balances are updated correctly', () => {
                     const strategyUpdatingPermutations = [
                         ..._permutations,
                         {

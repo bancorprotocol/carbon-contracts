@@ -1,5 +1,5 @@
 {
-    "mainnet": "https://ethereum-rpc.publicnode.com",
+    "mainnet": "https://eth.drpc.org",
     "optimism": "https://optimism.drpc.org",
     "cronos": "https://cronos-evm.publicnode.com",
     "rootstock": "https://public-node.rsk.co",

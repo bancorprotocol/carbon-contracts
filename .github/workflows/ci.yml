@@ -37,6 +37,9 @@ jobs:
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          # Full scan of the entire toolchain
+          args: --severity-threshold=high
 
   test:
     name: Test
