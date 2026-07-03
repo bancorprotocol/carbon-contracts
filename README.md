@@ -19,9 +19,6 @@ Some examples of the advanced features Carbon offers:
 
 ## Security
 
-The repository is part of the bug bounty program.
-See the details [here](./docs/bug-bounty.md).
-
 The security policy is available [here](./SECURITY.md).
 
 ### Security Audits
