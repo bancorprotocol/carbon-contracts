@@ -10,6 +10,7 @@ jobs:
     name: Health Checks
 
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Check out the repository
@@ -19,7 +20,7 @@ jobs:
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
-        with: 
+        with:
           version: 9
 
       - name: Set up Node.js
@@ -28,32 +29,20 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Tune GitHub-hosted runner network
-        uses: smorimoto/tune-github-hosted-runner-network@v1
-      
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: v1.3.5 # stable version 09.09.2025
 
+      # remappings resolve @openzeppelin, @bancor and hardhat-deploy from node_modules
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build
-        run: pnpm build
+      - name: Storage gaps
+        run: pnpm test:storage
 
-      - name: Setup tenderly 
-        run: |
-          mkdir ~/.tenderly
-          touch ~/.tenderly/config.yaml
-          echo "access_key: $TENDERLY_ACCESS_KEY" >> ~/.tenderly/config.yaml
-        env:
-          TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
-
-      - name: Test deployment and network health
+      # forks mainnet from utils/rpcUrls.json; set the MAINNET_RPC_URL secret to use a dedicated endpoint instead
+      - name: Mainnet health on a fork
         run: pnpm test:health
         env:
-          TENDERLY_PROJECT: carbon-temp-forks
-          TENDERLY_TEST_PROJECT: carbon-temp-forks
-          TENDERLY_USERNAME: bancor
-          TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}

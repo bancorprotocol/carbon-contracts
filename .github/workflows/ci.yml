@@ -83,3 +83,6 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Storage gaps
+        run: pnpm test:storage
